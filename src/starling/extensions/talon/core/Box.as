@@ -9,21 +9,30 @@ package starling.extensions.talon.core
 		// Strong typed attributes (NB! all of them have _synchronized_ analog in attributes)
 		//
 		public const width:Gauge = new Gauge();
+		public const minWidth:Gauge = new Gauge();
+		public const maxWidth:Gauge = new Gauge();
+
 		public const height:Gauge = new Gauge();
+		public const minHeight:Gauge = new Gauge();
+		public const maxHeight:Gauge = new Gauge();
+
 		public const margin:GaugeQuad = new GaugeQuad();
 		public const padding:GaugeQuad = new GaugeQuad();
-		public const layout:Layout = new Layout(this);
 
-		public const children:Vector.<Box> = new <Box>[];
+		public const layout:Layout = new Layout(this);
 
 		/** Proxy for all attributes. */
 		public const attributes:Object = new Attributes(onAttributeChanged);
 
 		public function Box():void
 		{
-			// Size
+			// Bounds
 			map("width", width.toString, width.parse, width);
-			map("height", width.toString, height.parse, height);
+			map("minWidth", minWidth.toString, minWidth.parse, minWidth);
+			map("maxWidth", maxWidth.toString, maxWidth.parse, maxWidth);
+			map("height", height.toString, height.parse, height);
+			map("minHeight", minHeight.toString, minHeight.parse, minHeight);
+			map("maxHeight", maxHeight.toString, maxHeight.parse, maxHeight);
 
 			// Margin
 			map("margin", margin.toString, margin.parse, margin);

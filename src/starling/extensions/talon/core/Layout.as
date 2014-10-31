@@ -4,12 +4,17 @@ package starling.extensions.talon.core
 	import flash.utils.Dictionary;
 
 	import starling.events.Event;
+	import starling.extensions.talon.layout.CanvasLayoutStrategy;
+	import starling.extensions.talon.layout.DockLayoutStrategy;
 	import starling.extensions.talon.layout.LayoutStrategy;
+	import starling.extensions.talon.layout.NoneLayoutStrategy;
+	import starling.extensions.talon.layout.StackLayoutStrategy;
+	import starling.extensions.talon.layout.WrapLayoutStrategy;
 
 	public final class Layout
 	{
 		//
-		// Static Registry
+		// Static Registry & LayoutStrategy multitone
 		//
 		private static const _strategy:Dictionary = new Dictionary();
 		private static const _strategySelfAttributes:Dictionary = new Dictionary();
@@ -22,6 +27,13 @@ package starling.extensions.talon.core
 			_strategy[alias] = layout;
 			_strategySelfAttributes[alias] = attributesDictionary;
 		}
+
+		// Defaults strategies
+		registerLayout("none", new NoneLayoutStrategy());
+		registerLayout("stack", new StackLayoutStrategy());
+		registerLayout("dock", new DockLayoutStrategy());
+		registerLayout("wrap", new WrapLayoutStrategy());
+		registerLayout("canvas", new CanvasLayoutStrategy());
 
 		//
 		// Layout
@@ -51,7 +63,7 @@ package starling.extensions.talon.core
 			if (property == "layout") return true;
 
 			// If layout added with this self-attributes
-			if (_strategySelfAttributes[_box.attributes.layout][property] === true) return true;
+			if (_strategySelfAttributes[_box.attributes.layout] && _strategySelfAttributes[_box.attributes.layout][property] === true) return true;
 
 			// Otherwise do not invalidate
 			return false;
@@ -68,6 +80,7 @@ package starling.extensions.talon.core
 			{
 				_invalidated = false;
 				// method.arrange();
+				_box.dispatchEventWith(Event.RESIZE);
 			}
 		}
 

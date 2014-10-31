@@ -1,7 +1,7 @@
 package starling.extension.talon.core
 {
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
+	import starling.events.Event;
+	import starling.events.EventDispatcher;
 
 	/** Размер. */
 	public final class Gauge extends EventDispatcher
@@ -20,6 +20,9 @@ package starling.extension.talon.core
 
 		public function parse(string:String):void
 		{
+			const prevUnit:String = _unit;
+			const prevAmount:Number = _amount;
+
 			if (string == AUTO)
 			{
 				_unit = AUTO;
@@ -33,9 +36,26 @@ package starling.extension.talon.core
 			else
 			{
 				var match:Array = PATTERN.exec(string);
-				if (match == null) throw new ArgumentError("Input string is not valid size: " + string);
+				if (match == null) throw new ArgumentError("Input string is not valid: " + string);
 				_amount = parseFloat(match[1]);
 				_unit = match[2] || PX;
+			}
+
+			if (prevUnit != _unit || prevAmount != _amount)
+			{
+				dispatchEventWith(Event.CHANGE);
+			}
+		}
+
+		/** Strong typed values setup. */
+		public function setTo(amount:Number, unit:String):void
+		{
+			if (_amount != amount || _unit != unit)
+			{
+				_amount = amount;
+				_unit = unit;
+
+				dispatchEventWith(Event.CHANGE);
 			}
 		}
 
@@ -47,17 +67,11 @@ package starling.extension.talon.core
 				case AUTO:		return 0;
 				case PX:		return amount;
 				case PT:		return amount * ppp;
-				case EM:		return amount * em;
-				case PERCENT:	return amount * target / 100;
+				case EM:        return amount * em;
+				case PERCENT:   return amount * target / 100;
 				case STAR:		return amount * target / stars;
 				default:		throw new Error();
 			}
-		}
-
-		private function dispatchChange():void
-		{
-			var event:Event = new Event(Event.CHANGE);
-			dispatchEvent(event);
 		}
 
 		/** Единицы измерения. */
@@ -67,7 +81,7 @@ package starling.extension.talon.core
 			if (_unit != unit)
 			{
 				_unit = unit;
-				dispatchChange();
+				dispatchEventWith(Event.CHANGE);
 			}
 		}
 
@@ -78,8 +92,14 @@ package starling.extension.talon.core
 			if (_amount != value)
 			{
 				_amount = value;
-				dispatchChange();
+				dispatchEventWith(Event.CHANGE);
 			}
+		}
+
+		public function equals(gauge:Gauge):Boolean
+		{
+			return gauge.unit == unit
+				&& gauge.amount == amount;
 		}
 
 		/** Значение вычисляется относительно контекста (родителя/братьев). */
@@ -95,7 +115,7 @@ package starling.extension.talon.core
 			return _unit == AUTO;
 		}
 
-		public override function toString():String
+		public function toString():String
 		{
 			return _unit == AUTO ? AUTO : _unit == STAR && _amount == 1 ? STAR : _amount + _unit;
 		}

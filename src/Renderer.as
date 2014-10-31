@@ -1,71 +1,124 @@
 package
 {
+	import starling.events.Event;
+
 	import starling.extension.talon.core.Box;
 
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 
+	import starling.extension.talon.core.GaugeQuad;
+
+	import starling.extension.talon.core.Layout;
+
+	import starling.extension.talon.core.Gauge;
+	import starling.extension.talon.layout.StackLayoutStrategy;
+	import starling.utils.HAlign;
+	import starling.utils.VAlign;
+
 	public class Renderer extends Sprite
 	{
+		private const _root:Box = new Box();
+
 		public function Renderer()
 		{
 			stage.scaleMode = StageScaleMode.NO_SCALE;
-			stage.align = StageAlign.TOP_RIGHT;
+			stage.align = StageAlign.TOP_LEFT;
+			stage.addEventListener(Event.RESIZE, onResize);
 
-//			var document:XML =
-//				<box layout:type = "stack" width = "200px" height = "400px">
-//					<box height = "*" />
-//					<box height = "*" />
-//					<box layout:type = "stack" layout.direction = "right">
-//						<button id = "ok" width = "100%" />
-//						<button id = "cancel" width = "100%" />
-//					</box>
-//				</box>;
+			_root.attributes.direction = "right";
+			_root.attributes.halign = HAlign.CENTER;
+			_root.attributes.valign = VAlign.CENTER;
 
-			var b1:Box = new Box();
-			var b2:Box = new Box();
-			var b3:Box = new Box();
-			var b4:Box = new Box();
-			var b5:Box = new Box();
+			_root.addEventListener(Event.CHANGE, onChange);
+			_root.margin.bottom.amount = 20;
+			_root.attributes.marginRight = "auto";
+			_root.margin.parse("10px");
+			_root.attributes.marginLeft = "auto";
+			trace(_root.margin);
+			trace(_root.margin.right);
 
-			b2.width.parse("150px");
-			b2.height.parse("200px");
+			function onChange(e:Event):void
+			{
+				trace(e.data);
+			}
 
-			b3.width.parse("120px");
-			b3.height.parse("100px");
+			function fromXML(xml:XML):Box
+			{
+				var box:Box = new Box();
 
-			b4.width.parse("20px");
-			b4.height.parse("50px");
+				for each (var attribute:XML in xml.attributes())
+				{
+					var name:String = attribute.name();
+					var value:String = attribute.valueOf();
+					box.attributes[name] = value;
+				}
 
-			b5.width.parse("30px");
-			b5.height.parse("50px");
+				for each (var childXML:XML in xml.children())
+				{
+					box.children.push(fromXML(childXML));
+				}
 
-			b3.children.push(b4);
-			b1.children.push(b2);
-			b1.children.push(b3);
-			b1.children.push(b5);
+				return box;
+			}
 
-			var ppp:Number = 0;
-			var em:Number = 0;
-			b1.bounds.setTo(0, 0, b1.layout.measureWidth(ppp, em), b1.layout.measureHeight(ppp, em));
-			b1.layout.arrange(ppp, ppp, b1.bounds.width, b1.bounds.height);
+//			Layout.registerMethod("stack", new StackLayoutMethod(), ["direction", "halign", "valign", "gap"]);
 
-			draw(b1);
+			var info:XML =
+				<layout type="stack" gap="10px" padding="10px">
+					<box width="64px" height="64px" background="#00FF00" />
+					<label text="text1" />
+					<box width="64px" height="64px" background="#FF0000" />
+					<label text="text2" />
+					<box width="64px" height="64px" background="#0000FF" />
+				</layout>;
+
+//			var info:XML = <layout type="stack" gap="10px" padding="10px" />;
+			var tmp:Box = fromXML(info);
+
+//			var builder:TalonBuilder = TalonBuilder.fromXML(null);
+//			builder.addLibraryTexture("/path/to/image.png", null);
+//			builder.addLibraryTexturesFromAtlas(null);
+//			builder.addLibraryConstant("header", "Заголовок");
+//			var box:Box = builder.getResult("AlertDialog");
+
+//			var button:TalonButton = new TalonButton();
+//			button.box.attributes.label = 100;
+
+//			var left:Box = build(_root, "auto", "50%");
+//			var right:Box = build(_root, "3*", "100%");
+//
+//			build(left, "10px", "10px");
+//			build(left, "10px", "10px");
+//
+//			build(right, "100px", "10%");
+//			build(right, "90px", "20%");
+//			build(right, "80px", "30%");
+//			build(right, "70px", "40%");
+//			build(right, "60px", "50%");
+//			build(right, "50px", "30%");
+//			build(right, "*", "20%");
+//
+//			refresh();
+		}
+
+		private function onResize(e:Event):void
+		{
+			_root.width.setTo(stage.stageWidth, Gauge.PX);
+			_root.height.setTo(stage.stageHeight, Gauge.PX);
 		}
 
 		private function draw(box:Box, dx:int = 0, dy:int = 0):void
 		{
-			var color:uint = Math.random() * 0xFFFFFF;
-
-			graphics.beginFill(color);
-			graphics.drawRect(dx + box.bounds.x, dy + box.bounds.y, box.bounds.width, box.bounds.height);
+//			graphics.beginFill(box.backgroundColor);
+//			graphics.drawRect(dx + box.bounds.x, dy + box.bounds.y, box.bounds.width, box.bounds.height);
 			graphics.endFill();
 
-			for each (var child:Box in box.children)
-			{
-				draw(child, dx + box.bounds.x, dy + box.bounds.y);
-			}
+//			for each (var child:Box in box.children)
+//			{
+//				draw(child, dx + box.bounds.x, dy + box.bounds.y);
+//			}
 		}
 	}
 }

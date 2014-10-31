@@ -1,11 +1,22 @@
 package starling.extension.talon.core
 {
-	public final class GaugeQuad
+	import starling.events.Event;
+	import starling.events.EventDispatcher;
+
+	public final class GaugeQuad extends EventDispatcher
 	{
 		public const top:Gauge = new Gauge();
 		public const right:Gauge = new Gauge();
 		public const bottom:Gauge = new Gauge();
 		public const left:Gauge = new Gauge();
+
+		public function GaugeQuad()
+		{
+			top.addEventListener(Event.CHANGE, dispatchEvent);
+			right.addEventListener(Event.CHANGE, dispatchEvent);
+			bottom.addEventListener(Event.CHANGE, dispatchEvent);
+			left.addEventListener(Event.CHANGE, dispatchEvent);
+		}
 
 		public function parse(string:String):void
 		{
@@ -34,12 +45,21 @@ package starling.extension.talon.core
 			}
 			else
 			{
-				throw new ArgumentError("Input string is not valid size quad: " + string);
+				throw new ArgumentError("Input string is not valid: " + string);
 			}
 		}
 
 		public function toString():String
 		{
+			if (top.equals(right) && top.equals(bottom) && top.equals(left))
+			{
+				return top.toString();
+			}
+			else if (top.equals(bottom) && right.equals(left))
+			{
+				return [top, right].join(" ");
+			}
+
 			return [top, right, bottom, left].join(" ");
 		}
 	}

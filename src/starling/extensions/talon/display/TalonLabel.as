@@ -1,4 +1,4 @@
-package starling.extension.talon.display
+package starling.extensions.talon.display
 {
 	public class TalonLabel extends TalonComponentBase
 	{

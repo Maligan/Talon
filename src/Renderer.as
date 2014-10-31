@@ -2,18 +2,18 @@ package
 {
 	import starling.events.Event;
 
-	import starling.extension.talon.core.Box;
+	import starling.extensions.talon.core.Box;
 
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 
-	import starling.extension.talon.core.GaugeQuad;
+	import starling.extensions.talon.core.GaugeQuad;
 
-	import starling.extension.talon.core.Layout;
+	import starling.extensions.talon.core.Layout;
 
-	import starling.extension.talon.core.Gauge;
-	import starling.extension.talon.layout.StackLayoutStrategy;
+	import starling.extensions.talon.core.Gauge;
+	import starling.extensions.talon.layout.StackLayoutStrategy;
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
 

@@ -1,8 +1,8 @@
-package starling.extension.talon.utils
+package starling.extensions.talon.utils
 {
 	import flash.utils.ByteArray;
 	import starling.display.DisplayObject;
-	import starling.extension.talon.core.StyleSheet;
+	import starling.extensions.talon.core.StyleSheet;
 
 	public class TalonBuilder
 	{

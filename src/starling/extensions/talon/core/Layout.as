@@ -1,10 +1,10 @@
-package starling.extension.talon.core
+package starling.extensions.talon.core
 {
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 
 	import starling.events.Event;
-	import starling.extension.talon.layout.LayoutStrategy;
+	import starling.extensions.talon.layout.LayoutStrategy;
 
 	public final class Layout
 	{

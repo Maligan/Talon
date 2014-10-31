@@ -1,8 +1,8 @@
-package starling.extension.talon.display
+package starling.extensions.talon.display
 {
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
-	import starling.extension.talon.core.Box;
+	import starling.extensions.talon.core.Box;
 
 	public class TalonComponentBase extends Sprite implements TalonComponent
 	{

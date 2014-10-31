@@ -1,4 +1,4 @@
-package starling.extension.talon.core
+package starling.extensions.talon.core
 {
 	public class StyleSheet
 	{

@@ -1,6 +1,6 @@
-package starling.extension.talon.layout
+package starling.extensions.talon.layout
 {
-	import starling.extension.talon.core.Box;
+	import starling.extensions.talon.core.Box;
 
 	public final class NoneLayoutStrategy implements LayoutStrategy
 	{

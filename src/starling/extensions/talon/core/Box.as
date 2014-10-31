@@ -1,4 +1,4 @@
-package starling.extension.talon.core
+package starling.extensions.talon.core
 {
 	import starling.events.Event;
 	import starling.events.EventDispatcher;

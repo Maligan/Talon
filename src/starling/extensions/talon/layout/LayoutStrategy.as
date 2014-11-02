@@ -4,8 +4,8 @@ package starling.extensions.talon.layout
 
 	public interface LayoutStrategy
 	{
-		function measureAutoWidth(box:Box):int;
-		function measureAutoHeight(box:Box):int;
-		function arrange(box:Box, width:int, height:int):void;
+		function measureAutoWidth(box:Box, ppp:Number, pem:Number):int
+		function measureAutoHeight(box:Box, ppp:Number, pem:Number):int
+		function arrange(box:Box, width:int, height:int, ppp:Number, pem:Number):void
 	}
 }

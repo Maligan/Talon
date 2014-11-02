@@ -15,6 +15,14 @@ package starling.extensions.talon.core
 
 		private static const PATTERN:RegExp = /^(-?\d*\.?\d+)(px|pt|em|%|\*|)$/;
 
+		public static function toPixels(value:String, ppp:Number, pem:Number, target:Number, stars:int):int
+		{
+			if (value == null) return 0;
+			var gauge:Gauge = new Gauge();
+			gauge.parse(value);
+			return gauge.toPixels(ppp, pem, target, stars);
+		}
+
 		private var _unit:String = AUTO;
 		private var _amount:Number = 0;
 
@@ -60,14 +68,14 @@ package starling.extensions.talon.core
 		}
 
 		/** Перевод значения в приксели, в функцию так же передаются все необходимые коэфициенты/параметры перевода. */
-		public function toPixels(ppp:Number, em:Number, target:Number, stars:int):Number
+		public function toPixels(ppp:Number, pem:Number, target:Number, stars:int):Number
 		{
 			switch (unit)
 			{
 				case AUTO:		return 0;
 				case PX:		return amount;
 				case PT:		return amount * ppp;
-				case EM:        return amount * em;
+				case EM:        return amount * pem;
 				case PERCENT:   return amount * target / 100;
 				case STAR:		return amount * target / stars;
 				default:		throw new Error();

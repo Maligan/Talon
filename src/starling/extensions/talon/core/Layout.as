@@ -44,6 +44,8 @@ package starling.extensions.talon.core
 
 		public function Layout(box:Box)
 		{
+			_invalidated = true;
+			_bounds = new Rectangle();
 			_box = box;
 			_box.addEventListener(Event.CHANGE, onBoxAttributeChanged);
 		}
@@ -53,13 +55,13 @@ package starling.extensions.talon.core
 			var property:String = String(e.data);
 			if (propertyCausesInvalidation(property))
 			{
-				invalidate();
+				// invalidate();
 			}
 		}
 
 		private function propertyCausesInvalidation(property:String):Boolean
 		{
-			// Change box layout attribute always cause invalidate
+			// Change box layout attribute always cause invalidation
 			if (property == "layout") return true;
 
 			// If layout added with this self-attributes
@@ -69,24 +71,25 @@ package starling.extensions.talon.core
 			return false;
 		}
 
-		private function invalidate():void
+		public function commit():void
 		{
-			_invalidated = true;
-		}
-
-		private function validate():void
-		{
-			if (_invalidated)
-			{
-				_invalidated = false;
-				// method.arrange();
-				_box.dispatchEventWith(Event.RESIZE);
-			}
+			_box.dispatchEventWith(Event.RESIZE);
+			arrange(bounds.width, bounds.height);
 		}
 
 		public function get bounds():Rectangle
 		{
 			return _bounds;
 		}
+
+		//
+		// Delegate to current strategy
+		// do not call it directly
+		//
+		public function arrange(width:int, height:int):void { strategy.arrange(_box, width, height, 1, 1); }
+		public function measureAutoWidth():int { return strategy.measureAutoHeight(_box, 1, 1); }
+		public function measureAutoHeight():int { return strategy.measureAutoWidth(_box, 1, 1); }
+
+		private function get strategy():LayoutStrategy { return _strategy[_box.attributes.layout]; }
 	}
 }

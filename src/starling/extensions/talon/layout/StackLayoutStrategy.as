@@ -1,65 +1,95 @@
 package starling.extensions.talon.layout
 {
 	import starling.extensions.talon.core.Box;
+	import starling.extensions.talon.core.Gauge;
 
 	public class StackLayoutStrategy implements LayoutStrategy
 	{
-		public static const TOP:String = "top";
-		public static const BOTTOM:String = "bottom";
-		public static const LEFT:String = "left";
-		public static const RIGHT:String = "right";
+		private static const TOP:String = "top";
+		private static const BOTTOM:String = "bottom";
+		private static const LEFT:String = "left";
+		private static const RIGHT:String = "right";
 
-		private var _target:Box;
-		private var _gap:int = 10;
-		private var _direction:String;
+		private static function isHorizontal(direction:String):Boolean { return direction == LEFT || direction == RIGHT; }
+		private static function isVertical(direction:String):Boolean { return direction == TOP || direction == BOTTOM; }
 
-		public function StackLayoutStrategy()
+		public function arrange(box:Box, width:int, height:int, ppp:Number, pem:Number):void
 		{
-//			_target = target;
-			_direction = RIGHT;
+			// Layout properties
+			var direction:String = box.attributes.stackDirection || BOTTOM;
+			var gap:int = Gauge.toPixels(box.attributes.stackGap, ppp, pem, isHorizontal(direction) ? box.layout.bounds.width : box.layout.bounds.height, 0);
+
+			var child:Box;
+
+			//
+			// Horizontal
+			//
+			if (isHorizontal(direction))
+			{
+				arrangeSide("width", "x", "measureAutoWidth", width, gap, ppp, pem, box);
+			}
+			else if (isVertical(direction))
+			{
+				arrangeSide("height", "y", "measureAutoHeight", height, gap, ppp, pem, box);
+			}
 		}
 
-		public function arrange(box:Box, width:int, height:int):void
+		private function arrangeSide2():void
 		{
-//			var child:Box;
-//
-//			// Количество "звёзд" в потомках
-//			var starWidth:int = 0;
-//			var starHeight:int = 0;
-//
-//			for each (child in _target.children)
-//			{
-//				if (child.width.unit == Gauge.STAR) starWidth += child.width.amount;
-//				if (child.height.unit == Gauge.STAR) starHeight += child.height.amount;
-//			}
-//
-//			// Определение размеров потомков
-//			for each (child in _target.children)
-//			{
-//				child.bounds.width = child.width.isAuto
-//					? child.layout.measureAutoWidth(ppp, em)
-//					: child.width.toPixels(ppp, em, width, starWidth);
-//
-//				child.bounds.height = child.height.isAuto
-//					? child.layout.measureAutoHeight(ppp, em)
-//					: child.height.toPixels(ppp, em, height, starHeight);
-//			}
-//
-//			// Ранжирование потомков
-//			var shift:int = 0;
-//			for each (child in _target.children)
-//			{
-//				child.bounds.x = direction == RIGHT ? shift : 0;
-//				child.bounds.y = direction == BOTTOM ? shift : 0;
-//
-//				shift += direction == RIGHT ? child.bounds.width : child.bounds.height;
-//				shift += _gap;
-//
-//				child.layout.arrange(ppp, em, child.bounds.width, child.bounds.height);
-//			}
+
 		}
 
-		public function measureAutoWidth(box:Box):int
+		private function arrangeSide(name:String, asix:String, auto:String, value:int, gap:int, ppp:Number, pem:Number, box:Box):void
+		{
+			var child:Box;
+
+			var starCount:int = 0;
+			var starTarget:int = value - (box.children.length > 1 ? (box.children.length - 1) * gap : 0);
+
+			for each (child in box.children)
+			{
+				if (child[name].unit == Gauge.STAR)
+				{
+					starCount += child[name].amount;
+				}
+				else
+				{
+					child.layout.bounds[name] = child[name].isAuto ? child.layout[auto]() : child[name].toPixels(ppp, pem, value, 0);
+					starTarget -= child.layout.bounds[name];
+				}
+			}
+
+			for each (child in box.children)
+			{
+				if (child[name].unit == Gauge.STAR)
+				{
+					child.layout.bounds[name] = child[name].toPixels(ppp, pem, starTarget, starCount);
+				}
+			}
+
+			var shift:int = 0;
+			for each (child in box.children)
+			{
+				child.layout.bounds[asix] = shift;
+				shift += child.layout.bounds[name] + gap;
+
+				// debug
+				if (name == "width")
+				{
+					child.layout.bounds.height = 20;
+					child.layout.bounds.y = 0;
+				}
+				else if (name == "height")
+				{
+					child.layout.bounds.width = 20;
+					child.layout.bounds.x = 0;
+				}
+
+				child.layout.commit();
+			}
+		}
+
+		public function measureAutoWidth(box:Box, ppp:Number, pem:Number):int
 		{
 			return 0;
 //			var child:Box;
@@ -88,7 +118,7 @@ package starling.extensions.talon.layout
 //			return result;
 		}
 
-		public function measureAutoHeight(box:Box):int
+		public function measureAutoHeight(box:Box, ppp:Number, pem:Number):int
 		{
 			return 0;
 //			var child:Box;
@@ -115,19 +145,6 @@ package starling.extensions.talon.layout
 //			}
 //
 //			return result;
-		}
-
-		/** Направление добавления элеметов. */
-		public function get direction():String { return _direction; }
-		public function set direction(value:String):void
-		{
-			_direction = value;
-		}
-
-		public function get gap():int { return _gap; }
-		public function set gap(value:int):void
-		{
-			_gap = value;
 		}
 	}
 }

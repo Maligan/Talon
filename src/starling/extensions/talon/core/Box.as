@@ -20,6 +20,7 @@ package starling.extensions.talon.core
 		public const padding:GaugeQuad = new GaugeQuad();
 
 		public const layout:Layout = new Layout(this);
+		public const children:Vector.<Box> = new Vector.<Box>();
 
 		/** Proxy for all attributes. */
 		public const attributes:Object = new Attributes(onAttributeChanged);

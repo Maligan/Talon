@@ -1,5 +1,6 @@
 package starling.extensions.talon.display
 {
+	import starling.display.DisplayObject;
 	import starling.display.Quad;
 	import starling.display.Sprite;
 	import starling.events.Event;
@@ -20,12 +21,15 @@ package starling.extensions.talon.display
 			addChild(_background);
 		}
 
+		public override function addChild(child:DisplayObject):DisplayObject
+		{
+			(child is TalonComponent) && box.children.push(TalonComponent(child).box);
+			return super.addChild(child);
+		}
+
 		private function onBoxChange(e:Event):void
 		{
-			_background.x = box.attributes.x;
-			_background.y = box.attributes.y;
-			_background.width = box.width.toPixels(0, 0, 0, 0);
-			_background.height = box.height.toPixels(0, 0, 0, 0);
+			_background.color = parseInt(box.attributes.backgroundColor);
 		}
 
 		private function onBoxResize(e:Event):void

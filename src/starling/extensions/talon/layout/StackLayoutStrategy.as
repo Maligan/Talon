@@ -5,29 +5,26 @@ package starling.extensions.talon.layout
 
 	public class StackLayoutStrategy implements LayoutStrategy
 	{
-		private static const TOP:String = "top";
-		private static const BOTTOM:String = "bottom";
-		private static const LEFT:String = "left";
-		private static const RIGHT:String = "right";
-
-		private static function isHorizontal(direction:String):Boolean { return direction == LEFT || direction == RIGHT; }
-		private static function isVertical(direction:String):Boolean { return direction == TOP || direction == BOTTOM; }
+		private static const HORIZONTAL:String = "horizontal";
+		private static const VERTICAL:String = "vertical";
 
 		public function arrange(node:Node, width:Number, height:Number, ppp:Number, pem:Number):void
 		{
 			// Layout properties
-			var direction:String = node.attributes.stackDirection || BOTTOM;
-			var gap:Number = Gauge.toPixels(node.attributes.stackGap, ppp, pem, isHorizontal(direction) ? node.layout.bounds.width : node.layout.bounds.height, 0);
+			var orientation:String = node.attributes.orientation || VERTICAL;
+			var gap:Number = Gauge.toPixels(node.attributes.gap, ppp, pem, (orientation == HORIZONTAL) ? node.layout.bounds.width : node.layout.bounds.height, 0);
+			width -= node.padding.left.toPixels(ppp, pem, width, 0) + node.padding.right.toPixels(ppp, pem, width, 0);
+			height -= node.padding.top.toPixels(ppp, pem, height, 0) + node.padding.bottom.toPixels(ppp, pem, height, 0);
 
 			//
 			// Horizontal
 			//
-			if (isHorizontal(direction))
+			if (orientation == HORIZONTAL)
 			{
 				arrangeSide1("width",  "x",  "measureAutoWidth",  width, gap, ppp, pem, node);
 				arrangeSide2("height", "y", "measureAutoHeight", height, gap, ppp, pem, node);
 			}
-			else if (isVertical(direction))
+			else if (orientation == VERTICAL)
 			{
 				arrangeSide1("height", "y", "measureAutoHeight", height, gap, ppp, pem, node);
 				arrangeSide2("width",  "x", "measureAutoWidth",  width,  gap, ppp, pem, node);
@@ -43,16 +40,37 @@ package starling.extensions.talon.layout
 				sumHeight += child.layout.bounds.height;
 				sumWidth += child.layout.bounds.width;
 			}
-			var deltaX:int = isHorizontal(direction) ? (width - sumWidth) : 0;
-			var deltaY:int = isVertical(direction) ? (height - sumHeight) : 0;
+			var deltaX:Number = (orientation == HORIZONTAL) ? (width - sumWidth) : 0;
+			var deltaY:Number = (orientation == VERTICAL) ? (height - sumHeight) : 0;
+
+			var halign:String = node.attributes.halign;
+			var valign:String = node.attributes.valign;
+			deltaX = halign == "right" ? deltaX : halign == "center" ? deltaX/2 : 0;
+			deltaY = valign == "bottom" ? deltaY : valign == "center" ? deltaY/2 : 0;
+
+			// Padding
+			deltaX += node.padding.left.toPixels(ppp, pem, height, 0);
+			deltaY += node.padding.top.toPixels(ppp, pem, height, 0);
 
 			for each (var child:Node in node.children)
 			{
-				child.layout.bounds.x += deltaX;
-				child.layout.bounds.y += deltaY;
+				var dY:Number = 0;
+				var dX:Number = 0;
+
+				if (orientation == VERTICAL)
+				{
+					dX = halign == "right" ? (width - child.layout.bounds.width) : halign == "center" ? (width - child.layout.bounds.width)/2 : 0;
+				}
+
+				if (orientation == HORIZONTAL)
+				{
+					dY = valign == "bottom" ? (height - child.layout.bounds.height) : valign == "center" ? (height - child.layout.bounds.height)/2 : 0;
+				}
+
+				child.layout.bounds.x += deltaX + dX;
+				child.layout.bounds.y += deltaY + dY;
 				child.layout.commit();
 			}
-
 		}
 
 		private function arrangeSide2(name:String, asix:String, auto:String, value:int, gap:int, ppp:Number, pem:Number, node:Node):void
@@ -106,7 +124,7 @@ package starling.extensions.talon.layout
 //			var child:Box;
 //			var result:int = 0;
 //
-//			if (direction == BOTTOM || direction == TOP)
+//			if (direction == VERTICAL || direction == HORIZONTAL)
 //			{
 //				for each (child in _target.children)
 //				{

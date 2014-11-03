@@ -44,8 +44,7 @@ package
 
 			if (_talon != null)
 			{
-				var padding:int = 32;
-				_talon.node.layout.bounds.setTo(padding, padding, stage.stageWidth - padding*2, stage.stageHeight - padding*2);
+				_talon.node.layout.bounds.setTo(0, 0, stage.stageWidth, stage.stageHeight);
 				_talon.node.layout.commit();
 			}
 		}
@@ -56,21 +55,41 @@ package
 
 
 			var main:XML =
-				<node layout="stack" width="100%" height="100%" stackDirection="bottom" stackGap="4px">
+				<node layout="stack" id="root" width="100%" height="100%" padding="16px 64px 0 0" orientation="vertical" halign="right" valign="center" gap="4px">
 
-					<node width="100%" height="64px" backgroundColor="0x666666" />
-					<node width="100%" height="64px" backgroundColor="0x666666" />
+					<node id="begin" width="100%" height="64px" backgroundColor="0x666666" />
 
-					<node layout="stack" width="100%" height="64px" stackDirection="right" stackGap="4px">
-						<node width="*" height="64px" backgroundColor="0x555555" />
-						<node width="*" height="64px" backgroundColor="0x666666" />
-						<node width="*" height="64px" backgroundColor="0x777777" />
-						<node width="*" height="64px" backgroundColor="0x888888" />
+					<node layout="stack" width="100%" height="64px" orientation="horizontal" halign="center" gap="4px">
+						<node id="icon1" width="*" height="64px" backgroundColor="0x555555" />
+						<node id="icon2" width="64" height="64px" backgroundColor="0x666666" />
+
+						<node layout="stack" orientation="vertical" width="64" height="64px" backgroundColor="0x777777">
+							<node id="j" width="100%" height="*" backgroundColor="0x886666"/>
+							<node id="j2" width="100%" height="*" backgroundColor="0x668866"/>
+							<node id="j3" width="100%" height="*" backgroundColor="0x666688"/>
+						</node>
+
+						<node id="icon4" width="64" height="64px" backgroundColor="0x888888" />
+						<node id="icon4" width="*" height="64px" backgroundColor="0x999999" />
+					</node>
+
+					<node id="end" width="50%" height="64px" backgroundColor="0x666666" />
+
+					<node id="back1" layout="stack" orientation="vertical" halign="center" width="100%" height="64px">
+						<node id="loop" width="50%" height="64px" backgroundColor="0x666666" />
+					</node>
+
+					<node id="back2" layout="stack" orientation="vertical" halign="left" width="100%" height="64px">
+						<node id="loop" width="50%" height="64px" backgroundColor="0x666666" />
 					</node>
 
 				</node>;
 
-			_talon = fromXML(main) as TalonComponentBase;
+			var panel:XML =
+				<node layout="stack" width="100%" height="100%" orientation="vertical" valign="center" gap="4px">
+				</node>;
+
+				_talon = fromXML(main) as TalonComponentBase;
 			_root.addChild(_talon);
 
 			onResize(null)

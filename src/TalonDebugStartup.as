@@ -9,7 +9,7 @@ package
 	import starling.display.Sprite;
 
 	import starling.events.Event;
-	import starling.extensions.talon.core.Box;
+	import starling.extensions.talon.core.Node;
 
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
@@ -32,7 +32,7 @@ package
 			stage.addEventListener(Event.RESIZE, onResize);
 
 
-			var box:Box = new Box();
+			var box:Node = new Node();
 //			box.addEventListener(Event.CHANGE, onChange);
 
 //			box.margin.parse("10px 10px 5px 7px");
@@ -92,7 +92,7 @@ package
 
 			if (element is TalonComponentBase)
 			{
-				var box:Box = TalonComponentBase(element).box;
+				var box:Node = TalonComponentBase(element).box;
 				for each (var attribute:XML in xml.attributes())
 				{
 					var name:String = attribute.name();

@@ -38,16 +38,16 @@ package starling.extensions.talon.core
 		//
 		// Layout
 		//
-		private var _box:Box;
+		private var _node:Node;
 		private var _invalidated:Boolean;
 		private var _bounds:Rectangle;
 
-		public function Layout(box:Box)
+		public function Layout(node:Node)
 		{
 			_invalidated = true;
 			_bounds = new Rectangle();
-			_box = box;
-			_box.addEventListener(Event.CHANGE, onBoxAttributeChanged);
+			_node = node;
+			_node.addEventListener(Event.CHANGE, onBoxAttributeChanged);
 		}
 
 		private function onBoxAttributeChanged(e:Event):void
@@ -65,7 +65,7 @@ package starling.extensions.talon.core
 			if (property == "layout") return true;
 
 			// If layout added with this self-attributes
-			if (_strategySelfAttributes[_box.attributes.layout] && _strategySelfAttributes[_box.attributes.layout][property] === true) return true;
+			if (_strategySelfAttributes[_node.attributes.layout] && _strategySelfAttributes[_node.attributes.layout][property] === true) return true;
 
 			// Otherwise do not invalidate
 			return false;
@@ -73,7 +73,7 @@ package starling.extensions.talon.core
 
 		public function commit():void
 		{
-			_box.dispatchEventWith(Event.RESIZE);
+			_node.dispatchEventWith(Event.RESIZE);
 			arrange(bounds.width, bounds.height);
 		}
 
@@ -84,12 +84,25 @@ package starling.extensions.talon.core
 
 		//
 		// Delegate to current strategy
-		// do not call it directly
 		//
-		public function arrange(width:int, height:int):void { strategy.arrange(_box, width, height, 1, 1); }
-		public function measureAutoWidth():int { return strategy.measureAutoHeight(_box, 1, 1); }
-		public function measureAutoHeight():int { return strategy.measureAutoWidth(_box, 1, 1); }
+		public function measureAutoWidth():int
+		{
+			return strategy.measureAutoHeight(_node, 1, 1);
+		}
 
-		private function get strategy():LayoutStrategy { return _strategy[_box.attributes.layout]; }
+		public function measureAutoHeight():int
+		{
+			return strategy.measureAutoWidth(_node, 1, 1);
+		}
+
+		private function arrange(width:int, height:int):void
+		{
+			strategy.arrange(_node, width, height, 1, 1);
+		}
+
+		private function get strategy():LayoutStrategy
+		{
+			return _strategy[_node.attributes.layout];
+		}
 	}
 }

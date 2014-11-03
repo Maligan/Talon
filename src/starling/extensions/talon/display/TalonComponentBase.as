@@ -4,16 +4,16 @@ package starling.extensions.talon.display
 	import starling.display.Quad;
 	import starling.display.Sprite;
 	import starling.events.Event;
-	import starling.extensions.talon.core.Box;
+	import starling.extensions.talon.core.Node;
 
 	public class TalonComponentBase extends Sprite implements TalonComponent
 	{
 		private var _background:Quad;
-		private var _box:Box;
+		private var _box:Node;
 
 		public function TalonComponentBase()
 		{
-			_box = new Box();
+			_box = new Node();
 			_box.addEventListener(Event.CHANGE, onBoxChange);
 			_box.addEventListener(Event.RESIZE, onBoxResize);
 
@@ -40,7 +40,7 @@ package starling.extensions.talon.display
 			_background.height = box.layout.bounds.height;
 		}
 
-		public function get box():Box
+		public function get box():Node
 		{
 			return _box;
 		}

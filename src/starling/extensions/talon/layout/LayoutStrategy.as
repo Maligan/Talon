@@ -1,11 +1,11 @@
 package starling.extensions.talon.layout
 {
-	import starling.extensions.talon.core.Box;
+	import starling.extensions.talon.core.Node;
 
 	public interface LayoutStrategy
 	{
-		function measureAutoWidth(box:Box, ppp:Number, pem:Number):int
-		function measureAutoHeight(box:Box, ppp:Number, pem:Number):int
-		function arrange(box:Box, width:int, height:int, ppp:Number, pem:Number):void
+		function measureAutoWidth(node:Node, ppp:Number, pem:Number):int
+		function measureAutoHeight(node:Node, ppp:Number, pem:Number):int
+		function arrange(node:Node, width:int, height:int, ppp:Number, pem:Number):void
 	}
 }

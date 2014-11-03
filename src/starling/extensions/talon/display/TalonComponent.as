@@ -1,9 +1,9 @@
 package starling.extensions.talon.display
 {
-	import starling.extensions.talon.core.Box;
+	import starling.extensions.talon.core.Node;
 
 	public interface TalonComponent
 	{
-		function get box():Box
+		function get box():Node
 	}
 }

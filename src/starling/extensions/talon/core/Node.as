@@ -3,7 +3,7 @@ package starling.extensions.talon.core
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
-	public final class Box extends EventDispatcher
+	public final class Node extends EventDispatcher
 	{
 		//
 		// Strong typed attributes (NB! all of them have _synchronized_ analog in attributes)
@@ -20,12 +20,12 @@ package starling.extensions.talon.core
 		public const padding:GaugeQuad = new GaugeQuad();
 
 		public const layout:Layout = new Layout(this);
-		public const children:Vector.<Box> = new Vector.<Box>();
+		public const children:Vector.<Node> = new Vector.<Node>();
 
 		/** Proxy for all attributes. */
 		public const attributes:Object = new Attributes(onAttributeChanged);
 
-		public function Box():void
+		public function Node():void
 		{
 			// Bounds
 			map("width", width.toString, width.parse, width);
@@ -54,6 +54,7 @@ package starling.extensions.talon.core
 
 			// Style
 			// ...
+			map("class", )
 		}
 
 		private function map(name:String, getter:Function, setter:Function, dispatcher:EventDispatcher):void

@@ -13,40 +13,65 @@ package starling.extensions.talon.layout
 		private static function isHorizontal(direction:String):Boolean { return direction == LEFT || direction == RIGHT; }
 		private static function isVertical(direction:String):Boolean { return direction == TOP || direction == BOTTOM; }
 
-		public function arrange(node:Node, width:int, height:int, ppp:Number, pem:Number):void
+		public function arrange(node:Node, width:Number, height:Number, ppp:Number, pem:Number):void
 		{
 			// Layout properties
 			var direction:String = node.attributes.stackDirection || BOTTOM;
-			var gap:int = Gauge.toPixels(node.attributes.stackGap, ppp, pem, isHorizontal(direction) ? node.layout.bounds.width : node.layout.bounds.height, 0);
-
-			var child:Node;
+			var gap:Number = Gauge.toPixels(node.attributes.stackGap, ppp, pem, isHorizontal(direction) ? node.layout.bounds.width : node.layout.bounds.height, 0);
 
 			//
 			// Horizontal
 			//
 			if (isHorizontal(direction))
 			{
-				arrangeSide("width", "x", "measureAutoWidth", width, gap, ppp, pem, node);
+				arrangeSide1("width",  "x",  "measureAutoWidth",  width, gap, ppp, pem, node);
+				arrangeSide2("height", "y", "measureAutoHeight", height, gap, ppp, pem, node);
 			}
 			else if (isVertical(direction))
 			{
-				arrangeSide("height", "y", "measureAutoHeight", height, gap, ppp, pem, node);
+				arrangeSide1("height", "y", "measureAutoHeight", height, gap, ppp, pem, node);
+				arrangeSide2("width",  "x", "measureAutoWidth",  width,  gap, ppp, pem, node);
+			}
+
+			//
+			// Arrange children
+			//
+			var sumHeight:Number = node.children.length > 1 ? (node.children.length - 1) * gap : 0;
+			var sumWidth:Number = node.children.length > 1 ? (node.children.length - 1) * gap : 0;
+			for each (var child:Node in node.children)
+			{
+				sumHeight += child.layout.bounds.height;
+				sumWidth += child.layout.bounds.width;
+			}
+			var deltaX:int = isHorizontal(direction) ? (width - sumWidth) : 0;
+			var deltaY:int = isVertical(direction) ? (height - sumHeight) : 0;
+
+			for each (var child:Node in node.children)
+			{
+				child.layout.bounds.x += deltaX;
+				child.layout.bounds.y += deltaY;
+				child.layout.commit();
+			}
+
+		}
+
+		private function arrangeSide2(name:String, asix:String, auto:String, value:int, gap:int, ppp:Number, pem:Number, node:Node):void
+		{
+			for each (var child:Node in node.children)
+			{
+				child.layout.bounds[name] = child[name].isAuto ? child.layout[auto]() : child[name].toPixels(ppp, pem, value, 0);
+				child.layout.bounds[asix] = 0;
 			}
 		}
 
-		private function arrangeSide2():void
-		{
-
-		}
-
-		private function arrangeSide(name:String, asix:String, auto:String, value:int, gap:int, ppp:Number, pem:Number, box:Node):void
+		private function arrangeSide1(name:String, asix:String, auto:String, value:int, gap:int, ppp:Number, pem:Number, node:Node):void
 		{
 			var child:Node;
 
 			var starCount:int = 0;
-			var starTarget:int = value - (box.children.length > 1 ? (box.children.length - 1) * gap : 0);
+			var starTarget:int = value - (node.children.length > 1 ? (node.children.length - 1) * gap : 0);
 
-			for each (child in box.children)
+			for each (child in node.children)
 			{
 				if (child[name].unit == Gauge.STAR)
 				{
@@ -59,7 +84,7 @@ package starling.extensions.talon.layout
 				}
 			}
 
-			for each (child in box.children)
+			for each (child in node.children)
 			{
 				if (child[name].unit == Gauge.STAR)
 				{
@@ -68,28 +93,14 @@ package starling.extensions.talon.layout
 			}
 
 			var shift:int = 0;
-			for each (child in box.children)
+			for each (child in node.children)
 			{
 				child.layout.bounds[asix] = shift;
 				shift += child.layout.bounds[name] + gap;
-
-				// debug
-				if (name == "width")
-				{
-					child.layout.bounds.height = 20;
-					child.layout.bounds.y = 0;
-				}
-				else if (name == "height")
-				{
-					child.layout.bounds.width = 20;
-					child.layout.bounds.x = 0;
-				}
-
-				child.layout.commit();
 			}
 		}
 
-		public function measureAutoWidth(node:Node, ppp:Number, pem:Number):int
+		public function measureAutoWidth(node:Node, ppp:Number, pem:Number):Number
 		{
 			return 0;
 //			var child:Box;
@@ -118,7 +129,7 @@ package starling.extensions.talon.layout
 //			return result;
 		}
 
-		public function measureAutoHeight(node:Node, ppp:Number, pem:Number):int
+		public function measureAutoHeight(node:Node, ppp:Number, pem:Number):Number
 		{
 			return 0;
 //			var child:Box;

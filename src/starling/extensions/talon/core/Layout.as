@@ -85,12 +85,12 @@ package starling.extensions.talon.core
 		//
 		// Delegate to current strategy
 		//
-		public function measureAutoWidth():int
+		public function measureAutoWidth():Number
 		{
 			return strategy.measureAutoHeight(_node, 1, 1);
 		}
 
-		public function measureAutoHeight():int
+		public function measureAutoHeight():Number
 		{
 			return strategy.measureAutoWidth(_node, 1, 1);
 		}
@@ -102,7 +102,7 @@ package starling.extensions.talon.core
 
 		private function get strategy():LayoutStrategy
 		{
-			return _strategy[_node.attributes.layout];
+			return _strategy[_node.attributes.layout || "none"];
 		}
 	}
 }

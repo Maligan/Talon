@@ -4,17 +4,17 @@ package starling.extensions.talon.layout
 
 	public final class NoneLayoutStrategy implements LayoutStrategy
 	{
-		public function measureAutoWidth(node:Node, ppp:Number, pem:Number):int
+		public function measureAutoWidth(node:Node, ppp:Number, pem:Number):Number
 		{
 			return 0;
 		}
 
-		public function measureAutoHeight(node:Node, ppp:Number, pem:Number):int
+		public function measureAutoHeight(node:Node, ppp:Number, pem:Number):Number
 		{
 			return 0;
 		}
 
-		public function arrange(node:Node, width:int, height:int, ppp:Number, pem:Number):void
+		public function arrange(node:Node, width:Number, height:Number, ppp:Number, pem:Number):void
 		{
 
 		}

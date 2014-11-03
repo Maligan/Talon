@@ -4,6 +4,6 @@ package starling.extensions.talon.display
 
 	public interface TalonComponent
 	{
-		function get box():Node
+		function get node():Node
 	}
 }

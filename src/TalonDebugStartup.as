@@ -31,26 +31,6 @@ package
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
 
-
-			var box:Node = new Node();
-//			box.addEventListener(Event.CHANGE, onChange);
-
-//			box.margin.parse("10px 10px 5px 7px");
-//			box.margin.top.parse("6px");
-			box.margin.parse("10px 9px")
-			box.attributes.margin = "8px";
-			box.attributes.marginBottom = "2px";
-
-			trace(box.margin)
-
-
-			function onChange(e:Event):void
-			{
-				trace("Changed", e.data, box[e.data]);
-			}
-
-			return;
-
 			new Starling(Sprite, stage);
 			Starling.current.addEventListener(Event.ROOT_CREATED, onRootCreated);
 			Starling.current.start();
@@ -64,8 +44,9 @@ package
 
 			if (_talon != null)
 			{
-				_talon.box.layout.bounds.setTo(0, 0, stage.stageWidth/3*2, stage.stageHeight/3*2);
-				_talon.box.layout.commit();
+				var padding:int = 32;
+				_talon.node.layout.bounds.setTo(padding, padding, stage.stageWidth - padding*2, stage.stageHeight - padding*2);
+				_talon.node.layout.commit();
 			}
 		}
 
@@ -73,14 +54,23 @@ package
 		{
 			_root = Sprite(Starling.current.root);
 
-			var info:XML =
-				<box id="root" layout="stack" stackGap="3px" stackDirection="bottom" width="200" height="200" x="0" y="0" backgroundColor="0x00FF00">
-					<box id="child1" layout="none" width="20%" valign="left" height="20%" backgroundColor="0x440000" />
-					<box id="child2" layout="none" width="20%" valign="right" height="20%" backgroundColor="0x880000" />
-					<box id="child3" layout="none" width="1*"  valign="center" height="*"   backgroundColor="0xFF0000" />
-				</box>;
 
-			_talon = fromXML(info) as TalonComponentBase;
+			var main:XML =
+				<node layout="stack" width="100%" height="100%" stackDirection="bottom" stackGap="4px">
+
+					<node width="100%" height="64px" backgroundColor="0x666666" />
+					<node width="100%" height="64px" backgroundColor="0x666666" />
+
+					<node layout="stack" width="100%" height="64px" stackDirection="right" stackGap="4px">
+						<node width="*" height="64px" backgroundColor="0x555555" />
+						<node width="*" height="64px" backgroundColor="0x666666" />
+						<node width="*" height="64px" backgroundColor="0x777777" />
+						<node width="*" height="64px" backgroundColor="0x888888" />
+					</node>
+
+				</node>;
+
+			_talon = fromXML(main) as TalonComponentBase;
 			_root.addChild(_talon);
 
 			onResize(null)
@@ -92,7 +82,7 @@ package
 
 			if (element is TalonComponentBase)
 			{
-				var box:Node = TalonComponentBase(element).box;
+				var box:Node = TalonComponentBase(element).node;
 				for each (var attribute:XML in xml.attributes())
 				{
 					var name:String = attribute.name();

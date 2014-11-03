@@ -54,7 +54,6 @@ package starling.extensions.talon.core
 
 			// Style
 			// ...
-			map("class", )
 		}
 
 		private function map(name:String, getter:Function, setter:Function, dispatcher:EventDispatcher):void

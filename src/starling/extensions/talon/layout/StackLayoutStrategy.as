@@ -2,29 +2,29 @@ package starling.extensions.talon.layout
 {
 	import starling.extensions.talon.core.Gauge;
 	import starling.extensions.talon.core.Node;
+	import starling.extensions.talon.utils.Orientation;
 
 	public class StackLayoutStrategy implements LayoutStrategy
 	{
-		private static const HORIZONTAL:String = "horizontal";
-		private static const VERTICAL:String = "vertical";
+		private static const DEFAULT:String = Orientation.VERTICAL;
 
-		public function arrange(node:Node, width:Number, height:Number, ppp:Number, pem:Number):void
+		public function arrange(node:Node, ppp:Number, pem:Number, width:Number, height:Number):void
 		{
 			// Layout properties
-			var orientation:String = node.attributes.orientation || VERTICAL;
-			var gap:Number = Gauge.toPixels(node.attributes.gap, ppp, pem, (orientation == HORIZONTAL) ? node.layout.bounds.width : node.layout.bounds.height, 0);
+			var orientation:String = Orientation.isValid(node.attributes.orientation) ? node.attributes.orientation : DEFAULT;
+			var gap:Number = Gauge.toPixels(node.attributes.gap, ppp, pem, (orientation == Orientation.HORIZONTAL) ? node.layout.bounds.width : node.layout.bounds.height, 0);
 			width -= node.padding.left.toPixels(ppp, pem, width, 0) + node.padding.right.toPixels(ppp, pem, width, 0);
 			height -= node.padding.top.toPixels(ppp, pem, height, 0) + node.padding.bottom.toPixels(ppp, pem, height, 0);
 
 			//
 			// Horizontal
 			//
-			if (orientation == HORIZONTAL)
+			if (orientation == Orientation.HORIZONTAL)
 			{
 				arrangeSide1("width",  "x",  "measureAutoWidth",  width, gap, ppp, pem, node);
 				arrangeSide2("height", "y", "measureAutoHeight", height, gap, ppp, pem, node);
 			}
-			else if (orientation == VERTICAL)
+			else if (orientation == Orientation.VERTICAL)
 			{
 				arrangeSide1("height", "y", "measureAutoHeight", height, gap, ppp, pem, node);
 				arrangeSide2("width",  "x", "measureAutoWidth",  width,  gap, ppp, pem, node);
@@ -40,8 +40,8 @@ package starling.extensions.talon.layout
 				sumHeight += child.layout.bounds.height;
 				sumWidth += child.layout.bounds.width;
 			}
-			var deltaX:Number = (orientation == HORIZONTAL) ? (width - sumWidth) : 0;
-			var deltaY:Number = (orientation == VERTICAL) ? (height - sumHeight) : 0;
+			var deltaX:Number = (orientation == Orientation.HORIZONTAL) ? (width - sumWidth) : 0;
+			var deltaY:Number = (orientation == Orientation.VERTICAL) ? (height - sumHeight) : 0;
 
 			var halign:String = node.attributes.halign;
 			var valign:String = node.attributes.valign;
@@ -57,12 +57,12 @@ package starling.extensions.talon.layout
 				var dY:Number = 0;
 				var dX:Number = 0;
 
-				if (orientation == VERTICAL)
+				if (orientation == Orientation.VERTICAL)
 				{
 					dX = halign == "right" ? (width - child.layout.bounds.width) : halign == "center" ? (width - child.layout.bounds.width)/2 : 0;
 				}
 
-				if (orientation == HORIZONTAL)
+				if (orientation == Orientation.HORIZONTAL)
 				{
 					dY = valign == "bottom" ? (height - child.layout.bounds.height) : valign == "center" ? (height - child.layout.bounds.height)/2 : 0;
 				}
@@ -120,60 +120,68 @@ package starling.extensions.talon.layout
 
 		public function measureAutoWidth(node:Node, ppp:Number, pem:Number):Number
 		{
-			return 0;
-//			var child:Box;
-//			var result:int = 0;
-//
-//			if (direction == VERTICAL || direction == HORIZONTAL)
-//			{
-//				for each (child in _target.children)
-//				{
-//					var width:int = child.width.isAuto ? child.layout.measureAutoWidth(ppp, em) : child.width.toPixels(ppp, em, 0, 0);
-//					result = Math.max(result, width);
-//				}
-//			}
-//			else
-//			{
-//				for each (child in _target.children)
-//				{
-//					/**/ if (child.width.isRelative) throw new IllegalOperationError("");
-//					else if (child.width.isAuto) result += child.layout.measureAutoWidth(ppp, em);
-//					else result += child.width.toPixels(ppp, em, 0, 0);
-//				}
-//
-//				result += _target.children.length > 1 ? (_target.children.length - 1) * _gap : 0;
-//			}
-//
-//			return result;
+			var result:Number = 0;
+			var orientation:String = Orientation.isValid(node.attributes.orientation) ? node.attributes.orientation : DEFAULT;
+			var isHorizontal:Boolean = orientation == Orientation.HORIZONTAL;
+
+			// Children Width
+			for each (var child:Node in node.children)
+			{
+				var childWidth:Number = child.width.isAuto
+					? child.layout.measureAutoWidth()
+					: child.width.toPixels(ppp, pem, 0, 0);
+
+				childWidth += child.margin.left.toPixels(ppp, pem, 0, 0);
+				childWidth += child.margin.right.toPixels(ppp, pem, 0, 0);
+
+				result = isHorizontal ? (result + childWidth) : Math.max(result, childWidth);
+			}
+
+			// Gap
+			if (isHorizontal)
+			{
+				var gap:Number = Gauge.toPixels(node.attributes.gap, ppp, pem, node.layout.bounds.width, 0);
+				result += node.children.length > 1 ? (node.children.length - 1) * gap : 0;
+			}
+
+			// Padding
+			result += node.padding.left.toPixels(ppp, pem, 0, 0);
+			result += node.padding.right.toPixels(ppp, pem, 0, 0);
+
+			return result;
 		}
 
 		public function measureAutoHeight(node:Node, ppp:Number, pem:Number):Number
 		{
-			return 0;
-//			var child:Box;
-//			var result:int = 0;
-//
-//			if (direction == LEFT || direction == RIGHT)
-//			{
-//				for each (child in _target.children)
-//				{
-//					var height:int = child.width.isAuto ? child.layout.measureAutoHeight(ppp, em) : child.height.toPixels(ppp, em, 0, 0);
-//					result = Math.max(result, height);
-//				}
-//			}
-//			else
-//			{
-//				for each (child in _target.children)
-//				{
-//					/**/ if (child.height.isRelative) throw new IllegalOperationError("");
-//					else if (child.height.isAuto) result += child.layout.measureAutoHeight(ppp, em);
-//					else result += child.height.toPixels(ppp, em, 0, 0);
-//				}
-//
-//				result += _target.children.length > 1 ? (_target.children.length - 1) * _gap : 0;
-//			}
-//
-//			return result;
+			var result:Number = 0;
+			var orientation:String = Orientation.isValid(node.attributes.orientation) ? node.attributes.orientation : DEFAULT;
+			var isVertical:Boolean = orientation == Orientation.VERTICAL;
+
+			// Children Height
+			for each (var child:Node in node.children)
+			{
+				var childHeight:Number = child.height.isAuto
+						? child.layout.measureAutoHeight()
+						: child.height.toPixels(ppp, pem, 0, 0);
+
+				childHeight += child.margin.top.toPixels(ppp, pem, 0, 0);
+				childHeight += child.margin.bottom.toPixels(ppp, pem, 0, 0);
+
+				result = isVertical ? (result + childHeight) : Math.max(result, childHeight);
+			}
+
+			// Gap
+			if (isVertical)
+			{
+				var gap:Number = Gauge.toPixels(node.attributes.gap, ppp, pem, node.layout.bounds.height, 0);
+				result += node.children.length > 1 ? (node.children.length - 1) * gap : 0;
+			}
+
+			// Padding
+			result += node.padding.top.toPixels(ppp, pem, 0, 0);
+			result += node.padding.bottom.toPixels(ppp, pem, 0, 0);
+
+			return result;
 		}
 	}
 }

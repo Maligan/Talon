@@ -87,17 +87,17 @@ package starling.extensions.talon.core
 		//
 		public function measureAutoWidth():Number
 		{
-			return strategy.measureAutoHeight(_node, 1, 1);
+			return strategy.measureAutoWidth(_node, 1, 1);
 		}
 
 		public function measureAutoHeight():Number
 		{
-			return strategy.measureAutoWidth(_node, 1, 1);
+			return strategy.measureAutoHeight(_node, 1, 1);
 		}
 
 		private function arrange(width:int, height:int):void
 		{
-			strategy.arrange(_node, width, height, 1, 1);
+			strategy.arrange(_node, 1, 1, width, height);
 		}
 
 		private function get strategy():LayoutStrategy

@@ -2,13 +2,21 @@ package starling.extensions.talon.core
 {
 	public class StyleSheet
 	{
-		public static function fromCSS(css:String):StyleSheet
-		{
+		private var _node:Node;
 
+		public function StyleSheet(node:Node)
+		{
+			_node = node;
 		}
 
-		public function StyleSheet()
+		public function getStyle(property:String):String
 		{
+			return null;
+		}
+
+		public function hasStyle(property:String):Boolean
+		{
+			return false;
 		}
 	}
 }

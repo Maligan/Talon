@@ -31,6 +31,13 @@ package
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
 
+
+			var node:Node = new Node();
+			node.attributes.minHeight = "100px";
+			node.attributes.paddingBottom = "10px";
+			node.width.parse("auto");
+			node.attributes.width = "auto";
+
 			new Starling(Sprite, stage);
 			Starling.current.addEventListener(Event.ROOT_CREATED, onRootCreated);
 			Starling.current.start();
@@ -55,7 +62,7 @@ package
 
 
 			var main:XML =
-				<node layout="stack" id="root" width="100%" height="100%" padding="16px 64px 0 0" orientation="vertical" halign="right" valign="center" gap="4px">
+				<node layout="stack" id="root" width="100%" height="100%" padding="16px" orientation="vertical" halign="center" valign="center" gap="4px">
 
 					<node id="begin" width="100%" height="64px" backgroundColor="0x666666" />
 
@@ -73,23 +80,39 @@ package
 						<node id="icon4" width="*" height="64px" backgroundColor="0x999999" />
 					</node>
 
-					<node id="end" width="50%" height="64px" backgroundColor="0x666666" />
-
-					<node id="back1" layout="stack" orientation="vertical" halign="center" width="100%" height="64px">
-						<node id="loop" width="50%" height="64px" backgroundColor="0x666666" />
+					<node layout="stack" orientation="vertical" halign="right" width="100%" height="64px">
+						<node id="right" width="50%" height="64px" backgroundColor="0x666666" />
 					</node>
 
-					<node id="back2" layout="stack" orientation="vertical" halign="left" width="100%" height="64px">
-						<node id="loop" width="50%" height="64px" backgroundColor="0x666666" />
+					<node layout="stack" orientation="vertical" halign="center" width="100%" height="64px">
+						<node id="center" width="50%" height="64px" backgroundColor="0x666666" />
 					</node>
+
+					<node layout="stack" orientation="vertical" halign="left" width="100%" height="64px">
+						<node id="left" width="50%" height="64px" backgroundColor="0x666666" />
+					</node>
+
+					<node id="footer" width="100%" height="*" backgroundColor="0x666666" />
 
 				</node>;
 
 			var panel:XML =
-				<node layout="stack" width="100%" height="100%" orientation="vertical" valign="center" gap="4px">
+				<node layout="stack" orientation="vertical" valign="center" halign="center" gap="4px">
+					<node id="play" width="256px" height="48px" backgroundColor="0x888899" />
+					<node layout="stack" orientation="vertical" width="256px" padding="0px 8px" gap="4px">
+						<node id="1" width="100%" height="48px" backgroundColor="0x888888" />
+						<node id="2" width="100%" height="48px" backgroundColor="0x888888" />
+						<node id="3" width="100%" height="48px" backgroundColor="0x888888" />
+						<node layout="stack" orientation="horizontal" gap="4px" width="100%">
+							<node id="prev" width="*" height="48px" backgroundColor="0x888888" />
+							<node id="next" width="*" height="48px" backgroundColor="0x888888" />
+						</node>
+					</node>
+					<node id="leaders" width="256px" height="48px" backgroundColor="0x888899" />
+					<node id="mother ship" width="256px" height="48px" backgroundColor="0x888899" />
 				</node>;
 
-				_talon = fromXML(main) as TalonComponentBase;
+			_talon = fromXML(panel) as TalonComponentBase;
 			_root.addChild(_talon);
 
 			onResize(null)

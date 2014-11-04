@@ -14,7 +14,7 @@ package starling.extensions.talon.layout
 			return 0;
 		}
 
-		public function arrange(node:Node, width:Number, height:Number, ppp:Number, pem:Number):void
+		public function arrange(node:Node, ppp:Number, pem:Number, width:Number, height:Number):void
 		{
 
 		}

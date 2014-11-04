@@ -82,7 +82,7 @@ for each (var attribute:XML in xml.attributes())
 
 ## Under the Hood
 * За размер и положение объекста отвечает его непосредственный родитель (и только он)
-* auto -> %, * недопустимо (или делать проброс к родительскии размерам?)
+* auto -> %, * недопустимо (или делать проброс к родительскии размерам?) (upd да, лчше запретить т.к. возникают проблемы с сильно вложенными элементами типа auto->auto->star)
 
 ## Download
 * <a href="https://github.com/Maligan/Starling-Extension-Talon">Talon on GitHub</a>

@@ -19,7 +19,7 @@ package
 	import starling.extensions.talon.display.TalonComponent;
 
 	import starling.extensions.talon.display.TalonComponentBase;
-	import starling.extensions.talon.utils.CSS;
+	import starling.extensions.talon.core.StyleSheet;
 
 	public class TalonDebugStartup extends MovieClip
 	{
@@ -33,7 +33,7 @@ package
 			stage.addEventListener(Event.RESIZE, onResize);
 
 			var style:String = " .div { body: null2; } body { step: 20px } trace, .my, .tag { margin: auto; padding: 10px 10px 10px }";
-			var css:CSS = new CSS(style);
+			var css:StyleSheet = new StyleSheet(style);
 			trace(css.getStyle({style:["my"]}, "margin"));
 
 			return;

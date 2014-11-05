@@ -27,7 +27,6 @@ package starling.extensions.talon.core
 		// Complex properties (components)
 		//
 		public const layout:Layout = new Layout(this);
-		public const style:StyleSheet = new StyleSheet(this);
 		public const children:Vector.<Node> = new Vector.<Node>();
 
 		public function Node():void

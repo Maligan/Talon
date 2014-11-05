@@ -5,6 +5,9 @@ package starling.extensions.talon.core
 
 	public final class Node extends EventDispatcher
 	{
+		/** Proxy for all attributes. */
+		public const attributes:Object = new Attributes(onAttributeChanged);
+
 		//
 		// Strong typed attributes (NB! all of them have _synchronized_ analog in attributes)
 		// Be aware, delete & reset to default available only from attribute.
@@ -20,14 +23,12 @@ package starling.extensions.talon.core
 		public const margin:GaugeQuad = new GaugeQuad();
 		public const padding:GaugeQuad = new GaugeQuad();
 
+		//
+		// Complex properties (components)
+		//
 		public const layout:Layout = new Layout(this);
-		public const children:Vector.<Node> = new Vector.<Node>();
-
-		/** Sets of default values. */
 		public const style:StyleSheet = new StyleSheet(this);
-
-		/** Proxy for all attributes. */
-		public const attributes:Object = new Attributes(onAttributeChanged);
+		public const children:Vector.<Node> = new Vector.<Node>();
 
 		public function Node():void
 		{

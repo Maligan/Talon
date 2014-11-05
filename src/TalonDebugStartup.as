@@ -19,6 +19,7 @@ package
 	import starling.extensions.talon.display.TalonComponent;
 
 	import starling.extensions.talon.display.TalonComponentBase;
+	import starling.extensions.talon.utils.CSS;
 
 	public class TalonDebugStartup extends MovieClip
 	{
@@ -31,6 +32,8 @@ package
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
 
+			var style:String = " div { body: null2; } body { step: 20px } trace, my, tag { value: oops }";
+			var css:CSS = new CSS(style);
 
 			var node:Node = new Node();
 			node.attributes.minHeight = "100px";
@@ -97,7 +100,7 @@ package
 				</node>;
 
 			var panel:XML =
-				<node layout="stack" orientation="vertical" valign="center" halign="center" gap="4px">
+				<node layout="stack" width="35%" orientation="vertical" valign="center" halign="center" gap="4px">
 					<node id="play" width="256px" height="48px" backgroundColor="0x888899" />
 					<node layout="stack" orientation="vertical" width="256px" padding="0px 8px" gap="4px">
 						<node id="1" width="100%" height="48px" backgroundColor="0x888888" />

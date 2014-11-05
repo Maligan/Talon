@@ -32,9 +32,11 @@ package
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
 
-			var style:String = " div { body: null2; } body { step: 20px } trace, my, tag { value: oops }";
+			var style:String = " .div { body: null2; } body { step: 20px } trace, .my, .tag { margin: auto; padding: 10px 10px 10px }";
 			var css:CSS = new CSS(style);
+			trace(css.getStyle({style:["my"]}, "margin"));
 
+			return;
 			var node:Node = new Node();
 			node.attributes.minHeight = "100px";
 			node.attributes.paddingBottom = "10px";

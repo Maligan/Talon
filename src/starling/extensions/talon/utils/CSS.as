@@ -1,20 +1,42 @@
 package starling.extensions.talon.utils
 {
+	import flash.utils.Dictionary;
+
 	public class CSS
 	{
+		private var _stylesBySelector:Dictionary;
+
+		private var _selectors:Vector.<CSSSelector>;
+		private var _selectorsByIdent:Dictionary;
+		private var _selectorsCursor:Vector.<CSSSelector>;
+
 		public function CSS(source:String)
 		{
+			_stylesBySelector = new Dictionary();
+			_selectors = new Vector.<CSSSelector>();
+			_selectorsByIdent = new Dictionary();
+			_selectorsCursor = new Vector.<CSSSelector>();
 			parseCSS(source);
 		}
 
-		private function addCurrentSelector(selector:String):void
+		public function getStyle(node:*, name:String):String
 		{
-			trace("Current selector:", selector);
-		}
+			var result:String = null;
 
-		private function addCurrentSelectorProperty(name:String, value:String):void
-		{
-			trace("*", name + ':', value);
+			for each (var selector:CSSSelector in _selectors)
+			{
+				// TODO: Selector priority
+				if (selector.match(node) === true)
+				{
+					var style:String = _stylesBySelector[selector][name];
+					if (style != null)
+					{
+						result = style;
+					}
+				}
+			}
+
+			return result;
 		}
 
 		//
@@ -49,11 +71,12 @@ package starling.extensions.talon.utils
 			var startIndex:int = 0;
 			var endIndex:int = input.indexOf('{');
 
+			resetCursorSelectors();
 			var selectors:Array = input.substr(startIndex, endIndex).split(',');
 			for each (var selector:String in selectors)
 			{
 				selector = trim(selector);
-				addCurrentSelector(selector);
+				addCursorSelector(selector);
 			}
 
 			return input.substr(endIndex);
@@ -74,7 +97,7 @@ package starling.extensions.talon.utils
 					var splitProperty:Array = property.split(':');
 					var name:String = trim(splitProperty[0]);
 					var value:String = trim(splitProperty[1]);
-					addCurrentSelectorProperty(name, value);
+					addCursorSelectorsProperty(name, value);
 				}
 			}
 
@@ -87,7 +110,7 @@ package starling.extensions.talon.utils
 		/** Remove white spaces from string start or end. */
 		private function trim(string:String):String
 		{
-			return string.replace(/^\s*|\s*$/m, '');
+			return string.replace(/^\s*|\s*$/gm, '');
 		}
 
 		/** Remove CSS comments. */
@@ -95,5 +118,54 @@ package starling.extensions.talon.utils
 		{
 			return string.replace(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/g, '');
 		}
+
+		//
+		// Parsing calls
+		//
+		private function resetCursorSelectors():void
+		{
+			_selectorsCursor.length = 0;
+		}
+
+		private function addCursorSelector(ident:String):void
+		{
+			var selector:CSSSelector = _selectorsByIdent[ident];
+			if (selector == null)
+			{
+				selector = new CSSSelector(ident);
+				_selectorsByIdent[selector];
+				_selectors.push(selector);
+			}
+
+			_selectorsCursor.push(selector);
+		}
+
+		private function addCursorSelectorsProperty(name:String, value:String):void
+		{
+			for each (var selector:CSSSelector in _selectorsCursor)
+			{
+				var style:Object = _stylesBySelector[selector];
+				if (style == null) style = _stylesBySelector[selector] = new Object();
+				style[name] = value;
+			}
+		}
+	}
+}
+
+class CSSSelector
+{
+	private var _class:String;
+
+	public function CSSSelector(string:String)
+	{
+		if (string.indexOf('.') == 0)
+		{
+			_class = string.substr(1);
+		}
+	}
+
+	public function match(node:*):Boolean
+	{
+		return node.style && node.style.indexOf(_class) != -1;
 	}
 }

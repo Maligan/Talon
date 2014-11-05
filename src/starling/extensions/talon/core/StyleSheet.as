@@ -10,16 +10,20 @@ package starling.extensions.talon.core
 		private var _selectorsByIdent:Dictionary;
 		private var _selectorsCursor:Vector.<CSSSelector>;
 
-		public function StyleSheet(source:String)
+		public function StyleSheet()
 		{
 			_stylesBySelector = new Dictionary();
 			_selectors = new Vector.<CSSSelector>();
 			_selectorsByIdent = new Dictionary();
 			_selectorsCursor = new Vector.<CSSSelector>();
-			parseCSS(source);
 		}
 
-		public function getStyle(node:*, name:String):String
+		public function parse(css:String):void
+		{
+			parseCSS(css);
+		}
+
+		public function getStyle(node:Node, name:String):String
 		{
 			var result:String = null;
 
@@ -42,10 +46,10 @@ package starling.extensions.talon.core
 		//
 		// Recursive descent parser (BNF):
 		//
-		// css      ::= { rule }
-		// rule     ::= selector {',' selector} '{' style '}'
-		// selector ::= * | 'ident' | .'ident' | #'ident' | 'ident' 'ident' | 'ident':'ident'
-		// style    ::= { 'ident' ':' 'ident' ';' }
+		// <css>      ::= { <rule> }
+		// <rule>     ::= <selector> {',' <selector>} '{' <style> '}'
+		// <selector> ::= * | 'ident' | .'ident' | #'ident' | <selector> <selector> | 'ident':'ident'
+		// <style>    ::= { 'ident' ':' 'ident' ';' }
 		//
 		private function parseCSS(input:String):void
 		{
@@ -152,20 +156,40 @@ package starling.extensions.talon.core
 	}
 }
 
+import starling.extensions.talon.core.Node;
+
 class CSSSelector
 {
+	private var _parent:CSSSelector;
 	private var _class:String;
+	private var _id:String;
 
 	public function CSSSelector(string:String)
 	{
-		if (string.indexOf('.') == 0)
+		var split:Array = string.split(' ');
+		var current:String = split.pop();
+
+		if (split.length > 0)
 		{
-			_class = string.substr(1);
+			_parent = new CSSSelector(split.join(' '))
+		}
+
+		if (current.indexOf('.') == 0)
+		{
+			_class = current.substr(1);
+		}
+		else if (current.indexOf('#') == 0)
+		{
+			_id = current.substr(1);
 		}
 	}
 
-	public function match(node:*):Boolean
+	public function match(node:Node):Boolean
 	{
-		return node.style && node.style.indexOf(_class) != -1;
+		if (node == null) return false;
+		var byParent:Boolean = !_parent || (_parent && _parent.match(node.parent));
+		var byClass:Boolean = !_class || (node.attributes['class'] && node.attributes['class'].indexOf(_class) != -1);
+		var byId:Boolean = !_id || (node.attributes['id'] == _id);
+		return byParent && byClass && byId;
 	}
 }

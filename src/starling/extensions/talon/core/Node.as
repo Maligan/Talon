@@ -1,7 +1,10 @@
 package starling.extensions.talon.core
 {
+	import flash.geom.Rectangle;
+
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
+	import starling.extensions.talon.layout.Layout;
 
 	public final class Node extends EventDispatcher
 	{
@@ -26,8 +29,11 @@ package starling.extensions.talon.core
 		//
 		// Complex properties (components)
 		//
-		public const layout:Layout = new Layout(this);
-		public const children:Vector.<Node> = new Vector.<Node>();
+		private var _bounds:Rectangle = new Rectangle();
+		private var _style:StyleSheet;
+		private var _parent:Node;
+		private var _children:Vector.<Node> = new Vector.<Node>();
+		private var _mappings:Vector.<String> = new Vector.<String>();
 
 		public function Node():void
 		{
@@ -58,10 +64,15 @@ package starling.extensions.talon.core
 
 			// Style
 			// ...
+
+			// Layout
+			// ...
 		}
 
 		private function map(name:String, getter:Function, setter:Function, dispatcher:EventDispatcher, defaultValue:String):void
 		{
+			_mappings.push(name);
+
 			Attributes(attributes).setGetter(name, getter);
 			Attributes(attributes).setSetter(name, setter);
 			Attributes(attributes).setDefault(name, defaultValue);
@@ -78,12 +89,88 @@ package starling.extensions.talon.core
 		{
 			dispatchEventWith(Event.CHANGE, false, name);
 		}
+
+		//
+		// Styling
+		//
+		public function setStyleSheet(style:StyleSheet):void
+		{
+			_style = style;
+			Attributes(attributes).setStyle(this, _style);
+
+			for each (var name:String in _mappings)
+			{
+				var styleValue:String = style.getStyle(this, name);
+				if (styleValue != null)
+				{
+					attributes[name] = styleValue;
+				}
+			}
+		}
+
+		//
+		// Layout
+		//
+		public function get bounds():Rectangle
+		{
+			return _bounds;
+		}
+
+		public function commit():void
+		{
+			dispatchEventWith(Event.RESIZE);
+			layout.arrange(this, 0, 0, bounds.width, bounds.height);
+		}
+
+		public function measureAutoWidth():Number
+		{
+			return layout.measureAutoWidth(this, 0, 0);
+		}
+
+		public function measureAutoHeight():Number
+		{
+			return layout.measureAutoHeight(this, 0, 0);
+		}
+
+		private function get layout():Layout
+		{
+			return Layout.getLayoutByAlias(attributes.layout || "none");
+		}
+
+		//
+		// Complex
+		//
+		public function get numChildren():int
+		{
+			return _children.length;
+		}
+
+		public function addChild(child:Node):void
+		{
+			_children.push(child);
+			child._parent = this;
+			child.setStyleSheet(_style);
+		}
+
+		public function getChildAt(index:int):Node
+		{
+			return _children[index];
+		}
+
+		public function get parent():Node
+		{
+			return _parent;
+		}
 	}
 }
 
 import flash.utils.Dictionary;
 import flash.utils.Proxy;
 import flash.utils.flash_proxy;
+
+import starling.extensions.talon.core.Node;
+
+import starling.extensions.talon.core.StyleSheet;
 
 use namespace flash_proxy;
 
@@ -93,19 +180,21 @@ class Attributes extends Proxy
 	private var _getters:Dictionary;
 	private var _default:Dictionary;
 	private var _changed:Dictionary;
-
 	private var _object:Object;
 
-	private var _change:Function;
+	private var _style:StyleSheet;
+	private var _node:Node;
 
-	public function Attributes(change:Function)
+	private var _handler:Function;
+
+	public function Attributes(handler:Function)
 	{
 		_setters = new Dictionary();
 		_getters = new Dictionary();
 		_changed = new Dictionary();
 		_default = new Dictionary();
 		_object = new Object();
-		_change = change;
+		_handler = handler;
 	}
 
 	public function setSetter(name:String, setter:Function):void
@@ -128,37 +217,40 @@ class Attributes extends Proxy
 		_changed[name] = true;
 	}
 
+	public function setStyle(node:Node, style:StyleSheet):void
+	{
+		_node = node;
+		_style = style;
+	}
+
 	flash_proxy override function setProperty(name:*, value:*):void
 	{
-		if (flash_proxy::getProperty(name) != value)
+		if (_setters[name])
 		{
-			if (_setters[name])
-			{
-				_setters[name](value);
-			}
-			else if (_object[name] != value)
-			{
-				_object[name] = value;
-				_change(name);
-			}
+			_setters[name](value);
+		}
+		else if (_object[name] != value)
+		{
+			_object[name] = value;
+			_handler(name);
 		}
 	}
 
 	flash_proxy override function getProperty(name:*):*
 	{
-		return _getters[name]
-			 ? _getters[name]()
-			 : _object[name];
-	}
+		if (_getters[name] != null && _changed[name] === true)
+		{
+			return _getters[name]();
+		}
+		else if (_object[name])
+		{
+			return _object[name]
+		}
+		else if (name != "id" && name != "class" && name != "tag"  && _style != null)
+		{
+			return _style.getStyle(_node, name) || _default[name];
+		}
 
-	flash_proxy override function deleteProperty(name:*):Boolean
-	{
-		// Reset to default value (first set default, _setter can invoke event & set _changed property)
-		_setters[name] && _default[name] && _setters[name](_default[name]);
-
-		delete _changed[name];
-		delete _object[name];
-
-		return true;
+		return _default[name];
 	}
 }

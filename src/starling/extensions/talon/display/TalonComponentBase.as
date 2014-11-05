@@ -1,7 +1,5 @@
 package starling.extensions.talon.display
 {
-	import flash.geom.Rectangle;
-
 	import starling.display.DisplayObject;
 	import starling.display.Quad;
 	import starling.display.Sprite;
@@ -34,7 +32,7 @@ package starling.extensions.talon.display
 			_label = new TextField(0, 0, "", BitmapFont.MINI, -1);
 			_label.hAlign = HAlign.LEFT;
 			_label.vAlign = VAlign.TOP;
-			_label.color = 0xFFFFFF;
+			_label.color = 0xFFFF00;
 			_label.autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
 			_label.x = _label.y = 2;
 			addChild(_label);
@@ -60,7 +58,7 @@ package starling.extensions.talon.display
 
 		public override function addChild(child:DisplayObject):DisplayObject
 		{
-			(child is TalonComponent) && node.children.push(TalonComponent(child).node);
+			(child is TalonComponent) && node.addChild(TalonComponent(child).node);
 			return super.addChild(child);
 		}
 
@@ -73,10 +71,10 @@ package starling.extensions.talon.display
 
 		private function onBoxResize(e:Event):void
 		{
-			x = Math.round(node.layout.bounds.x);
-			y = Math.round(node.layout.bounds.y);
-			_background.width = Math.ceil(node.layout.bounds.width);
-			_background.height = Math.ceil(node.layout.bounds.height);
+			x = Math.round(node.bounds.x);
+			y = Math.round(node.bounds.y);
+			_background.width = Math.ceil(node.bounds.width);
+			_background.height = Math.ceil(node.bounds.height);
 
 //			clipRect = new Rectangle(0, 0, node.layout.bounds.width, node.layout.bounds.height);
 		}

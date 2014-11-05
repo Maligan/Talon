@@ -4,15 +4,15 @@ package starling.extensions.talon.layout
 	import starling.extensions.talon.core.Node;
 	import starling.extensions.talon.utils.Orientation;
 
-	public class StackLayoutStrategy implements LayoutStrategy
+	public class StackLayout extends Layout
 	{
 		private static const DEFAULT:String = Orientation.VERTICAL;
 
-		public function arrange(node:Node, ppp:Number, pem:Number, width:Number, height:Number):void
+		public override function arrange(node:Node, ppp:Number, pem:Number, width:Number, height:Number):void
 		{
 			// Layout properties
 			var orientation:String = Orientation.isValid(node.attributes.orientation) ? node.attributes.orientation : DEFAULT;
-			var gap:Number = Gauge.toPixels(node.attributes.gap, ppp, pem, (orientation == Orientation.HORIZONTAL) ? node.layout.bounds.width : node.layout.bounds.height, 0);
+			var gap:Number = Gauge.toPixels(node.attributes.gap, ppp, pem, (orientation == Orientation.HORIZONTAL) ? node.bounds.width : node.bounds.height, 0);
 			width -= node.padding.left.toPixels(ppp, pem, width, 0) + node.padding.right.toPixels(ppp, pem, width, 0);
 			height -= node.padding.top.toPixels(ppp, pem, height, 0) + node.padding.bottom.toPixels(ppp, pem, height, 0);
 
@@ -33,12 +33,14 @@ package starling.extensions.talon.layout
 			//
 			// Arrange children
 			//
-			var sumHeight:Number = node.children.length > 1 ? (node.children.length - 1) * gap : 0;
-			var sumWidth:Number = node.children.length > 1 ? (node.children.length - 1) * gap : 0;
-			for each (var child:Node in node.children)
+			var sumHeight:Number = node.numChildren > 1 ? (node.numChildren - 1) * gap : 0;
+			var sumWidth:Number = node.numChildren > 1 ? (node.numChildren - 1) * gap : 0;
+
+			for (var i:int = 0; i < node.numChildren; i++)
 			{
-				sumHeight += child.layout.bounds.height;
-				sumWidth += child.layout.bounds.width;
+				var child:Node = node.getChildAt(i);
+				sumHeight += child.bounds.height;
+				sumWidth += child.bounds.width;
 			}
 			var deltaX:Number = (orientation == Orientation.HORIZONTAL) ? (width - sumWidth) : 0;
 			var deltaY:Number = (orientation == Orientation.VERTICAL) ? (height - sumHeight) : 0;
@@ -52,83 +54,91 @@ package starling.extensions.talon.layout
 			deltaX += node.padding.left.toPixels(ppp, pem, height, 0);
 			deltaY += node.padding.top.toPixels(ppp, pem, height, 0);
 
-			for each (var child:Node in node.children)
+			for (var i:int = 0; i < node.numChildren; i++)
 			{
+				var child:Node = node.getChildAt(i);
+
 				var dY:Number = 0;
 				var dX:Number = 0;
 
 				if (orientation == Orientation.VERTICAL)
 				{
-					dX = halign == "right" ? (width - child.layout.bounds.width) : halign == "center" ? (width - child.layout.bounds.width)/2 : 0;
+					dX = halign == "right" ? (width - child.bounds.width) : halign == "center" ? (width - child.bounds.width)/2 : 0;
 				}
 
 				if (orientation == Orientation.HORIZONTAL)
 				{
-					dY = valign == "bottom" ? (height - child.layout.bounds.height) : valign == "center" ? (height - child.layout.bounds.height)/2 : 0;
+					dY = valign == "bottom" ? (height - child.bounds.height) : valign == "center" ? (height - child.bounds.height)/2 : 0;
 				}
 
-				child.layout.bounds.x += deltaX + dX;
-				child.layout.bounds.y += deltaY + dY;
-				child.layout.commit();
+				child.bounds.x += deltaX + dX;
+				child.bounds.y += deltaY + dY;
+				child.commit();
 			}
 		}
 
 		private function arrangeSide2(name:String, asix:String, auto:String, value:int, gap:int, ppp:Number, pem:Number, node:Node):void
 		{
-			for each (var child:Node in node.children)
+			for (var i:int = 0; i < node.numChildren; i++)
 			{
-				child.layout.bounds[name] = child[name].isAuto ? child.layout[auto]() : child[name].toPixels(ppp, pem, value, 0);
-				child.layout.bounds[asix] = 0;
+				var child:Node = node.getChildAt(i);
+				child.bounds[name] = child[name].isAuto ? child[auto]() : child[name].toPixels(ppp, pem, value, 0);
+				child.bounds[asix] = 0;
 			}
 		}
 
 		private function arrangeSide1(name:String, asix:String, auto:String, value:int, gap:int, ppp:Number, pem:Number, node:Node):void
 		{
+			var i:int;
 			var child:Node;
 
 			var starCount:int = 0;
-			var starTarget:int = value - (node.children.length > 1 ? (node.children.length - 1) * gap : 0);
+			var starTarget:int = value - (node.numChildren > 1 ? (node.numChildren - 1) * gap : 0);
 
-			for each (child in node.children)
+			for (i = 0; i < node.numChildren; i++)
 			{
+				child = node.getChildAt(i);
 				if (child[name].unit == Gauge.STAR)
 				{
 					starCount += child[name].amount;
 				}
 				else
 				{
-					child.layout.bounds[name] = child[name].isAuto ? child.layout[auto]() : child[name].toPixels(ppp, pem, value, 0);
-					starTarget -= child.layout.bounds[name];
+					child.bounds[name] = child[name].isAuto ? child[auto]() : child[name].toPixels(ppp, pem, value, 0);
+					starTarget -= child.bounds[name];
 				}
 			}
 
-			for each (child in node.children)
+			for (i = 0; i < node.numChildren; i++)
 			{
+				child = node.getChildAt(i);
 				if (child[name].unit == Gauge.STAR)
 				{
-					child.layout.bounds[name] = child[name].toPixels(ppp, pem, starTarget, starCount);
+					child.bounds[name] = child[name].toPixels(ppp, pem, starTarget, starCount);
 				}
 			}
 
 			var shift:int = 0;
-			for each (child in node.children)
+			for (i = 0; i < node.numChildren; i++)
 			{
-				child.layout.bounds[asix] = shift;
-				shift += child.layout.bounds[name] + gap;
+				child = node.getChildAt(i);
+				child.bounds[asix] = shift;
+				shift += child.bounds[name] + gap;
 			}
 		}
 
-		public function measureAutoWidth(node:Node, ppp:Number, pem:Number):Number
+		public override function measureAutoWidth(node:Node, ppp:Number, pem:Number):Number
 		{
 			var result:Number = 0;
 			var orientation:String = Orientation.isValid(node.attributes.orientation) ? node.attributes.orientation : DEFAULT;
 			var isHorizontal:Boolean = orientation == Orientation.HORIZONTAL;
 
 			// Children Width
-			for each (var child:Node in node.children)
+			for (var i:int = 0; i < node.numChildren; i++)
 			{
+				var child:Node = node.getChildAt(i);
 				var childWidth:Number = child.width.isAuto
-					? child.layout.measureAutoWidth()
+					? child.measureAutoWidth()
 					: child.width.toPixels(ppp, pem, 0, 0);
 
 				childWidth += child.margin.left.toPixels(ppp, pem, 0, 0);
@@ -140,8 +150,8 @@ package starling.extensions.talon.layout
 			// Gap
 			if (isHorizontal)
 			{
-				var gap:Number = Gauge.toPixels(node.attributes.gap, ppp, pem, node.layout.bounds.width, 0);
-				result += node.children.length > 1 ? (node.children.length - 1) * gap : 0;
+				var gap:Number = Gauge.toPixels(node.attributes.gap, ppp, pem, node.bounds.width, 0);
+				result += node.numChildren > 1 ? (node.numChildren - 1) * gap : 0;
 			}
 
 			// Padding
@@ -151,17 +161,18 @@ package starling.extensions.talon.layout
 			return result;
 		}
 
-		public function measureAutoHeight(node:Node, ppp:Number, pem:Number):Number
+		public override function measureAutoHeight(node:Node, ppp:Number, pem:Number):Number
 		{
 			var result:Number = 0;
 			var orientation:String = Orientation.isValid(node.attributes.orientation) ? node.attributes.orientation : DEFAULT;
 			var isVertical:Boolean = orientation == Orientation.VERTICAL;
 
 			// Children Height
-			for each (var child:Node in node.children)
+			for (var i:int = 0; i < node.numChildren; i++)
 			{
+				var child:Node = node.getChildAt(i);
 				var childHeight:Number = child.height.isAuto
-						? child.layout.measureAutoHeight()
+						? child.measureAutoHeight()
 						: child.height.toPixels(ppp, pem, 0, 0);
 
 				childHeight += child.margin.top.toPixels(ppp, pem, 0, 0);
@@ -173,8 +184,8 @@ package starling.extensions.talon.layout
 			// Gap
 			if (isVertical)
 			{
-				var gap:Number = Gauge.toPixels(node.attributes.gap, ppp, pem, node.layout.bounds.height, 0);
-				result += node.children.length > 1 ? (node.children.length - 1) * gap : 0;
+				var gap:Number = Gauge.toPixels(node.attributes.gap, ppp, pem, node.bounds.height, 0);
+				result += node.numChildren > 1 ? (node.numChildren - 1) * gap : 0;
 			}
 
 			// Padding

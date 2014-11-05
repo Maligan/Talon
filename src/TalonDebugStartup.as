@@ -14,16 +14,18 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 
-	import starling.extensions.talon.core.Gauge;
-
 	import starling.extensions.talon.display.TalonComponent;
 
 	import starling.extensions.talon.display.TalonComponentBase;
 	import starling.extensions.talon.core.StyleSheet;
+	import starling.extensions.talon.layout.Layout;
+	import starling.extensions.talon.layout.StackLayout;
 
 	public class TalonDebugStartup extends MovieClip
 	{
 		private var _root:Sprite;
+
+		private var _style:StyleSheet;
 		private var _talon:TalonComponentBase;
 
 		public function TalonDebugStartup()
@@ -32,20 +34,23 @@ package
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
 
-			var style:String = " .div { body: null2; } body { step: 20px } trace, .my, .tag { margin: auto; padding: 10px 10px 10px }";
-			var css:StyleSheet = new StyleSheet(style);
-			trace(css.getStyle({style:["my"]}, "margin"));
+			Layout.registerLayoutAlias("none", new Layout());
+			Layout.registerLayoutAlias("stack", new StackLayout());
 
-			return;
-			var node:Node = new Node();
-			node.attributes.minHeight = "100px";
-			node.attributes.paddingBottom = "10px";
-			node.width.parse("auto");
-			node.attributes.width = "auto";
+			var style:String = " .red { backgroundColor: 0xFF0000; } .tmp .brown { backgroundColor: 0x964B00; width: 100%; height: 48px } .my, .tag { margin: auto; padding: 10px 10px 10px }";
+			_style = new StyleSheet();
+			_style.parse(style);
+
+//			var node:Node = new Node();
+//			node.attributes.minHeight = "100px";
+//			node.attributes.paddingBottom = "10px";
+//			node.width.parse("auto");
+//			node.attributes.width = "auto";
 
 			new Starling(Sprite, stage);
 			Starling.current.addEventListener(Event.ROOT_CREATED, onRootCreated);
 			Starling.current.start();
+			Starling.current.showStats = true;
 		}
 
 		private function onResize(e:*):void
@@ -56,8 +61,8 @@ package
 
 			if (_talon != null)
 			{
-				_talon.node.layout.bounds.setTo(0, 0, stage.stageWidth, stage.stageHeight);
-				_talon.node.layout.commit();
+				_talon.node.bounds.setTo(0, 0, stage.stageWidth, stage.stageHeight);
+				_talon.node.commit();
 			}
 		}
 
@@ -104,17 +109,17 @@ package
 			var panel:XML =
 				<node layout="stack" width="35%" orientation="vertical" valign="center" halign="center" gap="4px">
 					<node id="play" width="256px" height="48px" backgroundColor="0x888899" />
-					<node layout="stack" orientation="vertical" width="256px" padding="0px 8px" gap="4px">
-						<node id="1" width="100%" height="48px" backgroundColor="0x888888" />
-						<node id="2" width="100%" height="48px" backgroundColor="0x888888" />
-						<node id="3" width="100%" height="48px" backgroundColor="0x888888" />
-						<node layout="stack" orientation="horizontal" gap="4px" width="100%">
+					<node layout="stack" class="tmp" orientation="vertical" width="256px" padding="0px 8px" gap="4px">
+						<node id="1d" class="brown" />
+						<node id="2d" class="brown" />
+						<node id="3d" class="brown" />
+						<node id="4d" layout="stack" orientation="horizontal" gap="4px" width="100%">
 							<node id="prev" width="*" height="48px" backgroundColor="0x888888" />
 							<node id="next" width="*" height="48px" backgroundColor="0x888888" />
 						</node>
 					</node>
 					<node id="leaders" width="256px" height="48px" backgroundColor="0x888899" />
-					<node id="mother ship" width="256px" height="48px" backgroundColor="0x888899" />
+					<node id="mother ship" width="256px" height="48px" backgroundColor="0xFF000" />
 				</node>;
 
 			_talon = fromXML(panel) as TalonComponentBase;
@@ -127,15 +132,19 @@ package
 		{
 			var element:DisplayObject = new TalonComponentBase();
 
-			if (element is TalonComponentBase)
+			if (element is TalonComponent)
 			{
-				var box:Node = TalonComponentBase(element).node;
+				var node:Node = TalonComponent(element).node;
+
 				for each (var attribute:XML in xml.attributes())
 				{
 					var name:String = attribute.name();
 					var value:String = attribute.valueOf();
-					box.attributes[name] = value;
+					node.attributes[name] = value;
 				}
+
+				node.attributes.tag = xml.name();
+				node.setStyleSheet(_style);
 			}
 
 			if (element is DisplayObjectContainer)

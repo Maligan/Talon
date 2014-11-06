@@ -20,7 +20,7 @@ package starling.extensions.talon.utils
 		{
 		}
 
-		public function getResult(id:String):DisplayObject
+		public function build(id:String):DisplayObject
 		{
 			return null;
 		}
@@ -28,7 +28,7 @@ package starling.extensions.talon.utils
 		//
 		// Linkage
 		//
-		public function setLinkage(tag:String, displayObjectClass:Class):void
+		public function setLinkage(type:String, displayObjectClass:Class):void
 		{
 
 		}

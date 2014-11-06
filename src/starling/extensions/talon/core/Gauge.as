@@ -15,6 +15,7 @@ package starling.extensions.talon.core
 
 		private static const PATTERN:RegExp = /^(-?\d*\.?\d+)(px|pt|em|%|\*|)$/;
 
+		[Deprecated]
 		public static function toPixels(value:String, ppp:Number, pem:Number, target:Number, stars:int):int
 		{
 			if (value == null) return 0;

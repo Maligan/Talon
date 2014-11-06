@@ -31,30 +31,31 @@ package starling.extensions.talon.core
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
 		private var _attributes:Dictionary = new Dictionary();
+		private var _bundle:ResourceBundle;
 
 		public function Node():void
 		{
 			// Bounds
-			map("width", "auto", width.toString, width.parse, width);
-			map("minWidth", "auto", minWidth.toString, minWidth.parse, minWidth);
-			map("maxWidth", "auto", maxWidth.toString, maxWidth.parse, maxWidth);
-			map("height", "auto", height.toString, height.parse, height);
-			map("minHeight", "auto", minHeight.toString, minHeight.parse, minHeight);
-			map("maxHeight", "auto", maxHeight.toString, maxHeight.parse, maxHeight);
+			map("width", Gauge.AUTO, width.toString, width.parse, width);
+			map("minWidth", Gauge.AUTO, minWidth.toString, minWidth.parse, minWidth);
+			map("maxWidth", Gauge.AUTO, maxWidth.toString, maxWidth.parse, maxWidth);
+			map("height", Gauge.AUTO, height.toString, height.parse, height);
+			map("minHeight", Gauge.AUTO, minHeight.toString, minHeight.parse, minHeight);
+			map("maxHeight", Gauge.AUTO, maxHeight.toString, maxHeight.parse, maxHeight);
 
 			// Margin
-			map("margin", "auto", margin.toString, margin.parse, margin);
-			map("marginTop", "auto", margin.top.toString, margin.top.parse, margin.top);
-			map("marginRight", "auto", margin.right.toString, margin.right.parse, margin.right);
-			map("marginBottom", "auto", margin.bottom.toString, margin.bottom.parse, margin.bottom);
-			map("marginLeft", "auto", margin.left.toString, margin.left.parse, margin.left);
+			map("margin", Gauge.AUTO, margin.toString, margin.parse, margin);
+			map("marginTop", Gauge.AUTO, margin.top.toString, margin.top.parse, margin.top);
+			map("marginRight", Gauge.AUTO, margin.right.toString, margin.right.parse, margin.right);
+			map("marginBottom", Gauge.AUTO, margin.bottom.toString, margin.bottom.parse, margin.bottom);
+			map("marginLeft", Gauge.AUTO, margin.left.toString, margin.left.parse, margin.left);
 
 			// Padding
-			map("padding", "auto", padding.toString, padding.parse, padding);
-			map("paddingTop", "auto", padding.top.toString, padding.top.parse, padding.top);
-			map("paddingRight", "auto", padding.right.toString, padding.right.parse, padding.right);
-			map("paddingBottom", "auto", padding.bottom.toString, padding.bottom.parse, padding.bottom);
-			map("paddingLeft", "auto", padding.left.toString, padding.left.parse, padding.left);
+			map("padding", Gauge.AUTO, padding.toString, padding.parse, padding);
+			map("paddingTop", Gauge.AUTO, padding.top.toString, padding.top.parse, padding.top);
+			map("paddingRight", Gauge.AUTO, padding.right.toString, padding.right.parse, padding.right);
+			map("paddingBottom", Gauge.AUTO, padding.bottom.toString, padding.bottom.parse, padding.bottom);
+			map("paddingLeft", Gauge.AUTO, padding.left.toString, padding.left.parse, padding.left);
 
 			// Background
 			// ...
@@ -83,7 +84,7 @@ package starling.extensions.talon.core
 		{
 			_style = style;
 
-			var styles:Object = _style.getStyles(this);
+			var styles:Object = _style.getStyle(this);
 			for each (var attribute:Attribute in _attributes)
 			{
 				attribute.valueFromStyleSheet = styles[attribute.name];
@@ -94,6 +95,11 @@ package starling.extensions.talon.core
 			{
 				attribute = _attributes[name] || (_attributes[name] = new Attribute(name, onAttributeChange));
 				attribute.valueFromStyleSheet = styles[name];
+			}
+
+			for each (var child:Node in _children)
+			{
+				child.setStyleSheet(style);
 			}
 		}
 
@@ -109,6 +115,22 @@ package starling.extensions.talon.core
 			var attribute:Attribute = _attributes[name];
 			if (attribute == null) attribute = _attributes[name] = new Attribute(name, onAttributeChange);
 			attribute.valueFromAssign = value;
+		}
+
+		//
+		// Resource
+		//
+		public function setResources(bundle:ResourceBundle):void
+		{
+			_bundle = bundle;
+		}
+
+		public function getResource(key:String):*
+		{
+			var resource:* = null;
+			if (_bundle) resource = _bundle.getResource(key);
+			if (!resource && parent) resource = parent.getResource(key);
+			return resource;
 		}
 
 		//
@@ -153,7 +175,7 @@ package starling.extensions.talon.core
 		{
 			_children.push(child);
 			child._parent = this;
-			child.setStyleSheet(_style);
+			if (_style) child.setStyleSheet(_style);
 		}
 
 		public function getChildAt(index:int):Node

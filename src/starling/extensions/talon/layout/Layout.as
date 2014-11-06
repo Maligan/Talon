@@ -22,7 +22,7 @@ package starling.extensions.talon.layout
 
 		public static function getLayoutByAlias(aliasName:String):Layout
 		{
-			return _strategy[aliasName]
+			return _strategy[aliasName];
 		}
 
 		//

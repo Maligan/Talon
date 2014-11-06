@@ -2,7 +2,7 @@ package starling.extensions.talon.core
 {
 	import flash.utils.Dictionary;
 
-	public class StyleSheet
+	public final class StyleSheet
 	{
 		private var _stylesBySelector:Dictionary;
 
@@ -23,27 +23,7 @@ package starling.extensions.talon.core
 			parseCSS(css);
 		}
 
-		public function getStyle(node:Node, name:String):String
-		{
-			var result:String = null;
-
-			for each (var selector:CSSSelector in _selectors)
-			{
-				// TODO: Selector priority
-				if (selector.match(node) === true)
-				{
-					var style:String = _stylesBySelector[selector][name];
-					if (style != null)
-					{
-						result = style;
-					}
-				}
-			}
-
-			return result;
-		}
-
-		public function getStyles(node:Node):Object
+		public function getStyle(node:Node):Object
 		{
 			var result:Object = new Object();
 
@@ -144,7 +124,7 @@ package starling.extensions.talon.core
 		/** Remove CSS comments. */
 		private function uncomment(string:String):String
 		{
-			return string.replace(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/g, '');
+			return string.replace(/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g, '');1
 		}
 
 		//
@@ -187,6 +167,7 @@ class CSSSelector
 	private var _parent:CSSSelector;
 	private var _class:String;
 	private var _id:String;
+	private var _general:Boolean;
 
 	public function CSSSelector(string:String)
 	{
@@ -206,14 +187,19 @@ class CSSSelector
 		{
 			_id = current.substr(1);
 		}
+		else if (current == "*")
+		{
+			_general = true;
+		}
 	}
 
 	public function match(node:Node):Boolean
 	{
 		if (node == null) return false;
+
 		var byParent:Boolean = !_parent || (_parent && _parent.match(node.parent));
-		var byClass:Boolean = !_class || (node.getAttribute("class", "").indexOf(_class) != -1);
-		var byId:Boolean = !_id || (node.getAttribute("id") == _id);
+		var byClass:Boolean = !_class || (node.getAttribute("class", "").indexOf(_class) != -1) || _general;
+		var byId:Boolean = !_id || (node.getAttribute("id") == _id) || _general;
 		return byParent && byClass && byId;
 	}
 }

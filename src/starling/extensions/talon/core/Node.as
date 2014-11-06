@@ -1,6 +1,7 @@
 package starling.extensions.talon.core
 {
 	import flash.geom.Rectangle;
+	import flash.utils.Dictionary;
 
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
@@ -8,12 +9,8 @@ package starling.extensions.talon.core
 
 	public final class Node extends EventDispatcher
 	{
-		/** Proxy for all attributes. */
-		public const attributes:Object = new Attributes(onAttributeChanged);
-
 		//
-		// Strong typed attributes (NB! all of them have _synchronized_ analog in attributes)
-		// Be aware, delete & reset to default available only from attribute.
+		// Strong typed attributes/styles
 		//
 		public const width:Gauge = new Gauge();
 		public const minWidth:Gauge = new Gauge();
@@ -33,31 +30,31 @@ package starling.extensions.talon.core
 		private var _style:StyleSheet;
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
-		private var _mappings:Vector.<String> = new Vector.<String>();
+		private var _attributes:Dictionary = new Dictionary();
 
 		public function Node():void
 		{
 			// Bounds
-			map("width", width.toString, width.parse, width, "auto");
-			map("minWidth", minWidth.toString, minWidth.parse, minWidth, "auto");
-			map("maxWidth", maxWidth.toString, maxWidth.parse, maxWidth, "auto");
-			map("height", height.toString, height.parse, height, "auto");
-			map("minHeight", minHeight.toString, minHeight.parse, minHeight, "auto");
-			map("maxHeight", maxHeight.toString, maxHeight.parse, maxHeight, "auto");
+			map("width", "auto", width.toString, width.parse, width);
+			map("minWidth", "auto", minWidth.toString, minWidth.parse, minWidth);
+			map("maxWidth", "auto", maxWidth.toString, maxWidth.parse, maxWidth);
+			map("height", "auto", height.toString, height.parse, height);
+			map("minHeight", "auto", minHeight.toString, minHeight.parse, minHeight);
+			map("maxHeight", "auto", maxHeight.toString, maxHeight.parse, maxHeight);
 
 			// Margin
-			map("margin", margin.toString, margin.parse, margin, "auto");
-			map("marginTop", margin.top.toString, margin.top.parse, margin.top, "auto");
-			map("marginRight", margin.right.toString, margin.right.parse, margin.right, "auto");
-			map("marginBottom", margin.bottom.toString, margin.bottom.parse, margin.bottom, "auto");
-			map("marginLeft", margin.left.toString, margin.left.parse, margin.left, "auto");
+			map("margin", "auto", margin.toString, margin.parse, margin);
+			map("marginTop", "auto", margin.top.toString, margin.top.parse, margin.top);
+			map("marginRight", "auto", margin.right.toString, margin.right.parse, margin.right);
+			map("marginBottom", "auto", margin.bottom.toString, margin.bottom.parse, margin.bottom);
+			map("marginLeft", "auto", margin.left.toString, margin.left.parse, margin.left);
 
 			// Padding
-			map("padding", padding.toString, padding.parse, padding, "auto");
-			map("paddingTop", padding.top.toString, padding.top.parse, padding.top, "auto");
-			map("paddingRight", padding.right.toString, padding.right.parse, padding.right, "auto");
-			map("paddingBottom", padding.bottom.toString, padding.bottom.parse, padding.bottom, "auto");
-			map("paddingLeft", padding.left.toString, padding.left.parse, padding.left, "auto");
+			map("padding", "auto", padding.toString, padding.parse, padding);
+			map("paddingTop", "auto", padding.top.toString, padding.top.parse, padding.top);
+			map("paddingRight", "auto", padding.right.toString, padding.right.parse, padding.right);
+			map("paddingBottom", "auto", padding.bottom.toString, padding.bottom.parse, padding.bottom);
+			map("paddingLeft", "auto", padding.left.toString, padding.left.parse, padding.left);
 
 			// Background
 			// ...
@@ -66,26 +63,15 @@ package starling.extensions.talon.core
 			// ...
 
 			// Layout
-			// ...
+			map("layout", "none");
 		}
 
-		private function map(name:String, getter:Function, setter:Function, dispatcher:EventDispatcher, defaultValue:String):void
+		private function map(name:String, def:String = null, getter:Function = null, setter:Function = null, dispatcher:EventDispatcher = null):void
 		{
-			_mappings.push(name);
-
-			Attributes(attributes).setGetter(name, getter);
-			Attributes(attributes).setSetter(name, setter);
-			Attributes(attributes).setDefault(name, defaultValue);
-			dispatcher.addEventListener(Event.CHANGE, handler);
-
-			function handler(e:Event):void
-			{
-				Attributes(attributes).setChanged(name);
-				dispatchEventWith(Event.CHANGE, false, name);
-			}
+			_attributes[name] = new Attribute(name, onAttributeChange, def, getter, setter, dispatcher);
 		}
 
-		private function onAttributeChanged(name:String):void
+		private function onAttributeChange(name:String):void
 		{
 			dispatchEventWith(Event.CHANGE, false, name);
 		}
@@ -96,16 +82,33 @@ package starling.extensions.talon.core
 		public function setStyleSheet(style:StyleSheet):void
 		{
 			_style = style;
-			Attributes(attributes).setStyle(this, _style);
 
-			for each (var name:String in _mappings)
+			var styles:Object = _style.getStyles(this);
+			for each (var attribute:Attribute in _attributes)
 			{
-				var styleValue:String = style.getStyle(this, name);
-				if (styleValue != null)
-				{
-					attributes[name] = styleValue;
-				}
+				attribute.valueFromStyleSheet = styles[attribute.name];
+				delete styles[attribute.name];
 			}
+
+			for (var name:String in styles)
+			{
+				attribute = _attributes[name] || (_attributes[name] = new Attribute(name, onAttributeChange));
+				attribute.valueFromStyleSheet = styles[name];
+			}
+		}
+
+		public function getAttribute(name:String, defaultValue:String = null):String
+		{
+			var attribute:Attribute = _attributes[name];
+			if (attribute) return attribute.value || defaultValue;
+			return defaultValue;
+		}
+
+		public function setAttribute(name:String, value:String):void
+		{
+			var attribute:Attribute = _attributes[name];
+			if (attribute == null) attribute = _attributes[name] = new Attribute(name, onAttributeChange);
+			attribute.valueFromAssign = value;
 		}
 
 		//
@@ -134,7 +137,8 @@ package starling.extensions.talon.core
 
 		private function get layout():Layout
 		{
-			return Layout.getLayoutByAlias(attributes.layout || "none");
+			var aliasName:String = getAttribute("layout");
+			return Layout.getLayoutByAlias(aliasName);
 		}
 
 		//
@@ -164,93 +168,81 @@ package starling.extensions.talon.core
 	}
 }
 
-import flash.utils.Dictionary;
-import flash.utils.Proxy;
-import flash.utils.flash_proxy;
+import starling.events.Event;
+import starling.events.EventDispatcher;
 
-import starling.extensions.talon.core.Node;
-
-import starling.extensions.talon.core.StyleSheet;
-
-use namespace flash_proxy;
-
-class Attributes extends Proxy
+class Attribute
 {
-	private var _setters:Dictionary;
-	private var _getters:Dictionary;
-	private var _default:Dictionary;
-	private var _changed:Dictionary;
-	private var _object:Object;
-
-	private var _style:StyleSheet;
-	private var _node:Node;
-
+	private var _name:String;
 	private var _handler:Function;
 
-	public function Attributes(handler:Function)
+	private var _getter:Function;
+	private var _setter:Function;
+	private var _dispatcher:EventDispatcher;
+
+	private var _valueFromAssign:String;
+	private var _valueFromStyleSheet:String;
+	private var _valueFromDefault:String;
+
+	public function Attribute(name:String, handler:Function, def:String = null, getter:Function = null, setter:Function = null, dispatcher:EventDispatcher = null)
 	{
-		_setters = new Dictionary();
-		_getters = new Dictionary();
-		_changed = new Dictionary();
-		_default = new Dictionary();
-		_object = new Object();
+		_name = name;
 		_handler = handler;
+		_valueFromDefault = def;
+
+		_getter = getter;
+		_setter = setter;
+		_dispatcher = dispatcher;
+		_dispatcher && _dispatcher.addEventListener(Event.CHANGE, onChanged);
 	}
 
-	public function setSetter(name:String, setter:Function):void
+	private function onChanged(e:Event):void
 	{
-		_setters[name] = setter;
+		_valueFromAssign = _getter();
+		_handler(name);
 	}
 
-	public function setGetter(name:String, getter:Function):void
+	//
+	// Properties
+	//
+	public function get name():String { return _name }
+	public function get value():String
 	{
-		_getters[name] = getter;
+		return _valueFromAssign || _valueFromStyleSheet || _valueFromDefault
 	}
 
-	public function setDefault(name:String, value:String):void
+	public function get valueFromAssign():String { return _valueFromAssign; }
+	public function set valueFromAssign(value:String):void
 	{
-		_default[name] = value;
-	}
-
-	public function setChanged(name:String):void
-	{
-		_changed[name] = true;
-	}
-
-	public function setStyle(node:Node, style:StyleSheet):void
-	{
-		_node = node;
-		_style = style;
-	}
-
-	flash_proxy override function setProperty(name:*, value:*):void
-	{
-		if (_setters[name])
+		if (_setter)
 		{
-			_setters[name](value);
+			_setter(value);
 		}
-		else if (_object[name] != value)
+		else if (_valueFromAssign != value)
 		{
-			_object[name] = value;
+			_valueFromAssign = value;
 			_handler(name);
 		}
 	}
 
-	flash_proxy override function getProperty(name:*):*
+	public function get valueFromStyleSheet():String { return _valueFromStyleSheet }
+	public function set valueFromStyleSheet(value:String):void
 	{
-		if (_getters[name] != null && _changed[name] === true)
+		if (_valueFromStyleSheet != value)
 		{
-			return _getters[name]();
-		}
-		else if (_object[name])
-		{
-			return _object[name]
-		}
-		else if (name != "id" && name != "class" && name != "tag"  && _style != null)
-		{
-			return _style.getStyle(_node, name) || _default[name];
-		}
+			_valueFromStyleSheet = value;
 
-		return _default[name];
+			if (_valueFromAssign == null)
+			{
+				if (_setter == null)
+				{
+					_handler(name);
+				}
+				else
+				{
+					_setter(value);
+				}
+			}
+		}
 	}
 }

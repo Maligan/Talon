@@ -37,7 +37,7 @@ package
 			Layout.registerLayoutAlias("none", new Layout());
 			Layout.registerLayoutAlias("stack", new StackLayout());
 
-			var style:String = " .red { backgroundColor: 0xFF0000; } .tmp .brown { backgroundColor: 0x964B00; width: 100%; height: 48px } .my, .tag { margin: auto; padding: 10px 10px 10px }";
+			var style:String = " .red { backgroundColor: 0xFF0000; } .tmp .brown { backgroundImage: /orange.png; backgroundColor: 0x964B00; width: 100%; height: 128px } #2d { backgroundImage: /orange.png } .my, .tag { margin: auto; padding: 10px 10px 10px }";
 			_style = new StyleSheet();
 			_style.parse(style);
 
@@ -107,15 +107,15 @@ package
 				</node>;
 
 			var panel:XML =
-				<node layout="stack" width="35%" orientation="vertical" valign="center" halign="center" gap="4px">
-					<node id="play" width="256px" height="48px" backgroundColor="0x888899" />
-					<node layout="stack" class="tmp" orientation="vertical" width="256px" padding="0px 8px" gap="4px">
-						<node id="1d" class="brown" />
+				<node id="root" layout="stack" orientation="vertical" valign="center" halign="center" gap="4px">
+					<node id="play" width="50%" height="48px" backgroundColor="0x888899" />
+					<node layout="stack" class="tmp" orientation="vertical" width="50%" padding="0px 8px" gap="4px">
 						<node id="2d" class="brown" />
 						<node id="3d" class="brown" />
-						<node id="4d" layout="stack" orientation="horizontal" gap="4px" width="100%">
-							<node id="prev" width="*" height="48px" backgroundColor="0x888888" />
-							<node id="next" width="*" height="48px" backgroundColor="0x888888" />
+						<node id="4d" layout="stack" orientation="horizontal" gap="4px" width="100%" height="48px">
+							<node id="prev" width="*" height="100%" backgroundImage="0x888888" />
+							<node id="next" width="*" height="100%" backgroundImage="0x888888" />
+							<node id="next" width="*" height="100%" backgroundImage="0x888888" />
 						</node>
 					</node>
 					<node id="leaders" width="256px" height="48px" backgroundColor="0x888899" />
@@ -140,10 +140,10 @@ package
 				{
 					var name:String = attribute.name();
 					var value:String = attribute.valueOf();
-					node.attributes[name] = value;
+					node.setAttribute(name, value);
 				}
 
-				node.attributes.tag = xml.name();
+				node.setAttribute("type", xml.name());
 				node.setStyleSheet(_style);
 			}
 

@@ -43,6 +43,30 @@ package starling.extensions.talon.core
 			return result;
 		}
 
+		public function getStyles(node:Node):Object
+		{
+			var result:Object = new Object();
+
+			for each (var selector:CSSSelector in _selectors)
+			{
+				if (selector.match(node) === true)
+				{
+					var styles:Object = _stylesBySelector[selector];
+					for (var property:String in styles)
+					{
+						// TODO: Selector priority
+						var value:String = styles[property];
+						if (value != null)
+						{
+							result[property] = value;
+						}
+					}
+				}
+			}
+
+			return result;
+		}
+
 		//
 		// Recursive descent parser (BNF):
 		//
@@ -188,8 +212,8 @@ class CSSSelector
 	{
 		if (node == null) return false;
 		var byParent:Boolean = !_parent || (_parent && _parent.match(node.parent));
-		var byClass:Boolean = !_class || (node.attributes['class'] && node.attributes['class'].indexOf(_class) != -1);
-		var byId:Boolean = !_id || (node.attributes['id'] == _id);
+		var byClass:Boolean = !_class || (node.getAttribute("class", "").indexOf(_class) != -1);
+		var byId:Boolean = !_id || (node.getAttribute("id") == _id);
 		return byParent && byClass && byId;
 	}
 }

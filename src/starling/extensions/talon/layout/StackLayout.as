@@ -11,8 +11,8 @@ package starling.extensions.talon.layout
 		public override function arrange(node:Node, ppp:Number, pem:Number, width:Number, height:Number):void
 		{
 			// Layout properties
-			var orientation:String = Orientation.isValid(node.attributes.orientation) ? node.attributes.orientation : DEFAULT;
-			var gap:Number = Gauge.toPixels(node.attributes.gap, ppp, pem, (orientation == Orientation.HORIZONTAL) ? node.bounds.width : node.bounds.height, 0);
+			var orientation:String = node.getAttribute("orientation", DEFAULT);
+			var gap:Number = Gauge.toPixels(node.getAttribute("gap"), ppp, pem, (orientation == Orientation.HORIZONTAL) ? node.bounds.width : node.bounds.height, 0);
 			width -= node.padding.left.toPixels(ppp, pem, width, 0) + node.padding.right.toPixels(ppp, pem, width, 0);
 			height -= node.padding.top.toPixels(ppp, pem, height, 0) + node.padding.bottom.toPixels(ppp, pem, height, 0);
 
@@ -45,8 +45,8 @@ package starling.extensions.talon.layout
 			var deltaX:Number = (orientation == Orientation.HORIZONTAL) ? (width - sumWidth) : 0;
 			var deltaY:Number = (orientation == Orientation.VERTICAL) ? (height - sumHeight) : 0;
 
-			var halign:String = node.attributes.halign;
-			var valign:String = node.attributes.valign;
+			var halign:String = node.getAttribute("halign");
+			var valign:String = node.getAttribute("valign");
 			deltaX = halign == "right" ? deltaX : halign == "center" ? deltaX/2 : 0;
 			deltaY = valign == "bottom" ? deltaY : valign == "center" ? deltaY/2 : 0;
 
@@ -130,7 +130,7 @@ package starling.extensions.talon.layout
 		public override function measureAutoWidth(node:Node, ppp:Number, pem:Number):Number
 		{
 			var result:Number = 0;
-			var orientation:String = Orientation.isValid(node.attributes.orientation) ? node.attributes.orientation : DEFAULT;
+			var orientation:String = node.getAttribute("orientation", DEFAULT);
 			var isHorizontal:Boolean = orientation == Orientation.HORIZONTAL;
 
 			// Children Width
@@ -150,7 +150,7 @@ package starling.extensions.talon.layout
 			// Gap
 			if (isHorizontal)
 			{
-				var gap:Number = Gauge.toPixels(node.attributes.gap, ppp, pem, node.bounds.width, 0);
+				var gap:Number = Gauge.toPixels(node.getAttribute("gap"), ppp, pem, node.bounds.width, 0);
 				result += node.numChildren > 1 ? (node.numChildren - 1) * gap : 0;
 			}
 
@@ -164,7 +164,7 @@ package starling.extensions.talon.layout
 		public override function measureAutoHeight(node:Node, ppp:Number, pem:Number):Number
 		{
 			var result:Number = 0;
-			var orientation:String = Orientation.isValid(node.attributes.orientation) ? node.attributes.orientation : DEFAULT;
+			var orientation:String = node.getAttribute("orientation", DEFAULT);
 			var isVertical:Boolean = orientation == Orientation.VERTICAL;
 
 			// Children Height
@@ -184,7 +184,7 @@ package starling.extensions.talon.layout
 			// Gap
 			if (isVertical)
 			{
-				var gap:Number = Gauge.toPixels(node.attributes.gap, ppp, pem, node.bounds.height, 0);
+				var gap:Number = Gauge.toPixels(node.getAttribute("gap"), ppp, pem, node.bounds.height, 0);
 				result += node.numChildren > 1 ? (node.numChildren - 1) * gap : 0;
 			}
 

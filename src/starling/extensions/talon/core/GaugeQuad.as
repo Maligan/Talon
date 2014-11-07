@@ -3,6 +3,8 @@ package starling.extensions.talon.core
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
+	/** Group of 4 gauge. Used for strong typed definition of rectangle sides. */
+	[Event(name="change", type="starling.events.Event")]
 	public final class GaugeQuad extends EventDispatcher
 	{
 		public const top:Gauge = new Gauge();

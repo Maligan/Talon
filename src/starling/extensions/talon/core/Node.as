@@ -31,7 +31,7 @@ package starling.extensions.talon.core
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
 		private var _attributes:Dictionary = new Dictionary();
-		private var _bundle:ResourceBundle;
+		private var _bundle:Object;
 
 		public function Node():void
 		{
@@ -58,7 +58,9 @@ package starling.extensions.talon.core
 			map("paddingLeft", Gauge.AUTO, padding.left.toString, padding.left.parse, padding.left);
 
 			// Background
-			// ...
+//			map("backgroundImage", "none");
+//			map("backgroundColor", "transparent");
+//			map("backgroundScale", "0px 0px 0px 0px");
 
 			// Style
 			// ...
@@ -120,7 +122,7 @@ package starling.extensions.talon.core
 		//
 		// Resource
 		//
-		public function setResources(bundle:ResourceBundle):void
+		public function setResources(bundle:Object):void
 		{
 			_bundle = bundle;
 		}
@@ -128,7 +130,7 @@ package starling.extensions.talon.core
 		public function getResource(key:String):*
 		{
 			var resource:* = null;
-			if (_bundle) resource = _bundle.getResource(key);
+			if (_bundle) resource = _bundle[key];
 			if (!resource && parent) resource = parent.getResource(key);
 			return resource;
 		}

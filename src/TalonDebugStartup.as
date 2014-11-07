@@ -16,8 +16,6 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 
-	import starling.extensions.talon.core.ResourceBundle;
-
 	import starling.extensions.talon.display.ITalonComponent;
 
 	import starling.extensions.talon.display.TalonComponentBase;
@@ -26,7 +24,6 @@ package
 	import starling.extensions.talon.layout.StackLayout;
 	import starling.textures.Texture;
 
-	//	[ResourceBundle("locale")]
 	public class TalonDebugStartup extends MovieClip
 	{
 		[Embed(source="../assets/up.png")] private static const UP_BYTES:Class;
@@ -37,7 +34,7 @@ package
 
 		private var _style:StyleSheet;
 		private var _talon:TalonComponentBase;
-		private var _bundle:ResourceBundle;
+		private var _bundle:Object;
 
 		public function TalonDebugStartup()
 		{
@@ -71,13 +68,12 @@ package
 		{
 			_document = Sprite(Starling.current.root);
 
-			_bundle = new ResourceBundle();
-			_bundle.setResource("/img/up.png", getTexture(UP_BYTES));
-			_bundle.setResource("/img/over.png", getTexture(OVER_BYTES));
-			_bundle.setResource("/img/down.png", getTexture(DOWN_BYTES));
+			_bundle = new Object();
+			_bundle["/img/up.png"] = getTexture(UP_BYTES);
+			_bundle["/img/over.png"] = getTexture(OVER_BYTES);
+			_bundle["/img/down.png"] = getTexture(DOWN_BYTES);
 
-
-			var css:String = //new STYLE().toString();
+			var css:String =
 			<literal><![CDATA[
 				.tmp .brown
 				{

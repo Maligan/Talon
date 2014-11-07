@@ -26,19 +26,23 @@ package starling.extensions.talon.core
 		public function getStyle(node:Node):Object
 		{
 			var result:Object = new Object();
+			var priorities:Object = new Object();
 
 			for each (var selector:CSSSelector in _selectors)
 			{
-				if (selector.match(node) === true)
+				if (selector.match(node) !== true) continue;
+
+				var styles:Object = _stylesBySelector[selector];
+				for (var property:String in styles)
 				{
-					var styles:Object = _stylesBySelector[selector];
-					for (var property:String in styles)
+					var value:String = styles[property];
+					if (value != null)
 					{
-						// TODO: Selector priority
-						var value:String = styles[property];
-						if (value != null)
+						var priority:int = priorities[property];
+						if (priority <= selector.priority)
 						{
 							result[property] = value;
+							priorities[property] = selector.priority;
 						}
 					}
 				}
@@ -201,5 +205,10 @@ class CSSSelector
 		var byClass:Boolean = !_class || (node.getAttribute("class", "").indexOf(_class) != -1) || _general;
 		var byId:Boolean = !_id || (node.getAttribute("id") == _id) || _general;
 		return byParent && byClass && byId;
+	}
+
+	public function get priority():int
+	{
+		return 1;
 	}
 }

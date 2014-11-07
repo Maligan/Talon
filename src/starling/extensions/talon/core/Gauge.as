@@ -3,30 +3,29 @@ package starling.extensions.talon.core
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
-	/** Размер. */
+	/** Measured size. Defined by 'units' and 'amount'. */
+	[Event(name="change", type="starling.events.Event")]
 	public final class Gauge extends EventDispatcher
 	{
+		/** Indicates that final value must be defined by measure context. */
 		public static const AUTO:String = "auto";
+		/** Regular pixel. */
 		public static const PX:String = "px";
+		/** Typography point equals 1/72 of inch. NB! Device independent unit. */
 		public static const PT:String = "pt";
+		/** Ems has dynamic value, 1em equals 'fontSize' of current node. */
 		public static const EM:String = "em";
+		/** Relative unit. Percentages target defined by parent node. */
 		public static const PERCENT:String = "%";
+		/** Relative unit (weight based). Unlike percent stars target defined by parent node and siblings. */
 		public static const STAR:String = "*";
 
 		private static const PATTERN:RegExp = /^(-?\d*\.?\d+)(px|pt|em|%|\*|)$/;
 
-		[Deprecated]
-		public static function toPixels(value:String, ppp:Number, pem:Number, target:Number, stars:int):int
-		{
-			if (value == null) return 0;
-			var gauge:Gauge = new Gauge();
-			gauge.parse(value);
-			return gauge.toPixels(ppp, pem, target, stars);
-		}
-
 		private var _unit:String = AUTO;
 		private var _amount:Number = 0;
 
+		/** Read string and parse it value, throw ArgumentError if string has not valid format. */
 		public function parse(string:String):void
 		{
 			const prevUnit:String = _unit;
@@ -68,7 +67,13 @@ package starling.extensions.talon.core
 			}
 		}
 
-		/** Перевод значения в приксели, в функцию так же передаются все необходимые коэфициенты/параметры перевода. */
+		/**
+		 * Transform gauge to pixels.
+		 * @param ppp pixels per point
+		 * @param pem pixels per ems
+		 * @param target percentages/stars target (in pixels)
+		 * @param stars total amount of stars in target
+		 */
 		public function toPixels(ppp:Number, pem:Number, target:Number, stars:int):Number
 		{
 			switch (unit)
@@ -83,7 +88,6 @@ package starling.extensions.talon.core
 			}
 		}
 
-		/** Единицы измерения. */
 		public function get unit():String { return _unit }
 		public function set unit(value:String):void
 		{
@@ -94,7 +98,6 @@ package starling.extensions.talon.core
 			}
 		}
 
-		/** Количество единиц измерения. */
 		public function get amount():Number { return _amount }
 		public function set amount(value:Number):void
 		{
@@ -111,14 +114,14 @@ package starling.extensions.talon.core
 				&& gauge.amount == amount;
 		}
 
-		/** Значение вычисляется относительно контекста (родителя/братьев). */
+		/** Unit type is relative depend by parent/siblings. */
 		public function get isRelative():Boolean
 		{
 			return _unit == PERCENT
 				|| _unit == STAR;
 		}
 
-		/** Значение не задано. */
+		/** Unit is AUTO. */
 		public function get isAuto():Boolean
 		{
 			return _unit == AUTO;

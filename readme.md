@@ -1,89 +1,59 @@
 # Talon
 ## Table of Content
-* <a href = "#overview">Overview</a>
-* <a href = "#first-steps">First Steps</a>
-* <a href = "#editor">Editor</a>
-* <a href = "#feature-list">Feature List</a>
-* <a href = "#under-the-hood">Under the Hood</a>
-* <a href = "#download">Download</a>
+- <a href = "#overview">Overview</a>
+- <a href = "#first-steps">First Steps</a>
+- <a href = "#editor">Editor</a>
+- <a href = "#feature-list">Feature List</a>
+- <a href = "#under-the-hood">Under the Hood</a>
+- <a href = "#links">Links</a>
 
 ## Overview
 Talon — библиотека для создания резиновых интерфейсов на <a href="http://gamua.com/starling/">Starling</a>. Данная библиотека - не набор виждетов (т.е. в ней нет классов Кнопка, Список, Всплывающая подсказка и других), билиотека только предоставляет возможность для создания дерева иерархии объектов и адаптациию этого дерева под различные размеры экрана/окна.
+
 ## First Steps
-Самый простой способ создать элемент интерфейса - создать его из готовой библиотеки (созданной с помощью <a href="editor">редактора</a>)
-
-`
-var factory:TalonFactory = TalonFactory.fromArchive(bytes, onComplete);
-factory.addEventListener(Event.COMPLETE, onComplete);
-function onComplete(e:Event):void
-{
-	var message:DisplayObject = builder.createElement("MessageBox");
-	addChild(message);
-}
-`
-Самый простой способ создать элемент - в ручную
-`
-// Создатим элемент
-var button:TalonComponent = new TalonComponent();
-button.node.attributes.parce("100px");
-button.node.attributes.parce("100px");
-button.node.attributes.backgroundColor = "0xFFFFFF";
-// Зададим размеры
-button.node.layout.bounds.setTo(0, 0, 100, 100);
-button.node.layout.commit();
-// Добавим в список отображения
-addChild(button);
-`
-
-Не слишком просто для создания простой белой коробки не правда ли? Всё из-за того что Talon задуман не для имеративного определения, проще говоря не стоит создавать объекты и выставлять их аттрибуты свойствами языка. Альтернативный вариант — использовать xml - систаксис:
-
-`
-var button:TalonComponent = new TalonComponent();
-var xml:XML = <node width="100px" heiht="100px" backgroundColor="0xFFFFFF" />
-for each (var attribute:XML in xml.attributes())
-{
-	var name:String = attribute.name();
-	var value:String = attribute.valueOf();
-	button.node.attributes[name] = value;
-}
-`
-
 ## Editor
-
 ## Feature List
 Единицы измерения:
-- auto
-- px
-- pt
-- em
-- %
-- *
+- auto - Означает что значение величины должно определятся из контекста (для width/height это подразумевает определение размеров по потомкам и шаблону)
+- px - Обычный пиксель
+- pt - Типографский пункт (равет 1/72 дюйма). Является машинно-независимой единицей.
+- em - Масштабируемая едиица измерения, 1em = *fontSize* текущего узла.
+- % - Относительная единица. В процентах от *целевой велечины* (которая определяется по контексту)
+- * - Относительная единица. *Вес* относительно других дочерних элементов, c целевой величиной определяемой по контексту.
 
-Базовые шаблоны размещения:
-* transfrom (по-умолчанию)
-	* x
-	* y
-	* rotation
-	* pivotX, pivotY
-	* scaleX, scaleY
-* stack
-	+ orientation
-	+ halign
-	+ valign
-	+ gap
-* anchor
-	* top
-	* right
-	* bottom
-	* left
-* flow
-	+ orintation
-	+ gap
+### Базовые шаблоны размещения:
+#### transform
+Used children attributes:	
+- x, y (*px*, *pt*, *em*, *%*)
+- width, height (*px*, *pt*, *em*, *%*)
+- minWidth, minHeight (*px*, *pt*, *em*, *%*)
+- maxWidth, maxHeight (*px*, *pt*, *em*, *%*)
+- rotation
+- scaleX, scaleY
+- pivotX, pivotY (*px*, *pt*, *em*, *%*)
+
+#### stack
+Used self attributes:
+- orientation (*horizontal* || *vertical*)
+- gap (*px*, *pt*, *em*, *%*)
+- halign (*left* || *center* || *right*)
+- valign (*top* || *center* || *bottom*)
+
+#### wrap
+Used self attributes:
+- orientation (*horizontal* || *vertical*)
+- gap (*px*, *pt*, *em*, *%*)
+- halign (*left* || *center* || *right*)
+- valign (*top* || *center* || *bottom*)
+
+#### anchor
+Used children attributes:	
+- anchor (GaugeQuad)
 
 ## Under the Hood
-* За размер и положение объекста отвечает его непосредственный родитель (и только он)
-* auto -> %, * недопустимо (или делать проброс к родительскии размерам?) (upd да, лчше запретить т.к. возникают проблемы с сильно вложенными элементами типа auto->auto->star)
 
-## Download
-* <a href="https://github.com/Maligan/Starling-Extension-Talon">Talon on GitHub</a>
-* TalonEditor on GitHub
+- За размер и положение любого узла отвечает **только** его непосредственный родитель (без исключений)
+- Недопустимо использовать относительные размеры (*%*, *\**) в потомках если в родителе опущен целевой аттрибут (в значении auto)
+    - Вариант с проброссом целевого атрибута от непосредственного родителя вверх по иерархии был проверен и на мой взгляд интуитивно не понятен (пример для цепочки px -> auto + padding -> auto)
+
+## Links

@@ -4,6 +4,8 @@
 - <a href = "#first-steps">First Steps</a>
 - <a href = "#editor">Editor</a>
 - <a href = "#feature-list">Feature List</a>
+    - <a href = "#talon-layouts">Talon Layouts</a>
+    - <a href = "#talon-css">Talon CSS</a>
 - <a href = "#under-the-hood">Under the Hood</a>
 - <a href = "#links">Links</a>
 
@@ -21,7 +23,7 @@ Talon — библиотека для создания резиновых инт
 - **%** - Относительная единица. В процентах от *целевой велечины* (которая определяется по контексту)
 - **\*** - Относительная единица. *Вес* относительно других дочерних элементов, c целевой величиной определяемой по контексту.
 
-### Базовые шаблоны размещения:
+### Talon Layouts (Working Draft):
 #### transform
 Used children attributes:	
 - x, y (*px*, *pt*, *em*, *%*)
@@ -39,6 +41,11 @@ Used self attributes:
 - halign (*left* || *center* || *right*)
 - valign (*top* || *center* || *bottom*)
 
+Used children attributes:
+- width, height (*px*, *pt*, *em*, *%*)
+- minWidth, minHeight (*px*, *pt*, *em*, *%*)
+- maxWidth, maxHeight (*px*, *pt*, *em*, *%*)
+
 #### wrap
 Used self attributes:
 - orientation (*horizontal* || *vertical*)
@@ -46,9 +53,69 @@ Used self attributes:
 - halign (*left* || *center* || *right*)
 - valign (*top* || *center* || *bottom*)
 
+Used children attributes:
+- width, height (*px*, *pt*, *em*, *%*)
+- minWidth, minHeight (*px*, *pt*, *em*, *%*)
+- maxWidth, maxHeight (*px*, *pt*, *em*, *%*)
+
 #### anchor
 Used children attributes:	
 - anchor (GaugeQuad)
+- width, height (*px*, *pt*, *em*, *%*)
+- minWidth, minHeight (*px*, *pt*, *em*, *%*)
+- maxWidth, maxHeight (*px*, *pt*, *em*, *%*)
+
+### Talon CSS (Working Draft):
+В отличии от стандарта CSS разработанного W3C стили не содержатся в отдельном свойстве узла *styles*, а выставляют значение аттрбутов *по-умолчанию*.
+То есть если есть такая структура:
+```css
+.red
+{
+    backgroundColor: #FF0000; 
+}
+```
+
+```xml
+<node class="red" />
+<node class="red" backgroundColor="#00FF00" />
+```
+
+То первый узел будет красного цвета, а второй - зелёного.
+
+С помощью CSS может быть установлен *любой* аттрибут узла (можно даже придумывать свои), кроме:
+- id
+- type
+- class
+- state (aka всевдо класс)
+
+Значение любого атрибута - только строковая переменная.
+Думаю по очевидным причинам в названиях аттрбутов используется *малаяВерблюжьяНотация*, без чёрточек как в W3C стандарте.
+Сделано это усугубо для упрощения понимания того факта что одни и теже атрибуты задатся как из таблицы стилей так и из документа разметки.
+
+Следующий список аттрибутов используется реализованы в движке:
+
+- width
+- minWidth
+- maxWidth
+- height
+- minHeight
+- maxHeight
+
+- margin
+- marginTop
+- marginRight
+- marginBottom
+- marginLeft
+
+- padding
+- paddingTop
+- paddingRight
+- paddingBottom
+- paddingLeft
+
+- backgroundColor (*transparent*)
+- backgroundImage (*none*)
+- background9Scale
 
 ## Under the Hood
 

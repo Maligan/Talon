@@ -1,8 +1,10 @@
 package starling.extensions.talon.display
 {
 	import starling.events.Event;
+	import starling.extensions.talon.core.Gauge;
 	import starling.extensions.talon.core.Node;
 	import starling.text.TextField;
+	import starling.text.TextFieldAutoSize;
 
 	public class TalonLabel extends TextField implements ITalonComponent
 	{
@@ -10,15 +12,41 @@ package starling.extensions.talon.display
 
 		public function TalonLabel()
 		{
-			super(0, 0, "");
+			super(0, 0, null);
 			_node = new Node();
 			_node.addEventListener(Event.CHANGE, onNodeChange);
 			_node.addEventListener(Event.RESIZE, onNodeResize);
+			_node.width.auto = getTextWidth;
+			_node.height.auto = getTextHeight;
+			border = true;
+		}
+
+		private function getTextWidth():Number
+		{
+			return textBounds.width;
+		}
+
+		private function getTextHeight():Number
+		{
+			return textBounds.height;
 		}
 
 		private function onNodeChange(e:Event):void
 		{
-			if (e.data == "text") text = _node.getAttribute("text");
+			/**/ if (e.data == "text")      text = _node.getAttribute("text");
+			else if (e.data == "halign")    hAlign = _node.getAttribute("halign");
+			else if (e.data == "valign")    vAlign = _node.getAttribute("valign");
+			else if (e.data == "fontName")  fontName = _node.getAttribute("fontName");
+			else if (e.data == "fontColor") color = parseInt(_node.getAttribute("fontColor"));
+			else if (e.data == "fontSize")  fontSize = parseInt(_node.getAttribute("fontSize"));
+			else if (e.data == "width" || e.data == "height")
+			{
+				_node.width.isAuto && _node.height.isAuto && (autoSize = TextFieldAutoSize.BOTH_DIRECTIONS);
+				_node.width.isAuto && !_node.height.isAuto && (autoSize = TextFieldAutoSize.HORIZONTAL);
+				!_node.width.isAuto && _node.height.isAuto && (autoSize = TextFieldAutoSize.VERTICAL);
+				!_node.width.isAuto && !_node.height.isAuto && (autoSize = TextFieldAutoSize.NONE);
+				trace(text, _node.width, _node.height, autoSize);
+			}
 		}
 
 		private function onNodeResize(e:Event):void

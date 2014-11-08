@@ -24,6 +24,7 @@ package starling.extensions.talon.core
 
 		private var _unit:String = AUTO;
 		private var _amount:Number = 0;
+		private var _auto:Function = null;
 
 		/** Read string and parse it value, throw ArgumentError if string has not valid format. */
 		public function parse(string:String):void
@@ -78,7 +79,7 @@ package starling.extensions.talon.core
 		{
 			switch (unit)
 			{
-				case AUTO:		return 0;
+				case AUTO:		return _auto ? _auto() : 0;
 				case PX:		return amount;
 				case PT:		return amount * ppp;
 				case EM:        return amount * pem;
@@ -104,6 +105,16 @@ package starling.extensions.talon.core
 			if (_amount != value)
 			{
 				_amount = value;
+				dispatchEventWith(Event.CHANGE);
+			}
+		}
+
+		public function get auto():Function { return _auto }
+		public function set auto(value:Function):void
+		{
+			if (_auto != value)
+			{
+				_auto = value;
 				dispatchEventWith(Event.CHANGE);
 			}
 		}

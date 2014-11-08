@@ -35,6 +35,9 @@ package starling.extensions.talon.core
 
 		public function Node():void
 		{
+			width.auto = measureAutoWidth;
+			height.auto = measureAutoHeight;
+
 			// Bounds
 			map("width", Gauge.AUTO, width.toString, width.parse, width);
 			map("minWidth", Gauge.AUTO, minWidth.toString, minWidth.parse, minWidth);
@@ -147,21 +150,9 @@ package starling.extensions.talon.core
 			layout.arrange(this, 0, 0, bounds.width, bounds.height);
 		}
 
-		public function measureAutoWidth():Number
-		{
-			return layout.measureAutoWidth(this, 0, 0);
-		}
-
-		public function measureAutoHeight():Number
-		{
-			return layout.measureAutoHeight(this, 0, 0);
-		}
-
-		private function get layout():Layout
-		{
-			var aliasName:String = getAttribute("layout");
-			return Layout.getLayoutByAlias(aliasName);
-		}
+		private function measureAutoWidth():Number { return layout.measureAutoWidth(this, 0, 0); }
+		private function measureAutoHeight():Number { return layout.measureAutoHeight(this, 0, 0); }
+		private function get layout():Layout { return Layout.getLayoutByAlias(getAttribute("layout")); }
 
 		//
 		// Complex

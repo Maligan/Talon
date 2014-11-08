@@ -109,7 +109,7 @@ package starling.extensions.talon.layout
 				}
 				else
 				{
-					child.bounds[name] = child[name].isAuto ? child[auto]() : child[name].toPixels(ppp, pem, value, 0);
+					child.bounds[name] = child[name].toPixels(ppp, pem, value, 0);
 					starTarget -= child.bounds[name];
 				}
 			}
@@ -142,9 +142,7 @@ package starling.extensions.talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				var childWidth:Number = child.width.isAuto
-					? child.measureAutoWidth()
-					: child.width.toPixels(ppp, pem, 0, 0);
+				var childWidth:Number = child.width.toPixels(ppp, pem, 0, 0);
 
 				childWidth += child.margin.left.toPixels(ppp, pem, 0, 0);
 				childWidth += child.margin.right.toPixels(ppp, pem, 0, 0);
@@ -177,9 +175,7 @@ package starling.extensions.talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				var childHeight:Number = child.height.isAuto
-						? child.measureAutoHeight()
-						: child.height.toPixels(ppp, pem, 0, 0);
+				var childHeight:Number = child.height.toPixels(ppp, pem, 0, 0);
 
 				childHeight += child.margin.top.toPixels(ppp, pem, 0, 0);
 				childHeight += child.margin.bottom.toPixels(ppp, pem, 0, 0);

@@ -20,6 +20,7 @@ package
 
 	import starling.extensions.talon.display.TalonComponentBase;
 	import starling.extensions.talon.core.StyleSheet;
+	import starling.extensions.talon.display.TalonLabel;
 	import starling.extensions.talon.layout.Layout;
 	import starling.extensions.talon.layout.StackLayout;
 	import starling.extensions.talon.utils.TalonFactory;
@@ -92,9 +93,12 @@ package
 					<node layout="stack" class="tmp" orientation="vertical" width="50%" padding="0px 8px" gap="4px">
 						<node id="2d" width="100%" height="48px" backgroundColor="0x888888" />
 						<node id="3d" class="brown" width="100%" height="128px" />
-						<node id="4d" layout="stack" orientation="horizontal" gap="4px" width="100%" height="48px">
+						<node id="4d" layout="stack" orientation="horizontal" gap="4px" width="100%" height="64px">
 							<node id="prev"/>
-							<node id="stop" />
+							<node id="stop" layout="stack" orientation="vertical" gap="3px">
+								<label text="Hello World 1" width="100%" fontName="Trebuchet MS" fontSize="24" />
+								<label text="Hello World 2" width="100%" fontName="Consolas" />
+							</node>
 							<node id="next"/>
 						</node>
 					</node>
@@ -104,6 +108,7 @@ package
 
 
 			var builder:TalonFactory = new TalonFactory();
+			builder.setLinkage("label", TalonLabel);
 			builder.addLibraryPrototype("root", config);
 			builder.addLibraryStyleSheet(css);
 			builder.addLibraryResource("/img/up.png", getTexture(UP_BYTES));

@@ -22,6 +22,7 @@ package
 	import starling.extensions.talon.core.StyleSheet;
 	import starling.extensions.talon.layout.Layout;
 	import starling.extensions.talon.layout.StackLayout;
+	import starling.extensions.talon.utils.TalonFactory;
 	import starling.textures.Texture;
 
 	public class TalonDebugStartup extends MovieClip
@@ -67,11 +68,7 @@ package
 		private function onRootCreated(e:Event):void
 		{
 			_document = Sprite(Starling.current.root);
-
 			_bundle = new Object();
-			_bundle["/img/up.png"] = getTexture(UP_BYTES);
-			_bundle["/img/over.png"] = getTexture(OVER_BYTES);
-			_bundle["/img/down.png"] = getTexture(DOWN_BYTES);
 
 			var css:String =
 			<literal><![CDATA[
@@ -92,7 +89,7 @@ package
 				}
 			]]></literal>.valueOf();
 
-			var panel:XML =
+			var config:XML =
 				<node id="root" layout="stack" orientation="vertical" valign="center" halign="center" gap="4px">
 					<node id="play" width="50%" height="20%"/>
 					<node layout="stack" class="tmp" orientation="vertical" width="50%" padding="0px 8px" gap="4px">
@@ -108,45 +105,17 @@ package
 					<node id="mother ship" width="256px" height="48px" backgroundColor="0xFF000" />
 				</node>;
 
-			_style = new StyleSheet();
-			_style.parse(css);
-			_talon = fromXML(panel) as TalonComponentBase;
-			_talon.node.setResources(_bundle);
-			_talon.node.setStyleSheet(_style);
 
+			var builder:TalonFactory = new TalonFactory();
+			builder.addLibraryPrototype("root", config);
+			builder.addLibraryStyleSheet(css);
+			builder.addLibraryResource("/img/up.png", getTexture(UP_BYTES));
+			builder.addLibraryResource("/img/over.png", getTexture(OVER_BYTES));
+			builder.addLibraryResource("/img/down.png", getTexture(DOWN_BYTES));
+
+			_talon = builder.create("root") as TalonComponentBase;
 			_document.addChild(_talon);
 			onResize(null)
-		}
-
-		private function fromXML(xml:XML):DisplayObject
-		{
-			var element:DisplayObject = new TalonComponentBase();
-
-			if (element is ITalonComponent)
-			{
-				var node:Node = ITalonComponent(element).node;
-
-				for each (var attribute:XML in xml.attributes())
-				{
-					var name:String = attribute.name();
-					var value:String = attribute.valueOf();
-					node.setAttribute(name, value);
-				}
-
-				node.setAttribute("type", xml.name());
-			}
-
-			if (element is DisplayObjectContainer)
-			{
-				var container:DisplayObjectContainer = DisplayObjectContainer(element);
-				for each (var childXML:XML in xml.children())
-				{
-					var childElement:DisplayObject = fromXML(childXML);
-					container.addChild(childElement);
-				}
-			}
-
-			return element;
 		}
 
 		private static function getTexture(asset:Class):Scale9Textures

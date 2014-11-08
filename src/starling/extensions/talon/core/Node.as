@@ -24,14 +24,14 @@ package starling.extensions.talon.core
 		public const padding:GaugeQuad = new GaugeQuad();
 
 		//
-		// Complex properties (components)
+		// Private properties
 		//
 		private var _bounds:Rectangle = new Rectangle();
 		private var _style:StyleSheet;
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
 		private var _attributes:Dictionary = new Dictionary();
-		private var _bundle:Object;
+		private var _resources:Object;
 
 		public function Node():void
 		{
@@ -89,14 +89,14 @@ package starling.extensions.talon.core
 			var styles:Object = _style.getStyle(this);
 			for each (var attribute:Attribute in _attributes)
 			{
-				attribute.valueFromStyleSheet = styles[attribute.name];
+				attribute.setStyledValue(styles[attribute.name]);
 				delete styles[attribute.name];
 			}
 
 			for (var name:String in styles)
 			{
 				attribute = _attributes[name] || (_attributes[name] = new Attribute(name, onAttributeChange));
-				attribute.valueFromStyleSheet = styles[name];
+				attribute.setStyledValue(styles[name]);
 			}
 
 			for each (var child:Node in _children)
@@ -116,33 +116,31 @@ package starling.extensions.talon.core
 		{
 			var attribute:Attribute = _attributes[name];
 			if (attribute == null) attribute = _attributes[name] = new Attribute(name, onAttributeChange);
-			attribute.valueFromAssign = value;
+			attribute.setAssignedValue(value);
 		}
 
 		//
 		// Resource
 		//
-		public function setResources(bundle:Object):void
-		{
-			_bundle = bundle;
-		}
-
+		/** Set current node resources (an object containing key-value pairs). */
+		public function setResources(resources:Object):void { _resources = resources; }
+		/** Find resource in self or ancestors resources. */
 		public function getResource(key:String):*
 		{
-			var resource:* = null;
-			if (_bundle) resource = _bundle[key];
-			if (!resource && parent) resource = parent.getResource(key);
-			return resource;
+			// Find self resource
+			if (_resources && _resources[key]) return _resources[key];
+			// Find inherited resource
+			if (_parent) return _parent.getResource(key);
+			// Not found
+			return null;
 		}
 
 		//
 		// Layout
 		//
-		public function get bounds():Rectangle
-		{
-			return _bounds;
-		}
-
+		/** Actual node bounds, calculated by parent. */
+		public function get bounds():Rectangle { return _bounds; }
+		/** Apply bounds changes, dispatch RESIZE event & arrange children. */
 		public function commit():void
 		{
 			dispatchEventWith(Event.RESIZE);
@@ -168,10 +166,8 @@ package starling.extensions.talon.core
 		//
 		// Complex
 		//
-		public function get numChildren():int
-		{
-			return _children.length;
-		}
+		public function get parent():Node { return _parent; }
+		public function get numChildren():int { return _children.length; }
 
 		public function addChild(child:Node):void
 		{
@@ -183,11 +179,6 @@ package starling.extensions.talon.core
 		public function getChildAt(index:int):Node
 		{
 			return _children[index];
-		}
-
-		public function get parent():Node
-		{
-			return _parent;
 		}
 	}
 }
@@ -205,7 +196,7 @@ class Attribute
 	private var _dispatcher:EventDispatcher;
 
 	private var _valueFromAssign:String;
-	private var _valueFromStyleSheet:String;
+	private var _valueFromStyle:String;
 	private var _valueFromDefault:String;
 
 	public function Attribute(name:String, handler:Function, def:String = null, getter:Function = null, setter:Function = null, dispatcher:EventDispatcher = null)
@@ -232,11 +223,10 @@ class Attribute
 	public function get name():String { return _name }
 	public function get value():String
 	{
-		return _valueFromAssign || _valueFromStyleSheet || _valueFromDefault
+		return _valueFromAssign || _valueFromStyle || _valueFromDefault
 	}
 
-	public function get valueFromAssign():String { return _valueFromAssign; }
-	public function set valueFromAssign(value:String):void
+	public function setAssignedValue(value:String):void
 	{
 		if (_setter)
 		{
@@ -249,12 +239,11 @@ class Attribute
 		}
 	}
 
-	public function get valueFromStyleSheet():String { return _valueFromStyleSheet }
-	public function set valueFromStyleSheet(value:String):void
+	public function setStyledValue(value:String):void
 	{
-		if (_valueFromStyleSheet != value)
+		if (_valueFromStyle != value)
 		{
-			_valueFromStyleSheet = value;
+			_valueFromStyle = value;
 
 			if (_valueFromAssign == null)
 			{

@@ -79,6 +79,8 @@ package starling.extensions.talon.display
 
 		private function onBoxChange(e:Event):void
 		{
+			name = node.getAttribute("id");
+
 			_label.text = node.getAttribute("id") ? ("#" + String(node.getAttribute("id")).toUpperCase()) : null;
 
 			var image:String = node.getAttribute("backgroundImage");

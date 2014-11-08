@@ -43,9 +43,6 @@ package
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
 
-			Layout.registerLayoutAlias("none", new Layout());
-			Layout.registerLayoutAlias("stack", new StackLayout());
-
 			new Starling(Sprite, stage);
 			Starling.current.addEventListener(Event.ROOT_CREATED, onRootCreated);
 			Starling.current.start();
@@ -113,7 +110,7 @@ package
 			builder.addLibraryResource("/img/over.png", getTexture(OVER_BYTES));
 			builder.addLibraryResource("/img/down.png", getTexture(DOWN_BYTES));
 
-			_talon = builder.create("root") as TalonComponentBase;
+			_talon = builder.build("root") as TalonComponentBase;
 			_document.addChild(_talon);
 			onResize(null)
 		}

@@ -13,13 +13,33 @@ package starling.extensions.talon.utils
 
 	public final class TalonFactory
 	{
+		public static function fromXML(library:XML):TalonFactory
+		{
+			var factory:TalonFactory = new TalonFactory();
+
+			for each (var item:XML in library.*)
+			{
+				switch (item.name().toString())
+				{
+					case "stylesheet":
+						factory.addLibraryStyleSheet(item.valueOf());
+						break;
+					case "prototype":
+						factory.addLibraryPrototype(item.@id, item.*[0]);
+						break;
+				}
+			}
+
+			return factory;
+		}
+
 		private var _linkageByDefault:Class = TalonComponentBase;
 		private var _linkage:Dictionary = new Dictionary();
 		private var _prototypes:Dictionary = new Dictionary();
 		private var _resources:Dictionary = new Dictionary();
 		private var _style:StyleSheet = new StyleSheet();
 
-		public function create(id:String):DisplayObject
+		public function build(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):DisplayObject
 		{
 			if (id == null) throw new ArgumentError("Parameter id must be non-null");
 			var config:XML = _prototypes[id];
@@ -28,8 +48,8 @@ package starling.extensions.talon.utils
 			var element:DisplayObject = fromXML(config);
 			if (element is ITalonComponent)
 			{
-				ITalonComponent(element).node.setStyleSheet(_style);
-				ITalonComponent(element).node.setResources(_resources);
+				includeStyleSheet && ITalonComponent(element).node.setStyleSheet(_style);
+				includeResources  && ITalonComponent(element).node.setResources(_resources);
 			}
 
 			return element;

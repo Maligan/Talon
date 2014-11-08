@@ -8,21 +8,29 @@ package starling.extensions.talon.layout
 		//
 		// Static Registry & Layout multitone
 		//
-		private static const _strategy:Dictionary = new Dictionary();
-		private static const _strategySelfAttributes:Dictionary = new Dictionary();
+		private static var _initialized:Boolean = false;
+		private static var _layout:Dictionary = new Dictionary();
+		private static var _layoutSelfAttributes:Dictionary = new Dictionary();
 
 		public static function registerLayoutAlias(aliasName:String, layout:Layout, selfAttributes:Array = null, childAttributes:Array = null):void
 		{
 			var attributesDictionary:Dictionary = new Dictionary();
 			for each (var attribute:String in selfAttributes) attributesDictionary[attribute] = true;
 
-			_strategy[aliasName] = layout;
-			_strategySelfAttributes[aliasName] = attributesDictionary;
+			_layout[aliasName] = layout;
+			_layoutSelfAttributes[aliasName] = attributesDictionary;
 		}
 
 		public static function getLayoutByAlias(aliasName:String):Layout
 		{
-			return _strategy[aliasName];
+			if (_initialized == false)
+			{
+				_initialized = true;
+				registerLayoutAlias("none", new Layout());
+				registerLayoutAlias("stack", new StackLayout());
+			}
+
+			return _layout[aliasName];
 		}
 
 		//

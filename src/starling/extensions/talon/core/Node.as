@@ -39,26 +39,26 @@ package starling.extensions.talon.core
 			height.auto = measureAutoHeight;
 
 			// Bounds
-			map("width", Gauge.AUTO, width.toString, width.parse, width);
-			map("minWidth", Gauge.AUTO, minWidth.toString, minWidth.parse, minWidth);
-			map("maxWidth", Gauge.AUTO, maxWidth.toString, maxWidth.parse, maxWidth);
-			map("height", Gauge.AUTO, height.toString, height.parse, height);
-			map("minHeight", Gauge.AUTO, minHeight.toString, minHeight.parse, minHeight);
-			map("maxHeight", Gauge.AUTO, maxHeight.toString, maxHeight.parse, maxHeight);
+			bind("width", Gauge.AUTO, width.toString, width.parse, width);
+			bind("minWidth", Gauge.AUTO, minWidth.toString, minWidth.parse, minWidth);
+			bind("maxWidth", Gauge.AUTO, maxWidth.toString, maxWidth.parse, maxWidth);
+			bind("height", Gauge.AUTO, height.toString, height.parse, height);
+			bind("minHeight", Gauge.AUTO, minHeight.toString, minHeight.parse, minHeight);
+			bind("maxHeight", Gauge.AUTO, maxHeight.toString, maxHeight.parse, maxHeight);
 
 			// Margin
-			map("margin", Gauge.AUTO, margin.toString, margin.parse, margin);
-			map("marginTop", Gauge.AUTO, margin.top.toString, margin.top.parse, margin.top);
-			map("marginRight", Gauge.AUTO, margin.right.toString, margin.right.parse, margin.right);
-			map("marginBottom", Gauge.AUTO, margin.bottom.toString, margin.bottom.parse, margin.bottom);
-			map("marginLeft", Gauge.AUTO, margin.left.toString, margin.left.parse, margin.left);
+			bind("margin", Gauge.AUTO, margin.toString, margin.parse, margin);
+			bind("marginTop", Gauge.AUTO, margin.top.toString, margin.top.parse, margin.top);
+			bind("marginRight", Gauge.AUTO, margin.right.toString, margin.right.parse, margin.right);
+			bind("marginBottom", Gauge.AUTO, margin.bottom.toString, margin.bottom.parse, margin.bottom);
+			bind("marginLeft", Gauge.AUTO, margin.left.toString, margin.left.parse, margin.left);
 
 			// Padding
-			map("padding", Gauge.AUTO, padding.toString, padding.parse, padding);
-			map("paddingTop", Gauge.AUTO, padding.top.toString, padding.top.parse, padding.top);
-			map("paddingRight", Gauge.AUTO, padding.right.toString, padding.right.parse, padding.right);
-			map("paddingBottom", Gauge.AUTO, padding.bottom.toString, padding.bottom.parse, padding.bottom);
-			map("paddingLeft", Gauge.AUTO, padding.left.toString, padding.left.parse, padding.left);
+			bind("padding", Gauge.AUTO, padding.toString, padding.parse, padding);
+			bind("paddingTop", Gauge.AUTO, padding.top.toString, padding.top.parse, padding.top);
+			bind("paddingRight", Gauge.AUTO, padding.right.toString, padding.right.parse, padding.right);
+			bind("paddingBottom", Gauge.AUTO, padding.bottom.toString, padding.bottom.parse, padding.bottom);
+			bind("paddingLeft", Gauge.AUTO, padding.left.toString, padding.left.parse, padding.left);
 
 			// Background
 //			map("backgroundImage", "none");
@@ -68,13 +68,18 @@ package starling.extensions.talon.core
 			// Style
 			// ...
 
+			// Font
+			bind("fontColor", Attribute.INHERIT);
+			bind("fontName", Attribute.INHERIT);
+			bind("fontSize", Attribute.INHERIT);
+
 			// Layout
-			map("layout", "none");
+			bind("layout", "none");
 		}
 
-		private function map(name:String, def:String = null, getter:Function = null, setter:Function = null, dispatcher:EventDispatcher = null):void
+		private function bind(name:String, defaultValue:String = null, assignedGetter:Function = null, assignedSetter:Function = null, assignedDispatcher:EventDispatcher = null):void
 		{
-			_attributes[name] = new Attribute(name, onAttributeChange, def, getter, setter, dispatcher);
+			_attributes[name] = new Attribute(this, name, defaultValue, assignedGetter, assignedSetter, assignedDispatcher);
 		}
 
 		private function onAttributeChange(name:String):void
@@ -98,7 +103,7 @@ package starling.extensions.talon.core
 
 			for (var name:String in styles)
 			{
-				attribute = _attributes[name] || (_attributes[name] = new Attribute(name, onAttributeChange));
+				attribute = _attributes[name] || (_attributes[name] = new Attribute(this, name));
 				attribute.setStyledValue(styles[name]);
 			}
 
@@ -118,7 +123,7 @@ package starling.extensions.talon.core
 		public function setAttribute(name:String, value:String):void
 		{
 			var attribute:Attribute = _attributes[name];
-			if (attribute == null) attribute = _attributes[name] = new Attribute(name, onAttributeChange);
+			if (attribute == null) attribute = _attributes[name] = new Attribute(this, name);
 			attribute.setAssignedValue(value);
 		}
 
@@ -165,6 +170,7 @@ package starling.extensions.talon.core
 			_children.push(child);
 			child._parent = this;
 			if (_style) child.setStyleSheet(_style);
+			child.dispatchEventWith(Event.ADDED);
 		}
 
 		public function getChildAt(index:int):Node
@@ -176,77 +182,136 @@ package starling.extensions.talon.core
 
 import starling.events.Event;
 import starling.events.EventDispatcher;
+import starling.extensions.talon.core.Node;
 
-class Attribute
+/** @private */
+internal class Attribute
 {
+	public static const INHERIT:String = "inherit";
+
+	private var _node:Node;
 	private var _name:String;
-	private var _handler:Function;
 
-	private var _getter:Function;
-	private var _setter:Function;
-	private var _dispatcher:EventDispatcher;
+	private var _assignedValueGetter:Function;
+	private var _assignedValueSetter:Function;
+	private var _assignedDispatcher:EventDispatcher;
 
-	private var _valueFromAssign:String;
-	private var _valueFromStyle:String;
-	private var _valueFromDefault:String;
+	private var _value:String;
+	private var _assignedValue:String;
+	private var _styledValue:String;
+	private var _defaultValue:String;
 
-	public function Attribute(name:String, handler:Function, def:String = null, getter:Function = null, setter:Function = null, dispatcher:EventDispatcher = null)
+	public function Attribute(node:Node, name:String, defaultValue:String = null, getter:Function = null, setter:Function = null, dispatcher:EventDispatcher = null)
 	{
 		_name = name;
-		_handler = handler;
-		_valueFromDefault = def;
+		_defaultValue = defaultValue;
 
-		_getter = getter;
-		_setter = setter;
-		_dispatcher = dispatcher;
-		_dispatcher && _dispatcher.addEventListener(Event.CHANGE, onChanged);
+		_node = node;
+		_node.addEventListener(Event.ADDED, onNodeParentChange);
+		_node.addEventListener(Event.REMOVED, onNodeParentChange);
+
+		_assignedValueGetter = getter;
+		_assignedValueSetter = setter;
+		_assignedDispatcher = dispatcher;
+		_assignedDispatcher && _assignedDispatcher.addEventListener(Event.CHANGE, onAssignedChange);
 	}
 
-	private function onChanged(e:Event):void
+	private function onAssignedChange(e:Event):void
 	{
-		_valueFromAssign = _getter();
-		_handler(name);
+		_assignedValue = _assignedValueGetter();
+		dispatchChange();
+	}
+
+	private function onNodeParentChange(e:Event):void
+	{
+		_node.parent.addEventListener(Event.CHANGE, onParentNodeChange);
+
+		var isInherit:Boolean = (_assignedValue || _styledValue || _defaultValue) == INHERIT;
+		if (isInherit)
+		{
+			dispatchChange();
+		}
+	}
+
+	private function onParentNodeChange(e:Event):void
+	{
+		if (e.data == name)
+		{
+			var isInherit:Boolean = (_assignedValue || _styledValue || _defaultValue) == INHERIT;
+			if (isInherit)
+			{
+				dispatchChange();
+			}
+		}
 	}
 
 	//
 	// Properties
 	//
-	public function get name():String { return _name }
+	public function get name():String
+	{
+		return _name;
+	}
+
 	public function get value():String
 	{
-		return _valueFromAssign || _valueFromStyle || _valueFromDefault
+		if (_value == null)
+		{
+			if (isInherit)
+			{
+				_value = _node.parent ? _node.parent.getAttribute(name) : INHERIT;
+			}
+			else
+			{
+				_value = _assignedValue || _styledValue || _defaultValue;
+			}
+		}
+
+		return _value;
 	}
 
 	public function setAssignedValue(value:String):void
 	{
-		if (_setter)
+		if (_assignedValueSetter != null)
 		{
-			_setter(value);
+			_assignedValueSetter(value);
 		}
-		else if (_valueFromAssign != value)
+		else if (_assignedValue != value)
 		{
-			_valueFromAssign = value;
-			_handler(name);
+			_assignedValue = value;
+			dispatchChange();
 		}
 	}
 
 	public function setStyledValue(value:String):void
 	{
-		if (_valueFromStyle != value)
+		if (_styledValue != value)
 		{
-			_valueFromStyle = value;
+			_styledValue = value;
 
-			if (_valueFromAssign == null)
+			if (_assignedValue == null)
 			{
-				if (_setter == null)
+				if (_assignedValueSetter != null)
 				{
-					_handler(name);
+					// Для того что бы в onAssignedChange не установилось значение _assignedValue
+					_assignedDispatcher.removeEventListener(Event.CHANGE, onAssignedChange);
+					_assignedValueSetter(value);
+					_assignedDispatcher.addEventListener(Event.CHANGE, onAssignedChange);
 				}
-				else
-				{
-					_setter(value);
-				}
+
+				dispatchChange();
 			}
 		}
+	}
+
+	private function get isInherit():Boolean
+	{
+		return (_assignedValue || _styledValue || _defaultValue) == INHERIT;
+	}
+
+	private function dispatchChange():void
+	{
+		_value = null;
+		_node.dispatchEventWith(Event.CHANGE, false, name);
 	}
 }

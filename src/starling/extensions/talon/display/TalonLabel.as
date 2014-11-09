@@ -1,5 +1,6 @@
 package starling.extensions.talon.display
 {
+	import starling.display.BlendMode;
 	import starling.events.Event;
 	import starling.extensions.talon.core.Gauge;
 	import starling.extensions.talon.core.Node;
@@ -18,7 +19,6 @@ package starling.extensions.talon.display
 			_node.addEventListener(Event.RESIZE, onNodeResize);
 			_node.width.auto = getTextWidth;
 			_node.height.auto = getTextHeight;
-			border = true;
 		}
 
 		private function getTextWidth():Number
@@ -28,6 +28,11 @@ package starling.extensions.talon.display
 
 		private function getTextHeight():Number
 		{
+			if (text.indexOf("2") != -1)
+			{
+				trace("get", textBounds.height);
+			}
+
 			return textBounds.height;
 		}
 
@@ -45,7 +50,6 @@ package starling.extensions.talon.display
 				_node.width.isAuto && !_node.height.isAuto && (autoSize = TextFieldAutoSize.HORIZONTAL);
 				!_node.width.isAuto && _node.height.isAuto && (autoSize = TextFieldAutoSize.VERTICAL);
 				!_node.width.isAuto && !_node.height.isAuto && (autoSize = TextFieldAutoSize.NONE);
-				trace(text, _node.width, _node.height, autoSize);
 			}
 		}
 
@@ -55,6 +59,11 @@ package starling.extensions.talon.display
 			y = Math.round(_node.bounds.y);
 			width = Math.round(_node.bounds.width);
 			height = Math.round(_node.bounds.height);
+
+			if (text.indexOf("2") != -1)
+			{
+				trace("set", height, width);
+			}
 		}
 
 		public function get node():Node

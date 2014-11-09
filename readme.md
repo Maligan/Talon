@@ -117,6 +117,8 @@ Used children attributes:
 - backgroundImage (*none*)
 - background9Scale
 
+- cursor (*default*, *pointer*)
+
 ## Under the Hood
 
 - За размер и положение любого узла отвечает **только** его непосредственный родитель (без исключений)

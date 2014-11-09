@@ -10,6 +10,7 @@ package starling.extensions.talon.utils
 	import starling.extensions.talon.core.StyleSheet;
 	import starling.extensions.talon.display.ITalonComponent;
 	import starling.extensions.talon.display.TalonComponentBase;
+	import starling.extensions.talon.display.TalonLabel;
 
 	public final class TalonFactory
 	{
@@ -38,6 +39,11 @@ package starling.extensions.talon.utils
 		private var _prototypes:Dictionary = new Dictionary();
 		private var _resources:Dictionary = new Dictionary();
 		private var _style:StyleSheet = new StyleSheet();
+
+		public function TalonFactory():void
+		{
+			setLinkage("label", TalonLabel);
+		}
 
 		public function build(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):DisplayObject
 		{

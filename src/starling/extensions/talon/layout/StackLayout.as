@@ -87,7 +87,7 @@ package starling.extensions.talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				child.bounds[name] = child[name].isAuto ? child[auto]() : child[name].toPixels(ppp, pem, value, 0);
+				child.bounds[name] = child[name].toPixels(ppp, pem, value, 0);
 				child.bounds[asix] = 0;
 			}
 		}

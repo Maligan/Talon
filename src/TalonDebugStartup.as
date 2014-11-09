@@ -4,6 +4,7 @@ package
 
 	import flash.display.MovieClip;
 	import flash.geom.Rectangle;
+	import flash.utils.setTimeout;
 
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
@@ -34,7 +35,6 @@ package
 
 		private var _document:Sprite;
 
-		private var _style:StyleSheet;
 		private var _talon:TalonComponentBase;
 		private var _bundle:Object;
 
@@ -82,7 +82,6 @@ package
 				{
 					backgroundImage: /img/up.png;
 					backgroundColor: 0x0000ff;
-					height: 100%;
 					width: *;
 				}
 			]]></literal>.valueOf();
@@ -93,13 +92,13 @@ package
 					<node layout="stack" class="tmp" orientation="vertical" width="50%" padding="0px 8px" gap="4px">
 						<node id="2d" width="100%" height="48px" backgroundColor="0x888888" />
 						<node id="3d" class="brown" width="100%" height="128px" />
-						<node id="4d" layout="stack" orientation="horizontal" gap="4px" width="100%" height="64px">
-							<node id="prev"/>
-							<node id="stop" layout="stack" orientation="vertical" gap="3px">
-								<label text="Hello World 1" width="100%" fontName="Trebuchet MS" fontSize="24" />
+						<node id="4d" layout="stack" orientation="horizontal" gap="4px" width="100%">
+							<node id="prev" height="100%"/>
+							<node id="stop" layout="stack" orientation="vertical" gap="8px" padding="8px">
+								<label text="Hello World 1" width="100%" fontName="Trebuchet MS" fontSize="18" />
 								<label text="Hello World 2" width="100%" fontName="Consolas" />
 							</node>
-							<node id="next"/>
+							<node id="next" height="100%"/>
 						</node>
 					</node>
 					<node id="leaders" width="256px" height="48px" backgroundColor="0x888899" />
@@ -120,12 +119,9 @@ package
 			onResize(null)
 		}
 
-		private static function getTexture(asset:Class):Scale9Textures
+		private static function getTexture(asset:Class):Texture
 		{
-			var base:Texture = Texture.fromEmbeddedAsset(asset);
-			var bounds:Rectangle = new Rectangle(0, 0, base.width, base.height);
-			bounds.inflate(-8, -8);
-			return new Scale9Textures(base, bounds);
+			return Texture.fromEmbeddedAsset(asset);
 		}
 	}
 }

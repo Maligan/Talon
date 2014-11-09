@@ -1,32 +1,32 @@
 package starling.extensions.talon.display
 {
 	import feathers.display.Scale9Image;
-	import feathers.textures.Scale3Textures;
 	import feathers.textures.Scale9Textures;
 
 	import flash.geom.Rectangle;
-	import flash.utils.ByteArray;
 
 	import starling.display.DisplayObject;
-	import starling.display.Image;
 	import starling.display.Quad;
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
+	import starling.extensions.talon.core.GaugeQuad;
 	import starling.extensions.talon.core.Node;
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
 	import starling.text.TextFieldAutoSize;
+	import starling.textures.Texture;
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
 
 	public class TalonComponentBase extends Sprite implements ITalonComponent
 	{
 		private var _background:Quad;
-		private var _image:Scale9Image;
 		private var _label:TextField;
 		private var _node:Node;
+
+		private var _image:Scale9Image;
 
 		public function TalonComponentBase()
 		{
@@ -44,6 +44,7 @@ package starling.extensions.talon.display
 			_label.color = 0xFFFF00;
 			_label.autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
 			_label.x = _label.y = 2;
+			_label.visible = false;
 			addChild(_label);
 
 			addEventListener(TouchEvent.TOUCH, onTouch);
@@ -51,23 +52,13 @@ package starling.extensions.talon.display
 
 		private function onTouch(e:TouchEvent):void
 		{
-			if (e.getTouch(this, TouchPhase.HOVER) != null)
+			if (e.getTouch(this, TouchPhase.ENDED))
 			{
-				_background.color = 0x888888;
-				_image && (_image.textures = node.getResource("/img/over.png"));
-			}
-			else if (e.getTouch(this, TouchPhase.BEGAN))
-			{
-				_image && (_image.textures = node.getResource("/img/down.png"));
-			}
-			else if (e.getTouch(this) == null)
-			{
-				_background.color = parseInt(node.getAttribute("backgroundColor"));
-				_image && (_image.textures = node.getResource("/img/up.png"));
-			}
-			else if (e.getTouch(_background, TouchPhase.ENDED) != null)
-			{
-				trace("Click", _node.getAttribute("id"))
+				var click:String = node.getAttribute("click");
+				if (click != null)
+				{
+					dispatchEventWith(Event.TRIGGERED, true, click);
+				}
 			}
 		}
 
@@ -88,9 +79,18 @@ package starling.extensions.talon.display
 			{
 				if (_image == null && node.getResource(image))
 				{
-					useHandCursor = true;
-					_background.visible = false;
-					_image = new Scale9Image(node.getResource(image));
+					var texture:Texture = node.getResource(image);
+					var texture9Scale:Rectangle = new Rectangle(0, 0, texture.width, texture.height);
+					var texture9ScaleGauge:GaugeQuad = new GaugeQuad();
+					texture9ScaleGauge.parse(_node.getAttribute("background9Scale", "auto"));
+
+					texture9Scale.top += texture9ScaleGauge.top.toPixels(0, 0, 0, 0);
+					texture9Scale.right -= texture9ScaleGauge.right.toPixels(0, 0, 0, 0);
+					texture9Scale.bottom -= texture9ScaleGauge.bottom.toPixels(0, 0, 0, 0);
+					texture9Scale.left += texture9ScaleGauge.left.toPixels(0, 0, 0, 0);
+
+					_image = new Scale9Image(new Scale9Textures(texture, texture9Scale));
+
 					addChildAt(_image, 0);
 				}
 			}
@@ -99,6 +99,9 @@ package starling.extensions.talon.display
 				_background.visible = node.getAttribute("backgroundColor") != null;
 				_background.color = parseInt(node.getAttribute("backgroundColor"));
 			}
+
+
+			useHandCursor = node.getAttribute("cursor") == "pointer";
 		}
 
 		private function onBoxResize(e:Event):void

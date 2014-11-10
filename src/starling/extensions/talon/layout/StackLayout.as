@@ -14,9 +14,9 @@ package starling.extensions.talon.layout
 		public override function arrange(node:Node, ppp:Number, pem:Number, width:Number, height:Number):void
 		{
 			// Layout properties
-			var orientation:String = node.getAttribute("orientation", DEFAULT_ORIENTATION);
+			var orientation:String = node.getAttribute("orientation") || DEFAULT_ORIENTATION;
 
-			gauge.parse(node.getAttribute("gap", DEFAULT_GAP));
+			gauge.parse(node.getAttribute("gap") || DEFAULT_GAP);
 			var gap:Number = gauge.toPixels(ppp, pem, (orientation == Orientation.HORIZONTAL) ? node.bounds.width : node.bounds.height, 0);
 			width -= node.padding.left.toPixels(ppp, pem, width, 0) + node.padding.right.toPixels(ppp, pem, width, 0);
 			height -= node.padding.top.toPixels(ppp, pem, height, 0) + node.padding.bottom.toPixels(ppp, pem, height, 0);
@@ -135,7 +135,7 @@ package starling.extensions.talon.layout
 		public override function measureAutoWidth(node:Node, ppp:Number, pem:Number):Number
 		{
 			var result:Number = 0;
-			var orientation:String = node.getAttribute("orientation", DEFAULT_ORIENTATION);
+			var orientation:String = node.getAttribute("orientation") || DEFAULT_ORIENTATION;
 			var isHorizontal:Boolean = orientation == Orientation.HORIZONTAL;
 
 			// Children Width
@@ -153,7 +153,7 @@ package starling.extensions.talon.layout
 			// Gap
 			if (isHorizontal)
 			{
-				gauge.parse(node.getAttribute("gap", DEFAULT_GAP));
+				gauge.parse(node.getAttribute("gap") || DEFAULT_GAP);
 				var gap:Number = gauge.toPixels(ppp, pem, node.bounds.width, 0);
 				result += node.numChildren > 1 ? (node.numChildren - 1) * gap : 0;
 			}
@@ -168,7 +168,7 @@ package starling.extensions.talon.layout
 		public override function measureAutoHeight(node:Node, ppp:Number, pem:Number):Number
 		{
 			var result:Number = 0;
-			var orientation:String = node.getAttribute("orientation", DEFAULT_ORIENTATION);
+			var orientation:String = node.getAttribute("orientation") || DEFAULT_ORIENTATION;
 			var isVertical:Boolean = orientation == Orientation.VERTICAL;
 
 			// Children Height
@@ -186,7 +186,7 @@ package starling.extensions.talon.layout
 			// Gap
 			if (isVertical)
 			{
-				gauge.parse(node.getAttribute("gap", DEFAULT_GAP));
+				gauge.parse(node.getAttribute("gap") || DEFAULT_GAP);
 				var gap:Number = gauge.toPixels(ppp, pem, node.bounds.height, 0);
 				result += node.numChildren > 1 ? (node.numChildren - 1) * gap : 0;
 			}

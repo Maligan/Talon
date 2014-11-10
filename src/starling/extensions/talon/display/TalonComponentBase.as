@@ -82,7 +82,7 @@ package starling.extensions.talon.display
 					var texture:Texture = node.getResource(image);
 					var texture9Scale:Rectangle = new Rectangle(0, 0, texture.width, texture.height);
 					var texture9ScaleGauge:GaugeQuad = new GaugeQuad();
-					texture9ScaleGauge.parse(_node.getAttribute("background9Scale", "auto"));
+					texture9ScaleGauge.parse(_node.getAttribute("background9Scale") || "auto");
 
 					texture9Scale.top += texture9ScaleGauge.top.toPixels(0, 0, 0, 0);
 					texture9Scale.right -= texture9ScaleGauge.right.toPixels(0, 0, 0, 0);

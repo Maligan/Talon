@@ -6,29 +6,25 @@ package starling.extensions.talon.core
 	{
 		private var _stylesBySelector:Dictionary;
 
-		private var _selectors:Vector.<CSSSelector>;
+		private var _selectors:Vector.<StyleSelector>;
 		private var _selectorsByIdent:Dictionary;
-		private var _selectorsCursor:Vector.<CSSSelector>;
+		private var _selectorsCursor:Vector.<StyleSelector>;
 
 		public function StyleSheet()
 		{
 			_stylesBySelector = new Dictionary();
-			_selectors = new Vector.<CSSSelector>();
+			_selectors = new Vector.<StyleSelector>();
 			_selectorsByIdent = new Dictionary();
-			_selectorsCursor = new Vector.<CSSSelector>();
+			_selectorsCursor = new Vector.<StyleSelector>();
 		}
 
-		public function parse(css:String):void
-		{
-			parseCSS(css);
-		}
-
+		/** Get an object that reflects the style of the node. */
 		public function getStyle(node:Node):Object
 		{
-			var result:Object = new Object();
+			var style:Object = new Object();
 			var priorities:Object = new Object();
 
-			for each (var selector:CSSSelector in _selectors)
+			for each (var selector:StyleSelector in _selectors)
 			{
 				if (selector.match(node) !== true) continue;
 
@@ -41,14 +37,20 @@ package starling.extensions.talon.core
 						var priority:int = priorities[property];
 						if (priority <= selector.priority)
 						{
-							result[property] = value;
+							style[property] = value;
 							priorities[property] = selector.priority;
 						}
 					}
 				}
 			}
 
-			return result;
+			return style;
+		}
+
+		/** Parse css string and merge style selectors. */
+		public function parse(css:String):void
+		{
+			parseCSS(css);
 		}
 
 		//
@@ -141,10 +143,10 @@ package starling.extensions.talon.core
 
 		private function addCursorSelector(ident:String):void
 		{
-			var selector:CSSSelector = _selectorsByIdent[ident];
+			var selector:StyleSelector = _selectorsByIdent[ident];
 			if (selector == null)
 			{
-				selector = new CSSSelector(ident);
+				selector = new StyleSelector(ident);
 				_selectorsByIdent[selector];
 				_selectors.push(selector);
 			}
@@ -154,7 +156,7 @@ package starling.extensions.talon.core
 
 		private function addCursorSelectorsProperty(name:String, value:String):void
 		{
-			for each (var selector:CSSSelector in _selectorsCursor)
+			for each (var selector:StyleSelector in _selectorsCursor)
 			{
 				var style:Object = _stylesBySelector[selector];
 				if (style == null) style = _stylesBySelector[selector] = new Object();
@@ -166,21 +168,21 @@ package starling.extensions.talon.core
 
 import starling.extensions.talon.core.Node;
 
-class CSSSelector
+class StyleSelector
 {
-	private var _parent:CSSSelector;
+	private var _parent:StyleSelector;
 	private var _class:String;
 	private var _id:String;
 	private var _general:Boolean;
 
-	public function CSSSelector(string:String)
+	public function StyleSelector(string:String)
 	{
 		var split:Array = string.split(' ');
 		var current:String = split.pop();
 
 		if (split.length > 0)
 		{
-			_parent = new CSSSelector(split.join(' '))
+			_parent = new StyleSelector(split.join(' '))
 		}
 
 		if (current.indexOf('.') == 0)
@@ -202,13 +204,14 @@ class CSSSelector
 		if (node == null) return false;
 
 		var byParent:Boolean = !_parent || (_parent && _parent.match(node.parent));
-		var byClass:Boolean = !_class || (node.getAttribute("class", "").indexOf(_class) != -1) || _general;
+		var byClass:Boolean = !_class || ((node.getAttribute("class") || "").indexOf(_class) != -1) || _general;
 		var byId:Boolean = !_id || (node.getAttribute("id") == _id) || _general;
 		return byParent && byClass && byId;
 	}
 
 	public function get priority():int
 	{
+		// TODO
 		return 1;
 	}
 }

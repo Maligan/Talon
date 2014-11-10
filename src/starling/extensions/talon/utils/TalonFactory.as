@@ -61,7 +61,6 @@ package starling.extensions.talon.utils
 			return element;
 		}
 
-
 		private function fromXML(xml:XML):DisplayObject
 		{
 			var elementType:String = xml.name();
@@ -71,6 +70,7 @@ package starling.extensions.talon.utils
 			if (element is ITalonComponent)
 			{
 				var node:Node = ITalonComponent(element).node;
+				node.setAttribute("type", elementType);
 
 				for each (var attribute:XML in xml.attributes())
 				{
@@ -78,8 +78,6 @@ package starling.extensions.talon.utils
 					var value:String = attribute.valueOf();
 					node.setAttribute(name, value);
 				}
-
-				node.setAttribute("type", elementType);
 			}
 
 			if (element is DisplayObjectContainer)

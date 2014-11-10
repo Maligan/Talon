@@ -4,7 +4,7 @@ package starling.extensions.talon.layout
 	import starling.extensions.talon.core.Node;
 	import starling.extensions.talon.utils.Orientation;
 
-	public class StackLayout extends Layout
+	public class FlowLayout extends Layout
 	{
 		private static const DEFAULT_GAP:String = Gauge.AUTO;
 		private static const DEFAULT_ORIENTATION:String = Orientation.VERTICAL;

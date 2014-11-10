@@ -27,7 +27,7 @@ package starling.extensions.talon.layout
 			{
 				_initialized = true;
 				registerLayoutAlias("none", new Layout());
-				registerLayoutAlias("stack", new StackLayout());
+				registerLayoutAlias("flow", new FlowLayout());
 			}
 
 			return _layout[aliasName];

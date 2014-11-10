@@ -23,7 +23,7 @@ package
 	import starling.extensions.talon.core.StyleSheet;
 	import starling.extensions.talon.display.TalonLabel;
 	import starling.extensions.talon.layout.Layout;
-	import starling.extensions.talon.layout.StackLayout;
+	import starling.extensions.talon.layout.FlowLayout;
 	import starling.extensions.talon.utils.TalonFactory;
 	import starling.textures.Texture;
 
@@ -87,14 +87,14 @@ package
 			]]></literal>.valueOf();
 
 			var config:XML =
-				<node id="root" layout="stack" orientation="vertical" valign="center" halign="center" gap="4px">
+				<node id="root" layout="flow" orientation="vertical" valign="center" halign="center" gap="4px">
 					<node id="play" width="50%" height="20%"/>
-					<node layout="stack" class="tmp" orientation="vertical" width="50%" padding="0px 8px" gap="4px">
+					<node layout="flow" class="tmp" orientation="vertical" width="50%" padding="0px 8px" gap="4px">
 						<node id="2d" width="100%" height="48px" backgroundColor="0x888888" />
 						<node id="3d" class="brown" width="100%" height="128px" />
-						<node id="4d" layout="stack" orientation="horizontal" gap="4px" width="100%">
+						<node id="4d" layout="flow" orientation="horizontal" gap="4px" width="100%">
 							<node id="prev" height="100%"/>
-							<node id="stop" layout="stack" orientation="vertical" gap="8px" padding="8px">
+							<node id="stop" layout="flow" orientation="vertical" gap="8px" padding="8px">
 								<label text="Hello World 1" width="100%" fontName="Trebuchet MS" fontSize="18" />
 								<label text="Hello World 2" width="100%" fontName="Consolas" />
 							</node>

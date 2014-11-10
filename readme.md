@@ -34,24 +34,13 @@ Used children attributes:
 - scaleX, scaleY
 - pivotX, pivotY (*px*, *pt*, *em*, *%*)
 
-#### stack
+#### flow
 Used self attributes:
 - orientation (*horizontal* || *vertical*)
 - gap (*px*, *pt*, *em*, *%*)
 - halign (*left* || *center* || *right*)
 - valign (*top* || *center* || *bottom*)
-
-Used children attributes:
-- width, height (*px*, *pt*, *em*, *%*)
-- minWidth, minHeight (*px*, *pt*, *em*, *%*)
-- maxWidth, maxHeight (*px*, *pt*, *em*, *%*)
-
-#### wrap
-Used self attributes:
-- orientation (*horizontal* || *vertical*)
-- gap (*px*, *pt*, *em*, *%*)
-- halign (*left* || *center* || *right*)
-- valign (*top* || *center* || *bottom*)
+- wrap (*true* || *false*)
 
 Used children attributes:
 - width, height (*px*, *pt*, *em*, *%*)

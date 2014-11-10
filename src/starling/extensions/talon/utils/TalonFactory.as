@@ -1,7 +1,5 @@
 package starling.extensions.talon.utils
 {
-	import feathers.textures.Scale9Textures;
-
 	import flash.utils.Dictionary;
 
 	import starling.display.DisplayObject;

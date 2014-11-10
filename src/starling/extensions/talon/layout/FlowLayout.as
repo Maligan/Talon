@@ -11,28 +11,28 @@ package starling.extensions.talon.layout
 
 		private static const gauge:Gauge = new Gauge();
 
-		public override function arrange(node:Node, ppp:Number, pem:Number, width:Number, height:Number):void
+		public override function arrange(node:Node, width:Number, height:Number):void
 		{
 			// Layout properties
 			var orientation:String = node.getAttribute("orientation") || DEFAULT_ORIENTATION;
 
 			gauge.parse(node.getAttribute("gap") || DEFAULT_GAP);
-			var gap:Number = gauge.toPixels(ppp, pem, (orientation == Orientation.HORIZONTAL) ? node.bounds.width : node.bounds.height, 0);
-			width -= node.padding.left.toPixels(ppp, pem, width, 0) + node.padding.right.toPixels(ppp, pem, width, 0);
-			height -= node.padding.top.toPixels(ppp, pem, height, 0) + node.padding.bottom.toPixels(ppp, pem, height, 0);
+			var gap:Number = gauge.toPixels(node.ppp, node.pem, (orientation == Orientation.HORIZONTAL) ? node.bounds.width : node.bounds.height, 0);
+			width -= node.padding.left.toPixels(node.ppp, node.pem, width, 0) + node.padding.right.toPixels(node.ppp, node.pem, width, 0);
+			height -= node.padding.top.toPixels(node.ppp, node.pem, height, 0) + node.padding.bottom.toPixels(node.ppp, node.pem, height, 0);
 
 			//
 			// Horizontal
 			//
 			if (orientation == Orientation.HORIZONTAL)
 			{
-				arrangeSide1("width",  "x",  "measureAutoWidth",  width, gap, ppp, pem, node);
-				arrangeSide2("height", "y", "measureAutoHeight", height, gap, ppp, pem, node);
+				arrangeSide1("width",  "x",  "measureAutoWidth",  width, gap, node.ppp, node.pem, node);
+				arrangeSide2("height", "y", "measureAutoHeight", height, gap, node.ppp, node.pem, node);
 			}
 			else if (orientation == Orientation.VERTICAL)
 			{
-				arrangeSide1("height", "y", "measureAutoHeight", height, gap, ppp, pem, node);
-				arrangeSide2("width",  "x", "measureAutoWidth",  width,  gap, ppp, pem, node);
+				arrangeSide1("height", "y", "measureAutoHeight", height, gap, node.ppp, node.pem, node);
+				arrangeSide2("width",  "x", "measureAutoWidth",  width,  gap, node.ppp, node.pem, node);
 			}
 
 			//
@@ -56,8 +56,8 @@ package starling.extensions.talon.layout
 			deltaY = valign == "bottom" ? deltaY : valign == "center" ? deltaY/2 : 0;
 
 			// Padding
-			deltaX += node.padding.left.toPixels(ppp, pem, height, 0);
-			deltaY += node.padding.top.toPixels(ppp, pem, height, 0);
+			deltaX += node.padding.left.toPixels(node.ppp, node.pem, height, 0);
+			deltaY += node.padding.top.toPixels(node.ppp, node.pem, height, 0);
 
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
@@ -132,7 +132,7 @@ package starling.extensions.talon.layout
 			}
 		}
 
-		public override function measureAutoWidth(node:Node, ppp:Number, pem:Number):Number
+		public override function measureAutoWidth(node:Node):Number
 		{
 			var result:Number = 0;
 			var orientation:String = node.getAttribute("orientation") || DEFAULT_ORIENTATION;
@@ -142,10 +142,10 @@ package starling.extensions.talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				var childWidth:Number = child.width.toPixels(ppp, pem, 0, 0);
+				var childWidth:Number = child.width.toPixels(node.ppp, node.pem, 0, 0);
 
-				childWidth += child.margin.left.toPixels(ppp, pem, 0, 0);
-				childWidth += child.margin.right.toPixels(ppp, pem, 0, 0);
+				childWidth += child.margin.left.toPixels(node.ppp, node.pem, 0, 0);
+				childWidth += child.margin.right.toPixels(node.ppp, node.pem, 0, 0);
 
 				result = isHorizontal ? (result + childWidth) : Math.max(result, childWidth);
 			}
@@ -154,18 +154,18 @@ package starling.extensions.talon.layout
 			if (isHorizontal)
 			{
 				gauge.parse(node.getAttribute("gap") || DEFAULT_GAP);
-				var gap:Number = gauge.toPixels(ppp, pem, node.bounds.width, 0);
+				var gap:Number = gauge.toPixels(node.ppp, node.pem, node.bounds.width, 0);
 				result += node.numChildren > 1 ? (node.numChildren - 1) * gap : 0;
 			}
 
 			// Padding
-			result += node.padding.left.toPixels(ppp, pem, 0, 0);
-			result += node.padding.right.toPixels(ppp, pem, 0, 0);
+			result += node.padding.left.toPixels(node.ppp, node.pem, 0, 0);
+			result += node.padding.right.toPixels(node.ppp, node.pem, 0, 0);
 
 			return result;
 		}
 
-		public override function measureAutoHeight(node:Node, ppp:Number, pem:Number):Number
+		public override function measureAutoHeight(node:Node):Number
 		{
 			var result:Number = 0;
 			var orientation:String = node.getAttribute("orientation") || DEFAULT_ORIENTATION;
@@ -175,10 +175,10 @@ package starling.extensions.talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				var childHeight:Number = child.height.toPixels(ppp, pem, 0, 0);
+				var childHeight:Number = child.height.toPixels(node.ppp, node.pem, 0, 0);
 
-				childHeight += child.margin.top.toPixels(ppp, pem, 0, 0);
-				childHeight += child.margin.bottom.toPixels(ppp, pem, 0, 0);
+				childHeight += child.margin.top.toPixels(node.ppp, node.pem, 0, 0);
+				childHeight += child.margin.bottom.toPixels(node.ppp, node.pem, 0, 0);
 
 				result = isVertical ? (result + childHeight) : Math.max(result, childHeight);
 			}
@@ -187,13 +187,13 @@ package starling.extensions.talon.layout
 			if (isVertical)
 			{
 				gauge.parse(node.getAttribute("gap") || DEFAULT_GAP);
-				var gap:Number = gauge.toPixels(ppp, pem, node.bounds.height, 0);
+				var gap:Number = gauge.toPixels(node.ppp, node.pem, node.bounds.height, 0);
 				result += node.numChildren > 1 ? (node.numChildren - 1) * gap : 0;
 			}
 
 			// Padding
-			result += node.padding.top.toPixels(ppp, pem, 0, 0);
-			result += node.padding.bottom.toPixels(ppp, pem, 0, 0);
+			result += node.padding.top.toPixels(node.ppp, node.pem, 0, 0);
+			result += node.padding.bottom.toPixels(node.ppp, node.pem, 0, 0);
 
 			return result;
 		}

@@ -110,18 +110,13 @@ package
 			builder.setLinkage("label", TalonLabel);
 			builder.addLibraryPrototype("root", config);
 			builder.addLibraryStyleSheet(css);
-			builder.addLibraryResource("/img/up.png", getTexture(UP_BYTES));
-			builder.addLibraryResource("/img/over.png", getTexture(OVER_BYTES));
-			builder.addLibraryResource("/img/down.png", getTexture(DOWN_BYTES));
+			builder.addLibraryResource("/img/up.png", Texture.fromEmbeddedAsset(UP_BYTES));
+			builder.addLibraryResource("/img/over.png", Texture.fromEmbeddedAsset(OVER_BYTES));
+			builder.addLibraryResource("/img/down.png", Texture.fromEmbeddedAsset(DOWN_BYTES));
 
 			_talon = builder.build("root") as TalonComponentBase;
 			_document.addChild(_talon);
 			onResize(null)
-		}
-
-		private static function getTexture(asset:Class):Texture
-		{
-			return Texture.fromEmbeddedAsset(asset);
 		}
 	}
 }

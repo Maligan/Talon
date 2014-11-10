@@ -46,6 +46,7 @@ Used children attributes:
 - width, height (*px*, *pt*, *em*, *%*)
 - minWidth, minHeight (*px*, *pt*, *em*, *%*)
 - maxWidth, maxHeight (*px*, *pt*, *em*, *%*)
+- break (*true*, *false*)
 
 #### anchor
 Used children attributes:	

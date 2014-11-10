@@ -1,6 +1,7 @@
 package starling.extensions.talon.layout
 {
 	import flash.utils.Dictionary;
+
 	import starling.extensions.talon.core.Node;
 
 	public class Layout
@@ -36,17 +37,17 @@ package starling.extensions.talon.layout
 		//
 		// Layout methods
 		//
-		public function measureAutoWidth(node:Node, ppp:Number, pem:Number):Number
+		public function measureAutoWidth(node:Node):Number
 		{
 			return 0;
 		}
 
-		public function measureAutoHeight(node:Node, ppp:Number, pem:Number):Number
+		public function measureAutoHeight(node:Node):Number
 		{
 			return 0;
 		}
 
-		public function arrange(node:Node, ppp:Number, pem:Number, width:Number, height:Number):void
+		public function arrange(node:Node, width:Number, height:Number):void
 		{
 			// NOP
 		}

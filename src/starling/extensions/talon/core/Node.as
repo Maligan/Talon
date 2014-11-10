@@ -159,11 +159,14 @@ package starling.extensions.talon.core
 		public function commit():void
 		{
 			dispatchEventWith(Event.RESIZE);
-			layout.arrange(this, 0, 0, bounds.width, bounds.height);
+			layout.arrange(this, bounds.width, bounds.height);
 		}
 
-		private function measureAutoWidth():Number { return layout.measureAutoWidth(this, 0, 0); }
-		private function measureAutoHeight():Number { return layout.measureAutoHeight(this, 0, 0); }
+		public function get pem():Number { return 0; }
+		public function get ppp():Number { return 0; }
+
+		private function measureAutoWidth():Number { return layout.measureAutoWidth(this); }
+		private function measureAutoHeight():Number { return layout.measureAutoHeight(this); }
 		private function get layout():Layout { return Layout.getLayoutByAlias(getAttribute("layout")); }
 
 		//

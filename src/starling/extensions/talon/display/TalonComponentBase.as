@@ -13,6 +13,7 @@ package starling.extensions.talon.display
 	import starling.events.TouchPhase;
 	import starling.extensions.talon.core.GaugeQuad;
 	import starling.extensions.talon.core.Node;
+	import starling.extensions.talon.utils.parseColor;
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
 	import starling.text.TextFieldAutoSize;
@@ -93,11 +94,16 @@ package starling.extensions.talon.display
 
 					addChildAt(_image, 0);
 				}
+
+				if (_image != null)
+				{
+					_image.color = parseColor(node.getAttribute("backgroundChromeColor"));
+				}
 			}
 			else
 			{
 				_background.visible = node.getAttribute("backgroundColor") != null;
-				_background.color = parseInt(node.getAttribute("backgroundColor"));
+				_background.color = parseColor(node.getAttribute("backgroundColor"));
 			}
 
 
@@ -109,13 +115,13 @@ package starling.extensions.talon.display
 			onBoxChange(e);
 			x = Math.round(node.bounds.x);
 			y = Math.round(node.bounds.y);
-			_background.width = Math.ceil(node.bounds.width);
-			_background.height = Math.ceil(node.bounds.height);
+			_background.width = Math.round(node.bounds.width);
+			_background.height = Math.round(node.bounds.height);
 
 			if (_image)
 			{
-				_image.width = Math.ceil(node.bounds.width);
-				_image.height = Math.ceil(node.bounds.height);
+				_image.width = Math.round(node.bounds.width);
+				_image.height = Math.round(node.bounds.height);
 			}
 
 			clipRect = new Rectangle(0, 0, node.bounds.width, node.bounds.height);

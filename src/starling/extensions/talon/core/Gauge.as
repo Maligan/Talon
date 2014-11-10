@@ -71,18 +71,18 @@ package starling.extensions.talon.core
 		/**
 		 * Transform gauge to pixels.
 		 * @param ppp pixels per point
-		 * @param pem pixels per ems
+		 * @param ppem pixels per ems
 		 * @param target percentages/stars target (in pixels)
 		 * @param stars total amount of stars in target
 		 */
-		public function toPixels(ppp:Number, pem:Number, target:Number, stars:int):Number
+		public function toPixels(ppp:Number, ppem:Number, target:Number, stars:int):Number
 		{
 			switch (unit)
 			{
 				case AUTO:		return _auto ? _auto() : 0;
 				case PX:		return amount;
 				case PT:		return amount * ppp;
-				case EM:        return amount * pem;
+				case EM:        return amount * ppem;
 				case PERCENT:   return amount * target / 100;
 				case STAR:		return amount * target / stars;
 				default:		throw new Error();

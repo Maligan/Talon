@@ -1,29 +1,16 @@
 package
 {
-	import feathers.textures.Scale9Textures;
-
 	import flash.display.MovieClip;
 	import flash.geom.Rectangle;
-	import flash.utils.setTimeout;
-
 	import starling.core.Starling;
-	import starling.display.DisplayObject;
-	import starling.display.DisplayObjectContainer;
 	import starling.display.Sprite;
 
 	import starling.events.Event;
-	import starling.extensions.talon.core.Node;
-
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 
-	import starling.extensions.talon.display.ITalonComponent;
-
 	import starling.extensions.talon.display.TalonComponentBase;
-	import starling.extensions.talon.core.StyleSheet;
 	import starling.extensions.talon.display.TalonLabel;
-	import starling.extensions.talon.layout.Layout;
-	import starling.extensions.talon.layout.FlowLayout;
 	import starling.extensions.talon.utils.TalonFactory;
 	import starling.textures.Texture;
 
@@ -36,7 +23,6 @@ package
 		private var _document:Sprite;
 
 		private var _talon:TalonComponentBase;
-		private var _bundle:Object;
 
 		public function TalonDebugStartup()
 		{
@@ -66,22 +52,28 @@ package
 		private function onRootCreated(e:Event):void
 		{
 			_document = Sprite(Starling.current.root);
-			_bundle = new Object();
 
 			var css:String =
 			<literal><![CDATA[
+
+				*
+				{
+					fontName: Calibri;
+					fontColor: maroon;
+				}
+
 				.tmp .brown
 				{
-					backgroundImage: /img/up.png;
-					backgroundColor: 0x964B00;
+					backgroundColor: olive;
 					width: 100%;
 					height: 128px;
 				}
 
 				#4d *
 				{
+					background9Scale: 8px;
+					backgroundChromeColor: #aaFFaa;
 					backgroundImage: /img/up.png;
-					backgroundColor: 0x0000ff;
 					width: *;
 				}
 			]]></literal>.valueOf();
@@ -90,19 +82,19 @@ package
 				<node id="root" layout="flow" orientation="vertical" valign="center" halign="center" gap="4px">
 					<node id="play" width="50%" height="20%"/>
 					<node layout="flow" class="tmp" orientation="vertical" width="50%" padding="0px 8px" gap="4px">
-						<node id="2d" width="100%" height="48px" backgroundColor="0x888888" />
+						<node id="2d" width="100%" height="48px" backgroundColor="gray" />
 						<node id="3d" class="brown" width="100%" height="128px" />
 						<node id="4d" layout="flow" orientation="horizontal" gap="4px" width="100%">
 							<node id="prev" height="100%"/>
-							<node id="stop" layout="flow" orientation="vertical" gap="8px" padding="8px">
-								<label text="Hello World 1" width="100%" fontName="Trebuchet MS" fontSize="18" />
-								<label text="Hello World 2" width="100%" fontName="Consolas" />
+							<node id="stop" layout="flow" orientation="vertical" gap="8px" padding="8px" fontSize="23px" fontColor="red">
+								<label text="Hello World 1" width="100%" fontSize="12pt" />
+								<label text="Hello World 2" width="100%" />
 							</node>
-							<node id="next" height="100%"/>
+							<node id="next" height="100%" backgroundChromeColor="#FF5555" />
 						</node>
 					</node>
-					<node id="leaders" width="256px" height="48px" backgroundColor="0x888899" />
-					<node id="mother ship" width="256px" height="48px" backgroundColor="0xFF000" />
+					<node id="leaders" width="256px" height="48px" backgroundColor="gray" />
+					<node id="mother ship" width="256px" height="48px" backgroundColor="blue" />
 				</node>;
 
 

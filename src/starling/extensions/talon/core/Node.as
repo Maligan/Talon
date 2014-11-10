@@ -1,11 +1,13 @@
 package starling.extensions.talon.core
 {
 	import flash.geom.Rectangle;
+	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
 
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 	import starling.extensions.talon.layout.Layout;
+	import starling.extensions.talon.utils.Visibility;
 
 	public final class Node extends EventDispatcher
 	{
@@ -65,7 +67,7 @@ package starling.extensions.talon.core
 //			bind("background9Scale", "0px");
 //			bind("backgroundColor", "transparent");
 //			bind("backgroundScale", "0px 0px 0px 0px");
-//			bind("backgroundChromeColor", "0xFFFFFF")
+			bind("backgroundChromeColor", "#FFFFFF");
 
 			// Style
 			// ...
@@ -77,6 +79,7 @@ package starling.extensions.talon.core
 
 			// Layout
 			bind("layout", "none");
+			bind("visibility", Visibility.VISIBLE);
 		}
 
 		private function bind(name:String, initial:String = null, getter:Function = null, setter:Function = null, dispatcher:EventDispatcher = null):void
@@ -87,7 +90,7 @@ package starling.extensions.talon.core
 		//
 		// Attributes
 		//
-		public function getAttribute(name:String):String
+		public function getAttribute(name:String, inherit:Boolean = true):String
 		{
 			var attribute:Attribute = _attributes[name];
 			return attribute ? attribute.value : null;
@@ -162,8 +165,8 @@ package starling.extensions.talon.core
 			layout.arrange(this, bounds.width, bounds.height);
 		}
 
-		public function get pem():Number { return 0; }
-		public function get ppp():Number { return 0; }
+		public function get ppem():Number { return 0; }
+		public function get ppp():Number { return Capabilities.screenDPI / 72; }
 
 		private function measureAutoWidth():Number { return layout.measureAutoWidth(this); }
 		private function measureAutoHeight():Number { return layout.measureAutoHeight(this); }
@@ -273,7 +276,7 @@ internal class Attribute
 		{
 			if (isInherit)
 			{
-				_value = _node.parent ? _node.parent.getAttribute(name) : _initial;
+				_value = _node.parent ? _node.parent.getAttribute(name) : null;
 			}
 			else if (isInitial)
 			{

@@ -19,9 +19,9 @@ package starling.extensions.talon.core
 		}
 
 		/** Get an object that reflects the style of the node. */
-		public function getStyle(node:Node):Object
+		public function getStyle(node:Node, result:Object = null):Object
 		{
-			var style:Object = new Object();
+			var style:Object = result || new Object();
 			var priorities:Object = new Object();
 
 			for each (var selector:StyleSelector in _selectors)

@@ -7,7 +7,7 @@ package starling.extensions.talon.display
 	import starling.text.TextField;
 	import starling.text.TextFieldAutoSize;
 
-	public class TalonLabel extends TextField implements ITalonComponent
+	public class TalonLabel extends TextField implements ITalonTarget
 	{
 		private static const DEFAULT_FONT_SIZE:int = 12;
 		private static const DEFAULT_FONT_NAME:String = "mini";

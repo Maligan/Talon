@@ -6,8 +6,8 @@ package starling.extensions.talon.utils
 	import starling.display.DisplayObjectContainer;
 	import starling.extensions.talon.core.Node;
 	import starling.extensions.talon.core.StyleSheet;
-	import starling.extensions.talon.display.ITalonComponent;
-	import starling.extensions.talon.display.TalonComponentBase;
+	import starling.extensions.talon.display.ITalonTarget;
+	import starling.extensions.talon.display.TalonNode;
 	import starling.extensions.talon.display.TalonLabel;
 
 	public final class TalonFactory
@@ -32,7 +32,7 @@ package starling.extensions.talon.utils
 			return factory;
 		}
 
-		private var _linkageByDefault:Class = TalonComponentBase;
+		private var _linkageByDefault:Class = TalonNode;
 		private var _linkage:Dictionary = new Dictionary();
 		private var _prototypes:Dictionary = new Dictionary();
 		private var _resources:Dictionary = new Dictionary();
@@ -50,10 +50,10 @@ package starling.extensions.talon.utils
 			if (config == null) throw new ArgumentError("Prototype by id: " + id + " not found");
 
 			var element:DisplayObject = fromXML(config);
-			if (element is ITalonComponent)
+			if (element is ITalonTarget)
 			{
-				includeStyleSheet && ITalonComponent(element).node.setStyleSheet(_style);
-				includeResources  && ITalonComponent(element).node.setResources(_resources);
+				includeStyleSheet && ITalonTarget(element).node.setStyleSheet(_style);
+				includeResources  && ITalonTarget(element).node.setResources(_resources);
 			}
 
 			return element;
@@ -65,9 +65,9 @@ package starling.extensions.talon.utils
 			var elementClass:Class = _linkage[elementType] || _linkageByDefault;
 			var element:DisplayObject = new elementClass();
 
-			if (element is ITalonComponent)
+			if (element is ITalonTarget)
 			{
-				var node:Node = ITalonComponent(element).node;
+				var node:Node = ITalonTarget(element).node;
 				node.setAttribute("type", elementType);
 
 				for each (var attribute:XML in xml.attributes())

@@ -114,12 +114,13 @@ package starling.extensions.talon.core
 
 		public function getStyle(node:Node):Object
 		{
-			if (_style != null && _parent == null) return _style.getStyle(node);
-			if (_style != null && _parent != null) return _style.getStyle(node); // need merge styles by parent & by;
 			if (_style == null && _parent != null) return _parent.getStyle(node);
-			return {};
+			if (_style != null && _parent == null) return _style.getStyle(node);
+			if (_style != null && _parent != null) return _style.getStyle(node, _parent.getStyle(node));
+			return new Object();
 		}
 
+		/** Recursive apply style to current node. */
 		private function restyle():void
 		{
 			var style:Object = getStyle(this);

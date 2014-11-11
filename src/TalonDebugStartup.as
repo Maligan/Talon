@@ -9,7 +9,7 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 
-	import starling.extensions.talon.display.TalonComponentBase;
+	import starling.extensions.talon.display.TalonNode;
 	import starling.extensions.talon.display.TalonLabel;
 	import starling.extensions.talon.utils.TalonFactory;
 	import starling.textures.Texture;
@@ -22,7 +22,7 @@ package
 
 		private var _document:Sprite;
 
-		private var _talon:TalonComponentBase;
+		private var _talon:TalonNode;
 
 		public function TalonDebugStartup()
 		{
@@ -90,7 +90,7 @@ package
 								<label text="Hello World 1" width="100%" fontSize="12pt" />
 								<label text="Hello World 2" width="100%" />
 							</node>
-							<node id="next" height="100%" backgroundChromeColor="#FF5555" />
+							<node id="next" height="100%" backgroundChromeColor="lime" />
 						</node>
 					</node>
 					<node id="leaders" width="256px" height="48px" backgroundColor="gray" />
@@ -106,7 +106,7 @@ package
 			builder.addLibraryResource("/img/over.png", Texture.fromEmbeddedAsset(OVER_BYTES));
 			builder.addLibraryResource("/img/down.png", Texture.fromEmbeddedAsset(DOWN_BYTES));
 
-			_talon = builder.build("root") as TalonComponentBase;
+			_talon = builder.build("root") as TalonNode;
 			_document.addChild(_talon);
 			onResize(null)
 		}

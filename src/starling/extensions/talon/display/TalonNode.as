@@ -21,7 +21,7 @@ package starling.extensions.talon.display
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
 
-	public class TalonComponentBase extends Sprite implements ITalonComponent
+	public class TalonNode extends Sprite implements ITalonTarget
 	{
 		private var _background:Quad;
 		private var _label:TextField;
@@ -29,7 +29,7 @@ package starling.extensions.talon.display
 
 		private var _image:Scale9Image;
 
-		public function TalonComponentBase()
+		public function TalonNode()
 		{
 			_node = new Node();
 			_node.addEventListener(Event.CHANGE, onBoxChange);
@@ -65,7 +65,7 @@ package starling.extensions.talon.display
 
 		public override function addChild(child:DisplayObject):DisplayObject
 		{
-			(child is ITalonComponent) && node.addChild(ITalonComponent(child).node);
+			(child is ITalonTarget) && node.addChild(ITalonTarget(child).node);
 			return super.addChild(child);
 		}
 

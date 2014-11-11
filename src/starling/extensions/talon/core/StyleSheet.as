@@ -32,14 +32,11 @@ package starling.extensions.talon.core
 				for (var property:String in styles)
 				{
 					var value:String = styles[property];
-					if (value != null)
+					var priority:int = priorities[property];
+					if (priority <= selector.priority)
 					{
-						var priority:int = priorities[property];
-						if (priority <= selector.priority)
-						{
-							style[property] = value;
-							priorities[property] = selector.priority;
-						}
+						style[property] = value;
+						priorities[property] = selector.priority;
 					}
 				}
 			}

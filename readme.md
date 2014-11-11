@@ -1,4 +1,4 @@
-# Talon
+# Talon (Working Draft)
 ## Table of Content
 - <a href = "#overview">Overview</a>
 - <a href = "#first-steps">First Steps</a>
@@ -23,7 +23,7 @@ Talon — библиотека для создания резиновых инт
 - **%** - Относительная единица. В процентах от *целевой велечины* (которая определяется по контексту)
 - **\*** - Относительная единица. *Вес* относительно других дочерних элементов, c целевой величиной определяемой по контексту.
 
-### Talon Layouts (Working Draft):
+### Talon Layouts:
 #### transform
 Used children attributes:	
 - x, y (*px*, *pt*, *em*, *%*)
@@ -55,7 +55,7 @@ Used children attributes:
 - minWidth, minHeight (*px*, *pt*, *em*, *%*)
 - maxWidth, maxHeight (*px*, *pt*, *em*, *%*)
 
-### Talon CSS (Working Draft):
+### Talon CSS:
 В отличии от стандарта CSS разработанного W3C стили не содержатся в отдельном свойстве узла *styles*, а выставляют значение аттрбутов *по-умолчанию*.
 То есть если есть такая структура:
 ```css

@@ -109,23 +109,40 @@ package starling.extensions.talon.core
 		public function setStyleSheet(style:StyleSheet):void
 		{
 			_style = style;
+			restyle();
+		}
 
-			var styles:Object = _style.getStyle(this);
+		public function getStyle(node:Node):Object
+		{
+			if (_style != null && _parent == null) return _style.getStyle(node);
+			if (_style != null && _parent != null) return _style.getStyle(node); // need merge styles by parent & by;
+			if (_style == null && _parent != null) return _parent.getStyle(node);
+			return {};
+		}
+
+		private function restyle():void
+		{
+			var style:Object = getStyle(this);
+
+			// Fill all the existing attributes
 			for each (var attribute:Attribute in _attributes)
 			{
-				attribute.setStyledValue(styles[attribute.name]);
-				delete styles[attribute.name];
+				attribute.setStyledValue(style[attribute.name]);
+				delete style[attribute.name];
 			}
 
-			for (var name:String in styles)
+			// Addition attributes defined by style
+			for (var name:String in style)
 			{
 				attribute = _attributes[name] || (_attributes[name] = new Attribute(this, name));
-				attribute.setStyledValue(styles[name]);
+				attribute.setStyledValue(style[name]);
 			}
 
-			for each (var child:Node in _children)
+			// Recursive children restyling
+			for (var i:int = 0; i < numChildren; i++)
 			{
-				child.setStyleSheet(style);
+				var child:Node = getChildAt(i);
+				child.restyle();
 			}
 		}
 

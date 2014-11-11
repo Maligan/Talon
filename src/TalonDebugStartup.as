@@ -61,9 +61,29 @@ package
 					backgroundColor: gray;
 				}
 
-				#leaders:pressed
+				#leaders:hover
 				{
-					backgroundColor: maroon;
+					backgroundColor: olive;
+					fontSize: 20px;
+				}
+
+				#leaders *
+				{
+					backgroundColor: blue;
+					width: 10px;
+					height: 10px;
+				}
+
+				#leaders:hover *
+				{
+					backgroundColor: red;
+					width: 20px;
+					height: 20px;
+				}
+
+				#leaders #tmp:hover
+				{
+					backgroundColor: black;
 				}
 
 				*
@@ -104,7 +124,10 @@ package
 							</node>
 						</node>
 					</node>
-					<node id="leaders" width="256px" height="48px" />
+					<node id="leaders" width="256px" height="48px">
+						<node id="tmp" />
+						<label text="Hardcore!" />
+					</node>
 					<node id="mother_ship" width="256px" height="48px" backgroundColor="blue" />
 				</node>;
 

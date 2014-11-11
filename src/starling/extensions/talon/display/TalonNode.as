@@ -6,6 +6,8 @@ package starling.extensions.talon.display
 	import flash.geom.Point;
 
 	import flash.geom.Rectangle;
+	import flash.ui.Mouse;
+	import flash.ui.MouseCursor;
 
 	import starling.display.DisplayObject;
 	import starling.display.Quad;
@@ -57,12 +59,24 @@ package starling.extensions.talon.display
 		private function onTouch(e:TouchEvent):void
 		{
 			var touch:Touch = e.getTouch(this);
-			if (touch == null) return;
 
-			if (touch.phase == TouchPhase.ENDED)
+			if (touch == null)
 			{
 				trace("Remove pressed from ", node.getAttribute("id"));
 				node.states = new Vector.<String>();
+			}
+			else if (touch.phase == TouchPhase.HOVER)
+			{
+				trace("Add pressed to ", node.getAttribute("id"));
+				var states:Vector.<String> = new Vector.<String>();
+				states.push("hover");
+				node.states = states;
+			}
+
+
+			return;
+			if (touch.phase == TouchPhase.ENDED)
+			{
 				var click:String = node.getAttribute("click");
 				if (click != null) dispatchEventWith(Event.TRIGGERED, true, click);
 			}

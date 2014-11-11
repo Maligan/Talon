@@ -29,7 +29,7 @@ package starling.extensions.talon.core
 		// Private properties
 		//
 		private var _attributes:Dictionary = new Dictionary();
-		private var _classes:StyleSheet;
+		private var _style:StyleSheet;
 		private var _resources:Object;
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
@@ -108,15 +108,15 @@ package starling.extensions.talon.core
 		//
 		public function setStyleSheet(style:StyleSheet):void
 		{
-			_classes = style;
+			_style = style;
 			restyle();
 		}
 
 		public function getStyle(node:Node):Object
 		{
-			if (_classes == null && _parent != null) return _parent.getStyle(node);
-			if (_classes != null && _parent == null) return _classes.getStyle(node);
-			if (_classes != null && _parent != null) return _classes.getStyle(node, _parent.getStyle(node));
+			if (_style == null && _parent != null) return _parent.getStyle(node);
+			if (_style != null && _parent == null) return _style.getStyle(node);
+			if (_style != null && _parent != null) return _style.getStyle(node, _parent.getStyle(node));
 			return new Object();
 		}
 
@@ -192,8 +192,7 @@ package starling.extensions.talon.core
 		public function get ppem():Number
 		{
 			var attribute:Attribute = _attributes["fontSize"];
-			if (attribute.isInherit && parent) return parent.ppem;
-			if (attribute.isInherit) return 12;
+			if (attribute.isInherit) return parent ? parent.ppem : 12;
 			var gauge:Gauge = new Gauge();
 			gauge.parse(attribute.value);
 			var base:Number = parent?parent.ppem:12;
@@ -216,7 +215,7 @@ package starling.extensions.talon.core
 		{
 			_children.push(child);
 			child._parent = this;
-			if (_classes) child.setStyleSheet(_classes);
+			if (_style) child.setStyleSheet(_style);
 			child.dispatchEventWith(Event.ADDED);
 		}
 

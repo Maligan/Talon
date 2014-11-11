@@ -22,6 +22,8 @@ package starling.extensions.talon.display
 			_node.addEventListener(Event.RESIZE, onNodeResize);
 			_node.width.auto = getTextWidth;
 			_node.height.auto = getTextHeight;
+
+			touchable = false;
 		}
 
 		private function getTextWidth():Number

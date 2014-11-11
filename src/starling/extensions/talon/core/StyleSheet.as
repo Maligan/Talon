@@ -204,15 +204,8 @@ class StyleSelector
 
 		var byParent:Boolean = !_parent || (_parent && _parent.match(node.parent));
 		var byState:Boolean = !_state || (node.states.indexOf(_state) != -1) || _general;
-		var byClass:Boolean = !_class || ((node.getAttribute("class") || "").indexOf(_class) != -1) || _general;
+		var byClass:Boolean = !_class || (node.classes.indexOf(_class) != -1) || _general;
 		var byId:Boolean = !_id || (node.getAttribute("id") == _id) || _general;
-
-
-		if (_state && byState)
-		{
-			trace(node.getAttribute("id"));
-		}
-
 		return byParent && byState && byClass && byId;
 	}
 

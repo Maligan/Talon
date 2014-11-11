@@ -56,6 +56,16 @@ package
 			var css:String =
 			<literal><![CDATA[
 
+				#leaders
+				{
+					backgroundColor: gray;
+				}
+
+				#leaders:pressed
+				{
+					backgroundColor: maroon;
+				}
+
 				*
 				{
 					fontName: Calibri;
@@ -80,21 +90,22 @@ package
 
 			var config:XML =
 				<node id="root" layout="flow" orientation="vertical" valign="center" halign="center" gap="4px">
-					<node id="play" width="50%" height="20%"/>
-					<node layout="flow" class="tmp" orientation="vertical" width="50%" padding="0px 8px" gap="4px">
+					<node layout="flow" class="tmp" orientation="vertical" width="50%" padding="0px 8px" gap="4px" fontSize="24px">
+						<label text="Header" width="100%" />
 						<node id="2d" width="100%" height="48px" backgroundColor="gray" />
-						<node id="3d" class="brown" width="100%" height="128px" />
-						<node id="4d" layout="flow" orientation="horizontal" gap="4px" width="100%">
+						<node id="3d" class="brown nerd" width="100%" height="128px" />
+						<node id="4d" layout="flow" orientation="horizontal" gap="4px" width="100%" fontSize="10px">
 							<node id="prev" height="100%"/>
 							<node id="stop" layout="flow" orientation="vertical" gap="8px" padding="8px" fontSize="23px" fontColor="red">
-								<label text="Hello World 1" width="100%" fontSize="12pt" />
-								<label text="Hello World 2" width="100%" />
+
 							</node>
-							<node id="next" height="100%" backgroundChromeColor="lime" />
+							<node id="next" backgroundChromeColor="lime">
+								<label text="Subtext" fontSize="2em" />
+							</node>
 						</node>
 					</node>
-					<node id="leaders" width="256px" height="48px" backgroundColor="gray" />
-					<node id="mother ship" width="256px" height="48px" backgroundColor="blue" />
+					<node id="leaders" width="256px" height="48px" />
+					<node id="mother_ship" width="256px" height="48px" backgroundColor="blue" />
 				</node>;
 
 

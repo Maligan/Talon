@@ -9,7 +9,6 @@ package starling.extensions.talon.display
 
 	public class TalonLabel extends TextField implements ITalonTarget
 	{
-		private static const DEFAULT_FONT_SIZE:int = 12;
 		private static const DEFAULT_FONT_NAME:String = "mini";
 
 		private var _node:Node;
@@ -42,26 +41,16 @@ package starling.extensions.talon.display
 			else if (e.data == "valign")    vAlign = _node.getAttribute("valign");
 			else if (e.data == "fontName")  fontName = _node.getAttribute("fontName") || DEFAULT_FONT_NAME;
 			else if (e.data == "fontColor") color = parseColor(_node.getAttribute("fontColor"));
-			else if (e.data == "fontSize")
-			{
-				var fontSizeAttribute:String = _node.getAttribute("fontSize");
-				if (fontSizeAttribute != null)
-				{
-					var fontSizeGauge:Gauge = new Gauge();
-					fontSizeGauge.parse(fontSizeAttribute);
-					fontSize = fontSizeGauge.toPixels(node.ppp, node.ppem, node.ppem, 0);
-				}
-				else
-				{
-					fontSize = DEFAULT_FONT_SIZE;
-				}
-			}
+			else if (e.data == "fontSize")  fontSize = node.ppem;
 			else if (e.data == "width" || e.data == "height")
 			{
-				_node.width.isAuto && _node.height.isAuto && (autoSize = TextFieldAutoSize.BOTH_DIRECTIONS);
-				_node.width.isAuto && !_node.height.isAuto && (autoSize = TextFieldAutoSize.HORIZONTAL);
-				!_node.width.isAuto && _node.height.isAuto && (autoSize = TextFieldAutoSize.VERTICAL);
-				!_node.width.isAuto && !_node.height.isAuto && (autoSize = TextFieldAutoSize.NONE);
+				var isHorizontal:Boolean = _node.width.isAuto;
+				var isVertical:Boolean = _node.height.isAuto;
+
+				/**/ if ( isHorizontal &&  isVertical) (autoSize = TextFieldAutoSize.BOTH_DIRECTIONS);
+				else if ( isHorizontal && !isVertical) (autoSize = TextFieldAutoSize.HORIZONTAL);
+				else if (!isHorizontal &&  isVertical) (autoSize = TextFieldAutoSize.VERTICAL);
+				else if (!isHorizontal && !isVertical) (autoSize = TextFieldAutoSize.NONE);
 			}
 		}
 

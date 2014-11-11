@@ -170,6 +170,7 @@ class StyleSelector
 	private var _parent:StyleSelector;
 	private var _class:String;
 	private var _id:String;
+	private var _state:String;
 	private var _general:Boolean;
 
 	public function StyleSelector(string:String)
@@ -182,17 +183,18 @@ class StyleSelector
 			_parent = new StyleSelector(split.join(' '))
 		}
 
-		if (current.indexOf('.') == 0)
+		while (current.length)
 		{
-			_class = current.substr(1);
-		}
-		else if (current.indexOf('#') == 0)
-		{
-			_id = current.substr(1);
-		}
-		else if (current == "*")
-		{
-			_general = true;
+			var next:int = Math.min(uint(current.indexOf('#', 1)), uint(current.indexOf('.', 1)), uint(current.indexOf(':', 1)));
+			var name:String = current.substring(1, (next != -1) ? next : int.MAX_VALUE);
+
+			var first:String = current.charAt(0);
+			/**/ if (first == '.') _class = name;
+			else if (first == '#') _id = name;
+			else if (first == ':') _state = name;
+			else if (first == '*') _general = true;
+
+			current = current.substring(name.length + 1);
 		}
 	}
 
@@ -201,9 +203,17 @@ class StyleSelector
 		if (node == null) return false;
 
 		var byParent:Boolean = !_parent || (_parent && _parent.match(node.parent));
+		var byState:Boolean = !_state || (node.states.indexOf(_state) != -1) || _general;
 		var byClass:Boolean = !_class || ((node.getAttribute("class") || "").indexOf(_class) != -1) || _general;
 		var byId:Boolean = !_id || (node.getAttribute("id") == _id) || _general;
-		return byParent && byClass && byId;
+
+
+		if (_state && byState)
+		{
+			trace(node.getAttribute("id"));
+		}
+
+		return byParent && byState && byClass && byId;
 	}
 
 	public function get priority():int

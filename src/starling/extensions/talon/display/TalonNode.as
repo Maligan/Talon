@@ -3,12 +3,15 @@ package starling.extensions.talon.display
 	import feathers.display.Scale9Image;
 	import feathers.textures.Scale9Textures;
 
+	import flash.geom.Point;
+
 	import flash.geom.Rectangle;
 
 	import starling.display.DisplayObject;
 	import starling.display.Quad;
 	import starling.display.Sprite;
 	import starling.events.Event;
+	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.extensions.talon.core.GaugeQuad;
@@ -53,12 +56,27 @@ package starling.extensions.talon.display
 
 		private function onTouch(e:TouchEvent):void
 		{
-			if (e.getTouch(this, TouchPhase.ENDED))
+			var touch:Touch = e.getTouch(this);
+			if (touch == null) return;
+
+			if (touch.phase == TouchPhase.ENDED)
 			{
+				trace("Remove pressed from ", node.getAttribute("id"));
+				node.states = new Vector.<String>();
 				var click:String = node.getAttribute("click");
-				if (click != null)
+				if (click != null) dispatchEventWith(Event.TRIGGERED, true, click);
+			}
+			else if (touch.phase == TouchPhase.BEGAN)
+			{
+				var touch:Touch = e.getTouch(this, TouchPhase.BEGAN);
+				var local:Point = touch.getLocation(this);
+
+				if (hitTest(local, true))
 				{
-					dispatchEventWith(Event.TRIGGERED, true, click);
+					trace("Add pressed to ", node.getAttribute("id"));
+					var states:Vector.<String> = new Vector.<String>();
+					states.push("pressed");
+					node.states = states;
 				}
 			}
 		}

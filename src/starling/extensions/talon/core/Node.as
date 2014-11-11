@@ -29,7 +29,7 @@ package starling.extensions.talon.core
 		// Private properties
 		//
 		private var _attributes:Dictionary = new Dictionary();
-		private var _style:StyleSheet;
+		private var _classes:StyleSheet;
 		private var _resources:Object;
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
@@ -78,7 +78,7 @@ package starling.extensions.talon.core
 			bind("fontSize", Attribute.INHERIT);
 
 			// Layout
-			bind("layout", "none");
+			bind("layout", "flow");
 			bind("visibility", Visibility.VISIBLE);
 		}
 
@@ -108,15 +108,15 @@ package starling.extensions.talon.core
 		//
 		public function setStyleSheet(style:StyleSheet):void
 		{
-			_style = style;
+			_classes = style;
 			restyle();
 		}
 
 		public function getStyle(node:Node):Object
 		{
-			if (_style == null && _parent != null) return _parent.getStyle(node);
-			if (_style != null && _parent == null) return _style.getStyle(node);
-			if (_style != null && _parent != null) return _style.getStyle(node, _parent.getStyle(node));
+			if (_classes == null && _parent != null) return _parent.getStyle(node);
+			if (_classes != null && _parent == null) return _classes.getStyle(node);
+			if (_classes != null && _parent != null) return _classes.getStyle(node, _parent.getStyle(node));
 			return new Object();
 		}
 
@@ -146,6 +146,12 @@ package starling.extensions.talon.core
 				child.restyle();
 			}
 		}
+
+		public function get classes():Vector.<String> { return Vector.<String>(getAttribute("class") ? getAttribute("class").split(" ") : []) }
+		public function set classes(value:Vector.<String>):void { setAttribute("states", value.join(" ")); restyle(); }
+
+		public function get states():Vector.<String> { return Vector.<String>(getAttribute("states") ? getAttribute("states").split(" ") : []) }
+		public function set states(value:Vector.<String>):void { setAttribute("states", value.join(" ")); restyle(); }
 
 		//
 		// Resource
@@ -183,7 +189,17 @@ package starling.extensions.talon.core
 			layout.arrange(this, bounds.width, bounds.height);
 		}
 
-		public function get ppem():Number { return 0; }
+		public function get ppem():Number
+		{
+			var attribute:Attribute = _attributes["fontSize"];
+			if (attribute.isInherit && parent) return parent.ppem;
+			if (attribute.isInherit) return 12;
+			var gauge:Gauge = new Gauge();
+			gauge.parse(attribute.value);
+			var base:Number = parent?parent.ppem:12;
+			return gauge.toPixels(ppp, base, base, 0);
+		}
+
 		public function get ppp():Number { return Capabilities.screenDPI / 72; }
 
 		private function measureAutoWidth():Number { return layout.measureAutoWidth(this); }
@@ -200,7 +216,7 @@ package starling.extensions.talon.core
 		{
 			_children.push(child);
 			child._parent = this;
-			if (_style) child.setStyleSheet(_style);
+			if (_classes) child.setStyleSheet(_classes);
 			child.dispatchEventWith(Event.ADDED);
 		}
 
@@ -344,13 +360,13 @@ internal class Attribute
 	}
 
 	/** Value must be inherit from parent. */
-	private function get isInherit():Boolean
+	public function get isInherit():Boolean
 	{
 		return (_assign || _style || _initial) == INHERIT;
 	}
 
 	/** Value must be initial value. */
-	private function get isInitial():Boolean
+	public function get isInitial():Boolean
 	{
 		return (_assign || _style) == INITIAL;
 	}

@@ -49,17 +49,10 @@ package starling.extensions.talon.utils
 			var config:XML = _prototypes[id];
 			if (config == null) throw new ArgumentError("Prototype by id: " + id + " not found");
 
-			var element:DisplayObject = fromXML(config);
-			if (element is ITalonTarget)
-			{
-				includeStyleSheet && ITalonTarget(element).node.setStyleSheet(_style);
-				includeResources  && ITalonTarget(element).node.setResources(_resources);
-			}
-
-			return element;
+			return fromXML(config, includeStyleSheet, includeResources);
 		}
 
-		private function fromXML(xml:XML):DisplayObject
+		private function fromXML(xml:XML, includeStyleSheet:Boolean, includeResources:Boolean):DisplayObject
 		{
 			var elementType:String = xml.name();
 			var elementClass:Class = _linkage[elementType] || _linkageByDefault;
@@ -68,8 +61,10 @@ package starling.extensions.talon.utils
 			if (element is ITalonTarget)
 			{
 				var node:Node = ITalonTarget(element).node;
-				node.setAttribute("type", elementType);
+				includeStyleSheet && node.setStyleSheet(_style);
+				includeResources  && node.setResources(_resources);
 
+				node.setAttribute("type", elementType);
 				for each (var attribute:XML in xml.attributes())
 				{
 					var name:String = attribute.name();
@@ -83,7 +78,7 @@ package starling.extensions.talon.utils
 				var container:DisplayObjectContainer = DisplayObjectContainer(element);
 				for each (var childXML:XML in xml.children())
 				{
-					var childElement:DisplayObject = fromXML(childXML);
+					var childElement:DisplayObject = fromXML(childXML, false, false);
 					container.addChild(childElement);
 				}
 			}

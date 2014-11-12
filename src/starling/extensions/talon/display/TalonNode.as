@@ -28,11 +28,9 @@ package starling.extensions.talon.display
 
 	public class TalonNode extends Sprite implements ITalonTarget
 	{
-		private var _background:Quad;
-		private var _label:TextField;
 		private var _node:Node;
-
-		private var _image:Scale9Image;
+		private var _backgroundColor:Quad;
+		private var _backgroundImage:Scale9Image;
 
 		public function TalonNode()
 		{
@@ -40,18 +38,9 @@ package starling.extensions.talon.display
 			_node.addEventListener(Event.CHANGE, onBoxChange);
 			_node.addEventListener(Event.RESIZE, onBoxResize);
 
-			_background = new Quad(100, 100, 0);
-			_background.useHandCursor = true;
-			addChild(_background);
-
-			_label = new TextField(0, 0, "", BitmapFont.MINI, -1);
-			_label.hAlign = HAlign.LEFT;
-			_label.vAlign = VAlign.TOP;
-			_label.color = 0xFFFF00;
-			_label.autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
-			_label.x = _label.y = 2;
-			_label.visible = false;
-			addChild(_label);
+			_backgroundColor = new Quad(1, 1, 0);
+			_backgroundColor.visible = false;
+			addChild(_backgroundColor);
 
 			addEventListener(TouchEvent.TOUCH, onTouch);
 		}
@@ -62,37 +51,23 @@ package starling.extensions.talon.display
 
 			if (touch == null)
 			{
-				trace("Remove pressed from ", node.getAttribute("id"));
-				node.states = new Vector.<String>();
+				node.states = new <String>[];
 			}
 			else if (touch.phase == TouchPhase.HOVER)
 			{
-				trace("Add pressed to ", node.getAttribute("id"));
-				var states:Vector.<String> = new Vector.<String>();
-				states.push("hover");
-				node.states = states;
-			}
-
-
-			return;
-			if (touch.phase == TouchPhase.ENDED)
-			{
-				var click:String = node.getAttribute("click");
-				if (click != null) dispatchEventWith(Event.TRIGGERED, true, click);
+				node.states = new <String>["hover"];
 			}
 			else if (touch.phase == TouchPhase.BEGAN)
 			{
-				var touch:Touch = e.getTouch(this, TouchPhase.BEGAN);
-				var local:Point = touch.getLocation(this);
-
-				if (hitTest(local, true))
-				{
-					trace("Add pressed to ", node.getAttribute("id"));
-					var states:Vector.<String> = new Vector.<String>();
-					states.push("pressed");
-					node.states = states;
-				}
+				node.states = new <String>["hover", "active"];
 			}
+			else if (touch.phase == TouchPhase.ENDED)
+			{
+				node.states = new <String>["hover"];
+			}
+
+//			var click:String = node.getAttribute("click");
+//			if (click != null) dispatchEventWith(Event.TRIGGERED, true, click);
 		}
 
 		public override function addChild(child:DisplayObject):DisplayObject
@@ -103,57 +78,67 @@ package starling.extensions.talon.display
 
 		private function onBoxChange(e:Event):void
 		{
-			name = node.getAttribute("id");
-
-			_label.text = node.getAttribute("id") ? ("#" + String(node.getAttribute("id")).toUpperCase()) : null;
-
-			var image:String = node.getAttribute("backgroundImage");
-			if (image != null)
+			/**/ if (e.data == "id") name = node.getAttribute("id");
+			else if (e.data == "backgroundColor")
 			{
-				if (_image == null && node.getResource(image))
+				var color:String = node.getAttribute("backgroundColor");
+				_backgroundColor.visible = color != "transparent";
+				_backgroundColor.color = parseColor(color);
+			}
+			else if (e.data == "backgroundImage" || e.data == "backgroundChromeColor" || e.data == "background9Scale")
+			{
+				var image:String = node.getAttribute("backgroundImage");
+				var imageTexture:Texture = node.getResource(image);
+				if (imageTexture != null)
 				{
 					var texture:Texture = node.getResource(image);
 					var texture9Scale:Rectangle = new Rectangle(0, 0, texture.width, texture.height);
 					var texture9ScaleGauge:GaugeQuad = new GaugeQuad();
-					texture9ScaleGauge.parse(_node.getAttribute("background9Scale") || "auto");
+					texture9ScaleGauge.parse(_node.getAttribute("background9Scale"));
 
 					texture9Scale.top += texture9ScaleGauge.top.toPixels(0, 0, 0, 0);
 					texture9Scale.right -= texture9ScaleGauge.right.toPixels(0, 0, 0, 0);
 					texture9Scale.bottom -= texture9ScaleGauge.bottom.toPixels(0, 0, 0, 0);
 					texture9Scale.left += texture9ScaleGauge.left.toPixels(0, 0, 0, 0);
 
-					_image = new Scale9Image(new Scale9Textures(texture, texture9Scale));
+					var scale9Texture:Scale9Textures = new Scale9Textures(texture, texture9Scale);
 
-					addChildAt(_image, 0);
-				}
+					if (_backgroundImage)
+					{
+						_backgroundImage.textures = scale9Texture;
+					}
+					else
+					{
+						_backgroundImage = new Scale9Image(scale9Texture);
+						addChild(_backgroundImage);
+					}
 
-				if (_image != null)
-				{
-					_image.color = parseColor(node.getAttribute("backgroundChromeColor"));
+					_backgroundImage.color = parseColor(node.getAttribute("backgroundChromeColor"));
 				}
 			}
-			else
+			else if (e.data == "cursor")
 			{
-				_background.visible = node.getAttribute("backgroundColor") != null;
-				_background.color = parseColor(node.getAttribute("backgroundColor"));
+				var cursor:String = node.getAttribute("cursor");
+				cursor == MouseCursor.AUTO ? removeEventListener(TouchEvent.TOUCH, onCursorTouch) : addEventListener(TouchEvent.TOUCH, onCursorTouch);
 			}
+		}
 
-
-			useHandCursor = node.getAttribute("cursor") == "pointer";
+		private function onCursorTouch(e:TouchEvent):void
+		{
+			Mouse.cursor = e.interactsWith(this) ? node.getAttribute("cursor") : MouseCursor.AUTO;
 		}
 
 		private function onBoxResize(e:Event):void
 		{
-			onBoxChange(e);
 			x = Math.round(node.bounds.x);
 			y = Math.round(node.bounds.y);
-			_background.width = Math.round(node.bounds.width);
-			_background.height = Math.round(node.bounds.height);
+			_backgroundColor.width = Math.round(node.bounds.width);
+			_backgroundColor.height = Math.round(node.bounds.height);
 
-			if (_image)
+			if (_backgroundImage)
 			{
-				_image.width = Math.round(node.bounds.width);
-				_image.height = Math.round(node.bounds.height);
+				_backgroundImage.width = Math.round(node.bounds.width);
+				_backgroundImage.height = Math.round(node.bounds.height);
 			}
 
 			clipRect = new Rectangle(0, 0, node.bounds.width, node.bounds.height);

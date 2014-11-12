@@ -61,6 +61,7 @@ package
 					backgroundColor: gray;
 				}
 
+
 				#leaders:hover
 				{
 					backgroundColor: olive;
@@ -72,18 +73,6 @@ package
 					backgroundColor: blue;
 					width: 10px;
 					height: 10px;
-				}
-
-				#leaders:hover *
-				{
-					backgroundColor: red;
-					width: 20px;
-					height: 20px;
-				}
-
-				#leaders #tmp:hover
-				{
-					backgroundColor: black;
 				}
 
 				*
@@ -101,11 +90,21 @@ package
 
 				#4d *
 				{
-					background9Scale: 8px;
-					backgroundChromeColor: #aaFFaa;
-					backgroundImage: /img/up.png;
 					width: *;
+					height: 100%;
 				}
+
+				/* Default button skin. */
+				button:hover { backgroundImage: /img/over.png; }
+				button:active { backgroundImage: /img/down.png; }
+				button
+				{
+					backgroundImage: /img/up.png;
+					background9Scale: 8px;
+					backgroundChromeColor: #AAFFAA;
+					cursor: button;
+				}
+
 			]]></literal>.valueOf();
 
 			var config:XML =
@@ -114,14 +113,10 @@ package
 						<label text="Header" width="100%" />
 						<node id="2d" width="100%" height="48px" backgroundColor="gray" />
 						<node id="3d" class="brown nerd" width="100%" height="128px" />
-						<node id="4d" layout="flow" orientation="horizontal" gap="4px" width="100%" fontSize="10px">
-							<node id="prev" height="100%"/>
-							<node id="stop" layout="flow" orientation="vertical" gap="8px" padding="8px" fontSize="23px" fontColor="red">
-
-							</node>
-							<node id="next" backgroundChromeColor="lime">
-								<label text="Subtext" fontSize="2em" />
-							</node>
+						<node id="4d" layout="flow" orientation="horizontal" gap="4px" width="100%" height="48px" fontSize="10px">
+							<button />
+							<button backgroundChromeColor="#AAAAFF" />
+							<button />
 						</node>
 					</node>
 					<node id="leaders" width="256px" height="48px">

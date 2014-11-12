@@ -64,9 +64,8 @@ package starling.extensions.talon.core
 
 			// Background
 //			bind("backgroundImage", "none");
-//			bind("background9Scale", "0px");
-//			bind("backgroundColor", "transparent");
-//			bind("backgroundScale", "0px 0px 0px 0px");
+			bind("background9Scale", "0px");
+			bind("backgroundColor", "transparent");
 			bind("backgroundChromeColor", "#FFFFFF");
 
 			// Style
@@ -147,9 +146,11 @@ package starling.extensions.talon.core
 			}
 		}
 
+		/** CCS classes which determine node style. */
 		public function get classes():Vector.<String> { return Vector.<String>(getAttribute("class") ? getAttribute("class").split(" ") : []) }
 		public function set classes(value:Vector.<String>):void { setAttribute("states", value.join(" ")); restyle(); }
 
+		/** Current active CSS pseudoClasses. */
 		public function get states():Vector.<String> { return Vector.<String>(getAttribute("states") ? getAttribute("states").split(" ") : []) }
 		public function set states(value:Vector.<String>):void { setAttribute("states", value.join(" ")); restyle(); }
 
@@ -215,7 +216,7 @@ package starling.extensions.talon.core
 		{
 			_children.push(child);
 			child._parent = this;
-			if (_style) child.setStyleSheet(_style);
+			child.restyle();
 			child.dispatchEventWith(Event.ADDED);
 		}
 

@@ -164,54 +164,84 @@ package starling.extensions.talon.core
 }
 
 import starling.extensions.talon.core.Node;
+import starling.utils.Color;
 
 class StyleSelector
 {
-	private var _parent:StyleSelector;
-	private var _class:String;
+	private var _priority:int;
+
+	private var _ancestor:StyleSelector;
 	private var _id:String;
-	private var _state:String;
-	private var _general:Boolean;
+	private var _type:String;
+	private var _classes:Vector.<String>;
+	private var _states:Vector.<String>;
 
 	public function StyleSelector(string:String)
 	{
+		_classes = new <String>[];
+		_states = new <String>[];
+
 		var split:Array = string.split(' ');
 		var current:String = split.pop();
 
-		if (split.length > 0)
-		{
-			_parent = new StyleSelector(split.join(' '))
-		}
+		// Parent selector
+		if (split.length > 0) _ancestor = new StyleSelector(split.join(' '));
 
+		// This selector
+		var pattern:RegExp = /\*|[.#:]?[\w]+/;
 		while (current.length)
 		{
-			var next:int = Math.min(uint(current.indexOf('#', 1)), uint(current.indexOf('.', 1)), uint(current.indexOf(':', 1)));
-			var name:String = current.substring(1, (next != -1) ? next : int.MAX_VALUE);
+			var token:String = pattern.exec(current)[0];
+			var tokenType:String = token.charAt(0);
+			var tokenValue:String = token.substring(1);
 
-			var first:String = current.charAt(0);
-			/**/ if (first == '.') _class = name;
-			else if (first == '#') _id = name;
-			else if (first == ':') _state = name;
-			else if (first == '*') _general = true;
+			/**/ if (tokenType == '#') _id = tokenValue;
+			else if (tokenType == '.') _classes.push(tokenValue);
+			else if (tokenType == ':') _states.push(tokenValue);
+			else if (tokenType != '*') _type = token;
 
-			current = current.substring(name.length + 1);
+			// Continue parse
+			current = current.substring(token.length);
 		}
+
+		_priority = (_ancestor ? _ancestor.priority : 0) + Color.rgb(_id?1:0, _classes.length+_states.length, _type?1:0);
 	}
 
 	public function match(node:Node):Boolean
 	{
 		if (node == null) return false;
 
-		var byParent:Boolean = !_parent || (_parent && _parent.match(node.parent));
-		var byState:Boolean = !_state || (node.states.indexOf(_state) != -1) || _general;
-		var byClass:Boolean = !_class || (node.classes.indexOf(_class) != -1) || _general;
-		var byId:Boolean = !_id || (node.getAttribute("id") == _id) || _general;
-		return byParent && byState && byClass && byId;
+		var byParent:Boolean = !_ancestor || (_ancestor && _ancestor.match(node.parent));
+		var byClass:Boolean = !_classes.length || hasClasses(node);
+		var byState:Boolean = !_states.length || hasStates(node);
+		var byId:Boolean = !_id || (node.getAttribute("id") == _id);
+		var byType:Boolean = !_type || (node.getAttribute("type") == _type);
+
+		return byParent && byState && byClass && byId && byType;
+	}
+
+	private function hasClasses(node:Node):Boolean
+	{
+		for each (var className:String in _classes)
+		{
+			if (node.classes.indexOf(className) == -1) return false;
+		}
+
+		return true;
+	}
+
+	private function hasStates(node:Node):Boolean
+	{
+		for each (var className:String in _states)
+		{
+			if (node.states.indexOf(className) == -1) return false;
+		}
+
+		return true;
 	}
 
 	public function get priority():int
 	{
-		// TODO
-		return 1;
+		return _priority;
 	}
 }

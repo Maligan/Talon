@@ -128,7 +128,6 @@ package
 
 
 			var builder:TalonFactory = new TalonFactory();
-			builder.setLinkage("label", TalonLabel);
 			builder.addLibraryPrototype("root", config);
 			builder.addLibraryStyleSheet(css);
 			builder.addLibraryResource("/img/up.png", Texture.fromEmbeddedAsset(UP_BYTES));

@@ -63,11 +63,10 @@ package starling.extensions.talon.display
 			}
 			else if (touch.phase == TouchPhase.ENDED)
 			{
-				node.states = new <String>["hover"];
+				node.states = new <String>[];
+				var onclick:String = node.getAttribute("onclick");
+				if (onclick) dispatchEventWith(Event.TRIGGERED, true, onclick);
 			}
-
-//			var click:String = node.getAttribute("click");
-//			if (click != null) dispatchEventWith(Event.TRIGGERED, true, click);
 		}
 
 		public override function addChild(child:DisplayObject):DisplayObject
@@ -110,7 +109,7 @@ package starling.extensions.talon.display
 					else
 					{
 						_backgroundImage = new Scale9Image(scale9Texture);
-						addChild(_backgroundImage);
+						addChildAt(_backgroundImage, 1);
 					}
 
 					_backgroundImage.color = parseColor(node.getAttribute("backgroundChromeColor"));

@@ -32,14 +32,16 @@ package starling.extensions.talon.utils
 			return factory;
 		}
 
-		private var _linkageByDefault:Class = TalonNode;
+		private var _linkageByDefault:Class;
 		private var _linkage:Dictionary = new Dictionary();
 		private var _prototypes:Dictionary = new Dictionary();
 		private var _resources:Dictionary = new Dictionary();
 		private var _style:StyleSheet = new StyleSheet();
 
-		public function TalonFactory():void
+		public function TalonFactory(defaultLinkageClass:Class = null):void
 		{
+			_linkageByDefault = defaultLinkageClass || TalonNode;
+			setLinkage("node", TalonNode);
 			setLinkage("label", TalonLabel);
 		}
 

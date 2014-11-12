@@ -4,13 +4,12 @@ package starling.extensions.talon.display
 	import starling.extensions.talon.core.Gauge;
 	import starling.extensions.talon.core.Node;
 	import starling.extensions.talon.utils.parseColor;
+	import starling.text.BitmapFont;
 	import starling.text.TextField;
 	import starling.text.TextFieldAutoSize;
 
 	public class TalonLabel extends TextField implements ITalonTarget
 	{
-		private static const DEFAULT_FONT_NAME:String = "mini";
-
 		private var _node:Node;
 
 		public function TalonLabel()
@@ -41,7 +40,7 @@ package starling.extensions.talon.display
 			/**/ if (e.data == "text")      text = _node.getAttribute("text");
 			else if (e.data == "halign")    hAlign = _node.getAttribute("halign");
 			else if (e.data == "valign")    vAlign = _node.getAttribute("valign");
-			else if (e.data == "fontName")  fontName = _node.getAttribute("fontName") || DEFAULT_FONT_NAME;
+			else if (e.data == "fontName")  fontName = _node.getAttribute("fontName") || BitmapFont.MINI;
 			else if (e.data == "fontColor") color = parseColor(_node.getAttribute("fontColor"));
 			else if (e.data == "fontSize")  fontSize = node.ppem;
 			else if (e.data == "width" || e.data == "height")

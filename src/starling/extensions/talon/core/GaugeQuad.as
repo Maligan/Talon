@@ -38,6 +38,13 @@ package starling.extensions.talon.core
 				bottom.parse(split[0]);
 				left.parse(split[1]);
 			}
+			else if (split.lenght == 3)
+			{
+				top.parse(split[0]);
+				right.parse(split[1]);
+				bottom.parse(split[2]);
+				left.parse(split[1]);
+			}
 			else if (split.length == 4)
 			{
 				top.parse(split[0]);
@@ -56,6 +63,10 @@ package starling.extensions.talon.core
 			if (top.equals(right) && top.equals(bottom) && top.equals(left))
 			{
 				return top.toString();
+			}
+			else if (!top.equals(bottom) && right.equals(left))
+			{
+				return [top, left, bottom].join(" ");
 			}
 			else if (top.equals(bottom) && right.equals(left))
 			{

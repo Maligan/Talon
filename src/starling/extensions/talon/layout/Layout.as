@@ -9,6 +9,9 @@ package starling.extensions.talon.layout
 		//
 		// Static Registry & Layout multitone
 		//
+		public static const NONE:String = "none";
+		public static const FLOW:String = "flow";
+
 		private static var _initialized:Boolean = false;
 		private static var _layout:Dictionary = new Dictionary();
 		private static var _layoutSelfAttributes:Dictionary = new Dictionary();
@@ -27,8 +30,8 @@ package starling.extensions.talon.layout
 			if (_initialized == false)
 			{
 				_initialized = true;
-				registerLayoutAlias("none", new Layout());
-				registerLayoutAlias("flow", new FlowLayout());
+				registerLayoutAlias(NONE, new Layout());
+				registerLayoutAlias(FLOW, new FlowLayout());
 			}
 
 			return _layout[aliasName];

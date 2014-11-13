@@ -8,11 +8,11 @@ package starling.extensions.talon.display
 	import starling.text.TextField;
 	import starling.text.TextFieldAutoSize;
 
-	public class TalonLabel extends TextField implements ITalonTarget
+	public class TalonTextField extends TextField implements ITalonTarget
 	{
 		private var _node:Node;
 
-		public function TalonLabel()
+		public function TalonTextField()
 		{
 			super(0, 0, null);
 

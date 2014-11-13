@@ -26,13 +26,13 @@ package starling.extensions.talon.display
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
 
-	public class TalonNode extends Sprite implements ITalonTarget
+	public class TalonSprite extends Sprite implements ITalonTarget
 	{
 		private var _node:Node;
 		private var _backgroundColor:Quad;
 		private var _backgroundImage:Scale9Image;
 
-		public function TalonNode()
+		public function TalonSprite()
 		{
 			_node = new Node();
 			_node.addEventListener(Event.CHANGE, onBoxChange);

@@ -7,8 +7,8 @@ package starling.extensions.talon.utils
 	import starling.extensions.talon.core.Node;
 	import starling.extensions.talon.core.StyleSheet;
 	import starling.extensions.talon.display.ITalonTarget;
-	import starling.extensions.talon.display.TalonNode;
-	import starling.extensions.talon.display.TalonLabel;
+	import starling.extensions.talon.display.TalonSprite;
+	import starling.extensions.talon.display.TalonTextField;
 
 	public final class TalonFactory
 	{
@@ -40,9 +40,9 @@ package starling.extensions.talon.utils
 
 		public function TalonFactory(defaultLinkageClass:Class = null):void
 		{
-			_linkageByDefault = defaultLinkageClass || TalonNode;
-			setLinkage("node", TalonNode);
-			setLinkage("label", TalonLabel);
+			_linkageByDefault = defaultLinkageClass || TalonSprite;
+			setLinkage("node", TalonSprite);
+			setLinkage("label", TalonTextField);
 		}
 
 		public function build(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):DisplayObject

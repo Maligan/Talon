@@ -9,8 +9,12 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 
-	import starling.extensions.talon.display.TalonNode;
-	import starling.extensions.talon.display.TalonLabel;
+	import starling.extensions.talon.core.Gauge;
+
+	import starling.extensions.talon.core.Node;
+
+	import starling.extensions.talon.display.TalonSprite;
+	import starling.extensions.talon.display.TalonTextField;
 	import starling.extensions.talon.utils.TalonFactory;
 	import starling.textures.Texture;
 
@@ -22,13 +26,17 @@ package
 
 		private var _document:Sprite;
 
-		private var _talon:TalonNode;
+		private var _talon:TalonSprite;
 
 		public function TalonDebugStartup()
 		{
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
+
+			var node:Node = new Node();
+			node.setStyleSheet(null);
+			node.setResources(null);
 
 			new Starling(Sprite, stage);
 			Starling.current.addEventListener(Event.ROOT_CREATED, onRootCreated);
@@ -108,14 +116,14 @@ package
 			]]></literal>.valueOf();
 
 			var config:XML =
-				<node id="root" layout="flow" orientation="vertical" valign="center" halign="center" gap="4px">
+				<root valign="center" halign="center" gap="4px">
 					<node layout="flow" class="tmp" orientation="vertical" width="50%" padding="0px 8px" gap="4px" fontSize="24px">
 						<label text="Header" width="100%" />
 						<node id="2d" width="100%" height="48px" backgroundColor="gray" />
 						<node id="3d" class="brown nerd" width="100%" height="128px" />
 						<node id="4d" layout="flow" orientation="horizontal" gap="4px" width="100%" height="48px" fontSize="10px">
 							<button />
-							<button backgroundChromeColor="#AAAAFF" />
+							<button backgroundChromeColor="#AFAAAA" />
 							<button />
 						</node>
 					</node>
@@ -124,17 +132,17 @@ package
 						<label text="Hardcore!" />
 					</node>
 					<node id="mother_ship" width="256px" height="48px" backgroundColor="blue" />
-				</node>;
+				</root>;
 
 
-			var builder:TalonFactory = new TalonFactory();
-			builder.addLibraryPrototype("root", config);
-			builder.addLibraryStyleSheet(css);
-			builder.addLibraryResource("/img/up.png", Texture.fromEmbeddedAsset(UP_BYTES));
-			builder.addLibraryResource("/img/over.png", Texture.fromEmbeddedAsset(OVER_BYTES));
-			builder.addLibraryResource("/img/down.png", Texture.fromEmbeddedAsset(DOWN_BYTES));
+			var factory:TalonFactory = new TalonFactory();
+			factory.addLibraryPrototype("root", config);
+			factory.addLibraryStyleSheet(css);
+			factory.addLibraryResource("/img/up.png", Texture.fromEmbeddedAsset(UP_BYTES));
+			factory.addLibraryResource("/img/over.png", Texture.fromEmbeddedAsset(OVER_BYTES));
+			factory.addLibraryResource("/img/down.png", Texture.fromEmbeddedAsset(DOWN_BYTES));
 
-			_talon = builder.build("root") as TalonNode;
+			_talon = factory.build("root") as TalonSprite;
 			_document.addChild(_talon);
 			onResize(null)
 		}

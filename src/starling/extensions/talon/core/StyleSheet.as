@@ -127,7 +127,7 @@ package starling.extensions.talon.core
 		/** Remove CSS comments. */
 		private function uncomment(string:String):String
 		{
-			return string.replace(/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g, '');1
+			return string.replace(/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g, '');
 		}
 
 		//
@@ -209,18 +209,30 @@ class StyleSelector
 
 	public function match(node:Node):Boolean
 	{
-		if (node == null) return false;
-
-		var byParent:Boolean = !_ancestor || (_ancestor && _ancestor.match(node.parent));
-		var byClass:Boolean = !_classes.length || hasClasses(node);
-		var byState:Boolean = !_states.length || hasStates(node);
-		var byId:Boolean = !_id || (node.getAttribute("id") == _id);
-		var byType:Boolean = !_type || (node.getAttribute("type") == _type);
-
-		return byParent && byState && byClass && byId && byType;
+		return node
+			&& byId(node)
+			&& byType(node)
+			&& byAncestor(node)
+			&& byClasses(node)
+			&& byStates(node);
 	}
 
-	private function hasClasses(node:Node):Boolean
+	private function byType(node:Node):Boolean
+	{
+		return !_type || (node.getAttribute("type") == _type);
+	}
+
+	private function byAncestor(node:Node):Boolean
+	{
+		return !_ancestor || (_ancestor && _ancestor.match(node.parent));
+	}
+
+	private function byId(node:Node):Boolean
+	{
+		return !_id || (node.getAttribute("id") == _id);
+	}
+
+	private function byClasses(node:Node):Boolean
 	{
 		for each (var className:String in _classes)
 		{
@@ -230,11 +242,11 @@ class StyleSelector
 		return true;
 	}
 
-	private function hasStates(node:Node):Boolean
+	private function byStates(node:Node):Boolean
 	{
-		for each (var className:String in _states)
+		for each (var stateName:String in _states)
 		{
-			if (node.states.indexOf(className) == -1) return false;
+			if (node.states.indexOf(stateName) == -1) return false;
 		}
 
 		return true;

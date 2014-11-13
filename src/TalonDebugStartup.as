@@ -64,39 +64,13 @@ package
 			var css:String =
 			<literal><![CDATA[
 
-				#leaders
-				{
-					backgroundColor: gray;
-				}
-
-
-				#leaders:hover
-				{
-					backgroundColor: olive;
-					fontSize: 20px;
-				}
-
-				#leaders *
-				{
-					backgroundColor: blue;
-					width: 10px;
-					height: 10px;
-				}
-
-				*
+				root
 				{
 					fontName: Calibri;
 					fontColor: maroon;
 				}
 
-				.tmp .brown
-				{
-					backgroundColor: olive;
-					width: 100%;
-					height: 128px;
-				}
-
-				#4d *
+				#buttons *
 				{
 					width: *;
 					height: 100%;
@@ -111,28 +85,30 @@ package
 					background9Scale: 8px;
 					backgroundChromeColor: #AAFFAA;
 					cursor: button;
+
+					fontName: mini;
+					fontSize: 8px;
 				}
 
 			]]></literal>.valueOf();
 
 			var config:XML =
-				<root valign="center" halign="center" gap="4px">
+				<node id="root" valign="center" halign="center" gap="4px">
 					<node layout="flow" class="tmp" orientation="vertical" width="50%" padding="0px 8px" gap="4px" fontSize="24px">
-						<label text="Header" width="100%" />
-						<node id="2d" width="100%" height="48px" backgroundColor="gray" />
-						<node id="3d" class="brown nerd" width="100%" height="128px" />
-						<node id="4d" layout="flow" orientation="horizontal" gap="4px" width="100%" height="48px" fontSize="10px">
-							<button />
-							<button backgroundChromeColor="#AFAAAA" />
+						<label id="header" text="Header" width="100%" />
+						<node width="100%" height="48px" backgroundColor="gray" />
+						<node class="brown nerd" width="100%" height="128px" />
+						<node id="buttons" layout="flow" orientation="horizontal" gap="4px" width="100%" height="48px" fontSize="10px">
+							<button><label id="mini" text="MINI TEXT" /></button>
 							<button />
 						</node>
 					</node>
-					<node id="leaders" width="256px" height="48px">
+					<node fontName="Consolas" id="leaders" width="256px" height="48px">
 						<node id="tmp" />
 						<label text="Hardcore!" />
 					</node>
 					<node id="mother_ship" width="256px" height="48px" backgroundColor="blue" />
-				</root>;
+				</node>;
 
 
 			var factory:TalonFactory = new TalonFactory();

@@ -244,7 +244,7 @@ internal class Attribute
 	private var _assignedValueSetter:Function;
 	private var _assignedDispatcher:EventDispatcher;
 
-	private var _value:String;
+	private var _inherit:String;
 	private var _assign:String;
 	private var _style:String;
 	private var _initial:String;
@@ -276,23 +276,14 @@ internal class Attribute
 	private function onNodeParentChange(e:Event):void
 	{
 		_node.parent.addEventListener(Event.CHANGE, onParentNodeChange);
-
-		var isInherit:Boolean = (_assign || _style || _initial) == INHERIT;
-		if (isInherit)
-		{
-			dispatchChange();
-		}
+		onParentNodeChange(null)
 	}
 
 	private function onParentNodeChange(e:Event):void
 	{
-		if (e.data == name)
+		if (e == null || e.data == name)
 		{
-			var isInherit:Boolean = (_assign || _style || _initial) == INHERIT;
-			if (isInherit)
-			{
-				dispatchChange();
-			}
+			setInheritValue(_node.parent.getAttribute(name));
 		}
 	}
 
@@ -306,23 +297,7 @@ internal class Attribute
 
 	public function get value():String
 	{
-		if (_value == null)
-		{
-			if (isInherit)
-			{
-				_value = _node.parent ? _node.parent.getAttribute(name) : null;
-			}
-			else if (isInitial)
-			{
-				_value = _initial;
-			}
-			else
-			{
-				_value = _assign || _style || _initial;
-			}
-		}
-
-		return _value;
+		return isInherit ? _inherit : (_assign || _style || _initial);
 	}
 
 	public function setAssignedValue(value:String):void
@@ -359,21 +334,23 @@ internal class Attribute
 		}
 	}
 
+	private function setInheritValue(value:String):void
+	{
+		if (_inherit != value)
+		{
+			_inherit = value;
+			isInherit && dispatchChange();
+		}
+	}
+
 	/** Value must be inherit from parent. */
 	public function get isInherit():Boolean
 	{
 		return (_assign || _style || _initial) == INHERIT;
 	}
 
-	/** Value must be initial value. */
-	public function get isInitial():Boolean
-	{
-		return (_assign || _style) == INITIAL;
-	}
-
 	private function dispatchChange():void
 	{
-		_value = null;
 		_node.dispatchEventWith(Event.CHANGE, false, name);
 	}
 }

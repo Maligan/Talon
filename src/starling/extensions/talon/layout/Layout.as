@@ -15,14 +15,22 @@ package starling.extensions.talon.layout
 		private static var _initialized:Boolean = false;
 		private static var _layout:Dictionary = new Dictionary();
 		private static var _layoutSelfAttributes:Dictionary = new Dictionary();
+		private static var _layoutChildrenAttributes:Dictionary = new Dictionary();
 
-		public static function registerLayoutAlias(aliasName:String, layout:Layout, selfAttributes:Array = null, childAttributes:Array = null):void
+		public static function registerLayoutAlias(aliasName:String, layout:Layout, selfAttributes:Array = null, childrenAttributes:Array = null):void
 		{
-			var attributesDictionary:Dictionary = new Dictionary();
-			for each (var attribute:String in selfAttributes) attributesDictionary[attribute] = true;
-
 			_layout[aliasName] = layout;
-			_layoutSelfAttributes[aliasName] = attributesDictionary;
+
+			var helper:Dictionary;
+			var attribute:String;
+
+			helper = new Dictionary();
+			for each (attribute in selfAttributes) helper[attribute] = true;
+			_layoutSelfAttributes[aliasName] = helper;
+
+			helper = new Dictionary();
+			for each (attribute in childrenAttributes) helper[attribute] = true;
+			_layoutChildrenAttributes[aliasName] = helper;
 		}
 
 		public static function getLayoutByAlias(aliasName:String):Layout

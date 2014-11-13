@@ -57,6 +57,8 @@ package
 			}
 		}
 
+		private var _factory:TalonFactory;
+
 		private function onRootCreated(e:Event):void
 		{
 			_document = Sprite(Starling.current.root);
@@ -66,14 +68,8 @@ package
 
 				root
 				{
-					fontName: Calibri;
+					fontName: Helvetica;
 					fontColor: maroon;
-				}
-
-				#buttons *
-				{
-					width: *;
-					height: 100%;
 				}
 
 				/* Default button skin. */
@@ -85,42 +81,62 @@ package
 					background9Scale: 8px;
 					backgroundChromeColor: #AAFFAA;
 					cursor: button;
+					halign: center;
+					valign: center;
+					padding: 0.5em 1em;
+					clipping: true;
+				}
 
-					fontName: mini;
-					fontSize: 8px;
+				button label
+				{
+					fontName: Helvetica;
+					fontSize: 18pt;
+					fontColor: white;
 				}
 
 			]]></literal>.valueOf();
 
 			var config:XML =
-				<node id="root" valign="center" halign="center" gap="4px">
-					<node layout="flow" class="tmp" orientation="vertical" width="50%" padding="0px 8px" gap="4px" fontSize="24px">
-						<label id="header" text="Header" width="100%" />
-						<node width="100%" height="48px" backgroundColor="gray" />
-						<node class="brown nerd" width="100%" height="128px" />
-						<node id="buttons" layout="flow" orientation="horizontal" gap="4px" width="100%" height="48px" fontSize="10px">
-							<button><label id="mini" text="MINI TEXT" /></button>
-							<button />
+				<node id="root" valign="center" halign="center" gap="4px" fontSize="32px">
+					<node layout="flow" class="tmp" orientation="vertical" width="50%" gap="4px" fontSize="24px">
+						<label text="Header" width="100%" />
+						<node id="buttons" orientation="horizontal" gap="4px" width="100%">
+							<button onclick="remove"><label text="Capture Phase == true" /></button>
+							<button onclick="add"><label text="Hello World" /></button>
+							<button width="*"><label text="Empty Placeholder" /></button>
 						</node>
 					</node>
-					<node fontName="Consolas" id="leaders" width="256px" height="48px">
-						<node id="tmp" />
-						<label text="Hardcore!" />
-					</node>
-					<node id="mother_ship" width="256px" height="48px" backgroundColor="blue" />
 				</node>;
 
+			var button:XML = <button><label text="I'm Button!" /></button>;
 
-			var factory:TalonFactory = new TalonFactory();
-			factory.addLibraryPrototype("root", config);
-			factory.addLibraryStyleSheet(css);
-			factory.addLibraryResource("/img/up.png", Texture.fromEmbeddedAsset(UP_BYTES));
-			factory.addLibraryResource("/img/over.png", Texture.fromEmbeddedAsset(OVER_BYTES));
-			factory.addLibraryResource("/img/down.png", Texture.fromEmbeddedAsset(DOWN_BYTES));
+			_factory = new TalonFactory();
+			_factory.addLibraryPrototype("root", config);
+			_factory.addLibraryPrototype("button", button);
 
-			_talon = factory.build("root") as TalonSprite;
+			_factory.addLibraryStyleSheet(css);
+			_factory.addLibraryResource("/img/up.png", Texture.fromEmbeddedAsset(UP_BYTES));
+			_factory.addLibraryResource("/img/over.png", Texture.fromEmbeddedAsset(OVER_BYTES));
+			_factory.addLibraryResource("/img/down.png", Texture.fromEmbeddedAsset(DOWN_BYTES));
+
+			_talon = _factory.build("root") as TalonSprite;
 			_document.addChild(_talon);
+			_document.addEventListener(Event.TRIGGERED, onTriggered);
 			onResize(null)
+		}
+
+		private function onTriggered(e:Event):void
+		{
+			if (e.data == "add")
+			{
+				_talon.addChild(_factory.build("button", false, false));
+				onResize(null)
+			}
+			else if (e.data == "remove")
+			{
+				_talon.removeChild(_talon.getChildAt(_talon.numChildren - 1));
+				onResize(null)
+			}
 		}
 	}
 }

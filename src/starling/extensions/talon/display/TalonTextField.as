@@ -1,5 +1,7 @@
 package starling.extensions.talon.display
 {
+	import flash.filters.DropShadowFilter;
+
 	import starling.events.Event;
 	import starling.extensions.talon.core.Gauge;
 	import starling.extensions.talon.core.Node;
@@ -19,8 +21,8 @@ package starling.extensions.talon.display
 			_node = new Node();
 			_node.addEventListener(Event.CHANGE, onNodeChange);
 			_node.addEventListener(Event.RESIZE, onNodeResize);
-			_node.width.auto = getTextWidth;
-			_node.height.auto = getTextHeight;
+			_node.width.auto = _node.minWidth.auto = _node.maxWidth.auto = getTextWidth;
+			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = getTextHeight;
 
 			touchable = false;
 		}
@@ -57,10 +59,10 @@ package starling.extensions.talon.display
 
 		private function onNodeResize(e:Event):void
 		{
-			x = Math.round(_node.bounds.x);
-			y = Math.round(_node.bounds.y);
-			width = Math.round(_node.bounds.width);
-			height = Math.round(_node.bounds.height);
+			x = Math.round(_node.bounds.x) - 2;
+			y = Math.round(_node.bounds.y) - 2;
+			width = Math.round(_node.bounds.width) - 2;
+			height = Math.round(_node.bounds.height) - 2;
 		}
 
 		public function get node():Node

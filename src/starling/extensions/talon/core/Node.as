@@ -8,6 +8,8 @@ package starling.extensions.talon.core
 	import starling.events.EventDispatcher;
 	import starling.extensions.talon.layout.Layout;
 	import starling.extensions.talon.utils.Visibility;
+	import starling.utils.HAlign;
+	import starling.utils.VAlign;
 
 	public final class Node extends EventDispatcher
 	{
@@ -37,8 +39,13 @@ package starling.extensions.talon.core
 
 		public function Node():void
 		{
-			width.auto = measureAutoWidth;
-			height.auto = measureAutoHeight;
+			const ZERO:String = "0px";
+			const TRANSPARENT:String = "transparent";
+			const WHITE:String = "white";
+			const NULL:String = null;
+
+			width.auto = minWidth.auto = maxWidth.auto = measureAutoWidth;
+			height.auto = minHeight.auto = maxHeight.auto = measureAutoHeight;
 
 			// Bounds
 			bind("width", Gauge.AUTO, width.toString, width.parse, width);
@@ -49,27 +56,24 @@ package starling.extensions.talon.core
 			bind("maxHeight", Gauge.AUTO, maxHeight.toString, maxHeight.parse, maxHeight);
 
 			// Margin
-			bind("margin", Gauge.AUTO, margin.toString, margin.parse, margin);
-			bind("marginTop", Gauge.AUTO, margin.top.toString, margin.top.parse, margin.top);
-			bind("marginRight", Gauge.AUTO, margin.right.toString, margin.right.parse, margin.right);
-			bind("marginBottom", Gauge.AUTO, margin.bottom.toString, margin.bottom.parse, margin.bottom);
-			bind("marginLeft", Gauge.AUTO, margin.left.toString, margin.left.parse, margin.left);
+			bind("margin", ZERO, margin.toString, margin.parse, margin);
+			bind("marginTop", ZERO, margin.top.toString, margin.top.parse, margin.top);
+			bind("marginRight", ZERO, margin.right.toString, margin.right.parse, margin.right);
+			bind("marginBottom", ZERO, margin.bottom.toString, margin.bottom.parse, margin.bottom);
+			bind("marginLeft", ZERO, margin.left.toString, margin.left.parse, margin.left);
 
 			// Padding
-			bind("padding", Gauge.AUTO, padding.toString, padding.parse, padding);
-			bind("paddingTop", Gauge.AUTO, padding.top.toString, padding.top.parse, padding.top);
-			bind("paddingRight", Gauge.AUTO, padding.right.toString, padding.right.parse, padding.right);
-			bind("paddingBottom", Gauge.AUTO, padding.bottom.toString, padding.bottom.parse, padding.bottom);
-			bind("paddingLeft", Gauge.AUTO, padding.left.toString, padding.left.parse, padding.left);
+			bind("padding", ZERO, padding.toString, padding.parse, padding);
+			bind("paddingTop", ZERO, padding.top.toString, padding.top.parse, padding.top);
+			bind("paddingRight", ZERO, padding.right.toString, padding.right.parse, padding.right);
+			bind("paddingBottom", ZERO, padding.bottom.toString, padding.bottom.parse, padding.bottom);
+			bind("paddingLeft", ZERO, padding.left.toString, padding.left.parse, padding.left);
 
 			// Background
-//			bind("backgroundImage", "none");
-			bind("background9Scale", "0px");
-			bind("backgroundColor", "transparent");
-			bind("backgroundChromeColor", "#FFFFFF");
-
-			// Style
-			// ...
+			bind("backgroundImage", NULL);
+			bind("background9Scale", ZERO);
+			bind("backgroundColor", TRANSPARENT);
+			bind("backgroundChromeColor", WHITE);
 
 			// Font
 			bind("fontColor", Attribute.INHERIT);
@@ -77,19 +81,23 @@ package starling.extensions.talon.core
 			bind("fontSize", Attribute.INHERIT);
 
 			// Layout
-			bind("layout", "flow");
 			bind("visibility", Visibility.VISIBLE);
+			bind("layout", Layout.FLOW);
+			bind("halign", HAlign.LEFT);
+			bind("valign", VAlign.TOP);
+			bind("gap", ZERO);
 		}
 
-		private function bind(name:String, initial:String = null, getter:Function = null, setter:Function = null, dispatcher:EventDispatcher = null):void
+		private function bind(name:String, initial:String, getter:Function = null, setter:Function = null, dispatcher:EventDispatcher = null):void
 		{
-			_attributes[name] = new Attribute(this, name, initial, getter, setter, dispatcher);
+			setter && setter(initial);
+			_attributes[name] = new Attribute(this, name, initial, initial == Attribute.INHERIT, getter, setter, dispatcher);
 		}
 
 		//
 		// Attributes
 		//
-		public function getAttribute(name:String, inherit:Boolean = true):String
+		public function getAttribute(name:String):String
 		{
 			var attribute:Attribute = _attributes[name];
 			return attribute ? attribute.value : null;
@@ -190,17 +198,16 @@ package starling.extensions.talon.core
 			layout.arrange(this, bounds.width, bounds.height);
 		}
 
+		public function get pppt():Number { return Capabilities.screenDPI / 72; }
 		public function get ppem():Number
 		{
 			var attribute:Attribute = _attributes["fontSize"];
-			if (attribute.isInherit) return parent ? parent.ppem : 12;
+			if (attribute.isInherit) return parent?parent.ppem:12;
 			var gauge:Gauge = new Gauge();
 			gauge.parse(attribute.value);
 			var base:Number = parent?parent.ppem:12;
-			return gauge.toPixels(ppp, base, base, 0);
+			return gauge.toPixels(pppt, base, base, 0);
 		}
-
-		public function get ppp():Number { return Capabilities.screenDPI / 72; }
 
 		private function measureAutoWidth():Number { return layout.measureAutoWidth(this); }
 		private function measureAutoHeight():Number { return layout.measureAutoHeight(this); }
@@ -220,6 +227,16 @@ package starling.extensions.talon.core
 			child.dispatchEventWith(Event.ADDED);
 		}
 
+		public function removeChild(child:Node):void
+		{
+			var indexOf:int = _children.indexOf(child);
+			if (indexOf == -1) throw new ArgumentError("");
+			_children.splice(indexOf, 1);
+			child.dispatchEventWith(Event.REMOVED);
+			child._parent = null;
+			child.restyle();
+		}
+
 		public function getChildAt(index:int):Node
 		{
 			return _children[index];
@@ -235,7 +252,6 @@ import starling.extensions.talon.core.Node;
 internal class Attribute
 {
 	public static const INHERIT:String = "inherit";
-	public static const INITIAL:String = "initial";
 
 	private var _node:Node;
 	private var _name:String;
@@ -244,22 +260,27 @@ internal class Attribute
 	private var _assignedValueSetter:Function;
 	private var _assignedDispatcher:EventDispatcher;
 
+	private var _inheritable:Boolean;
 	private var _inherit:String;
 	private var _assign:String;
 	private var _style:String;
 	private var _initial:String;
 
-	public function Attribute(node:Node, name:String, initial:String = null, getter:Function = null, setter:Function = null, dispatcher:EventDispatcher = null)
+	public function Attribute(node:Node, name:String, initial:String = null, inheritable:Boolean = false, getter:Function = null, setter:Function = null, dispatcher:EventDispatcher = null)
 	{
 		if (node == null) throw new ArgumentError("Parameter node must be non-null");
 		if (name == null) throw new ArgumentError("Parameter name must be non-null");
 
+		_node = node;
 		_name = name;
 		_initial = initial;
+		_inheritable = inheritable;
 
-		_node = node;
-		_node.addEventListener(Event.ADDED, onNodeParentChange);
-		_node.addEventListener(Event.REMOVED, onNodeParentChange);
+		if (_inheritable)
+		{
+			_node.addEventListener(Event.ADDED, onNodeAdded);
+			_node.addEventListener(Event.REMOVED, onNodeRemoved);
+		}
 
 		_assignedValueGetter = getter;
 		_assignedValueSetter = setter;
@@ -273,15 +294,24 @@ internal class Attribute
 		dispatchChange();
 	}
 
-	private function onNodeParentChange(e:Event):void
+	//
+	// Inherit observation
+	//
+	private function onNodeAdded(e:Event):void
 	{
 		_node.parent.addEventListener(Event.CHANGE, onParentNodeChange);
-		onParentNodeChange(null)
+		setInheritValue(_node.parent.getAttribute(name));
+	}
+
+	private function onNodeRemoved(e:Event):void
+	{
+		_node.parent.removeEventListener(Event.CHANGE, onParentNodeChange);
+		setInheritValue(null);
 	}
 
 	private function onParentNodeChange(e:Event):void
 	{
-		if (e == null || e.data == name)
+		if (e.data == name)
 		{
 			setInheritValue(_node.parent.getAttribute(name));
 		}
@@ -325,7 +355,7 @@ internal class Attribute
 				{
 					// Для того что бы в onAssignedChange не установилось значение _assign
 					_assignedDispatcher.removeEventListener(Event.CHANGE, onAssignedChange);
-					_assignedValueSetter(value);
+					_assignedValueSetter(this.value);
 					_assignedDispatcher.addEventListener(Event.CHANGE, onAssignedChange);
 				}
 
@@ -346,7 +376,7 @@ internal class Attribute
 	/** Value must be inherit from parent. */
 	public function get isInherit():Boolean
 	{
-		return (_assign || _style || _initial) == INHERIT;
+		return _inheritable && (_assign || _style || _initial) == INHERIT;
 	}
 
 	private function dispatchChange():void

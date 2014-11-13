@@ -75,6 +75,13 @@ package starling.extensions.talon.display
 			return super.addChild(child);
 		}
 
+		override public function removeChildAt(index:int, dispose:Boolean = false):DisplayObject
+		{
+			var child:DisplayObject = getChildAt(index);
+			(child is ITalonTarget) && node.removeChild(ITalonTarget(child).node);
+			return super.removeChildAt(index, dispose);
+		}
+
 		private function onBoxChange(e:Event):void
 		{
 			/**/ if (e.data == "id") name = node.getAttribute("id");
@@ -131,8 +138,12 @@ package starling.extensions.talon.display
 		{
 			x = Math.round(node.bounds.x);
 			y = Math.round(node.bounds.y);
-			_backgroundColor.width = Math.round(node.bounds.width);
-			_backgroundColor.height = Math.round(node.bounds.height);
+
+			if (_backgroundColor)
+			{
+				_backgroundColor.width = Math.round(node.bounds.width);
+				_backgroundColor.height = Math.round(node.bounds.height);
+			}
 
 			if (_backgroundImage)
 			{
@@ -140,7 +151,12 @@ package starling.extensions.talon.display
 				_backgroundImage.height = Math.round(node.bounds.height);
 			}
 
-			clipRect = new Rectangle(0, 0, node.bounds.width, node.bounds.height);
+			clipRect = clipping ? new Rectangle(0, 0, node.bounds.width, node.bounds.height) : null;
+		}
+
+		private function get clipping():Boolean
+		{
+			return node.getAttribute("clipping") == "true";
 		}
 
 		public function get node():Node

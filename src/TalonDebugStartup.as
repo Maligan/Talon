@@ -3,6 +3,7 @@ package
 	import flash.display.MovieClip;
 	import flash.geom.Rectangle;
 	import starling.core.Starling;
+	import starling.display.DisplayObject;
 	import starling.display.Sprite;
 
 	import starling.events.Event;
@@ -108,7 +109,7 @@ package
 					</node>
 				</node>;
 
-			var button:XML = <button><label text="I'm Button!" /></button>;
+			var button:XML = <button onclick="remove_me"><label text="I'm Button!" /></button>;
 
 			_factory = new TalonFactory();
 			_factory.addLibraryPrototype("root", config);
@@ -134,7 +135,12 @@ package
 			}
 			else if (e.data == "remove")
 			{
-				_talon.removeChild(_talon.getChildAt(_talon.numChildren - 1));
+				_talon.removeChildAt(_talon.numChildren - 1);
+				onResize(null)
+			}
+			else if (e.data == "remove_me")
+			{
+				_talon.removeChild(e.target as DisplayObject);
 				onResize(null)
 			}
 		}

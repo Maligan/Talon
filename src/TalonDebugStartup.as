@@ -4,6 +4,7 @@ package
 	import flash.geom.Rectangle;
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
+	import starling.display.DisplayObjectContainer;
 	import starling.display.Sprite;
 
 	import starling.events.Event;
@@ -42,7 +43,7 @@ package
 			new Starling(Sprite, stage);
 			Starling.current.addEventListener(Event.ROOT_CREATED, onRootCreated);
 			Starling.current.start();
-			Starling.current.showStats = true;
+			Starling.current.showStats = false;
 		}
 
 		private function onResize(e:*):void
@@ -67,12 +68,6 @@ package
 			var css:String =
 			<literal><![CDATA[
 
-				root
-				{
-					fontName: Helvetica;
-					fontColor: maroon;
-				}
-
 				/* Default button skin. */
 				button:hover { backgroundImage: /img/over.png; }
 				button:active { backgroundImage: /img/down.png; }
@@ -82,31 +77,31 @@ package
 					background9Scale: 8px;
 					backgroundChromeColor: #AAFFAA;
 					cursor: button;
+
 					halign: center;
 					valign: center;
 					padding: 0.5em 1em;
 					clipping: true;
-				}
+					layout: none;
 
-				button label
-				{
 					fontName: Helvetica;
 					fontSize: 18pt;
 					fontColor: white;
+
+					width: 48px;
+					height: 48px;
 				}
 
 			]]></literal>.valueOf();
 
 			var config:XML =
-				<node id="root" valign="center" halign="center" gap="4px" fontSize="32px">
-					<node layout="flow" class="tmp" orientation="vertical" width="50%" gap="4px" fontSize="24px">
-						<label text="Header" width="100%" />
-						<node id="buttons" orientation="horizontal" gap="4px" width="100%">
-							<button onclick="remove"><label text="Capture Phase == true" /></button>
-							<button onclick="add"><label text="Hello World" /></button>
-							<button width="*"><label text="Empty Placeholder" /></button>
-						</node>
-					</node>
+				<node id="root" orientation="horizontal" gap="4px" interline="4px" wrap="true">
+					<button height="10%" minHeight="48px" maxHeight="96px"/>
+					<button width="*" minWidth="48px" height="*" />
+					<button height="78px" break="true"  />
+					<button width="20%" maxWidth="256px" minWidth="48px" />
+					<button height="15%" minHeight="48px"/>
+					<button />
 				</node>;
 
 			var button:XML = <button onclick="remove_me"><label text="I'm Button!" /></button>;
@@ -128,19 +123,21 @@ package
 
 		private function onTriggered(e:Event):void
 		{
+			var container:DisplayObjectContainer = _talon.getChildByName("container") as DisplayObjectContainer;
+
 			if (e.data == "add")
 			{
-				_talon.addChild(_factory.build("button", false, false));
+				container.addChild(_factory.build("button", false, false));
 				onResize(null)
 			}
 			else if (e.data == "remove")
 			{
-				_talon.removeChildAt(_talon.numChildren - 1);
+				container.removeChildAt(container.numChildren - 1);
 				onResize(null)
 			}
 			else if (e.data == "remove_me")
 			{
-				_talon.removeChild(e.target as DisplayObject);
+				container.removeChild(e.target as DisplayObject);
 				onResize(null)
 			}
 		}

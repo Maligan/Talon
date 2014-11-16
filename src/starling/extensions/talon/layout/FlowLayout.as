@@ -1,201 +1,157 @@
 package starling.extensions.talon.layout
 {
+	import flash.sampler.getSize;
+
 	import starling.extensions.talon.core.Gauge;
 	import starling.extensions.talon.core.Node;
 	import starling.extensions.talon.utils.Orientation;
 
 	public class FlowLayout extends Layout
 	{
-		private static const DEFAULT_GAP:String = Gauge.AUTO;
-		private static const DEFAULT_ORIENTATION:String = Orientation.VERTICAL;
+		private static const GAP:String = "gap";
+		private static const INTERLINE:String = "interline";
+		private static const ORIENTATION:String = "orientation";
+		private static const WRAP:String = "wrap";
+		private static const BREAK:String = "break";
+		private static const TRUE:String = "true";
 
-		private static const gauge:Gauge = new Gauge();
+		private static const _gauge:Gauge = new Gauge();
+
+		private static function toPixels(source:String, pppt:Number, ppem:Number, target:Number, stars:int):Number
+		{
+			_gauge.parse(source);
+			return _gauge.toPixels(pppt, ppem, target, 0, stars);
+		}
 
 		public override function arrange(node:Node, width:Number, height:Number):void
 		{
-			// Layout properties
-			var orientation:String = node.getAttribute("orientation") || DEFAULT_ORIENTATION;
-
-			gauge.parse(node.getAttribute("gap") || DEFAULT_GAP);
-			var gap:Number = gauge.toPixels(node.pppt, node.ppem, (orientation == Orientation.HORIZONTAL) ? node.bounds.width : node.bounds.height, 0);
-			width -= node.padding.left.toPixels(node.pppt, node.ppem, width, 0) + node.padding.right.toPixels(node.pppt, node.ppem, width, 0);
-			height -= node.padding.top.toPixels(node.pppt, node.ppem, height, 0) + node.padding.bottom.toPixels(node.pppt, node.ppem, height, 0);
-
-			//
-			// Horizontal
-			//
-			if (orientation == Orientation.HORIZONTAL)
-			{
-				arrangeSide1("width",  "x",  "measureAutoWidth",  width, gap, node.pppt, node.ppem, node);
-				arrangeSide2("height", "y", "measureAutoHeight", height, gap, node.pppt, node.ppem, node);
-			}
-			else if (orientation == Orientation.VERTICAL)
-			{
-				arrangeSide1("height", "y", "measureAutoHeight", height, gap, node.pppt, node.ppem, node);
-				arrangeSide2("width",  "x", "measureAutoWidth",  width,  gap, node.pppt, node.ppem, node);
-			}
-
-			//
-			// Arrange children
-			//
-			var sumHeight:Number = node.numChildren > 1 ? (node.numChildren - 1) * gap : 0;
-			var sumWidth:Number = node.numChildren > 1 ? (node.numChildren - 1) * gap : 0;
-
-			for (var i:int = 0; i < node.numChildren; i++)
-			{
-				var child:Node = node.getChildAt(i);
-				sumHeight += child.bounds.height;
-				sumWidth += child.bounds.width;
-			}
-			var deltaX:Number = (orientation == Orientation.HORIZONTAL) ? (width - sumWidth) : 0;
-			var deltaY:Number = (orientation == Orientation.VERTICAL) ? (height - sumHeight) : 0;
-
-			var halign:String = node.getAttribute("halign");
-			var valign:String = node.getAttribute("valign");
-			deltaX = halign == "right" ? deltaX : halign == "center" ? deltaX/2 : 0;
-			deltaY = valign == "bottom" ? deltaY : valign == "center" ? deltaY/2 : 0;
-
-			// Padding
-			deltaX += node.padding.left.toPixels(node.pppt, node.ppem, height, 0);
-			deltaY += node.padding.top.toPixels(node.pppt, node.ppem, height, 0);
-
-			for (var i:int = 0; i < node.numChildren; i++)
-			{
-				var child:Node = node.getChildAt(i);
-
-				var dY:Number = 0;
-				var dX:Number = 0;
-
-				if (orientation == Orientation.VERTICAL)
-				{
-					dX = halign == "right" ? (width - child.bounds.width) : halign == "center" ? (width - child.bounds.width)/2 : 0;
-				}
-
-				if (orientation == Orientation.HORIZONTAL)
-				{
-					dY = valign == "bottom" ? (height - child.bounds.height) : valign == "center" ? (height - child.bounds.height)/2 : 0;
-				}
-
-				child.bounds.x += deltaX + dX;
-				child.bounds.y += deltaY + dY;
-				child.commit();
-			}
-		}
-
-		private function arrangeSide2(name:String, asix:String, auto:String, value:int, gap:int, ppp:Number, pem:Number, node:Node):void
-		{
-			for (var i:int = 0; i < node.numChildren; i++)
-			{
-				var child:Node = node.getChildAt(i);
-				child.bounds[name] = child[name].toPixels(ppp, child.ppem, value, 0);
-				child.bounds[asix] = 0;
-			}
-		}
-
-		private function arrangeSide1(name:String, asix:String, auto:String, value:int, gap:int, ppp:Number, pem:Number, node:Node):void
-		{
-			var i:int;
-			var child:Node;
-
-			var starCount:int = 0;
-			var starTarget:int = value - (node.numChildren > 1 ? (node.numChildren - 1) * gap : 0);
-
-			for (i = 0; i < node.numChildren; i++)
-			{
-				child = node.getChildAt(i);
-				if (child[name].unit == Gauge.STAR)
-				{
-					starCount += child[name].amount;
-				}
-				else
-				{
-					child.bounds[name] = child[name].toPixels(ppp, child.ppem, value, 0);
-					starTarget -= child.bounds[name];
-				}
-			}
-
-			for (i = 0; i < node.numChildren; i++)
-			{
-				child = node.getChildAt(i);
-				if (child[name].unit == Gauge.STAR)
-				{
-					child.bounds[name] = child[name].toPixels(ppp, child.ppem, starTarget, starCount);
-				}
-			}
-
-			var shift:int = 0;
-			for (i = 0; i < node.numChildren; i++)
-			{
-				child = node.getChildAt(i);
-				child.bounds[asix] = shift;
-				shift += child.bounds[name] + gap;
-			}
-		}
-
-		public override function measureAutoWidth(node:Node):Number
-		{
-			var result:Number = 0;
-			var orientation:String = node.getAttribute("orientation") || DEFAULT_ORIENTATION;
+			var orientation:String = node.getAttribute(ORIENTATION);
 			var isHorizontal:Boolean = orientation == Orientation.HORIZONTAL;
-
-			// Children Width
-			for (var i:int = 0; i < node.numChildren; i++)
-			{
-				var child:Node = node.getChildAt(i);
-				var childWidth:Number = child.width.toPixels(node.pppt, node.ppem, 0, 0);
-
-				childWidth += child.margin.left.toPixels(node.pppt, node.ppem, 0, 0);
-				childWidth += child.margin.right.toPixels(node.pppt, node.ppem, 0, 0);
-
-				result = isHorizontal ? (result + childWidth) : Math.max(result, childWidth);
-			}
-
-			// Gap
-			if (isHorizontal)
-			{
-				gauge.parse(node.getAttribute("gap") || DEFAULT_GAP);
-				var gap:Number = gauge.toPixels(node.pppt, node.ppem, node.bounds.width, 0);
-				result += node.numChildren > 1 ? (node.numChildren - 1) * gap : 0;
-			}
-
-			// Padding
-			result += node.padding.left.toPixels(node.pppt, node.ppem, 0, 0);
-			result += node.padding.right.toPixels(node.pppt, node.ppem, 0, 0);
-
-			return result;
-		}
-
-		public override function measureAutoHeight(node:Node):Number
-		{
-			var result:Number = 0;
-			var orientation:String = node.getAttribute("orientation") || DEFAULT_ORIENTATION;
 			var isVertical:Boolean = orientation == Orientation.VERTICAL;
 
-			// Children Height
-			for (var i:int = 0; i < node.numChildren; i++)
+			var wrap:Boolean = node.getAttribute(WRAP) == TRUE;
+
+			var gap:Number = toPixels(node.getAttribute(GAP), node.pppt, node.ppem, (isHorizontal ? width : height), 0);
+			var interline:Number = toPixels(node.getAttribute(INTERLINE), node.pppt, node.ppem, (isHorizontal ? width : height), 0);
+
+			// ----
+			var lineOffset:Number = 0;
+			var lineFirstChildIndex:int = 0;
+			var lineLastChildIndex:int = 0;
+			var lineLengthLimit:Number = isHorizontal ? width : height;
+			var lineLength:Number = 0;
+			var lineThickness:Number = 0;
+			var lineThicknessLimit:Number = isVertical ? width : height;
+			var lineStarsCount:int = 0;
+			var lineStarsTarget:Number = 0;
+
+			while (lineFirstChildIndex < node.numChildren)
 			{
-				var child:Node = node.getChildAt(i);
-				var childHeight:Number = child.height.toPixels(node.pppt, node.ppem, 0, 0);
+				trace(lineFirstChildIndex);
 
-				childHeight += child.margin.top.toPixels(node.pppt, node.ppem, 0, 0);
-				childHeight += child.margin.bottom.toPixels(node.pppt, node.ppem, 0, 0);
+				lineLength = 0;
+				lineThickness = 0;
+				lineStarsCount = 0;
+				lineStarsTarget = 0;
 
-				result = isVertical ? (result + childHeight) : Math.max(result, childHeight);
+				for (var i:int = lineFirstChildIndex; i < node.numChildren; i++)
+				{
+					var child:Node = node.getChildAt(i);
+
+					// If child require new line - break it
+					var childIsBreak:Boolean = wrap && (i != lineFirstChildIndex) && (child.getAttribute(BREAK) == TRUE);
+					if (childIsBreak) break;
+
+					var size:Gauge = isHorizontal ? child.width     : child.height;
+					var minSize:Gauge = isHorizontal ? child.minWidth  : child.minHeight;
+					var maxSize:Gauge = isHorizontal ? child.maxWidth  : child.maxHeight;
+					var margin1:Gauge = isHorizontal ? child.margin.left : child.margin.top;
+					var margin2:Gauge = isHorizontal ? child.margin.right : child.margin.bottom;
+
+					// Define margin
+					var margin:Number = 0;
+					margin += margin1.toPixels(child.pppt, child.ppem, lineLengthLimit, 0, 0);
+					margin += margin2.toPixels(child.pppt, child.ppem, lineLengthLimit, 0, 0);
+
+					// Star unit doesn't add any length
+					if (size.unit == Gauge.STAR)
+					{
+						lineStarsCount += size.amount;
+						if (i != lineFirstChildIndex) lineLength += gap;
+					}
+					else
+					{
+						// Define size
+						var childLength:Number = getSize(size, minSize, maxSize, child.pppt, child.ppem, lineLengthLimit, 0, 0) + margin;
+						if (i != lineFirstChildIndex) childLength += gap;
+
+						if (wrap && (i != lineFirstChildIndex))
+						{
+							var isOverflow:Boolean = lineLength + childLength > lineLengthLimit;
+							if (isOverflow) break;
+						}
+
+						lineLength += childLength;
+					}
+
+					lineLastChildIndex = i;
+
+					// Calculate line thickness
+					size = isVertical ? child.width     : child.height;
+					minSize = isVertical ? child.minWidth  : child.minHeight;
+					maxSize = isVertical ? child.maxWidth  : child.maxHeight;
+					margin1 = isVertical ? child.margin.left : child.margin.top;
+					margin2 = isVertical ? child.margin.right : child.margin.bottom;
+
+					margin = margin1.toPixels(node.pppt, node.ppem, lineThicknessLimit, 0, 0) + margin2.toPixels(node.pppt, node.ppem, lineThicknessLimit, 0, 0);
+					lineThickness = Math.max(lineThickness, getSize(size, minSize, maxSize, child.pppt, child.ppem, lineThicknessLimit, 0, 0) + margin);
+				}
+
+				lineStarsTarget = Math.max(0, lineLengthLimit - lineLength);
+				//-------------
+
+				var offset:Number = 0;
+				for (i = lineFirstChildIndex; i <= lineLastChildIndex; i++)
+				{
+					child = node.getChildAt(i);
+
+					if (isHorizontal)
+					{
+						child.bounds.width = getSize(child.width, child.minWidth, child.maxWidth, child.pppt, child.ppem, width, lineStarsTarget, lineStarsCount);
+						child.bounds.height = getSize(child.height, child.minHeight, child.maxHeight, child.pppt, node.ppem, height, lineThickness, 1);
+						offset += child.margin.left.toPixels(node.pppt, node.ppem, width, 0, 0);
+						child.bounds.x = offset;
+						offset += child.bounds.width;
+						offset += child.margin.right.toPixels(node.pppt, node.ppem, width, 0, 0);
+						offset += gap;
+						child.bounds.y = lineOffset;
+					}
+					else if (isVertical)
+					{
+						child.bounds.width = getSize(child.width, child.minWidth, child.maxWidth, child.pppt, child.ppem, width, lineThickness, 1);
+						child.bounds.height = getSize(child.height, child.minHeight, child.maxHeight, child.pppt, node.ppem, height, lineStarsTarget, lineStarsCount);
+						offset += child.margin.top.toPixels(node.pppt, node.ppem, width, 0, 0);
+						child.bounds.y = offset;
+						offset += child.bounds.height;
+						offset += child.margin.bottom.toPixels(node.pppt, node.ppem, width, 0, 0);
+						offset += gap;
+						child.bounds.x = lineOffset;
+					}
+
+					child.commit();
+				}
+
+				lineOffset += lineThickness + interline;
+				lineFirstChildIndex = lineLastChildIndex+1;
 			}
+		}
 
-			// Gap
-			if (isVertical)
-			{
-				gauge.parse(node.getAttribute("gap") || DEFAULT_GAP);
-				var gap:Number = gauge.toPixels(node.pppt, node.ppem, node.bounds.height, 0);
-				result += node.numChildren > 1 ? (node.numChildren - 1) * gap : 0;
-			}
-
-			// Padding
-			result += node.padding.top.toPixels(node.pppt, node.ppem, 0, 0);
-			result += node.padding.bottom.toPixels(node.pppt, node.ppem, 0, 0);
-
-			return result;
+		private function getSize(size:Gauge, min:Gauge, max:Gauge, pppt:Number, ppem:Number, percentTarget:Number, starTarget:Number = 0, starCount:Number = 0):Number
+		{
+			var value:Number = size.toPixels(pppt, ppem, percentTarget, starTarget, starCount);
+			if (!min.isNone) value = Math.max(value, min.toPixels(pppt, ppem, percentTarget, starTarget, starCount));
+			if (!max.isNone) value = Math.min(value, max.toPixels(pppt, ppem, percentTarget, starTarget, starCount));
+			return value;
 		}
 	}
 }

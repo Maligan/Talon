@@ -1,5 +1,6 @@
 package starling.extensions.talon.layout
 {
+	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 
 	import starling.extensions.talon.core.Node;

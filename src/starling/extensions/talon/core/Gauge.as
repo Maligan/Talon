@@ -7,6 +7,8 @@ package starling.extensions.talon.core
 	[Event(name="change", type="starling.events.Event")]
 	public final class Gauge extends EventDispatcher
 	{
+		/** Value is not set, and must be ignored in layout processing. */
+		public static const NONE:String = "none";
 		/** Indicates that final value must be defined by measure context. */
 		public static const AUTO:String = "auto";
 		/** Regular pixel. */
@@ -22,7 +24,7 @@ package starling.extensions.talon.core
 
 		private static const PATTERN:RegExp = /^(-?\d*\.?\d+)(px|pt|em|%|\*|)$/;
 
-		private var _unit:String = AUTO;
+		private var _unit:String = NONE;
 		private var _amount:Number = 0;
 		private var _auto:Function = null;
 
@@ -32,7 +34,12 @@ package starling.extensions.talon.core
 			const prevUnit:String = _unit;
 			const prevAmount:Number = _amount;
 
-			if (string == AUTO)
+			if (string == NONE)
+			{
+				_unit = NONE;
+				_amount = 0;
+			}
+			else if (string == AUTO)
 			{
 				_unit = AUTO;
 				_amount = 0;
@@ -70,21 +77,22 @@ package starling.extensions.talon.core
 
 		/**
 		 * Transform gauge to pixels.
-		 * @param ppp pixels per point
+		 * @param pppt pixels per point
 		 * @param ppem pixels per ems
-		 * @param target percentages/stars target (in pixels)
-		 * @param stars total amount of stars in target
+		 * @param percentTarget percentages/starsCount percentTarget (in pixels)
+		 * @param starsCount total amount of starsCount in percentTarget
 		 */
-		public function toPixels(ppp:Number, ppem:Number, target:Number, stars:int):Number
+		public function toPixels(pppt:Number, ppem:Number, percentTarget:Number, starsTarget:Number, starsCount:int):Number
 		{
 			switch (unit)
 			{
-				case AUTO:		return _auto ? _auto() : 0;
+				case NONE:		return 0;
+				case AUTO:		return auto ? auto() : 0;
 				case PX:		return amount;
-				case PT:		return amount * ppp;
+				case PT:		return amount * pppt;
 				case EM:        return amount * ppem;
-				case PERCENT:   return amount * target / 100;
-				case STAR:		return amount * target / stars;
+				case PERCENT:   return amount * percentTarget / 100;
+				case STAR:		return starsCount ? (amount * starsTarget / starsCount) : 0;
 				default:		throw new Error();
 			}
 		}
@@ -136,6 +144,11 @@ package starling.extensions.talon.core
 		public function get isAuto():Boolean
 		{
 			return _unit == AUTO;
+		}
+
+		public function get isNone():Boolean
+		{
+			return _unit == NONE;
 		}
 
 		public function toString():String

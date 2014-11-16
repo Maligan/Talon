@@ -13,13 +13,13 @@ Talon — библиотека для создания резиновых инт
 - **\*** - Относительная единица. *Вес* относительно других дочерних элементов, c целевой величиной определяемой по контексту.
 
 ### Talon Layouts:
-#### transform
+#### abs
 Used children attributes:	
+- anchor (GaugeQuad)
 - x, y (*px*, *pt*, *em*, *%*)
 - width, height (*px*, *pt*, *em*, *%*)
 - minWidth, minHeight (*px*, *pt*, *em*, *%*)
 - maxWidth, maxHeight (*px*, *pt*, *em*, *%*)
-- rotation
 - scaleX, scaleY
 - pivotX, pivotY (*px*, *pt*, *em*, *%*)
 
@@ -27,6 +27,7 @@ Used children attributes:
 Used self attributes:
 - orientation (*horizontal*, *vertical*)
 - gap (*px*, *pt*, *em*, *%*)
+- interline (*px*, *pt*, *em*, *%*)
 - halign (*left*, *center*, *right*)
 - valign (*top*, *center*, *bottom*)
 - wrap (*true*, *false*)
@@ -36,15 +37,10 @@ Used children attributes:
 - minWidth, minHeight (*px*, *pt*, *em*, *%*)
 - maxWidth, maxHeight (*px*, *pt*, *em*, *%*)
 - break (*true*, *false*)
+- ihalign ???
+- ivalign ???
 
-#### anchor
-Used children attributes:	
-- anchor (GaugeQuad)
-- width, height (*px*, *pt*, *em*, *%*)
-- minWidth, minHeight (*px*, *pt*, *em*, *%*)
-- maxWidth, maxHeight (*px*, *pt*, *em*, *%*)
-
-#### Grid
+#### grid
 
 ### Talon CSS:
 В отличии от стандарта CSS разработанного W3C стили не содержатся в отдельном свойстве узла *styles*, а выставляют значение аттрбутов *по-умолчанию*.

@@ -136,19 +136,24 @@ package starling.extensions.talon.display
 
 		private function onBoxResize(e:Event):void
 		{
-			x = Math.round(node.bounds.x);
-			y = Math.round(node.bounds.y);
+			node.bounds.left = Math.round(node.bounds.left);
+			node.bounds.right = Math.round(node.bounds.right);
+			node.bounds.top = Math.round(node.bounds.top);
+			node.bounds.bottom = Math.round(node.bounds.bottom);
+
+			x = node.bounds.x;
+			y = node.bounds.y;
 
 			if (_backgroundColor)
 			{
-				_backgroundColor.width = Math.round(node.bounds.width);
-				_backgroundColor.height = Math.round(node.bounds.height);
+				_backgroundColor.width = node.bounds.width;
+				_backgroundColor.height = node.bounds.height;
 			}
 
 			if (_backgroundImage)
 			{
-				_backgroundImage.width = Math.round(node.bounds.width);
-				_backgroundImage.height = Math.round(node.bounds.height);
+				_backgroundImage.width = node.bounds.width;
+				_backgroundImage.height = node.bounds.height;
 			}
 
 			clipRect = clipping ? new Rectangle(0, 0, node.bounds.width, node.bounds.height) : null;

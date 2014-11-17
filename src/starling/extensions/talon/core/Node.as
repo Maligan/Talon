@@ -98,7 +98,7 @@ package starling.extensions.talon.core
 		private function bind(name:String, initial:String, styleable:Boolean, getter:Function = null, setter:Function = null, dispatcher:EventDispatcher = null):void
 		{
 			setter && setter(initial);
-			_attributes[name] = new Attribute(this, name, initial, initial == Attribute.INHERIT, true, getter, setter, dispatcher);
+			_attributes[name] = new Attribute(this, name, initial, initial == Attribute.INHERIT, styleable, getter, setter, dispatcher);
 		}
 
 		//
@@ -205,7 +205,9 @@ package starling.extensions.talon.core
 			layout.arrange(this, bounds.width, bounds.height);
 		}
 
-		public function get pppt():Number { return Capabilities.screenDPI / 72; }
+		/** Pixels per millimeter (in current node). */
+		public function get ppmm():Number { return Capabilities.screenDPI / 25.4; }
+		/** Current node 'fontSize' expressed in pixels.*/
 		public function get ppem():Number
 		{
 			var attribute:Attribute = _attributes["fontSize"];
@@ -213,7 +215,7 @@ package starling.extensions.talon.core
 			var gauge:Gauge = new Gauge();
 			gauge.parse(attribute.value);
 			var base:Number = parent?parent.ppem:12;
-			return gauge.toPixels(pppt, base, base, 0, 0);
+			return gauge.toPixels(ppmm, base, base, 0, 0);
 		}
 
 		private function measureAutoWidth():Number { return layout.measureAutoWidth(this); }

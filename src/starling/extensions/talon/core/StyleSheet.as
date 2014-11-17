@@ -18,7 +18,7 @@ package starling.extensions.talon.core
 			_selectorsCursor = new Vector.<StyleSelector>();
 		}
 
-		/** Get an object that reflects the style of the node. */
+		/** Get an object (containing key-value pairs) that reflects the style of the node. */
 		public function getStyle(node:Node, result:Object = null):Object
 		{
 			var style:Object = result || new Object();
@@ -31,11 +31,10 @@ package starling.extensions.talon.core
 				var styles:Object = _stylesBySelector[selector];
 				for (var property:String in styles)
 				{
-					var value:String = styles[property];
 					var priority:int = priorities[property];
 					if (priority <= selector.priority)
 					{
-						style[property] = value;
+						style[property] = styles[property];
 						priorities[property] = selector.priority;
 					}
 				}

@@ -31,10 +31,9 @@ package starling.extensions.talon.layout
 
 			var wrap:Boolean = node.getAttribute(WRAP) == TRUE;
 
-			var gap:Number = toPixels(node.getAttribute(GAP), node.pppt, node.ppem, (isHorizontal ? width : height), 0);
-			var interline:Number = toPixels(node.getAttribute(INTERLINE), node.pppt, node.ppem, (isHorizontal ? width : height), 0);
+			var gap:Number = toPixels(node.getAttribute(GAP), node.ppmm, node.ppem, (isHorizontal ? width : height), 0);
+			var interline:Number = toPixels(node.getAttribute(INTERLINE), node.ppmm, node.ppem, (isHorizontal ? width : height), 0);
 
-			// ----
 			var lineOffset:Number = 0;
 			var lineFirstChildIndex:int = 0;
 			var lineLastChildIndex:int = 0;
@@ -47,8 +46,7 @@ package starling.extensions.talon.layout
 
 			while (lineFirstChildIndex < node.numChildren)
 			{
-				trace(lineFirstChildIndex);
-
+				// ----
 				lineLength = 0;
 				lineThickness = 0;
 				lineStarsCount = 0;
@@ -70,8 +68,8 @@ package starling.extensions.talon.layout
 
 					// Define margin
 					var margin:Number = 0;
-					margin += margin1.toPixels(child.pppt, child.ppem, lineLengthLimit, 0, 0);
-					margin += margin2.toPixels(child.pppt, child.ppem, lineLengthLimit, 0, 0);
+					margin += margin1.toPixels(child.ppmm, child.ppem, lineLengthLimit, 0, 0);
+					margin += margin2.toPixels(child.ppmm, child.ppem, lineLengthLimit, 0, 0);
 
 					// Star unit doesn't add any length
 					if (size.unit == Gauge.STAR)
@@ -82,7 +80,7 @@ package starling.extensions.talon.layout
 					else
 					{
 						// Define size
-						var childLength:Number = getSize(size, minSize, maxSize, child.pppt, child.ppem, lineLengthLimit, 0, 0) + margin;
+						var childLength:Number = getSize(size, minSize, maxSize, child.ppmm, child.ppem, lineLengthLimit, 0, 0) + margin;
 						if (i != lineFirstChildIndex) childLength += gap;
 
 						if (wrap && (i != lineFirstChildIndex))
@@ -103,8 +101,8 @@ package starling.extensions.talon.layout
 					margin1 = isVertical ? child.margin.left : child.margin.top;
 					margin2 = isVertical ? child.margin.right : child.margin.bottom;
 
-					margin = margin1.toPixels(node.pppt, node.ppem, lineThicknessLimit, 0, 0) + margin2.toPixels(node.pppt, node.ppem, lineThicknessLimit, 0, 0);
-					lineThickness = Math.max(lineThickness, getSize(size, minSize, maxSize, child.pppt, child.ppem, lineThicknessLimit, 0, 0) + margin);
+					margin = margin1.toPixels(node.ppmm, node.ppem, lineThicknessLimit, 0, 0) + margin2.toPixels(node.ppmm, node.ppem, lineThicknessLimit, 0, 0);
+					lineThickness = Math.max(lineThickness, getSize(size, minSize, maxSize, child.ppmm, child.ppem, lineThicknessLimit, 0, 0) + margin);
 				}
 
 				lineStarsTarget = Math.max(0, lineLengthLimit - lineLength);
@@ -117,23 +115,23 @@ package starling.extensions.talon.layout
 
 					if (isHorizontal)
 					{
-						child.bounds.width = getSize(child.width, child.minWidth, child.maxWidth, child.pppt, child.ppem, width, lineStarsTarget, lineStarsCount);
-						child.bounds.height = getSize(child.height, child.minHeight, child.maxHeight, child.pppt, node.ppem, height, lineThickness, 1);
-						offset += child.margin.left.toPixels(node.pppt, node.ppem, width, 0, 0);
+						child.bounds.width = getSize(child.width, child.minWidth, child.maxWidth, child.ppmm, child.ppem, width, lineStarsTarget, lineStarsCount);
+						child.bounds.height = getSize(child.height, child.minHeight, child.maxHeight, child.ppmm, node.ppem, height, lineThickness, 1);
+						offset += child.margin.left.toPixels(node.ppmm, node.ppem, width, 0, 0);
 						child.bounds.x = offset;
 						offset += child.bounds.width;
-						offset += child.margin.right.toPixels(node.pppt, node.ppem, width, 0, 0);
+						offset += child.margin.right.toPixels(node.ppmm, node.ppem, width, 0, 0);
 						offset += gap;
 						child.bounds.y = lineOffset;
 					}
 					else if (isVertical)
 					{
-						child.bounds.width = getSize(child.width, child.minWidth, child.maxWidth, child.pppt, child.ppem, width, lineThickness, 1);
-						child.bounds.height = getSize(child.height, child.minHeight, child.maxHeight, child.pppt, node.ppem, height, lineStarsTarget, lineStarsCount);
-						offset += child.margin.top.toPixels(node.pppt, node.ppem, width, 0, 0);
+						child.bounds.width = getSize(child.width, child.minWidth, child.maxWidth, child.ppmm, child.ppem, width, lineThickness, 1);
+						child.bounds.height = getSize(child.height, child.minHeight, child.maxHeight, child.ppmm, node.ppem, height, lineStarsTarget, lineStarsCount);
+						offset += child.margin.top.toPixels(node.ppmm, node.ppem, width, 0, 0);
 						child.bounds.y = offset;
 						offset += child.bounds.height;
-						offset += child.margin.bottom.toPixels(node.pppt, node.ppem, width, 0, 0);
+						offset += child.margin.bottom.toPixels(node.ppmm, node.ppem, width, 0, 0);
 						offset += gap;
 						child.bounds.x = lineOffset;
 					}

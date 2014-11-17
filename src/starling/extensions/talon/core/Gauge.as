@@ -13,8 +13,8 @@ package starling.extensions.talon.core
 		public static const AUTO:String = "auto";
 		/** Regular pixel. */
 		public static const PX:String = "px";
-		/** Typography point equals 1/72 of inch. NB! Device independent unit. */
-		public static const PT:String = "pt";
+		/** Millimeter. NB! Device independent (absolute) unit. (Undesirable to use absolute units. If possible then replace it with em/px). */
+		public static const MM:String = "mm";
 		/** Ems has dynamic value, 1em equals 'fontSize' of current node. */
 		public static const EM:String = "em";
 		/** Relative unit. Percentages target defined by parent node. */
@@ -22,7 +22,7 @@ package starling.extensions.talon.core
 		/** Relative unit (weight based). Unlike percent stars target defined by parent node and siblings. */
 		public static const STAR:String = "*";
 
-		private static const PATTERN:RegExp = /^(-?\d*\.?\d+)(px|pt|em|%|\*|)$/;
+		private static const PATTERN:RegExp = /^(-?\d*\.?\d+)(px|mm|em|%|\*|)$/;
 
 		private var _unit:String = NONE;
 		private var _amount:Number = 0;
@@ -77,19 +77,19 @@ package starling.extensions.talon.core
 
 		/**
 		 * Transform gauge to pixels.
-		 * @param pppt pixels per point
+		 * @param ppmm pixels per millimeter
 		 * @param ppem pixels per ems
 		 * @param percentTarget percentages/starsCount percentTarget (in pixels)
 		 * @param starsCount total amount of starsCount in percentTarget
 		 */
-		public function toPixels(pppt:Number, ppem:Number, percentTarget:Number, starsTarget:Number, starsCount:int):Number
+		public function toPixels(ppmm:Number, ppem:Number, percentTarget:Number, starsTarget:Number, starsCount:int):Number
 		{
 			switch (unit)
 			{
 				case NONE:		return 0;
 				case AUTO:		return auto ? auto() : 0;
 				case PX:		return amount;
-				case PT:		return amount * pppt;
+				case MM:		return amount * ppmm;
 				case EM:        return amount * ppem;
 				case PERCENT:   return amount * percentTarget / 100;
 				case STAR:		return starsCount ? (amount * starsTarget / starsCount) : 0;

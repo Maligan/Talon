@@ -85,22 +85,25 @@ package
 					layout: none;
 
 					fontName: Helvetica;
-					fontSize: 18pt;
+					fontSize: 18px;
 					fontColor: white;
 
 					width: 48px;
 					height: 48px;
+					minWidth: 48px;
+					minHeight: 48px;
 				}
 
 			]]></literal>.valueOf();
 
 			var config:XML =
 				<node id="root" orientation="horizontal" gap="4px" interline="4px" wrap="true">
-					<button height="10%" minHeight="48px" maxHeight="96px"/>
-					<button width="*" minWidth="48px" height="*" />
+					<label text="Very Long Long Header" width="100%" halign="left" fontColor="black" fontName="Helvetica" fontSize="24px" />
+					<button height="10%" break="true" />
+					<button width="*" height="*" />
 					<button height="78px" break="true"  />
-					<button width="20%" maxWidth="256px" minWidth="48px" />
-					<button height="15%" minHeight="48px"/>
+					<button width="20%" />
+					<button height="15%" />
 					<button />
 				</node>;
 

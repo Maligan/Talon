@@ -1,6 +1,5 @@
 package starling.extensions.talon.layout
 {
-	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 
 	import starling.extensions.talon.core.Node;
@@ -8,7 +7,7 @@ package starling.extensions.talon.layout
 	public class Layout
 	{
 		//
-		// Static Registry & Layout multitone
+		// Static Layout Registry
 		//
 		public static const NONE:String = "none";
 		public static const FLOW:String = "flow";
@@ -20,6 +19,8 @@ package starling.extensions.talon.layout
 
 		public static function registerLayoutAlias(aliasName:String, layout:Layout, selfAttributes:Array = null, childrenAttributes:Array = null):void
 		{
+			if (_layout[aliasName] != null) throw new ArgumentError("Layout alias " + aliasName + "already registered");
+
 			_layout[aliasName] = layout;
 
 			var helper:Dictionary;
@@ -39,8 +40,8 @@ package starling.extensions.talon.layout
 			if (_initialized == false)
 			{
 				_initialized = true;
-				registerLayoutAlias(NONE, new Layout());
-				registerLayoutAlias(FLOW, new FlowLayout());
+				if (!_layout[NONE]) registerLayoutAlias(NONE, new Layout());
+				if (!_layout[FLOW]) registerLayoutAlias(FLOW, new FlowLayout());
 			}
 
 			return _layout[aliasName];
@@ -49,16 +50,19 @@ package starling.extensions.talon.layout
 		//
 		// Layout methods
 		//
+		/** This method will be call while arranging, and must calculate node width in pixels, based on node children. */
 		public function measureAutoWidth(node:Node):Number
 		{
 			return 0;
 		}
 
+		/** This method will be call while arranging, and must calculate node height in pixels, based on node children. */
 		public function measureAutoHeight(node:Node):Number
 		{
 			return 0;
 		}
 
+		/** Arrange (define bounds & commit) children within size. */
 		public function arrange(node:Node, width:Number, height:Number):void
 		{
 			// NOP

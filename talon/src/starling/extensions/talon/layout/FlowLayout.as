@@ -5,6 +5,7 @@ package starling.extensions.talon.layout
 	import starling.extensions.talon.core.Gauge;
 	import starling.extensions.talon.core.Node;
 	import starling.extensions.talon.utils.Orientation;
+	import starling.extensions.talon.utils.Orientation;
 
 	public class FlowLayout extends Layout
 	{
@@ -15,12 +16,14 @@ package starling.extensions.talon.layout
 		private static const BREAK:String = "break";
 		private static const TRUE:String = "true";
 
-		private static const _gauge:Gauge = new Gauge();
+		private static const _linesPool:Vector.<Line> = new <Line>[];
+		private static const _gaugeHelper:Gauge = new Gauge();
 
-		private static function toPixels(source:String, pppt:Number, ppem:Number, target:Number, stars:int):Number
+		private static function toPixels(attribute:String, node:Node, target:Number):Number
 		{
-			_gauge.parse(source);
-			return _gauge.toPixels(pppt, ppem, target, 0, stars);
+			var source:String = node.getAttribute(attribute);
+			_gaugeHelper.parse(source);
+			return _gaugeHelper.toPixels(node.ppmm, node.ppem, target, 0, 0);
 		}
 
 		public override function arrange(node:Node, width:Number, height:Number):void
@@ -31,8 +34,8 @@ package starling.extensions.talon.layout
 
 			var wrap:Boolean = node.getAttribute(WRAP) == TRUE;
 
-			var gap:Number = toPixels(node.getAttribute(GAP), node.ppmm, node.ppem, (isHorizontal ? width : height), 0);
-			var interline:Number = toPixels(node.getAttribute(INTERLINE), node.ppmm, node.ppem, (isHorizontal ? width : height), 0);
+			var gap:Number = toPixels(GAP, node, (isHorizontal ? width : height));
+			var interline:Number = toPixels(INTERLINE, node, (isHorizontal ? width : height));
 
 			var lineOffset:Number = 0;
 			var lineFirstChildIndex:int = 0;
@@ -144,6 +147,75 @@ package starling.extensions.talon.layout
 			}
 		}
 
+		public function arrange2(node:Node, width:Number, height:Number):void
+		{
+			var orientation:String = node.getAttribute(ORIENTATION);
+			if (Orientation.isValid(orientation) === false) throw new Error("Attribute orientation has invalid value: " + orientation);
+
+			var gap:Number = toPixels(GAP, node, (orientation == Orientation.HORIZONTAL? width : height));
+			var interline:Number = toPixels(INTERLINE, node, (orientation == Orientation.HORIZONTAL ? width : height));
+
+			var offsetGap:Number = 0;
+			var offsetInterline:Number = 0;
+
+			var lines:Vector.<Line> = measure(node);
+			for each (var line:Line in lines)
+			{
+				for (var i:int = line.firstChildIndex; i <= line.lastChildIndex; i++)
+				{
+					var child:Node = node.getChildAt(i);
+
+
+
+					offsetGap += gap;
+				}
+
+				offsetInterline += interline;
+			}
+
+			_linesPool.concat(lines);
+		}
+
+		public override function measureAutoWidth(node:Node):Number
+		{
+			return measureSide(node, Orientation.HORIZONTAL);
+		}
+
+		public override function measureAutoHeight(node:Node):Number
+		{
+			return measureSide(node, Orientation.VERTICAL);
+		}
+
+		private function measureSide(node, side:String):Number
+		{
+			var orientation:String = node.getAttribute(ORIENTATION);
+			if (Orientation.isValid(orientation) === false) throw new Error("Attribute orientation has invalid value: " + orientation);
+
+			var width:Number = 0;
+			var lines:Vector.<Line> = measure(node);
+			var line:Line = null;
+
+			if (side == orientation)
+			{
+				for each (line in lines) width = Math.max(width, line.length);
+			}
+			else
+			{
+				for each (line in lines) width = width + line.thickness;
+
+				var interline:Number = toPixels(node.getAttribute(INTERLINE), 0, 0, 0, 0);
+				width += (lines.length>1) ? (lines.length-1)*interline : 0;
+			}
+
+			_linesPool.concat(lines);
+			return width;
+		}
+
+		private function measure(node:Node):Vector.<Line>
+		{
+
+		}
+
 		private function getSize(size:Gauge, min:Gauge, max:Gauge, pppt:Number, ppem:Number, percentTarget:Number, starTarget:Number = 0, starCount:Number = 0):Number
 		{
 			var value:Number = size.toPixels(pppt, ppem, percentTarget, starTarget, starCount);
@@ -152,4 +224,15 @@ package starling.extensions.talon.layout
 			return value;
 		}
 	}
+}
+
+class Line
+{
+	public var firstChildIndex:int;
+	public var lastChildIndex:int;
+	public var thickness:Number;
+	public var length:Number;
+
+	public var starLength:Number;
+	public var starAmount:Number;
 }

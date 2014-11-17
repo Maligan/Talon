@@ -27,7 +27,6 @@ package
 		[Embed(source="../assets/down.png")] private static const DOWN_BYTES:Class;
 
 		private var _document:Sprite;
-
 		private var _talon:TalonSprite;
 
 		public function TalonDebugStartup()

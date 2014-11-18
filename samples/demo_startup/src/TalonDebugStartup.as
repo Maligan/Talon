@@ -96,23 +96,15 @@ package
 			]]></literal>.valueOf();
 
 			var config:XML =
-				<node id="root">
-					<node width="100%" height="100%" layout="absolute" padding="10px">
-						<node anchor="auto 100% 100% auto" gap="4px" orientation="horizontal">
-
-							<node gap="4px" orientation="vertical">
-								<button/>
-								<button/>
-								<button/>
-								<button/>
-							</node>
-
-							<button/>
-							<button/>
-							<button/>
+				<node id="root" layout="absolute" padding="10px">
+						<node id="container" anchor="auto 100% 100% auto" gap="4px" orientation="horizontal">
 							<button/>
 						</node>
-					</node>
+
+						<node anchor="auto auto 100% 0%" gap="4px" orientation="horizontal">
+							<button onclick="add"><label text="Add"/></button>
+							<button onclick="remove"><label text="Remove"/></button>
+						</node>
 				</node>;
 
 			var button:XML = <button onclick="remove_me"><label text="I'm Button!" /></button>;
@@ -143,6 +135,7 @@ package
 			}
 			else if (e.data == "remove")
 			{
+				if (container.numChildren == 0) return;
 				container.removeChildAt(container.numChildren - 1);
 				onResize(null)
 			}

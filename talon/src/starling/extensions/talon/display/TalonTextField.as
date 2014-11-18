@@ -1,9 +1,7 @@
 package starling.extensions.talon.display
 {
-	import flash.filters.DropShadowFilter;
 
 	import starling.events.Event;
-	import starling.extensions.talon.core.Gauge;
 	import starling.extensions.talon.core.Node;
 	import starling.extensions.talon.utils.parseColor;
 	import starling.text.BitmapFont;
@@ -23,6 +21,7 @@ package starling.extensions.talon.display
 			_node.addEventListener(Event.RESIZE, onNodeResize);
 			_node.width.auto = _node.minWidth.auto = _node.maxWidth.auto = getTextWidth;
 			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = getTextHeight;
+			autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
 
 			touchable = false;
 		}

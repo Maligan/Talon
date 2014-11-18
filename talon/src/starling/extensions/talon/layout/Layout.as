@@ -11,6 +11,7 @@ package starling.extensions.talon.layout
 		//
 		public static const NONE:String = "none";
 		public static const FLOW:String = "flow";
+		public static const ABSOLUTE:String = "absolute";
 
 		private static var _initialized:Boolean = false;
 		private static var _layout:Dictionary = new Dictionary();
@@ -42,6 +43,7 @@ package starling.extensions.talon.layout
 				_initialized = true;
 				if (!_layout[NONE]) registerLayoutAlias(NONE, new Layout());
 				if (!_layout[FLOW]) registerLayoutAlias(FLOW, new FlowLayout());
+				if (!_layout[ABSOLUTE]) registerLayoutAlias(ABSOLUTE, new AbsoluteLayout());
 			}
 
 			return _layout[aliasName];

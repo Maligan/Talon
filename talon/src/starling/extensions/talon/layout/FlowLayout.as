@@ -13,6 +13,7 @@ package starling.extensions.talon.layout
 		private static const BREAK:String = "break";
 		private static const TRUE:String = "true";
 
+
 		private static const _gaugeHelper:Gauge = new Gauge();
 
 		private static function toPixels(attribute:String, node:Node, target:Number):Number
@@ -24,6 +25,9 @@ package starling.extensions.talon.layout
 
 		public override function arrange(node:Node, width:Number, height:Number):void
 		{
+			// Optimization
+			if (node.numChildren == 0) return;
+
 			var orientation:String = node.getAttribute(ORIENTATION);
 			if (Orientation.isValid(orientation) === false) throw new Error("Attribute orientation has invalid value: " + orientation);
 
@@ -34,7 +38,6 @@ package starling.extensions.talon.layout
 			var offsetInterline:Number = 0;
 
 			var lines:Vector.<Line> = measure(node, width, height);
-			trace(lines);
 			for each (var line:Line in lines)
 			{
 				offsetGap = 0;
@@ -67,7 +70,6 @@ package starling.extensions.talon.layout
 					}
 
 					child.commit();
-					offsetGap += gap;
 				}
 
 				offsetInterline += line.thickness + interline;
@@ -100,7 +102,7 @@ package starling.extensions.talon.layout
 			else
 			{
 				for each (line in lines) length = length + line.thickness;
-				var interline:Number = toPixels(node.getAttribute(INTERLINE), node, length);
+				var interline:Number = toPixels(INTERLINE, node, length);
 				length += (lines.length>1) ? (lines.length-1)*interline : 0;
 			}
 
@@ -117,8 +119,8 @@ package starling.extensions.talon.layout
 			var isVertical:Boolean = orientation == Orientation.VERTICAL;
 
 			var wrap:Boolean = node.getAttribute(WRAP) == TRUE;
-
 			var gap:Number = toPixels(GAP, node, (isHorizontal ? width : height));
+			var isAuto:Boolean = (isHorizontal ? node.width : node.height).isAuto;
 
 			var i:int = 0;
 			var lineLengthLimit:Number = isHorizontal ? width : height;
@@ -166,7 +168,7 @@ package starling.extensions.talon.layout
 						var childLength:Number = getSize(size, minSize, maxSize, child.ppmm, child.ppem, lineLengthLimit, 0, 0) + margin;
 						if (i != line.firstChildIndex) childLength += gap;
 
-						if (wrap && (i != line.firstChildIndex))
+						if (wrap && (i != line.firstChildIndex) && !isAuto)
 						{
 							var isOverflow:Boolean = line.length + childLength > lineLengthLimit;
 							if (isOverflow) break;

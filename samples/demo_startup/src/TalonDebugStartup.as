@@ -96,14 +96,23 @@ package
 			]]></literal>.valueOf();
 
 			var config:XML =
-				<node id="root" layout="flow" orientation="horizontal" gap="4px" interline="4px" wrap="true">
-					<label text="Very Long Long Header" width="100%" halign="left" fontColor="black" fontName="Helvetica" fontSize="24px" />
-					<button height="10%" />
-					<button width="*" height="*" />
-					<button height="78px" break="true" />
-					<button width="20%" />
-					<button height="15%" />
-					<button />
+				<node id="root">
+					<node width="100%" height="100%" layout="absolute" padding="10px">
+						<node anchor="auto 100% 100% auto" gap="4px" orientation="horizontal">
+
+							<node gap="4px" orientation="vertical">
+								<button/>
+								<button/>
+								<button/>
+								<button/>
+							</node>
+
+							<button/>
+							<button/>
+							<button/>
+							<button/>
+						</node>
+					</node>
 				</node>;
 
 			var button:XML = <button onclick="remove_me"><label text="I'm Button!" /></button>;

@@ -27,6 +27,7 @@ package starling.extensions.talon.core
 
 		public const margin:GaugeQuad = new GaugeQuad();
 		public const padding:GaugeQuad = new GaugeQuad();
+		public const anchor:GaugeQuad = new GaugeQuad();
 
 		//
 		// Private properties
@@ -70,6 +71,13 @@ package starling.extensions.talon.core
 			bind("paddingBottom", ZERO, true, padding.bottom.toString, padding.bottom.parse, padding.bottom);
 			bind("paddingLeft", ZERO, true, padding.left.toString, padding.left.parse, padding.left);
 
+			// Anchor (Absolute Position)
+			bind("anchor", Gauge.NONE, true, anchor.toString, anchor.parse, anchor);
+			bind("anchorTop", Gauge.NONE, true, anchor.top.toString, anchor.top.parse, anchor.top);
+			bind("anchorRight", Gauge.NONE, true, anchor.right.toString, anchor.right.parse, anchor.right);
+			bind("anchorBottom", Gauge.NONE, true, anchor.bottom.toString, anchor.bottom.parse, anchor.bottom);
+			bind("anchorLeft", Gauge.NONE, true, anchor.left.toString, anchor.left.parse, anchor.left);
+
 			// Background
 			bind("backgroundImage", NULL, true);
 			bind("background9Scale", ZERO, true);
@@ -89,7 +97,7 @@ package starling.extensions.talon.core
 
 			// Layout
 			bind("visibility", Visibility.VISIBLE, true);
-			bind("layout", Layout.NONE, true);
+			bind("layout", Layout.FLOW, true);
 			bind("orientation", Orientation.HORIZONTAL, true);
 			bind("halign", HAlign.LEFT, true);
 			bind("valign", VAlign.TOP, true);
@@ -220,8 +228,8 @@ package starling.extensions.talon.core
 			return gauge.toPixels(ppmm, base, base, 0, 0);
 		}
 
-		private function measureAutoWidth():Number { return layout.measureAutoWidth(this, 0, 0); }
-		private function measureAutoHeight():Number { return layout.measureAutoHeight(this, 0, 0); }
+		private function measureAutoWidth():Number { return layout.measureAutoWidth(this, bounds.width, bounds.height); }
+		private function measureAutoHeight():Number { return layout.measureAutoHeight(this, bounds.width, bounds.height); }
 		private function get layout():Layout { return Layout.getLayoutByAlias(getAttribute("layout")); }
 
 		//

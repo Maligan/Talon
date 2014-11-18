@@ -96,9 +96,9 @@ package
 			]]></literal>.valueOf();
 
 			var config:XML =
-				<node id="root" orientation="horizontal" gap="4px" interline="4px" wrap="true">
+				<node id="root" layout="flow" orientation="horizontal" gap="4px" interline="4px" wrap="true">
 					<label text="Very Long Long Header" width="100%" halign="left" fontColor="black" fontName="Helvetica" fontSize="24px" />
-					<button height="10%" break="true" />
+					<button height="10%" />
 					<button width="*" height="*" />
 					<button height="78px" break="true" />
 					<button width="20%" />

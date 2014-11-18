@@ -51,13 +51,13 @@ package starling.extensions.talon.layout
 		// Layout methods
 		//
 		/** This method will be call while arranging, and must calculate node width in pixels, based on node children. */
-		public function measureAutoWidth(node:Node):Number
+		public function measureAutoWidth(node:Node, width:Number, height:Number):Number
 		{
 			return 0;
 		}
 
 		/** This method will be call while arranging, and must calculate node height in pixels, based on node children. */
-		public function measureAutoHeight(node:Node):Number
+		public function measureAutoHeight(node:Node, width:Number, height:Number):Number
 		{
 			return 0;
 		}

@@ -7,6 +7,7 @@ package starling.extensions.talon.core
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 	import starling.extensions.talon.layout.Layout;
+	import starling.extensions.talon.utils.Orientation;
 	import starling.extensions.talon.utils.Visibility;
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
@@ -88,7 +89,8 @@ package starling.extensions.talon.core
 
 			// Layout
 			bind("visibility", Visibility.VISIBLE, true);
-			bind("layout", Layout.FLOW, true);
+			bind("layout", Layout.NONE, true);
+			bind("orientation", Orientation.HORIZONTAL, true);
 			bind("halign", HAlign.LEFT, true);
 			bind("valign", VAlign.TOP, true);
 			bind("gap", ZERO, true);
@@ -218,8 +220,8 @@ package starling.extensions.talon.core
 			return gauge.toPixels(ppmm, base, base, 0, 0);
 		}
 
-		private function measureAutoWidth():Number { return layout.measureAutoWidth(this); }
-		private function measureAutoHeight():Number { return layout.measureAutoHeight(this); }
+		private function measureAutoWidth():Number { return layout.measureAutoWidth(this, 0, 0); }
+		private function measureAutoHeight():Number { return layout.measureAutoHeight(this, 0, 0); }
 		private function get layout():Layout { return Layout.getLayoutByAlias(getAttribute("layout")); }
 
 		//

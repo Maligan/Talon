@@ -68,27 +68,24 @@ package
 			<literal><![CDATA[
 
 				/* Default button skin. */
-				button:hover { backgroundImage: /img/over.png; }
-				button:active { backgroundImage: /img/down.png; }
+				button:hover { backgroundImage: resource(over); }
+				button:active { backgroundImage: resource(down); }
 				button
 				{
-					backgroundImage: /img/up.png;
+					backgroundImage: resource(up);
 					background9Scale: 8px;
 					backgroundChromeColor: #AAFFAA;
 					cursor: button;
 
 					halign: center;
 					valign: center;
-					padding: 0.5em 1em;
+					padding: 10px;
 					clipping: true;
-					layout: none;
 
 					fontName: Helvetica;
 					fontSize: 18px;
 					fontColor: white;
 
-					width: 48px;
-					height: 48px;
 					minWidth: 48px;
 					minHeight: 48px;
 				}
@@ -96,15 +93,8 @@ package
 			]]></literal>.valueOf();
 
 			var config:XML =
-				<node id="root" layout="absolute" padding="10px">
-						<node id="container" anchor="auto 100% 100% auto" gap="4px" orientation="horizontal">
-							<button/>
-						</node>
-
-						<node anchor="auto auto 100% 0%" gap="4px" orientation="horizontal">
-							<button onclick="add"><label text="Add"/></button>
-							<button onclick="remove"><label text="Remove"/></button>
-						</node>
+				<node id="root" backgroundColor="gray" padding="8px">
+					<button><label text="It is a good day to die" /></button>
 				</node>;
 
 			var button:XML = <button onclick="remove_me"><label text="I'm Button!" /></button>;
@@ -114,9 +104,9 @@ package
 			_factory.addLibraryPrototype("button", button);
 
 			_factory.addLibraryStyleSheet(css);
-			_factory.addLibraryResource("/img/up.png", Texture.fromEmbeddedAsset(UP_BYTES));
-			_factory.addLibraryResource("/img/over.png", Texture.fromEmbeddedAsset(OVER_BYTES));
-			_factory.addLibraryResource("/img/down.png", Texture.fromEmbeddedAsset(DOWN_BYTES));
+			_factory.addLibraryResource("up", Texture.fromEmbeddedAsset(UP_BYTES));
+			_factory.addLibraryResource("over", Texture.fromEmbeddedAsset(OVER_BYTES));
+			_factory.addLibraryResource("down", Texture.fromEmbeddedAsset(DOWN_BYTES));
 
 			_talon = _factory.build("root") as TalonSprite;
 			_document.addChild(_talon);

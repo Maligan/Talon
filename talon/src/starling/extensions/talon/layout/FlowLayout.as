@@ -3,12 +3,16 @@ package starling.extensions.talon.layout
 	import starling.extensions.talon.core.Gauge;
 	import starling.extensions.talon.core.Node;
 	import starling.extensions.talon.utils.Orientation;
+	import starling.utils.HAlign;
+	import starling.utils.VAlign;
 
 	public class FlowLayout extends Layout
 	{
 		private static const GAP:String = "gap";
 		private static const INTERLINE:String = "interline";
 		private static const ORIENTATION:String = "orientation";
+		private static const VALIGN:String = "valign";
+		private static const HALIGN:String = "halign";
 		private static const WRAP:String = "wrap";
 		private static const BREAK:String = "break";
 		private static const TRUE:String = "true";
@@ -31,16 +35,54 @@ package starling.extensions.talon.layout
 			var orientation:String = node.getAttribute(ORIENTATION);
 			if (Orientation.isValid(orientation) === false) throw new Error("Attribute orientation has invalid value: " + orientation);
 
+			var paddingLeft:Number = node.padding.left.toPixels(node.ppmm, node.ppem, width, 0, 0);
+			var paddingTop:Number = node.padding.top.toPixels(node.ppmm, node.ppem, height, 0, 0);
+
+			width -= paddingLeft + node.padding.right.toPixels(node.ppmm, node.ppem, width, 0, 0);
+			height -= paddingTop + node.padding.bottom.toPixels(node.ppmm, node.ppem, height, 0, 0);
+
 			var gap:Number = toPixels(GAP, node, (orientation == Orientation.HORIZONTAL? width : height));
 			var interline:Number = toPixels(INTERLINE, node, (orientation == Orientation.HORIZONTAL ? width : height));
+
+			var lines:Vector.<Line> = measure(node, width, height);
+			var totalLength:Number = orientation==Orientation.HORIZONTAL?width:height;
+			var totalThickness:Number = orientation==Orientation.HORIZONTAL?height:width;
+
+			var lengthAlign:Number = 0;
+			var thicknessAlign:Number = 0;
+			var valign:String = node.getAttribute(VALIGN);
+			var halign:String = node.getAttribute(HALIGN);
+
+			if (orientation == Orientation.HORIZONTAL)
+			{
+				/**/ if (halign==HAlign.CENTER) lengthAlign = 0.5;
+				else if (halign==HAlign.LEFT) lengthAlign = 0;
+				else if (halign==HAlign.RIGHT) lengthAlign = 1;
+
+				/**/ if (valign==VAlign.CENTER) thicknessAlign = 0.5;
+				else if (valign==VAlign.TOP) thicknessAlign = 0;
+				else if (valign==VAlign.BOTTOM) thicknessAlign = 1;
+			}
+			else
+			{
+				/**/ if (halign==HAlign.CENTER) thicknessAlign = 0.5;
+				else if (halign==HAlign.LEFT) thicknessAlign = 0;
+				else if (halign==HAlign.RIGHT) thicknessAlign = 1;
+
+				/**/ if (valign==VAlign.CENTER) lengthAlign = 0.5;
+				else if (valign==VAlign.TOP) lengthAlign = 0;
+				else if (valign==VAlign.BOTTOM) lengthAlign = 1;
+			}
 
 			var offsetGap:Number = 0;
 			var offsetInterline:Number = 0;
 
-			var lines:Vector.<Line> = measure(node, width, height);
 			for each (var line:Line in lines)
 			{
 				offsetGap = 0;
+
+				var deltaLength:Number = (totalLength - line.length)*lengthAlign;
+				var deltaThickness:Number = (totalThickness - line.thickness)*thicknessAlign;
 
 				for (var i:int = line.firstChildIndex; i <= line.lastChildIndex; i++)
 				{
@@ -55,7 +97,10 @@ package starling.extensions.talon.layout
 						offsetGap += child.bounds.width;
 						offsetGap += child.margin.right.toPixels(node.ppmm, node.ppem, width, 0, 0);
 						offsetGap += gap;
-						child.bounds.y = offsetInterline;
+						child.bounds.y = offsetInterline + child.margin.top.toPixels(node.ppmm, node.ppem, height, 0, 0);
+
+						child.bounds.x += deltaLength;
+						child.bounds.y += deltaThickness;
 					}
 					else
 					{
@@ -66,9 +111,14 @@ package starling.extensions.talon.layout
 						offsetGap += child.bounds.height;
 						offsetGap += child.margin.bottom.toPixels(node.ppmm, node.ppem, width, 0, 0);
 						offsetGap += gap;
-						child.bounds.x = offsetInterline;
+						child.bounds.x = offsetInterline + child.margin.left.toPixels(node.ppmm, node.ppem, width, 0, 0);
+
+						child.bounds.y += deltaThickness;
+						child.bounds.x += deltaLength;
 					}
 
+					child.bounds.x += paddingLeft;
+					child.bounds.y += paddingTop;
 					child.commit();
 				}
 
@@ -78,31 +128,37 @@ package starling.extensions.talon.layout
 
 		public override function measureAutoWidth(node:Node, width:Number, height:Number):Number
 		{
-			return measureSide(node, Orientation.HORIZONTAL, width, height);
+			return measureSide(node, Orientation.HORIZONTAL, width, height)
+				+ node.padding.left.toPixels(node.ppmm, node.ppem, width, 0, 0)
+				+ node.padding.right.toPixels(node.ppmm, node.ppem, width, 0, 0)
 		}
 
 		public override function measureAutoHeight(node:Node, width:Number, height:Number):Number
 		{
 			return measureSide(node, Orientation.VERTICAL, width, height);
+				+ node.padding.top.toPixels(node.ppmm, node.ppem, height, 0, 0)
+				+ node.padding.bottom.toPixels(node.ppmm, node.ppem, height, 0, 0);
 		}
 
 		private function measureSide(node, side:String, width:Number, height:Number):Number
 		{
 			var orientation:String = node.getAttribute(ORIENTATION);
 			if (Orientation.isValid(orientation) === false) throw new Error("Attribute orientation has invalid value: " + orientation);
+			return getMeasureSize(measure(node, width, height), orientation == side, toPixels(INTERLINE, node, orientation==Orientation.HORIZONTAL?height:width));
+		}
 
-			var lines:Vector.<Line> = measure(node, width, height);
+		private function getMeasureSize(lines:Vector.<Line>, primary:Boolean, interline:Number):Number
+		{
 			var line:Line = null;
 			var length:Number = 0;
 
-			if (side == orientation)
+			if (primary)
 			{
 				for each (line in lines) length = Math.max(length, line.length);
 			}
 			else
 			{
 				for each (line in lines) length = length + line.thickness;
-				var interline:Number = toPixels(INTERLINE, node, length);
 				length += (lines.length>1) ? (lines.length-1)*interline : 0;
 			}
 

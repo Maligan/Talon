@@ -94,10 +94,16 @@ package starling.extensions.talon.display
 			else if (e.data == "backgroundImage" || e.data == "backgroundChromeColor" || e.data == "background9Scale")
 			{
 				var image:String = node.getAttribute("backgroundImage");
-				var imageTexture:Texture = node.getResource(image);
+				var imageResourceKey:String = null;
+
+				var resourcePattern:RegExp = /resource\(["']?(.*)["']?\)/;
+				var split:Array = resourcePattern.exec(image);
+				if (split != null) imageResourceKey = split[1];
+
+				var imageTexture:Texture = node.getResource(imageResourceKey);
 				if (imageTexture != null)
 				{
-					var texture:Texture = node.getResource(image);
+					var texture:Texture = imageTexture;
 					var texture9Scale:Rectangle = new Rectangle(0, 0, texture.width, texture.height);
 					var texture9ScaleGauge:GaugeQuad = new GaugeQuad();
 					texture9ScaleGauge.parse(_node.getAttribute("background9Scale"));

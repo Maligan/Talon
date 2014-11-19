@@ -79,7 +79,7 @@ package
 
 					halign: center;
 					valign: center;
-					padding: 10px;
+					padding: 1em;
 					clipping: true;
 
 					fontName: Helvetica;
@@ -87,15 +87,19 @@ package
 					fontColor: white;
 
 					minWidth: 48px;
-					minHeight: 48px;
+					minHeight: 0px;
 				}
 
 			]]></literal>.valueOf();
 
 			var config:XML =
-				<node id="root" backgroundColor="gray" padding="8px">
-					<button><label text="It is a good day to die" /></button>
+				<node id="menu" halign="center" valign="center" gap="4px" orientation="vertical">
+					<label class="header" width="*" text="Steam Age"/>
+					<button id="challenge" onclick="challenge"> <label text="Challenge"/> </button>
+					<button id="leaders" onclick="leaders"> <label text="Leaders"/> </button>
+					<button id="mothership" onclick="mothership"> <label text="Mother Ship"/> </button>
 				</node>;
+
 
 			var button:XML = <button onclick="remove_me"><label text="I'm Button!" /></button>;
 

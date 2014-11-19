@@ -113,8 +113,8 @@ package starling.extensions.talon.layout
 						offsetGap += gap;
 						child.bounds.x = offsetInterline + child.margin.left.toPixels(node.ppmm, node.ppem, width, 0, 0);
 
-						child.bounds.y += deltaThickness;
-						child.bounds.x += deltaLength;
+						child.bounds.x += deltaThickness;
+						child.bounds.y += deltaLength;
 					}
 
 					child.bounds.x += paddingLeft;
@@ -135,7 +135,7 @@ package starling.extensions.talon.layout
 
 		public override function measureAutoHeight(node:Node, width:Number, height:Number):Number
 		{
-			return measureSide(node, Orientation.VERTICAL, width, height);
+			return measureSide(node, Orientation.VERTICAL, width, height)
 				+ node.padding.top.toPixels(node.ppmm, node.ppem, height, 0, 0)
 				+ node.padding.bottom.toPixels(node.ppmm, node.ppem, height, 0, 0);
 		}

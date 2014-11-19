@@ -22,7 +22,6 @@ package starling.extensions.talon.display
 			_node.width.auto = _node.minWidth.auto = _node.maxWidth.auto = getTextWidth;
 			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = getTextHeight;
 			autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
-			border = true;
 
 			touchable = false;
 		}

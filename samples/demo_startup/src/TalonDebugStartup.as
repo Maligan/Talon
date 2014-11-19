@@ -90,15 +90,20 @@ package
 					minHeight: 0px;
 				}
 
+				#editor button
+				{
+					width: 100%;
+				}
+
 			]]></literal>.valueOf();
 
 			var config:XML =
-				<node id="menu" halign="center" valign="center" gap="4px" orientation="vertical">
-					<label class="header" width="*" text="Steam Age"/>
-					<button id="challenge" onclick="challenge"> <label text="Challenge"/> </button>
-					<button id="leaders" onclick="leaders"> <label text="Leaders"/> </button>
-					<button id="mothership" onclick="mothership"> <label text="Mother Ship"/> </button>
-				</node>;
+					<node id="editor" layout="absolute">
+						<node anchor="0 100% 100% auto" width="128px" orientation="vertical">
+							<button><label text="Добавить"/></button>
+							<button><label text="Удалить"/></button>
+						</node>
+					</node>;
 
 
 			var button:XML = <button onclick="remove_me"><label text="I'm Button!" /></button>;

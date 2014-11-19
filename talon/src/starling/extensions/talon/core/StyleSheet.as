@@ -223,7 +223,16 @@ class StyleSelector
 
 	private function byAncestor(node:Node):Boolean
 	{
-		return !_ancestor || (_ancestor && _ancestor.match(node.parent));
+		if (_ancestor == null) return true;
+		if (node.parent == null) return false;
+
+		while (node != null)
+		{
+			if (_ancestor.match(node.parent)) return true;
+			node = node.parent;
+		}
+
+		return false;
 	}
 
 	private function byId(node:Node):Boolean

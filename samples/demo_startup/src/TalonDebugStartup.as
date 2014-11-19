@@ -67,6 +67,14 @@ package
 			var css:String =
 			<literal><![CDATA[
 
+				node#container
+				{
+					gap: 4px;
+					interline: 4px;
+					padding: 4px;
+					wrap: true;
+				}
+
 				/* Default button skin. */
 				button:hover { backgroundImage: resource(over); }
 				button:active { backgroundImage: resource(down); }
@@ -87,22 +95,23 @@ package
 					fontColor: white;
 
 					minWidth: 48px;
-					minHeight: 0px;
-				}
-
-				#editor button
-				{
-					width: 100%;
+					minHeight: 48px;
 				}
 
 			]]></literal>.valueOf();
 
 			var config:XML =
-					<node id="editor" layout="absolute">
-						<node anchor="0 100% 100% auto" width="128px" orientation="vertical">
-							<button><label text="Добавить"/></button>
-							<button><label text="Удалить"/></button>
+					<node id="root" width="100%" height="100%">
+						<node id="container" width="*">
+							<button/>
+							<button/>
+							<button/>
+							<button/>
+							<button/>
+							<button/>
+							<button/>
 						</node>
+						<node width="256px" height="*" backgroundColor="yellow" />
 					</node>;
 
 

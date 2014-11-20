@@ -20,6 +20,7 @@ package
 	import starling.extensions.talon.utils.TalonFactory;
 	import starling.textures.Texture;
 
+	[SWF(backgroundColor="#444444")]
 	public class TalonDebugStartup extends MovieClip
 	{
 		[Embed(source="../assets/up.png")] private static const UP_BYTES:Class;
@@ -81,21 +82,20 @@ package
 				button
 				{
 					backgroundImage: resource(up);
-					background9Scale: 8px;
-					backgroundChromeColor: #AAFFAA;
+					background9Scale: 3px;
 					cursor: button;
 
 					halign: center;
 					valign: center;
-					padding: 1em;
 					clipping: true;
 
-					fontName: Helvetica;
-					fontSize: 18px;
-					fontColor: white;
+					fontName: Tahoma;
+					fontSize: 11px;
+					fontColor: #C9C9C9;
+					padding: 0px 10px 2px 10px;
 
-					minWidth: 48px;
-					minHeight: 48px;
+					minWidth: 20px;
+					minHeight: 20px;
 				}
 
 			]]></literal>.valueOf();
@@ -105,13 +105,11 @@ package
 						<node id="container" width="*">
 							<button/>
 							<button/>
-							<button/>
-							<button/>
+							<button width="auto"><label text="Remove from parent" /></button>
 							<button/>
 							<button/>
 							<button/>
 						</node>
-						<node width="256px" height="*" backgroundColor="yellow" />
 					</node>;
 
 

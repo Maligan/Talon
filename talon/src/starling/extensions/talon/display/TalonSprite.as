@@ -96,7 +96,7 @@ package starling.extensions.talon.display
 				var image:String = node.getAttribute("backgroundImage");
 				var imageResourceKey:String = null;
 
-				var resourcePattern:RegExp = /resource\(["']?(.*)["']?\)/;
+				var resourcePattern:RegExp = /resource\(["']?(\w*)["']?\)/;
 				var split:Array = resourcePattern.exec(image);
 				if (split != null) imageResourceKey = split[1];
 

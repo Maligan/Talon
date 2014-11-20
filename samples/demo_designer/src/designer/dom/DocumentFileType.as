@@ -6,7 +6,8 @@ package designer.dom
 		public static const PROJECT:String = "project";
 		public static const FOLDER:String = "folder";
 		public static const PROTOTYPE:String = "prototype";
-		public static const RESOURCE:String = "resource";
+		public static const IMAGE:String = "resource";
+		public static const ATLAS:String = "atlas";
 		public static const STYLE:String = "style";
 	}
 }

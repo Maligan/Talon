@@ -105,6 +105,11 @@ package starling.extensions.talon.utils
 		//
 		// Library
 		//
+		public function hasPrototype(id:String):Boolean
+		{
+			return _prototypes[id] != null;
+		}
+
 		public function addLibraryPrototype(id:String, xml:XML):void
 		{
 			_prototypes[id] = xml;

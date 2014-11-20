@@ -2,10 +2,13 @@ package
 {
 	import designer.DesignerController;
 
+	import flash.desktop.NativeApplication;
+
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
+	import flash.events.InvokeEvent;
 	import flash.geom.Rectangle;
 
 	import starling.core.Starling;
@@ -18,6 +21,7 @@ package
 	{
 		private var _dropTarget:flash.display.Sprite;
 		private var _controller:DesignerController;
+		private var _invoke:String;
 
 		public function DesignerApplication()
 		{
@@ -29,6 +33,9 @@ package
 			// add this object to fix this problem
 			_dropTarget = new flash.display.Sprite();
 			addChild(_dropTarget);
+
+			NativeApplication.nativeApplication.setAsDefaultApplication("tdp");
+			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
 
 			new Starling(starling.display.Sprite, stage);
 			Starling.current.addEventListener(Event.ROOT_CREATED, onRootCreated);
@@ -54,6 +61,16 @@ package
 		private function onRootCreated(e:*):void
 		{
 			_controller = new DesignerController(this, Starling.current.root as starling.display.Sprite);
+			_invoke && _controller.invoke(_invoke);
+		}
+
+		private function onInvoke(e:InvokeEvent):void
+		{
+			if (e.arguments.length > 0)
+			{
+				_invoke = e.arguments[0];
+				_controller && _controller.invoke(_invoke);
+			}
 		}
 	}
 }

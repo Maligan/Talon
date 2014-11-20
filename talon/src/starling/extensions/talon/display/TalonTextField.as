@@ -1,6 +1,8 @@
 package starling.extensions.talon.display
 {
 
+	import flash.filters.DropShadowFilter;
+
 	import starling.events.Event;
 	import starling.extensions.talon.core.Node;
 	import starling.extensions.talon.utils.parseColor;
@@ -22,6 +24,8 @@ package starling.extensions.talon.display
 			_node.width.auto = _node.minWidth.auto = _node.maxWidth.auto = getTextWidth;
 			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = getTextHeight;
 			autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
+
+			nativeFilters = [new DropShadowFilter(1, 270, 0x000000, 0.3, 1, 1, 10)];
 
 			touchable = false;
 		}

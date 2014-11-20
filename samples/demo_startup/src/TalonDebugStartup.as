@@ -1,6 +1,7 @@
 package
 {
 	import flash.display.MovieClip;
+	import flash.display.StageQuality;
 	import flash.geom.Rectangle;
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
@@ -11,12 +12,9 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 
-	import starling.extensions.talon.core.Gauge;
-
 	import starling.extensions.talon.core.Node;
 
 	import starling.extensions.talon.display.TalonSprite;
-	import starling.extensions.talon.display.TalonTextField;
 	import starling.extensions.talon.utils.TalonFactory;
 	import starling.textures.Texture;
 
@@ -35,6 +33,7 @@ package
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
+			stage.quality = StageQuality.BEST;
 
 			var node:Node = new Node();
 			node.setStyleSheet(null);
@@ -82,7 +81,7 @@ package
 				button
 				{
 					backgroundImage: resource(up);
-					background9Scale: 3px;
+					background9Scale: 4px;
 					cursor: button;
 
 					halign: center;
@@ -92,24 +91,22 @@ package
 					fontName: Tahoma;
 					fontSize: 11px;
 					fontColor: #C9C9C9;
-					padding: 0px 10px 2px 10px;
+					padding: 0.75em 1.25em 1.25em 1.25em;
 
-					minWidth: 20px;
+					minWidth: auto;
+					width: *;
 					minHeight: 20px;
 				}
 
 			]]></literal>.valueOf();
 
 			var config:XML =
-					<node id="root" width="100%" height="100%">
-						<node id="container" width="*">
-							<button/>
-							<button/>
-							<button width="auto"><label text="Remove from parent" /></button>
-							<button/>
-							<button/>
-							<button/>
-						</node>
+					<node id="root" width="100%" height="100%" layout="flow" padding="0.5em" valign="center" halign="center" orientation="vertical">
+						<label text="Select button:" fontSize="11px" fontName="Tahoma" marginBottom="0.5em" marginLeft="2px" halign="left" fontColor="#C9C9C9" width="*" />
+						<button width="auto"><label text="Sed ut perspiciatis unde" /></button>
+						<button width="auto"><label text="Nor again is there anyone" /></button>
+						<button width="auto"><label text="Et harum quidem rerum facilis" /></button>
+						<button width="auto"><label text="Temporibus autem quibusdam" /></button>
 					</node>;
 
 

@@ -34,6 +34,8 @@ package designer
 			_host.addChild(_interface);
 
 			resizeTo(_host.stage.stageWidth, _host.stage.stageHeight);
+
+			_prototype = "button";
 		}
 
 		private function onNativeDragEnter(e:NativeDragEvent):void
@@ -64,9 +66,7 @@ package designer
 
 		private function onDocumentChange(e:Event):void
 		{
-			trace("Было бы неплохо перестроить всё что есть");
-
-			if (_prototype != null)
+			if (_document.factory.hasPrototype(_prototype))
 			{
 				var view:DisplayObject = _document.factory.build(_prototype, true, true);
 				_interface.setPrototype(view);
@@ -76,6 +76,13 @@ package designer
 		public function resizeTo(width:int, height:int):void
 		{
 			_interface.resizeTo(width, height);
+		}
+
+		public function invoke(filePath:String):void
+		{
+			var file:File = new File(filePath);
+			var documentFile = new DocumentFile(file);
+			_document.addFile(documentFile);
 		}
 	}
 }

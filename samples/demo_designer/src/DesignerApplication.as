@@ -9,7 +9,11 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.InvokeEvent;
+	import flash.filesystem.File;
+	import flash.filesystem.FileMode;
+	import flash.filesystem.FileStream;
 	import flash.geom.Rectangle;
+	import flash.utils.ByteArray;
 
 	import starling.core.Starling;
 
@@ -34,7 +38,7 @@ package
 			_dropTarget = new flash.display.Sprite();
 			addChild(_dropTarget);
 
-			NativeApplication.nativeApplication.setAsDefaultApplication("tdp");
+			NativeApplication.nativeApplication.setAsDefaultApplication(DesignerConstants.DESIGNER_FILE_EXTENSION);
 			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
 
 			new Starling(starling.display.Sprite, stage);

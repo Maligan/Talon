@@ -1,23 +1,24 @@
 package designer.dom
 {
+	import designer.utils.TalonDesignerFactory;
+
 	import flash.display.Bitmap;
 	import flash.display.Loader;
 	import flash.filesystem.File;
 
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
-	import starling.extensions.talon.utils.TalonFactory;
 	import starling.textures.Texture;
 
 	public class Document extends EventDispatcher
 	{
 		private var _files:Vector.<DocumentFile>;
-		private var _factory:TalonFactory;
+		private var _factory:TalonDesignerFactory;
 
 		public function Document():void
 		{
 			_files = new Vector.<DocumentFile>();
-			_factory = new TalonFactory();
+			_factory = new TalonDesignerFactory();
 		}
 
 		private function onFileChange(e:Event):void
@@ -82,7 +83,7 @@ package designer.dom
 			documentFile.addEventListener(Event.CHANGE, onFileChange);
 		}
 
-		public function get factory():TalonFactory
+		public function get factory():TalonDesignerFactory
 		{
 			return _factory;
 		}

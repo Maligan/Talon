@@ -50,30 +50,29 @@ package designer.dom
 
 		public function get data():ByteArray
 		{
+			var result:ByteArray = new ByteArray();
 			var stream:FileStream = new FileStream();
 
 			try
 			{
-				var result:ByteArray = new ByteArray();
 				stream.open(_file, FileMode.READ);
 				stream.readBytes(result, 0, stream.bytesAvailable);
-				return result;
 			}
 			finally
 			{
 				stream.close();
 			}
 
-			return null;
+			return result;
 		}
 
 		/** @see designer.dom.DocumentFileType */
 		public function get type():String
 		{
-			if (path.indexOf(".png") != -1) return DocumentFileType.IMAGE;
+			if (path.indexOf(DesignerConstants.DESIGNER_FILE_EXTENSION) != -1) return DocumentFileType.PROJECT;
 			if (path.indexOf(".xml") != -1) return DocumentFileType.PROTOTYPE;
+			if (path.indexOf(".png") != -1) return DocumentFileType.IMAGE;
 			if (path.indexOf(".css") != -1) return DocumentFileType.STYLE;
-			if (path.indexOf(".tdp") != -1) return DocumentFileType.PROJECT;
 			return DocumentFileType.UNKNOWN;
 		}
 

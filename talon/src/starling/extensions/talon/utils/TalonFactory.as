@@ -10,7 +10,7 @@ package starling.extensions.talon.utils
 	import starling.extensions.talon.display.TalonSprite;
 	import starling.extensions.talon.display.TalonTextField;
 
-	public final class TalonFactory
+	public class TalonFactory
 	{
 		public static function fromXML(library:XML):TalonFactory
 		{
@@ -32,11 +32,11 @@ package starling.extensions.talon.utils
 			return factory;
 		}
 
-		private var _linkageByDefault:Class;
-		private var _linkage:Dictionary = new Dictionary();
-		private var _prototypes:Dictionary = new Dictionary();
-		private var _resources:Dictionary = new Dictionary();
-		private var _style:StyleSheet = new StyleSheet();
+		protected var _linkageByDefault:Class;
+		protected var _linkage:Dictionary = new Dictionary();
+		protected var _prototypes:Dictionary = new Dictionary();
+		protected var _resources:Dictionary = new Dictionary();
+		protected var _style:StyleSheet = new StyleSheet();
 
 		public function TalonFactory(defaultLinkageClass:Class = null):void
 		{
@@ -105,11 +105,6 @@ package starling.extensions.talon.utils
 		//
 		// Library
 		//
-		public function hasPrototype(id:String):Boolean
-		{
-			return _prototypes[id] != null;
-		}
-
 		public function addLibraryPrototype(id:String, xml:XML):void
 		{
 			_prototypes[id] = xml;

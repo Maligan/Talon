@@ -74,6 +74,13 @@ package starling.extensions.talon.layout
 				else if (valign==VAlign.BOTTOM) lengthAlign = 1;
 			}
 
+			var sumThickness:Number = 0;
+			for each (var line1:Line in lines)
+			{
+				if (line1 != lines[0]) sumThickness += interline;
+				sumThickness += line1.thickness;
+			}
+
 			var offsetGap:Number = 0;
 			var offsetInterline:Number = 0;
 
@@ -82,7 +89,7 @@ package starling.extensions.talon.layout
 				offsetGap = 0;
 
 				var deltaLength:Number = (totalLength - line.length)*lengthAlign;
-				var deltaThickness:Number = (totalThickness - line.thickness)*thicknessAlign;
+				var deltaThickness:Number = (totalThickness - sumThickness)*thicknessAlign;
 
 				for (var i:int = line.firstChildIndex; i <= line.lastChildIndex; i++)
 				{

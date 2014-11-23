@@ -40,6 +40,7 @@ package designer.dom
 			else if (file.type == DocumentFileType.STYLE)
 			{
 				var text:String = file.data.toString();
+				_factory.clearStyle(); // FIXME: A lot of CSS
 				_factory.addLibraryStyleSheet(text);
 				dispatch && dispatchEventWith(Event.CHANGE);
 			}

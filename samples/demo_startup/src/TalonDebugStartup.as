@@ -3,6 +3,8 @@ package
 	import flash.display.MovieClip;
 	import flash.display.StageQuality;
 	import flash.geom.Rectangle;
+	import flash.system.Capabilities;
+
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
@@ -107,10 +109,7 @@ package
 						<button><label text="Nor again is there anyone" /></button>
 						<button><label text="Et harum quidem rerum facilis" /></button>
 						<button><label text="Temporibus autem quibusdam" /></button>
-						<button orientation="vertical" halign="center" valign="center" gap="4px">
-							<input multiline="true" width="auto" height="auto" halign="left" fontColor="#C9C9C9" fontName="Tahoma" fontSize="11px" text="Native Text Field" backgroundColor="#222222" />
-							<button width="32px" height="32px"></button>
-						</button>
+						<input multiline="true" width="auto" height="auto" halign="left" fontColor="#C9C9C9" fontName="Tahoma" fontSize="11px" text="Native Text Field" backgroundColor="#222222" />
 					</node>;
 
 

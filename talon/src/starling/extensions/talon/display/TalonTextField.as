@@ -25,7 +25,7 @@ package starling.extensions.talon.display
 			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = getTextHeight;
 			autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
 
-			nativeFilters = [new DropShadowFilter(1, 270, 0x000000, 0.3, 1, 1, 10)];
+			//nativeFilters = [new DropShadowFilter(1, 270, 0x000000, 0.3, 1, 1, 10)];
 
 			touchable = false;
 		}

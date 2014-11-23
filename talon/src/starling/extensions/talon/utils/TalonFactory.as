@@ -1,5 +1,6 @@
 package starling.extensions.talon.utils
 {
+	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 
 	import starling.display.DisplayObject;
@@ -12,22 +13,11 @@ package starling.extensions.talon.utils
 
 	public class TalonFactory
 	{
-		public static function fromXML(library:XML):TalonFactory
+		public static function fromArchive(archive:ByteArray):TalonFactory
 		{
 			var factory:TalonFactory = new TalonFactory();
 
-			for each (var item:XML in library.*)
-			{
-				switch (item.name().toString())
-				{
-					case "stylesheet":
-						factory.addLibraryStyleSheet(item.valueOf());
-						break;
-					case "prototype":
-						factory.addLibraryPrototype(item.@id, item.*[0]);
-						break;
-				}
-			}
+
 
 			return factory;
 		}
@@ -105,6 +95,22 @@ package starling.extensions.talon.utils
 		//
 		// Library
 		//
+		public function addLibrary(xml:XML):void
+		{
+			for each (var item:XML in xml.*)
+			{
+				switch (item.name().toString())
+				{
+					case "stylesheet":
+						addLibraryStyleSheet(item.valueOf());
+						break;
+					case "prototype":
+						addLibraryPrototype(item.@id, item.*[0]);
+						break;
+				}
+			}
+		}
+
 		public function addLibraryPrototype(id:String, xml:XML):void
 		{
 			_prototypes[id] = xml;

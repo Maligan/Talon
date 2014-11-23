@@ -81,7 +81,7 @@ package designer
 		public function invoke(filePath:String):void
 		{
 			var file:File = new File(filePath);
-			var documentFile = new DocumentFile(file);
+			var documentFile:DocumentFile = new DocumentFile(file);
 			_document.addFile(documentFile);
 		}
 	}

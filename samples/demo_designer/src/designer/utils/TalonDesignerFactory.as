@@ -1,5 +1,6 @@
 package designer.utils
 {
+	import starling.extensions.talon.core.StyleSheet;
 	import starling.extensions.talon.utils.TalonFactory;
 
 	/** Extended version of TalonFactory for designer purpose. */
@@ -8,6 +9,11 @@ package designer.utils
 		public function hasPrototype(id:String):Boolean
 		{
 			return _prototypes[id] != null;
+		}
+
+		public function clearStyle():void
+		{
+			_style = new StyleSheet();
 		}
 	}
 }

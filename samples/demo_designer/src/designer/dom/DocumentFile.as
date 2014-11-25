@@ -45,7 +45,7 @@ package designer.dom
 
 		public function equals(file:DocumentFile):Boolean
 		{
-			return path == file.path;
+			return url == file.url;
 		}
 
 		public function get data():ByteArray
@@ -69,16 +69,21 @@ package designer.dom
 		/** @see designer.dom.DocumentFileType */
 		public function get type():String
 		{
-			if (path.indexOf(DesignerConstants.DESIGNER_FILE_EXTENSION) != -1) return DocumentFileType.PROJECT;
-			if (path.indexOf(".xml") != -1) return DocumentFileType.PROTOTYPE;
-			if (path.indexOf(".png") != -1) return DocumentFileType.IMAGE;
-			if (path.indexOf(".css") != -1) return DocumentFileType.STYLE;
+			if (url.indexOf(DesignerConstants.DESIGNER_FILE_EXTENSION) != -1) return DocumentFileType.PROJECT;
+			if (url.indexOf(".xml") != -1) return DocumentFileType.PROTOTYPE;
+			if (url.indexOf(".png") != -1) return DocumentFileType.IMAGE;
+			if (url.indexOf(".css") != -1) return DocumentFileType.STYLE;
 			return DocumentFileType.UNKNOWN;
 		}
 
-		public function get path():String
+		public function get url():String
 		{
-			return _file.nativePath;
+			return _file.url;
+		}
+
+		public function getRelativePath(documentFile:DocumentFile):String
+		{
+			return documentFile._file.parent.getRelativePath(_file);
 		}
 	}
 }

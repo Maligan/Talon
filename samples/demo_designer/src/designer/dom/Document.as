@@ -53,7 +53,7 @@ package designer.dom
 				function onComplete(e:*):void
 				{
 					var texture:Texture = Texture.fromBitmap(loader.content as Bitmap);
-					var key:String = file.path.substring(file.path.lastIndexOf("\\") + 1, file.path.lastIndexOf("."));
+					var key:String = file.url.substring(file.url.lastIndexOf("/") + 1, file.url.lastIndexOf("."));
 					_factory.addLibraryResource(key, texture);
 					dispatchEventWith(Event.CHANGE); // Всегда диспатчить
 				}

@@ -10,10 +10,12 @@ package designer.dom
 	import starling.events.EventDispatcher;
 	import starling.textures.Texture;
 
+	[Event(name="change", type="starling.events.Event")]
 	public class Document extends EventDispatcher
 	{
 		private var _files:Vector.<DocumentFile>;
 		private var _factory:TalonDesignerFactory;
+		private var _root:File;
 
 		public function Document():void
 		{
@@ -60,6 +62,10 @@ package designer.dom
 			}
 			else if (file.type == DocumentFileType.PROJECT)
 			{
+				if (_root && _root != file) throw new Error("Project file already exists");
+
+				_root = file;
+
 				var files:Array = file.data.toString().replace(/^\s*|\s*$/g, "").split("\n");
 
 				for each (var filePath:String in files)
@@ -91,7 +97,22 @@ package designer.dom
 
 		public function get files():Vector.<DocumentFile>
 		{
-			return _files.slice();
+			var result:Vector.<DocumentFile> = _files.slice();
+			var indexOfRoot:int = result.indexOf(_root);
+			result[indexOfRoot] = result[result.length - 1];
+			result.length--;
+			return result;
+		}
+
+		/** Get document file name. */
+		public function getRelativeName(documentFile:DocumentFile):String
+		{
+			return _root.parent.getRelativePath(documentFile.file);
+		}
+
+		public function setRoot(file:File):void
+		{
+			_root = file;
 		}
 	}
 }

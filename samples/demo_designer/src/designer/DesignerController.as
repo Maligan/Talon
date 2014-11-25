@@ -1,10 +1,9 @@
 package designer
 {
-	import deng.fzip.FZip;
+	import designer.commands.SaveCommand;
 
 	import designer.dom.Document;
 	import designer.dom.DocumentFile;
-	import designer.dom.DocumentFileType;
 
 	import flash.desktop.ClipboardFormats;
 	import flash.desktop.NativeDragActions;
@@ -12,9 +11,6 @@ package designer
 	import flash.events.KeyboardEvent;
 	import flash.events.NativeDragEvent;
 	import flash.filesystem.File;
-	import flash.filesystem.FileMode;
-	import flash.filesystem.FileStream;
-	import flash.net.FileReference;
 	import flash.ui.Keyboard;
 
 	import starling.display.DisplayObject;
@@ -35,9 +31,6 @@ package designer
 			_launcher.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onNativeDragEnter);
 			_launcher.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onNativeDragDrop);
 			_launcher.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-
-			_document = new Document();
-			_document.addEventListener(Event.CHANGE, onDocumentChange);
 
 			_interface = new DesignerInterface();
 
@@ -61,27 +54,7 @@ package designer
 			function onFileSelect(e:*):void
 			{
 				var archive:File = File(e.target);
-				var zip:FZip = new FZip();
-
-				var file:DocumentFile = null;
-				var project:DocumentFile = null;
-				for each (file in _document.files)
-					if (file.type == DocumentFileType.PROJECT)
-						{ project = file; break; }
-
-				for each (file in _document.files)
-				{
-					if (file != project)
-					{
-						var name:String = file.getRelativePath(project);
-						zip.addFile(name, file.data);
-					}
-				}
-
-				var fileStream:FileStream = new FileStream();
-				fileStream.open(archive, FileMode.WRITE);
-				zip.serialize(fileStream);
-				fileStream.close();
+				new SaveCommand(_document, archive).execute();
 			}
 		}
 
@@ -92,8 +65,16 @@ package designer
 				var files:Array = e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
 				if (files.length != 0)
 				{
-					NativeDragManager.dropAction = NativeDragActions.LINK;
-					NativeDragManager.acceptDragDrop(_launcher);
+					if (_document != null)
+					{
+						NativeDragManager.dropAction = NativeDragActions.LINK;
+						NativeDragManager.acceptDragDrop(_launcher);
+					}
+					else if (files.length == 1 && files[0].indexOf("." + DesignerConstants.DESIGNER_FILE_EXTENSION) != -1)
+					{
+						NativeDragManager.dropAction = NativeDragActions.LINK;
+						NativeDragManager.acceptDragDrop(_launcher);
+					}
 				}
 			}
 		}
@@ -103,10 +84,13 @@ package designer
 			var files:Array = e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
 			if (files.length != 0)
 			{
-				for each (var file:File in files)
+				if (_document != null)
 				{
-					var documentFile:DocumentFile = new DocumentFile(file);
-					_document.addFile(documentFile);
+					for each (var file:File in files)
+					{
+						var documentFile:DocumentFile = new DocumentFile(file);
+						_document.addFile(documentFile);
+					}
 				}
 			}
 		}

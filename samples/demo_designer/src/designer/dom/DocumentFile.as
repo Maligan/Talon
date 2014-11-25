@@ -81,9 +81,10 @@ package designer.dom
 			return _file.url;
 		}
 
-		public function getRelativePath(documentFile:DocumentFile):String
+		/** For internal usage ONLY. */
+		internal function get file():File
 		{
-			return documentFile._file.parent.getRelativePath(_file);
+			return _file;
 		}
 	}
 }

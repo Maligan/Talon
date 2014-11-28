@@ -24,23 +24,15 @@ package designer.dom
 			_file = file;
 			_monitor = new FileMonitor(_file);
 			_monitor.addEventListener(FileMonitorEvent.CHANGE, onFileChange);
-			_monitor.addEventListener(FileMonitorEvent.MOVE, onFileMove);
+			_monitor.addEventListener(FileMonitorEvent.MOVE, onFileChange);
+			_monitor.addEventListener(FileMonitorEvent.CREATE, onFileChange);
 			_monitor.watch();
 		}
 
 		private function onFileChange(e:FileMonitorEvent):void
 		{
+			trace(_file.nativePath, e.type);
 			dispatchEventWith(Event.CHANGE);
-		}
-
-		private function onFileMove(e:FileMonitorEvent):void
-		{
-			dispatchEventWith(Event.CHANGE);
-		}
-
-		public function resolve(path:String):String
-		{
-			return _file.parent.resolvePath(path).nativePath;
 		}
 
 		public function equals(file:DocumentFile):Boolean
@@ -69,11 +61,19 @@ package designer.dom
 		/** @see designer.dom.DocumentFileType */
 		public function get type():String
 		{
-			if (url.indexOf(DesignerConstants.DESIGNER_FILE_EXTENSION) != -1) return DocumentFileType.PROJECT;
-			if (url.indexOf(".xml") != -1) return DocumentFileType.PROTOTYPE;
-			if (url.indexOf(".png") != -1) return DocumentFileType.IMAGE;
-			if (url.indexOf(".css") != -1) return DocumentFileType.STYLE;
+			if (extension == "xml") return DocumentFileType.PROTOTYPE;
+			if (extension == "css") return DocumentFileType.STYLE;
+			if (DesignerConstants.SUPPORTED_IMAGE_FORMATS.indexOf(extension) != -1) return DocumentFileType.IMAGE;
+			if (_file.isDirectory) return DocumentFileType.DIRECTORY;
+
 			return DocumentFileType.UNKNOWN;
+		}
+
+		private function get extension():String
+		{
+			var extensionDosIndex:int = url.lastIndexOf('.');
+			if (extensionDosIndex != -1) return url.substring(extensionDosIndex + 1);
+			return null;
 		}
 
 		public function get url():String

@@ -16,9 +16,11 @@ package designer.dom
 		private var _files:Vector.<DocumentFile>;
 		private var _factory:TalonDesignerFactory;
 		private var _root:File;
+		private var _properties:Object;
 
-		public function Document():void
+		public function Document(properties:Object):void
 		{
+			_properties = properties;
 			_files = new Vector.<DocumentFile>();
 			_factory = new TalonDesignerFactory();
 		}
@@ -31,6 +33,10 @@ package designer.dom
 
 		private function apply(file:DocumentFile, dispatch:Boolean = true):void
 		{
+			if (file.type == DocumentFileType.DIRECTORY)
+			{
+
+			}
 			if (file.type == DocumentFileType.PROTOTYPE)
 			{
 				var xml:XML = new XML(file.data);
@@ -60,23 +66,6 @@ package designer.dom
 					dispatchEventWith(Event.CHANGE); // Всегда диспатчить
 				}
 			}
-			else if (file.type == DocumentFileType.PROJECT)
-			{
-				if (_root && _root != file) throw new Error("Project file already exists");
-
-				_root = file;
-
-				var files:Array = file.data.toString().replace(/^\s*|\s*$/g, "").split("\n");
-
-				for each (var filePath:String in files)
-				{
-					var projectFile:File = new File(file.resolve(filePath));
-					var projectDocumentFile:DocumentFile = new DocumentFile(projectFile);
-					addFile(projectDocumentFile, true);
-				}
-
-				dispatch && dispatchEventWith(Event.CHANGE);
-			}
 		}
 
 		public function addFile(documentFile:DocumentFile, silent:Boolean = false):void
@@ -97,11 +86,12 @@ package designer.dom
 
 		public function get files():Vector.<DocumentFile>
 		{
-			var result:Vector.<DocumentFile> = _files.slice();
-			var indexOfRoot:int = result.indexOf(_root);
-			result[indexOfRoot] = result[result.length - 1];
-			result.length--;
-			return result;
+			return new <DocumentFile>[];
+//			var result:Vector.<DocumentFile> = _files.slice();
+//			var indexOfRoot:int = result.indexOf(_root);
+//			result[indexOfRoot] = result[result.length - 1];
+//			result.length--;
+//			return result;
 		}
 
 		/** Get document file name. */

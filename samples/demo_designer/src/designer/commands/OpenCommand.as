@@ -13,34 +13,84 @@ package designer.commands
 		private var _document:Document;
 		private var _source:File;
 
-		public function OpenCommand(document:Document, source:File)
+		public function OpenCommand(source:File)
 		{
-			_document = document;
 			_source = source;
 		}
 
 		public override function execute():void
 		{
-			var files:Array = read().toString().replace(/^\s*|\s*$/g, "").split("\n");
+			var properties:Object = readPropertiesFile(_source);
+			_document = new Document(properties);
 
-			for each (var filePath:String in files)
+			// Определение sourcePath
+			var sourcePathURL:String = properties[DesignerConstants.DESIGNER_FILE_PROPERTY_SOURCE_PATH];
+			if (sourcePathURL == null) sourcePathURL = _source.parent.url;
+			var sourcePath:File = _source.parent.resolvePath(sourcePathURL);
+			if (sourcePath.exists == false) sourcePath.parent;
+
+			// Поиск всех файлов
+			var files:Vector.<File> = findFilesRecursive(sourcePath);
+
+			// Добавление файлов в документ
+
+			for each (var file:File in files)
 			{
-				var projectFile:File = new File(_source.parent.resolvePath(filePath));
-				var projectDocumentFile:DocumentFile = new DocumentFile(projectFile);
-				_document.addFile(projectDocumentFile, true);
+				var documentFile:DocumentFile = new DocumentFile(file);
+				_document.addFile(documentFile);
 			}
-
-			dispatch && dispatchEventWith(Event.CHANGE);
 		}
 
-		public function read():ByteArray
+		private function findFilesRecursive(root:File, includeRoot:Boolean = true):Vector.<File>
+		{
+			var result:Vector.<File> = new Vector.<File>();
+
+			if (includeRoot) result.push(root);
+
+			if (root.isDirectory)
+			{
+				var children:Array = root.getDirectoryListing();
+				for each (var child:File in children)
+				{
+					result.push(child);
+					var childChildren:Vector.<File> = findFilesRecursive(child, false);
+					result = result.concat(childChildren);
+				}
+			}
+
+			return result;
+		}
+
+		private function readPropertiesFile(file:File):Object
+		{
+			var result:Object = new Object();
+
+			var data:String = readFile(file).toString();
+			var values:Array = data.split(/[\n\r]/);
+			var pattern:RegExp = /\s*([\w\.]+)\s*\=\s*(.*)\s*$/;
+
+			for each (var line:String in values)
+			{
+				var property:Array = pattern.exec(line);
+				if (property)
+				{
+					var key:String = property[1];
+					var value:String = property[2];
+					result[key] = value;
+				}
+			}
+
+			return result;
+		}
+
+		private function readFile(file:File):ByteArray
 		{
 			var result:ByteArray = new ByteArray();
 			var stream:FileStream = new FileStream();
 
 			try
 			{
-				stream.open(_source, FileMode.READ);
+				stream.open(file, FileMode.READ);
 				stream.readBytes(result, 0, stream.bytesAvailable);
 			}
 			finally
@@ -49,6 +99,11 @@ package designer.commands
 			}
 
 			return result;
+		}
+
+		public function get document():Document
+		{
+			return _document;
 		}
 	}
 }

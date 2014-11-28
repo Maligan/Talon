@@ -1,15 +1,10 @@
 package designer
 {
+	import designer.commands.OpenCommand;
 	import designer.commands.SaveCommand;
 
 	import designer.dom.Document;
-	import designer.dom.DocumentFile;
-
-	import flash.desktop.ClipboardFormats;
-	import flash.desktop.NativeDragActions;
-	import flash.desktop.NativeDragManager;
 	import flash.events.KeyboardEvent;
-	import flash.events.NativeDragEvent;
 	import flash.filesystem.File;
 	import flash.ui.Keyboard;
 
@@ -28,8 +23,7 @@ package designer
 		public function DesignerController(application:DesignerApplication, host:DisplayObjectContainer)
 		{
 			_launcher = application;
-			_launcher.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onNativeDragEnter);
-			_launcher.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onNativeDragDrop);
+
 			_launcher.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 
 			_interface = new DesignerInterface();
@@ -58,46 +52,14 @@ package designer
 			}
 		}
 
-		private function onNativeDragEnter(e:NativeDragEvent):void
-		{
-			if (e.clipboard.hasFormat(ClipboardFormats.FILE_LIST_FORMAT))
-			{
-				var files:Array = e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
-				if (files.length != 0)
-				{
-					if (_document != null)
-					{
-						NativeDragManager.dropAction = NativeDragActions.LINK;
-						NativeDragManager.acceptDragDrop(_launcher);
-					}
-					else if (files.length == 1 && files[0].indexOf("." + DesignerConstants.DESIGNER_FILE_EXTENSION) != -1)
-					{
-						NativeDragManager.dropAction = NativeDragActions.LINK;
-						NativeDragManager.acceptDragDrop(_launcher);
-					}
-				}
-			}
-		}
-
-		private function onNativeDragDrop(e:NativeDragEvent):void
-		{
-			var files:Array = e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
-			if (files.length != 0)
-			{
-				if (_document != null)
-				{
-					for each (var file:File in files)
-					{
-						var documentFile:DocumentFile = new DocumentFile(file);
-						_document.addFile(documentFile);
-					}
-				}
-			}
-		}
-
 		private function onDocumentChange(e:Event):void
 		{
-			if (_document.factory.hasPrototype(_prototype))
+			refresh();
+		}
+
+		private function refresh():void
+		{
+			if (_document && _prototype && _document.factory.hasPrototype(_prototype))
 			{
 				var view:DisplayObject = _document.factory.build(_prototype, true, true);
 				_interface.setPrototype(view);
@@ -112,8 +74,58 @@ package designer
 		public function invoke(filePath:String):void
 		{
 			var file:File = new File(filePath);
-			var documentFile:DocumentFile = new DocumentFile(file);
-			_document.addFile(documentFile);
+			var open:OpenCommand = new OpenCommand(file);
+			open.execute();
+
+			setCurrentDocument(open.document);
+		}
+
+		public function setCurrentDocument(document:Document):void
+		{
+			_document && _document.removeEventListener(Event.CHANGE, onDocumentChange);
+			_document = document;
+			_document && _document.addEventListener(Event.CHANGE, onDocumentChange);
+			refresh();
 		}
 	}
 }
+
+//		_launcher.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onNativeDragEnter);
+//		_launcher.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onNativeDragDrop);
+
+//		private function onNativeDragEnter(e:NativeDragEvent):void
+//		{
+//			if (e.clipboard.hasFormat(ClipboardFormats.FILE_LIST_FORMAT))
+//			{
+//				var files:Array = e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
+//				if (files.length != 0)
+//				{
+//					if (_document != null)
+//					{
+//						NativeDragManager.dropAction = NativeDragActions.LINK;
+//						NativeDragManager.acceptDragDrop(_launcher);
+//					}
+//					else if (files.length == 1 && files[0].indexOf("." + DesignerConstants.DESIGNER_FILE_EXTENSION) != -1)
+//					{
+//						NativeDragManager.dropAction = NativeDragActions.LINK;
+//						NativeDragManager.acceptDragDrop(_launcher);
+//					}
+//				}
+//			}
+//		}
+//
+//		private function onNativeDragDrop(e:NativeDragEvent):void
+//		{
+//			var files:Array = e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
+//			if (files.length != 0)
+//			{
+//				if (_document != null)
+//				{
+//					for each (var file:File in files)
+//					{
+//						var documentFile:DocumentFile = new DocumentFile(file);
+//						_document.addFile(documentFile);
+//					}
+//				}
+//			}
+//		}

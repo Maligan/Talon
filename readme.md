@@ -22,6 +22,8 @@ Used children attributes:
 - maxWidth, maxHeight (*px*, *pt*, *em*, *%*)
 - scaleX, scaleY
 - pivotX, pivotY (*px*, *pt*, *em*, *%*)
+Used self attributes:
+- originX, originY
 
 #### flow
 Used self attributes:
@@ -90,6 +92,8 @@ Used children attributes:
 
 - backgroundColor (*transparent*)
 - backgroundImage (*none*)
+- backgroundTint (*white*)
+- backgroundFill (*clip*, *scale*, *repeat*)
 - background9Scale
 
 - cursor (*default*, *pointer*)

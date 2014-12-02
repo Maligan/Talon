@@ -3,13 +3,11 @@ package
 	import flash.display.BitmapData;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import flash.text.StageText;
 	import flash.text.StageTextInitOptions;
+	import flash.utils.getDefinitionByName;
 
 	import starling.core.Starling;
-
 	import starling.display.Quad;
-
 	import starling.events.Event;
 
 	import starling.extensions.talon.core.Node;
@@ -22,16 +20,25 @@ package
 		private static var AUTO_CACHE_WIDTH:int = 1000;
 		private static var AUTO_CACHE_HEIGHT:int = 1000;
 
-		private static const _helper:StageText = new StageText();
+		private static var StageText:Class;
+		private static var StageTextInitOptions:Class;
+
+		private static var _helper:*;
 
 		private var _node:Node;
-		private var _text:StageText;
+		private var _text:*;
 
 		public function TalonInput()
 		{
+			if (StageText == null)
+			{
+				StageText = getDefinitionByName("flash.text::StageText") as Class;
+				StageTextInitOptions = getDefinitionByName("flash.text::StageTextInitOptions") as Class;
+				_helper = new StageText();
+			}
+
 			super(1, 1, 0xFFFFFF);
 			visible = false;
-
 
 			_helper.viewPort = new Rectangle(0, 0, 0, 0);
 			_helper.stage = Starling.current.nativeStage;
@@ -58,30 +65,14 @@ package
 			return height+(2+2);
 		}
 
-		private function getNumNewLine():int
-		{
-			return 0;
-			var result:int = 0;
-			var text:String = _text.text;
-
-			for (var i:int = text.length-1; i >= 0 ; i++)
-			{
-				var char:String = text.charAt(i);
-				if (/\s/.test(char)) result++;
-				else break;
-			}
-
-			return result;
-		}
-
 		private function getStageTextBounds():Rectangle
 		{
 			var autoSizeAttribute:String = node.getAttribute("autoSize") || TextFieldAutoSize.BOTH_DIRECTIONS;
 			var isHorizontal:Boolean = ((autoSizeAttribute==TextFieldAutoSize.HORIZONTAL)||(autoSizeAttribute==TextFieldAutoSize.BOTH_DIRECTIONS));
 			var isVertical:Boolean = ((autoSizeAttribute==TextFieldAutoSize.VERTICAL)||(autoSizeAttribute==TextFieldAutoSize.BOTH_DIRECTIONS));
 
-			var width:Number = node.width.isAuto ? AUTO_CACHE_WIDTH : node.width.toPixels(0,0,0,0,0);
-			var height:Number = node.height.isAuto ? AUTO_CACHE_HEIGHT : node.height.toPixels(0,0,0,0,0);
+			var width:Number = node.width.isAuto ? AUTO_CACHE_WIDTH : node.width.toPixels(0, 0, node.pppt, 0, 0, 0, width, height);
+			var height:Number = node.height.isAuto ? AUTO_CACHE_HEIGHT : node.height.toPixels(0, 0, node.pppt, 0, 0, 0, width, height);
 
 			var prev:Rectangle = _text.viewPort;
 			var draw:Rectangle = new Rectangle(0, 0, width, height);
@@ -112,7 +103,7 @@ package
 				var multiline:Boolean = node.getAttribute("multiline") == "true";
 				if (multiline)
 				{
-					var options:StageTextInitOptions = new StageTextInitOptions(multiline);
+					var options:* = new StageTextInitOptions(multiline);
 					// TODO: Copy properties
 					_text.dispose();
 					_text = new StageText(options);

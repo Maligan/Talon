@@ -24,37 +24,34 @@ package starling.extensions.talon.core
 		{
 			var split:Array = string.split(" ");
 
-			if (split.length == 1)
+			switch (split.length)
 			{
-				top.parse(split[0]);
-				right.parse(split[0]);
-				bottom.parse(split[0]);
-				left.parse(split[0]);
-			}
-			else if (split.length == 2)
-			{
-				top.parse(split[0]);
-				right.parse(split[1]);
-				bottom.parse(split[0]);
-				left.parse(split[1]);
-			}
-			else if (split.lenght == 3)
-			{
-				top.parse(split[0]);
-				right.parse(split[1]);
-				bottom.parse(split[2]);
-				left.parse(split[1]);
-			}
-			else if (split.length == 4)
-			{
-				top.parse(split[0]);
-				right.parse(split[1]);
-				bottom.parse(split[2]);
-				left.parse(split[3]);
-			}
-			else
-			{
-				throw new ArgumentError("Input string is not valid: " + string);
+				case 1:
+					top.parse(split[0]);
+					right.parse(split[0]);
+					bottom.parse(split[0]);
+					left.parse(split[0]);
+					break;
+				case 2:
+					top.parse(split[0]);
+					right.parse(split[1]);
+					bottom.parse(split[0]);
+					left.parse(split[1]);
+					break;
+				case 3:
+					top.parse(split[0]);
+					right.parse(split[1]);
+					bottom.parse(split[2]);
+					left.parse(split[1]);
+					break;
+				case 4:
+					top.parse(split[0]);
+					right.parse(split[1]);
+					bottom.parse(split[2]);
+					left.parse(split[3]);
+					break;
+				default:
+					throw new ArgumentError("Input string is not valid: " + string);
 			}
 		}
 

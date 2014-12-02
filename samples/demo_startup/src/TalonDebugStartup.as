@@ -14,6 +14,8 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 
+	import starling.extensions.talon.core.GaugeQuad;
+
 	import starling.extensions.talon.core.Node;
 
 	import starling.extensions.talon.display.TalonSprite;
@@ -36,6 +38,9 @@ package
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
 			stage.quality = StageQuality.BEST;
+
+			var gauge:GaugeQuad = new GaugeQuad();
+			gauge.parse("10px 10px 1em");
 
 			var node:Node = new Node();
 			node.setStyleSheet(null);

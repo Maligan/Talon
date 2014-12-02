@@ -13,6 +13,8 @@ package starling.extensions.talon.core
 		public static const AUTO:String = "auto";
 		/** Regular pixel. */
 		public static const PX:String = "px";
+		/** Point, retina display set point per pixel as 1:2. */
+		public static const PT:String = "px";
 		/** Millimeter. NB! Device independent (absolute) unit. (Undesirable to use absolute units. If possible then replace it with em/px). */
 		public static const MM:String = "mm";
 		/** Ems has dynamic value, 1em equals 'fontSize' of current node. */
@@ -82,7 +84,7 @@ package starling.extensions.talon.core
 		 * @param percentTarget percentages/starsCount percentTarget (in pixels)
 		 * @param starsCount total amount of starsCount in percentTarget
 		 */
-		public function toPixels(ppmm:Number, ppem:Number, percentTarget:Number, starsTarget:Number, starsCount:int):Number
+		public function toPixels(ppmm:Number, ppem:Number, pppt:Number, percentTarget:Number, starsTarget:Number, starsCount:int, width:Number, height:Number):Number
 		{
 			switch (unit)
 			{
@@ -91,6 +93,7 @@ package starling.extensions.talon.core
 				case PX:		return amount;
 				case MM:		return amount * ppmm;
 				case EM:        return amount * ppem;
+				case PT:        return amount * pppt;
 				case PERCENT:   return amount * percentTarget / 100;
 				case STAR:		return starsCount ? (amount * starsTarget / starsCount) : 0;
 				default:		throw new Error();

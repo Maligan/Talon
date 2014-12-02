@@ -4,6 +4,8 @@ package starling.extensions.talon.core
 	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
 
+	import starling.core.Starling;
+
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 	import starling.extensions.talon.layout.Layout;
@@ -215,6 +217,8 @@ package starling.extensions.talon.core
 			layout.arrange(this, bounds.width, bounds.height);
 		}
 
+		/** Pixel per point. (Also known as (csf) content scale factor) */
+		public function get pppt():Number { return Starling.current.contentScaleFactor; }
 		/** Pixels per millimeter (in current node). */
 		public function get ppmm():Number { return Capabilities.screenDPI / 25.4; }
 		/** Current node 'fontSize' expressed in pixels.*/
@@ -225,7 +229,7 @@ package starling.extensions.talon.core
 			var gauge:Gauge = new Gauge();
 			gauge.parse(attribute.value);
 			var base:Number = parent?parent.ppem:12;
-			return gauge.toPixels(ppmm, base, base, 0, 0);
+			return gauge.toPixels(ppmm, base, pppt, base, 0, 0, width, height);
 		}
 
 		private function measureAutoWidth():Number { return layout.measureAutoWidth(this, bounds.width, bounds.height); }

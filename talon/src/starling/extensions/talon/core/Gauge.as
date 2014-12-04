@@ -89,7 +89,7 @@ package starling.extensions.talon.core
 			switch (unit)
 			{
 				case NONE:		return 0;
-				case AUTO:		return auto ? auto() : 0;
+				case AUTO:		return auto ? auto(width, height) : 0;
 				case PX:		return amount;
 				case MM:		return amount * ppmm;
 				case EM:        return amount * ppem;

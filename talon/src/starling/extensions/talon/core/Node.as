@@ -5,7 +5,6 @@ package starling.extensions.talon.core
 	import flash.utils.Dictionary;
 
 	import starling.core.Starling;
-
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 	import starling.extensions.talon.layout.Layout;
@@ -17,7 +16,7 @@ package starling.extensions.talon.core
 	public final class Node extends EventDispatcher
 	{
 		//
-		// Strong typed attributes/styles
+		// Strong typed attributes
 		//
 		public const width:Gauge = new Gauge();
 		public const minWidth:Gauge = new Gauge();
@@ -30,6 +29,10 @@ package starling.extensions.talon.core
 		public const margin:GaugeQuad = new GaugeQuad();
 		public const padding:GaugeQuad = new GaugeQuad();
 		public const anchor:GaugeQuad = new GaugeQuad();
+
+		public const position:GaugePair = new GaugePair();
+		public const origin:GaugePair = new GaugePair();
+		public const pivot:GaugePair = new GaugePair();
 
 		//
 		// Private properties
@@ -52,33 +55,33 @@ package starling.extensions.talon.core
 			height.auto = minHeight.auto = maxHeight.auto = measureAutoHeight;
 
 			// Bounds
-			bind("width", Gauge.AUTO, true, width.toString, width.parse, width);
-			bind("minWidth", Gauge.NONE, true, minWidth.toString, minWidth.parse, minWidth);
-			bind("maxWidth", Gauge.NONE, true, maxWidth.toString, maxWidth.parse, maxWidth);
-			bind("height", Gauge.AUTO, true, height.toString, height.parse, height);
-			bind("minHeight", Gauge.NONE, true, minHeight.toString, minHeight.parse, minHeight);
-			bind("maxHeight", Gauge.NONE, true, maxHeight.toString, maxHeight.parse, maxHeight);
+			bind("width", Gauge.AUTO, true, width);
+			bind("minWidth", Gauge.NONE, true, minWidth);
+			bind("maxWidth", Gauge.NONE, true, maxWidth);
+			bind("height", Gauge.AUTO, true, height);
+			bind("minHeight", Gauge.NONE, true, minHeight);
+			bind("maxHeight", Gauge.NONE, true, maxHeight);
 
 			// Margin
-			bind("margin", ZERO, true, margin.toString, margin.parse, margin);
-			bind("marginTop", ZERO, true, margin.top.toString, margin.top.parse, margin.top);
-			bind("marginRight", ZERO, true, margin.right.toString, margin.right.parse, margin.right);
-			bind("marginBottom", ZERO, true, margin.bottom.toString, margin.bottom.parse, margin.bottom);
-			bind("marginLeft", ZERO, true, margin.left.toString, margin.left.parse, margin.left);
+			bind("margin", ZERO, true, margin);
+			bind("marginTop", ZERO, true, margin.top);
+			bind("marginRight", ZERO, true, margin.right);
+			bind("marginBottom", ZERO, true, margin.bottom);
+			bind("marginLeft", ZERO, true, margin.left);
 
 			// Padding
-			bind("padding", ZERO, true, padding.toString, padding.parse, padding);
-			bind("paddingTop", ZERO, true, padding.top.toString, padding.top.parse, padding.top);
-			bind("paddingRight", ZERO, true, padding.right.toString, padding.right.parse, padding.right);
-			bind("paddingBottom", ZERO, true, padding.bottom.toString, padding.bottom.parse, padding.bottom);
-			bind("paddingLeft", ZERO, true, padding.left.toString, padding.left.parse, padding.left);
+			bind("padding", ZERO, true, padding);
+			bind("paddingTop", ZERO, true, padding.top);
+			bind("paddingRight", ZERO, true, padding.right);
+			bind("paddingBottom", ZERO, true, padding.bottom);
+			bind("paddingLeft", ZERO, true, padding.left);
 
 			// Anchor (Absolute Position)
-			bind("anchor", Gauge.NONE, true, anchor.toString, anchor.parse, anchor);
-			bind("anchorTop", Gauge.NONE, true, anchor.top.toString, anchor.top.parse, anchor.top);
-			bind("anchorRight", Gauge.NONE, true, anchor.right.toString, anchor.right.parse, anchor.right);
-			bind("anchorBottom", Gauge.NONE, true, anchor.bottom.toString, anchor.bottom.parse, anchor.bottom);
-			bind("anchorLeft", Gauge.NONE, true, anchor.left.toString, anchor.left.parse, anchor.left);
+			bind("anchor", Gauge.NONE, true, anchor);
+			bind("anchorTop", Gauge.NONE, true, anchor.top);
+			bind("anchorRight", Gauge.NONE, true, anchor.right);
+			bind("anchorBottom", Gauge.NONE, true, anchor.bottom);
+			bind("anchorLeft", Gauge.NONE, true, anchor.left);
 
 			// Background
 			bind("backgroundImage", NULL, true);
@@ -98,18 +101,36 @@ package starling.extensions.talon.core
 			bind("status", NULL, false);
 
 			// Layout
-			bind("visibility", Visibility.VISIBLE, true);
 			bind("layout", Layout.FLOW, true);
+			bind("visibility", Visibility.VISIBLE, true);
+
 			bind("orientation", Orientation.HORIZONTAL, true);
 			bind("halign", HAlign.LEFT, true);
 			bind("valign", VAlign.TOP, true);
 			bind("gap", ZERO, true);
 			bind("interline", ZERO, true);
+
+			bind("position", ZERO, true, position);
+			bind("x", ZERO, true, position.x);
+			bind("y", ZERO, true, position.y);
+
+			bind("pivot", ZERO, true, pivot);
+			bind("pivotX", ZERO, true, pivot.x);
+			bind("pivotY", ZERO, true, pivot.y);
+
+			bind("origin", ZERO, true, origin);
+			bind("originX", ZERO, true, origin.x);
+			bind("originY", ZERO, true, origin.y);
 		}
 
-		private function bind(name:String, initial:String, styleable:Boolean, getter:Function = null, setter:Function = null, dispatcher:EventDispatcher = null):void
+		private function bind(name:String, initial:String, styleable:Boolean, source:* = null):void
 		{
-			setter && setter(initial);
+			var setter:Function = source ? source["parse"] : null;
+			var getter:Function = source ? source["toString"] : null;
+			var dispatcher:EventDispatcher = source;
+
+			if (setter) setter(initial);
+
 			_attributes[name] = new Attribute(this, name, initial, initial == Attribute.INHERIT, styleable, getter, setter, dispatcher);
 		}
 
@@ -185,11 +206,7 @@ package starling.extensions.talon.core
 		// Resource
 		//
 		/** Set current node resources (an object containing key-value pairs). */
-		public function setResources(resources:Object):void
-		{
-			_resources = resources;
-		}
-
+		public function setResources(resources:Object):void { _resources = resources; }
 		/** Find resource in self or ancestors resources. */
 		public function getResource(key:String):*
 		{
@@ -213,7 +230,9 @@ package starling.extensions.talon.core
 		/** Apply bounds changes: dispatch RESIZE event, arrange children. */
 		public function commit():void
 		{
+			// Update self view object attached to node
 			dispatchEventWith(Event.RESIZE);
+			// Update children nodes
 			layout.arrange(this, bounds.width, bounds.height);
 		}
 
@@ -229,11 +248,11 @@ package starling.extensions.talon.core
 			var gauge:Gauge = new Gauge();
 			gauge.parse(attribute.value);
 			var base:Number = parent?parent.ppem:12;
-			return gauge.toPixels(ppmm, base, pppt, base, 0, 0, width, height);
+			return gauge.toPixels(ppmm, base, pppt, base, 0, 0, 0, 0);
 		}
 
-		private function measureAutoWidth():Number { return layout.measureAutoWidth(this, bounds.width, bounds.height); }
-		private function measureAutoHeight():Number { return layout.measureAutoHeight(this, bounds.width, bounds.height); }
+		private function measureAutoWidth(width:Number, height:Number):Number { return layout.measureAutoWidth(this, width, height); }
+		private function measureAutoHeight(width:Number, height:Number):Number { return layout.measureAutoHeight(this, width, height); }
 		private function get layout():Layout { return Layout.getLayoutByAlias(getAttribute("layout")); }
 
 		//

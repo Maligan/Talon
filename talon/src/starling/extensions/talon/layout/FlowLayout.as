@@ -24,7 +24,7 @@ package starling.extensions.talon.layout
 		{
 			var source:String = node.getAttribute(attribute);
 			_gaugeHelper.parse(source);
-			return _gaugeHelper.toPixels(node.ppmm, node.ppem, node.pppt, target, 0, 0, width, height);
+			return _gaugeHelper.toPixels(node.ppmm, node.ppem, node.pppt, target, 0, 0, 0, 0);
 		}
 
 		public override function arrange(node:Node, width:Number, height:Number):void
@@ -263,9 +263,9 @@ package starling.extensions.talon.layout
 
 		private function getSize(size:Gauge, min:Gauge, max:Gauge, ppmm:Number, ppem:Number, pppt:Number, percentTarget:Number, starTarget:Number = 0, starCount:Number = 0):Number
 		{
-			var value:Number = size.toPixels(ppmm, ppem, pppt, percentTarget, starTarget, starCount, width, height);
-			if (!min.isNone) value = Math.max(value, min.toPixels(ppmm, ppem, pppt, percentTarget, starTarget, starCount, width, height));
-			if (!max.isNone) value = Math.min(value, max.toPixels(ppmm, ppem, pppt, percentTarget, starTarget, starCount, width, height));
+			var value:Number = size.toPixels(ppmm, ppem, pppt, percentTarget, starTarget, starCount, 0, 0);
+			if (!min.isNone) value = Math.max(value, min.toPixels(ppmm, ppem, pppt, percentTarget, starTarget, starCount, 0, 0));
+			if (!max.isNone) value = Math.min(value, max.toPixels(ppmm, ppem, pppt, percentTarget, starTarget, starCount, 0, 0));
 			return value;
 		}
 	}

@@ -23,6 +23,11 @@ button
 	height: 32px;
 }
 
+#tools button:hover
+{
+	filter: brightness(0.1);
+}
+
 #tools hr
 {
 	backgroundColor: #444444;
@@ -37,8 +42,11 @@ button
 	interline: 32px;
 	wrap: true;
 	padding: 32px;
+	backgroundFillMode: repeat;
+	backgroundImage: resource('transparent')
 }
 
+preview:hover { backgroundColor: #4F4F4F; }
 preview
 {
 	width: 128px;
@@ -47,7 +55,3 @@ preview
 	cursor: button;
 }
 
-preview:hover
-{
-	backgroundColor: #3F3F3F;
-}

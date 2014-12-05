@@ -15,7 +15,7 @@ package designer.dom
 	{
 		private var _files:Vector.<DocumentFile>;
 		private var _factory:TalonDesignerFactory;
-		private var _root:File;
+		private var _source:File;
 		private var _properties:Object;
 
 		public function Document(properties:Object):void
@@ -42,14 +42,14 @@ package designer.dom
 				var xml:XML = new XML(file.data);
 				var type:String = xml.@type;
 				var config:XML = xml.*[0];
-				_factory.addLibraryPrototype(type, config);
+				_factory.addPrototype(type, config);
 				dispatch && dispatchEventWith(Event.CHANGE);
 			}
 			else if (file.type == DocumentFileType.STYLE)
 			{
 				var text:String = file.data.toString();
 				_factory.clearStyle(); // FIXME: A lot of CSS
-				_factory.addLibraryStyleSheet(text);
+				_factory.addStyleSheet(text);
 				dispatch && dispatchEventWith(Event.CHANGE);
 			}
 			else if (file.type == DocumentFileType.IMAGE)
@@ -62,9 +62,13 @@ package designer.dom
 				{
 					var texture:Texture = Texture.fromBitmap(loader.content as Bitmap);
 					var key:String = file.url.substring(file.url.lastIndexOf("/") + 1, file.url.lastIndexOf("."));
-					_factory.addLibraryResource(key, texture);
+					_factory.addResource(key, texture);
 					dispatchEventWith(Event.CHANGE); // Всегда диспатчить
 				}
+			}
+			else if (file.type == DocumentFileType.FONT)
+			{
+				trace("Font");
 			}
 		}
 
@@ -86,23 +90,23 @@ package designer.dom
 
 		public function get files():Vector.<DocumentFile>
 		{
-			return new <DocumentFile>[];
-//			var result:Vector.<DocumentFile> = _files.slice();
-//			var indexOfRoot:int = result.indexOf(_root);
-//			result[indexOfRoot] = result[result.length - 1];
-//			result.length--;
-//			return result;
+			return _files.slice();
 		}
 
-		/** Get document file name. */
-		public function getRelativeName(documentFile:DocumentFile):String
+		public function get exportFileName():String
 		{
-			return _root.parent.getRelativePath(documentFile.file);
+			return _properties[DesignerConstants.PROPERTY_EXPORT_PATH];
 		}
 
-		public function setRoot(file:File):void
+		/** Get in export document file name. */
+		public function getExportFileName(documentFile:DocumentFile):String
 		{
-			_root = file;
+			return _source.getRelativePath(documentFile.file);
+		}
+
+		public function setSourcePath(file:File):void
+		{
+			_source = file;
 		}
 	}
 }

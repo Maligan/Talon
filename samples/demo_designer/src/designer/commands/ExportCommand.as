@@ -4,17 +4,19 @@ package designer.commands
 
 	import designer.dom.Document;
 	import designer.dom.DocumentFile;
+	import designer.dom.DocumentFileType;
 
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
+	import flash.utils.ByteArray;
 
-	public class SaveCommand extends DesignerCommand
+	public class ExportCommand extends DesignerCommand
 	{
 		private var _document:Document;
 		private var _file:File;
 
-		public function SaveCommand(document:Document, file:File)
+		public function ExportCommand(document:Document, file:File)
 		{
 			_document = document;
 			_file = file;
@@ -27,15 +29,25 @@ package designer.commands
 
 			for each (var file:DocumentFile in _document.files)
 			{
-				zip.addFile(_document.getRelativeName(file), file.data);
+				if (file.type == DocumentFileType.DIRECTORY) continue;
+				if (file.type == DocumentFileType.UNKNOWN) continue;
+
+				var name:String = _document.getExportFileName(file);
+				var data:ByteArray = file.data;
+				zip.addFile(name, data);
 			}
 
+			writeFile(_file, zip);
+		}
+
+		public function writeFile(file:File, zip:FZip):void
+		{
 			// Save file
 			var fileStream:FileStream = new FileStream();
 
 			try
 			{
-				fileStream.open(_file, FileMode.WRITE);
+				fileStream.open(file, FileMode.WRITE);
 				zip.serialize(fileStream);
 			}
 			finally

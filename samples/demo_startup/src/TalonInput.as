@@ -56,8 +56,8 @@ package
 			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
 		}
 
-		private function getAutoWidth():Number { return getStageTextBounds().width + (2+2) + 2; }
-		private function getAutoHeight():Number
+		private function getAutoWidth(width:Number, height:Number):Number { return getStageTextBounds().width + (2+2) + 2; }
+		private function getAutoHeight(width:Number, height:Number):Number
 		{
 			var height:Number = getStageTextBounds().height;
 			var lineHeight:Number = _text.fontSize + 2;

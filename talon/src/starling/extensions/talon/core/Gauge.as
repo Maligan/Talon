@@ -96,7 +96,7 @@ package starling.extensions.talon.core
 				case PT:        return amount * pppt;
 				case PERCENT:   return amount * percentTarget / 100;
 				case STAR:		return starsCount ? (amount * starsTarget / starsCount) : 0;
-				default:		throw new Error();
+				default:		throw new Error("Unknown gauge unit: " + unit);
 			}
 		}
 

@@ -224,9 +224,10 @@ class StyleSelector
 	private function byAncestor(node:Node):Boolean
 	{
 		if (_ancestor == null) return true;
-		if (node.parent == null) return false;
 
-		while (node != null)
+		node = node.parent;
+
+		while (node)
 		{
 			if (_ancestor.match(node.parent)) return true;
 			node = node.parent;

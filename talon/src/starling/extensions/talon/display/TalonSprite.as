@@ -1,11 +1,13 @@
 package starling.extensions.talon.display
 {
 	import feathers.display.Scale9Image;
+	import feathers.display.TiledImage;
 	import feathers.textures.Scale9Textures;
 
 	import flash.geom.Point;
 
 	import flash.geom.Rectangle;
+	import flash.net.FileFilter;
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
 
@@ -17,20 +19,21 @@ package starling.extensions.talon.display
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.extensions.talon.core.GaugeQuad;
+	import starling.extensions.talon.display.ITalonTarget;
 	import starling.extensions.talon.core.Node;
+	import starling.extensions.talon.utils.FillMode;
 	import starling.extensions.talon.utils.parseColor;
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
 	import starling.text.TextFieldAutoSize;
 	import starling.textures.Texture;
-	import starling.utils.HAlign;
-	import starling.utils.VAlign;
 
 	public class TalonSprite extends Sprite implements ITalonTarget
 	{
 		private var _node:Node;
 		private var _backgroundColor:Quad;
-		private var _backgroundImage:Scale9Image;
+		private var _background9ScaleImage:Scale9Image;
+		private var _backgroundTiledImage:TiledImage;
 
 		public function TalonSprite()
 		{
@@ -91,47 +94,76 @@ package starling.extensions.talon.display
 				_backgroundColor.visible = color != "transparent";
 				_backgroundColor.color = parseColor(color);
 			}
-			else if (e.data == "backgroundImage" || e.data == "backgroundChromeColor" || e.data == "background9Scale")
+			else if (e.data == "backgroundImage" || e.data == "backgroundChromeColor" || e.data == "background9Scale" || e.data == "backgroundFillMode")
 			{
 				var image:String = node.getAttribute("backgroundImage");
 				var imageResourceKey:String = null;
 
-				var resourcePattern:RegExp = /resource\(["']?(\w*)["']?\)/;
+				var resourcePattern:RegExp = /resource\(["']?([^'"]*)["']?\)/;
 				var split:Array = resourcePattern.exec(image);
 				if (split != null) imageResourceKey = split[1];
 
-				var imageTexture:Texture = node.getResource(imageResourceKey);
-				if (imageTexture != null)
+				var texture:Texture = node.getResource(imageResourceKey);
+				if (texture != null)
 				{
-					var texture:Texture = imageTexture;
-					var texture9Scale:Rectangle = new Rectangle(0, 0, texture.width, texture.height);
-					var texture9ScaleGauge:GaugeQuad = new GaugeQuad();
-					texture9ScaleGauge.parse(_node.getAttribute("background9Scale"));
+					var tint:uint = parseColor(node.getAttribute("backgroundTint"));
+					var fillMode:String = node.getAttribute("backgroundFillMode");
 
-					texture9Scale.top += texture9ScaleGauge.top.toPixels(0, 0, node.pppt, 0, 0, 0, width, height);
-					texture9Scale.right -= texture9ScaleGauge.right.toPixels(0, 0, node.pppt, 0, 0, 0, width, height);
-					texture9Scale.bottom -= texture9ScaleGauge.bottom.toPixels(0, 0, node.pppt, 0, 0, 0, width, height);
-					texture9Scale.left += texture9ScaleGauge.left.toPixels(0, 0, node.pppt, 0, 0, 0, width, height);
-
-					var scale9Texture:Scale9Textures = new Scale9Textures(texture, texture9Scale);
-
-					if (_backgroundImage)
+					switch (fillMode)
 					{
-						_backgroundImage.textures = scale9Texture;
-					}
-					else
-					{
-						_backgroundImage = new Scale9Image(scale9Texture);
-						addChildAt(_backgroundImage, 1);
+						case FillMode.SCALE:
+							var texture9Scale:Rectangle = new Rectangle(0, 0, texture.width, texture.height);
+							var texture9ScaleGauge:GaugeQuad = new GaugeQuad();
+
+							texture9ScaleGauge.parse(_node.getAttribute("background9Scale"));
+							texture9Scale.top += texture9ScaleGauge.top.toPixels(0, 0, node.pppt, 0, 0, 0, width, height);
+							texture9Scale.right -= texture9ScaleGauge.right.toPixels(0, 0, node.pppt, 0, 0, 0, width, height);
+							texture9Scale.bottom -= texture9ScaleGauge.bottom.toPixels(0, 0, node.pppt, 0, 0, 0, width, height);
+							texture9Scale.left += texture9ScaleGauge.left.toPixels(0, 0, node.pppt, 0, 0, 0, width, height);
+
+							var scale9Texture:Scale9Textures = new Scale9Textures(texture, texture9Scale);
+
+							if (_background9ScaleImage)
+							{
+								_background9ScaleImage.textures = scale9Texture;
+							}
+							else
+							{
+								_background9ScaleImage = new Scale9Image(scale9Texture);
+							}
+
+							addChildAt(_background9ScaleImage, 1);
+							_background9ScaleImage.color = tint;
+							_backgroundTiledImage && _backgroundTiledImage.removeFromParent();
+							break;
+						case FillMode.REPEAT:
+							if (_backgroundTiledImage)
+							{
+								_backgroundTiledImage.texture = texture;
+							}
+							else
+							{
+								_backgroundTiledImage = new TiledImage(texture);
+							}
+
+							addChildAt(_backgroundTiledImage, 1);
+							_backgroundTiledImage.color = tint;
+							_background9ScaleImage && _background9ScaleImage.removeFromParent();
+							break;
 					}
 
-					_backgroundImage.color = parseColor(node.getAttribute("backgroundChromeColor"));
+					onBoxResize(null)
 				}
 			}
 			else if (e.data == "cursor")
 			{
 				var cursor:String = node.getAttribute("cursor");
 				cursor == MouseCursor.AUTO ? removeEventListener(TouchEvent.TOUCH, onCursorTouch) : addEventListener(TouchEvent.TOUCH, onCursorTouch);
+			}
+			else if (e.data == "filter")
+			{
+				var filterString:String = node.getAttribute("filter");
+				filter = FilterFactory.fromString(filterString);
 			}
 		}
 
@@ -156,11 +188,18 @@ package starling.extensions.talon.display
 				_backgroundColor.height = node.bounds.height;
 			}
 
-			if (_backgroundImage)
+			if (_background9ScaleImage)
 			{
-				_backgroundImage.width = node.bounds.width;
-				_backgroundImage.height = node.bounds.height;
+				_background9ScaleImage.width = node.bounds.width;
+				_background9ScaleImage.height = node.bounds.height;
 			}
+
+			if (_backgroundTiledImage)
+			{
+				_backgroundTiledImage.width = node.bounds.width;
+				_backgroundTiledImage.height = node.bounds.height;
+			}
+
 
 			clipRect = clipping ? new Rectangle(0, 0, node.bounds.width, node.bounds.height) : null;
 		}

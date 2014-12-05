@@ -8,5 +8,6 @@ package designer.dom
 		public static const IMAGE:String = "image";
 		public static const ATLAS:String = "atlas";
 		public static const STYLE:String = "style";
+		public static const FONT:String = "font";
 	}
 }

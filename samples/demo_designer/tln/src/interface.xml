@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
-<prototype type="button">
+<prototype id="interface" type="button">
   <node width="100%" height="100%">
-    <node id="container" width="*" height="100%" halign="left" valign="top">
-      <preview/><preview/><preview/><preview/><preview/><preview/><preview/>
-    </node>
-    <node id="tools">
-      <node orientation="vertical" gap="16px" padding="8px" backgroundColor="#222222">
-        <button backgroundImage="resource('settings')"/><hr/>
-        <button onclick="grid" backgroundImage="resource('grid')"/><hr/>
-        <button onclick="export" backgroundImage="resource('export')"/></node>
-    </node>
+    <node id="container" width="*" height="100%"/>
+    <!--<node id="tools">-->
+      <!--<node orientation="vertical" gap="16px" padding="8px" backgroundColor="#222222">-->
+        <!--<button backgroundImage="resource('settings')"/>-->
+        <!--<hr/>-->
+        <!--<button onclick="grid" backgroundImage="resource('grid')"/>-->
+        <!--<hr/>-->
+        <!--<button onclick="export" backgroundImage="resource('export')"/>-->
+      <!--</node>-->
+    <!--</node>-->
   </node>
 </prototype>

@@ -21,19 +21,24 @@ package designer.commands
 		public override function execute():void
 		{
 			var properties:Object = readPropertiesFile(_source);
+			var exportName:String = properties[DesignerConstants.PROPERTY_EXPORT_PATH];
+			if (exportName == null) properties[DesignerConstants.PROPERTY_EXPORT_PATH] = _source.name.replace(DesignerConstants.DESIGNER_FILE_EXTENSION, DesignerConstants.ZIP_FILE_EXTENSION);
+
 			_document = new Document(properties);
 
-			// Определение sourcePath
-			var sourcePathURL:String = properties[DesignerConstants.DESIGNER_FILE_PROPERTY_SOURCE_PATH];
+			// Define sourcePath
+			var sourcePathURL:String = properties[DesignerConstants.PROPERTY_SOURCE_PATH];
 			if (sourcePathURL == null) sourcePathURL = _source.parent.url;
 			var sourcePath:File = _source.parent.resolvePath(sourcePathURL);
 			if (sourcePath.exists == false) sourcePath.parent;
 
-			// Поиск всех файлов
+			// Setup sourcePath
+			_document.setSourcePath(sourcePath);
+
+			// Find all document files
 			var files:Vector.<File> = findFilesRecursive(sourcePath);
 
-			// Добавление файлов в документ
-
+			// Add file to document
 			for each (var file:File in files)
 			{
 				var documentFile:DocumentFile = new DocumentFile(file);

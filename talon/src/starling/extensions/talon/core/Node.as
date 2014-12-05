@@ -8,6 +8,7 @@ package starling.extensions.talon.core
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 	import starling.extensions.talon.layout.Layout;
+	import starling.extensions.talon.utils.FillMode;
 	import starling.extensions.talon.utils.Orientation;
 	import starling.extensions.talon.utils.Visibility;
 	import starling.utils.HAlign;
@@ -85,9 +86,10 @@ package starling.extensions.talon.core
 
 			// Background
 			bind("backgroundImage", NULL, true);
+			bind("backgroundTint", WHITE, true);
 			bind("background9Scale", ZERO, true);
 			bind("backgroundColor", TRANSPARENT, true);
-			bind("backgroundChromeColor", WHITE, true);
+			bind("backgroundFillMode", FillMode.SCALE, true);
 
 			// Font
 			bind("fontColor", Attribute.INHERIT, true);
@@ -290,7 +292,6 @@ import starling.events.Event;
 import starling.events.EventDispatcher;
 import starling.extensions.talon.core.Node;
 
-/** @private */
 internal class Attribute
 {
 	public static const INHERIT:String = "inherit";

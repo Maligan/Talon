@@ -1,7 +1,7 @@
 package designer.utils
 {
 	import starling.extensions.talon.core.StyleSheet;
-	import starling.extensions.talon.utils.TalonFactory;
+	import starling.extensions.talon.display.TalonFactory;
 
 	/** Extended version of TalonFactory for designer purpose. */
 	public class TalonDesignerFactory extends TalonFactory

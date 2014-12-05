@@ -19,7 +19,7 @@ package
 	import starling.extensions.talon.core.Node;
 
 	import starling.extensions.talon.display.TalonSprite;
-	import starling.extensions.talon.utils.TalonFactory;
+	import starling.extensions.talon.display.TalonFactory;
 	import starling.textures.Texture;
 
 	[SWF(backgroundColor="#444444")]
@@ -122,13 +122,13 @@ package
 
 			_factory = new TalonFactory();
 			_factory.setLinkage("input", TalonInput);
-			_factory.addLibraryPrototype("root", config);
-			_factory.addLibraryPrototype("button", button);
+			_factory.addPrototype("root", config);
+			_factory.addPrototype("button", button);
 
-			_factory.addLibraryStyleSheet(css);
-			_factory.addLibraryResource("up", Texture.fromEmbeddedAsset(UP_BYTES));
-			_factory.addLibraryResource("over", Texture.fromEmbeddedAsset(OVER_BYTES));
-			_factory.addLibraryResource("down", Texture.fromEmbeddedAsset(DOWN_BYTES));
+			_factory.addStyleSheet(css);
+			_factory.addResource("up", Texture.fromEmbeddedAsset(UP_BYTES));
+			_factory.addResource("over", Texture.fromEmbeddedAsset(OVER_BYTES));
+			_factory.addResource("down", Texture.fromEmbeddedAsset(DOWN_BYTES));
 
 			_talon = _factory.build("root") as TalonSprite;
 			_talon.addEventListener("invalidate", onInvalidate);

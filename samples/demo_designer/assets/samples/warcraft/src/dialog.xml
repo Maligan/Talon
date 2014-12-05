@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<prototype id="interface" type="button">
+  <node width="100%" height="100%" halign="center" valign="center">
+    <border>
+		<node width="*" height="0px" halign="center"><node id="header" valign="center" halign="center" paddingBottom="22px"><label text="Attention" /></node></node>
+      <node>
+        <node class="icon"/>
+        <label margin="9px" halign="left" text="And remember all those assets belong to Blizzard Entertainment and cannot be used in your own projects." width="230px"/>
+      </node>
+      <node gap="16px">
+        <button class="disabled">
+          <label text="Cancel" width="100%" height="100%"/>
+        </button>
+        <button>
+          <label text="Accept" width="100%" height="100%"/>
+        </button>
+      </node>
+    </border>
+  </node>
+</prototype>

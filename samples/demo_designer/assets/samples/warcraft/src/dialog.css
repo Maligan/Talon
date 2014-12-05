@@ -1,0 +1,56 @@
+button:hover { filter: brightness(0.05) }
+button:active
+{
+	backgroundImage: resource('UI-DialogBox-Button-Down'); 
+	paddingBottom: 4px;
+}
+
+button.disabled:hover { filter: none }
+button.disabled
+{
+	backgroundImage: resource('UI-DialogBox-Button-Disabled');
+	fontColor: #FFFFFF;
+}
+
+button
+{
+	background9Scale: 8px 8px 15px;
+	backgroundImage: resource('UI-DialogBox-Button-Up');
+	cursor: button;
+
+	marginBottom: -8px;
+	fontColor: #FFFF00;
+
+	width: 150px;
+	minHeight: 38px;
+}
+
+border
+{
+	background9Scale: 20px;
+	backgroundImage: resource('border');
+	padding: 24px 32px 18px;
+	orientation: vertical;
+	halign: right;
+	/*gap: 18px;*/
+
+	fontName: FrizQuadrata;
+	fontSize: 13px;
+	fontColor: white;
+}
+
+.icon
+{
+	backgroundImage: resource('alert-icon');
+	/*background9Scale: 0px;*/
+	width: 64px;
+	height: 64px;
+}
+
+#header
+{
+	width: 256px;
+	height: 64px;
+	backgroundImage: resource('UI-DialogBox-Header');
+	marginTop: -37px;
+}

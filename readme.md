@@ -97,6 +97,7 @@ Used children attributes:
 - background9Scale
 
 - cursor (*default*, *pointer*)
+- filter (*grayscale*, *sepia*, *blur*, *drop-shapow* etc)
 
 ## Under the Hood
 Ключевые моменты:

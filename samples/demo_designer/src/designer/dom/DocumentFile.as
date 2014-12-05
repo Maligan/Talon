@@ -15,6 +15,7 @@ package designer.dom
 	{
 		private var _file:File;
 		private var _monitor:FileMonitor;
+		private var _type:String;
 
 		public function DocumentFile(file:File)
 		{
@@ -61,9 +62,15 @@ package designer.dom
 		/** @see designer.dom.DocumentFileType */
 		public function get type():String
 		{
-			if (extension == "xml") return DocumentFileType.PROTOTYPE;
+			return _type || (_type = getType());
+		}
+
+		private function getType():String
+		{
 			if (extension == "css") return DocumentFileType.STYLE;
-			if (DesignerConstants.SUPPORTED_IMAGE_FORMATS.indexOf(extension) != -1) return DocumentFileType.IMAGE;
+			if (extension == "xml") return DocumentFileType.PROTOTYPE;
+			if (extension == "fnt") return DocumentFileType.FONT;
+			if (DesignerConstants.SUPPORTED_IMAGE_EXTENSIONS.indexOf(extension) != -1) return DocumentFileType.IMAGE;
 			if (_file.isDirectory) return DocumentFileType.DIRECTORY;
 
 			return DocumentFileType.UNKNOWN;

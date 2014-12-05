@@ -4,6 +4,7 @@ package starling.extensions.talon.display
 	import flash.filters.DropShadowFilter;
 
 	import starling.events.Event;
+	import starling.extensions.talon.display.ITalonTarget;
 	import starling.extensions.talon.core.Node;
 	import starling.extensions.talon.utils.parseColor;
 	import starling.text.BitmapFont;
@@ -30,12 +31,12 @@ package starling.extensions.talon.display
 			touchable = false;
 		}
 
-		private function getTextWidth():Number
+		private function getTextWidth(width:Number, height:Number):Number
 		{
 			return textBounds.width;
 		}
 
-		private function getTextHeight():Number
+		private function getTextHeight(width:Number, height:Number):Number
 		{
 			return textBounds.height;
 		}

@@ -1,7 +1,9 @@
 package designer
 {
+	import designer.commands.DesignerCommand;
+	import designer.commands.DesignerCommand;
 	import designer.commands.OpenCommand;
-	import designer.commands.SaveCommand;
+	import designer.commands.ExportCommand;
 
 	import designer.dom.Document;
 	import flash.events.KeyboardEvent;
@@ -27,6 +29,7 @@ package designer
 			_launcher.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 
 			_interface = new DesignerInterface();
+			_interface.addEventListener(DesignerInterfaceEvent.COMMAND, onCommand);
 
 			_host = host;
 			_host.addChild(_interface);
@@ -36,11 +39,19 @@ package designer
 			_prototype = "button";
 		}
 
+		private function onCommand(e:Event):void
+		{
+			var command:DesignerCommand = DesignerCommand(e.data);
+			command.execute();
+
+			if (command is OpenCommand) setCurrentDocument(OpenCommand(command).document);
+		}
+
 		private function onKeyDown(e:KeyboardEvent):void
 		{
 			if (e.ctrlKey && e.keyCode == Keyboard.S)
 			{
-				var file:File = new File();
+				var file:File = new File("/interface.zip");
 				file.browseForSave("Export");
 				file.addEventListener(Event.SELECT, onFileSelect);
 			}
@@ -48,7 +59,7 @@ package designer
 			function onFileSelect(e:*):void
 			{
 				var archive:File = File(e.target);
-				new SaveCommand(_document, archive).execute();
+				new ExportCommand(_document, archive).execute();
 			}
 		}
 
@@ -85,6 +96,9 @@ package designer
 			_document && _document.removeEventListener(Event.CHANGE, onDocumentChange);
 			_document = document;
 			_document && _document.addEventListener(Event.CHANGE, onDocumentChange);
+
+			_interface.setDocument(_document);
+
 			refresh();
 		}
 	}

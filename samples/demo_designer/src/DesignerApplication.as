@@ -1,6 +1,7 @@
 package
 {
 	import designer.DesignerController;
+	import designer.utils.Console;
 
 	import flash.desktop.NativeApplication;
 
@@ -23,12 +24,17 @@ package
 	[SWF(backgroundColor="#444444")]
 	public class DesignerApplication extends MovieClip
 	{
+		public static var current:DesignerApplication;
+
 		private var _dropTarget:flash.display.Sprite;
 		private var _controller:DesignerController;
+		private var _console:Console;
 		private var _invoke:String;
 
 		public function DesignerApplication()
 		{
+			current = this;
+
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
@@ -37,6 +43,9 @@ package
 			// add this object to fix this problem
 			_dropTarget = new flash.display.Sprite();
 			addChild(_dropTarget);
+
+			// Add console
+			addChild(_console = new Console());
 
 			NativeApplication.nativeApplication.setAsDefaultApplication(DesignerConstants.DESIGNER_FILE_EXTENSION);
 			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
@@ -75,6 +84,16 @@ package
 				_invoke = e.arguments[0];
 				_controller && _controller.invoke(_invoke);
 			}
+		}
+
+		public function get console():Console
+		{
+			return _console;
+		}
+
+		public function get controller():DesignerController
+		{
+			return _controller;
 		}
 	}
 }

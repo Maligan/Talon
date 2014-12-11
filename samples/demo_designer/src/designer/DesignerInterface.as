@@ -1,5 +1,6 @@
 package designer
 {
+	import designer.commands.CloseCommand;
 	import designer.commands.ExportCommand;
 	import designer.commands.OpenCommand;
 	import designer.dom.Document;
@@ -43,6 +44,7 @@ package designer
 		private var _export:NativeMenuItem;
 		private var _close:NativeMenuItem;
 		private var _stats:NativeMenuItem;
+		private var _console:NativeMenuItem;
 
 		private var _view:DisplayObject;
 
@@ -98,6 +100,15 @@ package designer
 			view.addItem(stats);
 			_stats = stats;
 
+			var console:NativeMenuItem = new NativeMenuItem(DesignerConstants.T_MENU_VIEW_CONSOLE);
+			console.addEventListener(Event.SELECT, onConsoleSelect);
+			console.keyEquivalent = '~';
+			console.keyEquivalentModifiers = [];
+			view.addItem(console);
+			_console = console;
+			DesignerApplication.current.console.addEventListener(Event.OPEN, onConsoleOpen);
+			DesignerApplication.current.console.addEventListener(Event.CLOSE, onConsoleClose);
+
 			// Help
 			var help:NativeMenu = new NativeMenu();
 			menu.addSubmenu(help, DesignerConstants.T_MENU_HELP);
@@ -143,11 +154,28 @@ package designer
 			dispatchEventWith(DesignerInterfaceEvent.COMMAND, false, export);
 		}
 
-		private function onCloseSelect(e:*):void { }
+		private function onCloseSelect(e:*):void
+		{
+			var close:CloseCommand = new CloseCommand();
+			dispatchEventWith(DesignerInterfaceEvent.COMMAND, false, close);
+		}
+
 		private function onStatsSelect(e:*):void
 		{
 			_stats.checked = Starling.current.showStats = !Starling.current.showStats;
 		}
+
+		private function onConsoleSelect(e:*):void
+		{
+			_console.checked
+				? DesignerApplication.current.console.hide()
+				: DesignerApplication.current.console.show();
+		}
+
+		private function onConsoleOpen(e:*):void { _console.checked = DesignerApplication.current.console.visible; }
+		private function onConsoleClose(e:*):void { _console.checked = DesignerApplication.current.console.visible; }
+
+
 		private function onOnlineHelpSelect(e:*):void { }
 		private function onAboutSelect(e:*):void { }
 
@@ -175,8 +203,12 @@ package designer
 		{
 			_view = view;
 			_layer.removeChildren();
-			_layer.addChild(_view);
-			stage && resizeTo(stage.stageWidth, stage.stageHeight);
+
+			if (_view)
+			{
+				_layer.addChild(_view);
+				stage && resizeTo(stage.stageWidth, stage.stageHeight);
+			}
 		}
 
 		public function resizeTo(width:int, height:int):void

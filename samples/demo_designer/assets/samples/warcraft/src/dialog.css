@@ -1,21 +1,21 @@
 button:hover { filter: brightness(0.05) }
 button:active
 {
-	backgroundImage: resource('UI-DialogBox-Button-Down'); 
+	backgroundImage: resource('button-down'); 
 	paddingBottom: 4px;
 }
 
-button.disabled:hover { filter: none }
+button.disabled:hover { filter: none; cursor: auto; }
 button.disabled
 {
-	backgroundImage: resource('UI-DialogBox-Button-Disabled');
+	backgroundImage: resource('button-disabled');
 	fontColor: #FFFFFF;
 }
 
 button
 {
 	background9Scale: 8px 8px 15px;
-	backgroundImage: resource('UI-DialogBox-Button-Up');
+	backgroundImage: resource('button-up');
 	cursor: button;
 
 	marginBottom: -8px;
@@ -28,7 +28,7 @@ button
 border
 {
 	background9Scale: 20px;
-	backgroundImage: resource('border');
+	backgroundImage: resource('dialog-border');
 	padding: 24px 32px 18px;
 	orientation: vertical;
 	halign: right;
@@ -41,7 +41,7 @@ border
 
 .icon
 {
-	backgroundImage: resource('alert-icon');
+	backgroundImage: resource('dialog-alert-icon');
 	/*background9Scale: 0px;*/
 	width: 64px;
 	height: 64px;
@@ -51,6 +51,6 @@ border
 {
 	width: 256px;
 	height: 64px;
-	backgroundImage: resource('UI-DialogBox-Header');
+	backgroundImage: resource('dialog-header');
 	marginTop: -37px;
 }

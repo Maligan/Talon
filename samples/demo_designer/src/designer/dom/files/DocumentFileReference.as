@@ -1,5 +1,6 @@
-package designer.dom
+package designer.dom.files
 {
+	import designer.dom.*;
 	import com.adobe.air.filesystem.FileMonitor;
 	import com.adobe.air.filesystem.events.FileMonitorEvent;
 	import flash.events.Event;
@@ -11,13 +12,13 @@ package designer.dom
 	import starling.events.EventDispatcher;
 
 	[Event(name="change", type="starling.events.Event")]
-	public class DocumentFile extends EventDispatcher
+	public class DocumentFileReference extends EventDispatcher
 	{
 		private var _file:File;
 		private var _monitor:FileMonitor;
 		private var _type:String;
 
-		public function DocumentFile(file:File)
+		public function DocumentFileReference(file:File)
 		{
 			if (!file) throw new ArgumentError("File must be non null");
 			if (!file.exists) throw new ArgumentError("File must be exists");
@@ -36,13 +37,15 @@ package designer.dom
 			dispatchEventWith(Event.CHANGE);
 		}
 
-		public function equals(file:DocumentFile):Boolean
+		public function equals(link:DocumentFileReference):Boolean
 		{
-			return url == file.url;
+			return url == link.url;
 		}
 
-		public function get data():ByteArray
+		public function read():ByteArray
 		{
+			if (removed) throw new ArgumentError("File was removed");
+
 			var result:ByteArray = new ByteArray();
 			var stream:FileStream = new FileStream();
 
@@ -59,7 +62,7 @@ package designer.dom
 			return result;
 		}
 
-		/** @see designer.dom.DocumentFileType */
+		/** @see designer.dom.files.DocumentFileType */
 		public function get type():String
 		{
 			return _type || (_type = getType());
@@ -88,8 +91,14 @@ package designer.dom
 			return _file.url;
 		}
 
-		/** For internal usage ONLY. */
-		internal function get file():File
+		/** File is obsolete and must be removed from document. */
+		public function get removed():Boolean
+		{
+			return !_file.exists;
+		}
+
+		/** @private For internal usage ONLY. */
+		public function get file():File
 		{
 			return _file;
 		}

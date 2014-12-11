@@ -111,7 +111,7 @@ package starling.extensions.talon.display
 		}
 
 		/** Get filename without extension. */
-		private function getBasename(path:String):String
+		protected final function getBasename(path:String):String
 		{
 			var regexp:RegExp = /([^\?\/\\]+?)(?:\.([\w\-]+))?(?:\?.*)?$/;
 			var matches:Array = regexp.exec(path);

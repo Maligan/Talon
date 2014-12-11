@@ -17,6 +17,7 @@ package
 		public static const T_MENU_FILE_CLOSE:String = "Close";
 		public static const T_MENU_VIEW:String = "View";
 		public static const T_MENU_VIEW_STATS:String = "Starling Stats";
+		public static const T_MENU_VIEW_CONSOLE:String = "Console";
 		public static const T_MENU_HELP:String = "Help";
 		public static const T_MENU_HELP_ONLINE:String = "Online Documentation";
 		public static const T_MENU_HELP_ABOUT:String = "About";

@@ -1,86 +1,120 @@
 package designer.dom
 {
+	import designer.dom.files.DocumentFileReference;
+	import designer.dom.files.DocumentFileReferenceList;
+	import designer.dom.files.DocumentFileType;
 	import designer.utils.TalonDesignerFactory;
+	import designer.utils.findFiles;
 
 	import flash.display.Bitmap;
 	import flash.display.Loader;
 	import flash.filesystem.File;
+	import flash.utils.ByteArray;
 
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
+	import starling.textures.AtfData;
 	import starling.textures.Texture;
 
 	[Event(name="change", type="starling.events.Event")]
 	public class Document extends EventDispatcher
 	{
-		private var _files:Vector.<DocumentFile>;
+		private var _files:DocumentFileReferenceList;
 		private var _factory:TalonDesignerFactory;
 		private var _source:File;
 		private var _properties:Object;
+		private var _tracker:TaskTracker;
 
 		public function Document(properties:Object):void
 		{
+			_tracker = new TaskTracker(onTaskEnd);
 			_properties = properties;
-			_files = new Vector.<DocumentFile>();
 			_factory = new TalonDesignerFactory();
+			_files = new DocumentFileReferenceList();
+			_files.registerDocumentFileType(DocumentFileType.DIRECTORY, null, asDirectory);
+			_files.registerDocumentFileType(DocumentFileType.IMAGE, asImage, asImage, asImageRemoved);
+			_files.registerDocumentFileType(DocumentFileType.PROTOTYPE, asPrototype);
+			_files.registerDocumentFileType(DocumentFileType.STYLE, asStyle, asStyle);
 		}
 
-		private function onFileChange(e:Event):void
+		//
+		// File types
+		//
+		private function asDirectory(reference:DocumentFileReference):void
 		{
-			var file:DocumentFile = DocumentFile(e.target);
-			apply(file);
+			var files:Vector.<File> = findFiles(reference.file, false, false);
+			var references:Vector.<DocumentFileReference> = new Vector.<DocumentFileReference>();
+			for each (var file:File in files) references[references.length] = new DocumentFileReference(file);
+			addFiles(references);
 		}
 
-		private function apply(file:DocumentFile, dispatch:Boolean = true):void
+		private function asImage(reference:DocumentFileReference):void
 		{
-			if (file.type == DocumentFileType.DIRECTORY)
-			{
+			var bytes:ByteArray = reference.read();
 
-			}
-			if (file.type == DocumentFileType.PROTOTYPE)
+			if (AtfData.isAtfData(bytes))
 			{
-				var xml:XML = new XML(file.data);
-				var type:String = xml.@type;
-				var config:XML = xml.*[0];
-				_factory.addPrototype(type, config);
-				dispatch && dispatchEventWith(Event.CHANGE);
+				_factory.addResource(_factory.getResourceId(reference.url), Texture.fromAtfData(bytes));
 			}
-			else if (file.type == DocumentFileType.STYLE)
+			else
 			{
-				var text:String = file.data.toString();
-				_factory.clearStyle(); // FIXME: A lot of CSS
-				_factory.addStyleSheet(text);
-				dispatch && dispatchEventWith(Event.CHANGE);
-			}
-			else if (file.type == DocumentFileType.IMAGE)
-			{
+				_tracker.beginTask();
+
 				var loader:Loader = new Loader();
 				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
-				loader.loadBytes(file.data);
+				loader.loadBytes(reference.read());
 
 				function onComplete(e:*):void
 				{
-					var texture:Texture = Texture.fromBitmap(loader.content as Bitmap);
-					var key:String = file.url.substring(file.url.lastIndexOf("/") + 1, file.url.lastIndexOf("."));
-					_factory.addResource(key, texture);
-					dispatchEventWith(Event.CHANGE); // Всегда диспатчить
+					_factory.addResource(_factory.getResourceId(reference.url), Texture.fromBitmap(loader.content as Bitmap));
+					_tracker.endTask();
 				}
-			}
-			else if (file.type == DocumentFileType.FONT)
-			{
-				trace("Font");
 			}
 		}
 
-		public function addFile(documentFile:DocumentFile, silent:Boolean = false):void
+		private function asImageRemoved(reference:DocumentFileReference):void
 		{
-			for each (var file:DocumentFile in _files)
-				if (file.equals(documentFile))
-					return;
+			_tracker.beginTask();
+			_factory.removeResource(_factory.getResourceId(reference.url));
+			_tracker.endTask();
+		}
 
-			_files[_files.length] = documentFile;
-			apply(documentFile, !silent);
-			documentFile.addEventListener(Event.CHANGE, onFileChange);
+		private function asPrototype(reference:DocumentFileReference):void
+		{
+			var xml:XML = new XML(reference.read());
+			var type:String = xml.@type;
+			var config:XML = xml.*[0];
+			_factory.addPrototype(type, config);
+		}
+
+		private function asStyle(reference:DocumentFileReference):void
+		{
+			_factory.addStyleSheet(reference.read().toString());
+		}
+
+
+
+
+
+
+
+		private function onTaskEnd():void
+		{
+			dispatchEventWith(Event.CHANGE);
+		}
+
+		public function addFiles(links:Vector.<DocumentFileReference>):void
+		{
+			_tracker.beginTask();
+			for each (var link:DocumentFileReference in links) addFile(link);
+			_tracker.endTask();
+		}
+
+		public function addFile(file:DocumentFileReference):void
+		{
+			_tracker.beginTask();
+			_files.addFile(file);
+			_tracker.endTask();
 		}
 
 		public function get factory():TalonDesignerFactory
@@ -88,9 +122,9 @@ package designer.dom
 			return _factory;
 		}
 
-		public function get files():Vector.<DocumentFile>
+		public function get files():Vector.<DocumentFileReference>
 		{
-			return _files.slice();
+			return _files.toArray();
 		}
 
 		public function get exportFileName():String
@@ -99,7 +133,7 @@ package designer.dom
 		}
 
 		/** Get in export document file name. */
-		public function getExportFileName(documentFile:DocumentFile):String
+		public function getExportFileName(documentFile:DocumentFileReference):String
 		{
 			return _source.getRelativePath(documentFile.file);
 		}
@@ -108,5 +142,27 @@ package designer.dom
 		{
 			_source = file;
 		}
+	}
+}
+
+class TaskTracker
+{
+	private var _taskCount:int = 0;
+	private var _complete:Function;
+
+	public function TaskTracker(complete:Function)
+	{
+		_complete = complete;
+	}
+
+	public function beginTask():void
+	{
+		_taskCount++;
+	}
+
+	public function endTask():void
+	{
+		_taskCount--;
+		_taskCount == 0 && _complete();
 	}
 }

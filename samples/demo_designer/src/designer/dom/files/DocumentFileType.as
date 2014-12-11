@@ -1,4 +1,4 @@
-package designer.dom
+package designer.dom.files
 {
 	public class DocumentFileType
 	{

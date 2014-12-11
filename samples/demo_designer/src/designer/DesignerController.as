@@ -1,11 +1,11 @@
 package designer
 {
 	import designer.commands.DesignerCommand;
-	import designer.commands.DesignerCommand;
 	import designer.commands.OpenCommand;
 	import designer.commands.ExportCommand;
 
 	import designer.dom.Document;
+
 	import flash.events.KeyboardEvent;
 	import flash.filesystem.File;
 	import flash.ui.Keyboard;
@@ -25,8 +25,8 @@ package designer
 		public function DesignerController(application:DesignerApplication, host:DisplayObjectContainer)
 		{
 			_launcher = application;
-
 			_launcher.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			_launcher.console.addCommand("resources", cmdResourceSearch, "RegExp based search project resources", "regexp");
 
 			_interface = new DesignerInterface();
 			_interface.addEventListener(DesignerInterfaceEvent.COMMAND, onCommand);
@@ -75,6 +75,10 @@ package designer
 				var view:DisplayObject = _document.factory.build(_prototype, true, true);
 				_interface.setPrototype(view);
 			}
+			else
+			{
+				_interface.setPrototype(null);
+			}
 		}
 
 		public function resizeTo(width:int, height:int):void
@@ -100,6 +104,42 @@ package designer
 			_interface.setDocument(_document);
 
 			refresh();
+		}
+
+		//
+		// Console command
+		//
+		private function cmdResourceSearch(query:String):void
+		{
+			if (_document == null) throw new Error("Document not opened");
+
+			var split:Array = query.split(" ");
+			var regexp:RegExp = query.length > 1 ? new RegExp(split[1]) : /.*/;
+			var resourceIds:Vector.<String> = _document.factory.resourceIds.filter(byRegExp(regexp)).sort(byName);
+
+			if (resourceIds.length == 0) _launcher.console.println("Resources not found");
+			else
+			{
+				for each (var resourceId:String in resourceIds)
+				{
+					_launcher.console.println("*", resourceId);
+				}
+			}
+		}
+
+		private function byName(string1:String, string2:String):int
+		{
+			if (string1 > string2) return +1;
+			if (string1 < string2) return -1;
+			return 0;
+		}
+
+		private function byRegExp(regexp:RegExp):Function
+		{
+			return function (value:String, index:int, vector:Vector.<String>):Boolean
+			{
+				return regexp.test(value);
+			}
 		}
 	}
 }
@@ -137,7 +177,7 @@ package designer
 //				{
 //					for each (var file:File in files)
 //					{
-//						var documentFile:DocumentFile = new DocumentFile(file);
+//						var documentFile:DocumentFileReference = new DocumentFileReference(file);
 //						_document.addFile(documentFile);
 //					}
 //				}

@@ -1,7 +1,8 @@
 package designer.commands
 {
 	import designer.dom.Document;
-	import designer.dom.DocumentFile;
+	import designer.dom.files.DocumentFileReference;
+	import designer.utils.findFiles;
 
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
@@ -36,34 +37,12 @@ package designer.commands
 			_document.setSourcePath(sourcePath);
 
 			// Find all document files
-			var files:Vector.<File> = findFilesRecursive(sourcePath);
+			var files:Vector.<File> = findFiles(sourcePath);
 
-			// Add file to document
-			for each (var file:File in files)
-			{
-				var documentFile:DocumentFile = new DocumentFile(file);
-				_document.addFile(documentFile);
-			}
-		}
-
-		private function findFilesRecursive(root:File, includeRoot:Boolean = true):Vector.<File>
-		{
-			var result:Vector.<File> = new Vector.<File>();
-
-			if (includeRoot) result.push(root);
-
-			if (root.isDirectory)
-			{
-				var children:Array = root.getDirectoryListing();
-				for each (var child:File in children)
-				{
-					result.push(child);
-					var childChildren:Vector.<File> = findFilesRecursive(child, false);
-					result = result.concat(childChildren);
-				}
-			}
-
-			return result;
+			// Add batch of files to document
+			var links:Vector.<DocumentFileReference> = new Vector.<DocumentFileReference>();
+			for each (var file:File in files) links[links.length] = new DocumentFileReference(file);
+			_document.addFiles(links);
 		}
 
 		private function readPropertiesFile(file:File):Object

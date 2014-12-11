@@ -3,8 +3,8 @@ package designer.commands
 	import deng.fzip.FZip;
 
 	import designer.dom.Document;
-	import designer.dom.DocumentFile;
-	import designer.dom.DocumentFileType;
+	import designer.dom.files.DocumentFileReference;
+	import designer.dom.files.DocumentFileType;
 
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
@@ -27,13 +27,13 @@ package designer.commands
 			// Create archive
 			var zip:FZip = new FZip();
 
-			for each (var file:DocumentFile in _document.files)
+			for each (var file:DocumentFileReference in _document.files)
 			{
 				if (file.type == DocumentFileType.DIRECTORY) continue;
 				if (file.type == DocumentFileType.UNKNOWN) continue;
 
 				var name:String = _document.getExportFileName(file);
-				var data:ByteArray = file.data;
+				var data:ByteArray = file.read();
 				zip.addFile(name, data);
 			}
 

@@ -53,7 +53,6 @@ package
 			new Starling(starling.display.Sprite, stage);
 			Starling.current.addEventListener(Event.ROOT_CREATED, onRootCreated);
 			Starling.current.start();
-			Starling.current.showStats = false;
 
 			onResize(null);
 		}

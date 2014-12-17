@@ -40,9 +40,9 @@ package designer.commands
 			var files:Vector.<File> = findFiles(sourcePath);
 
 			// Add batch of files to document
-			var links:Vector.<DocumentFileReference> = new Vector.<DocumentFileReference>();
-			for each (var file:File in files) links[links.length] = new DocumentFileReference(file);
-			_document.addFiles(links);
+			var references:Vector.<DocumentFileReference> = new Vector.<DocumentFileReference>();
+			for each (var file:File in files) references[references.length] = new DocumentFileReference(file);
+			_document.files.addFiles(references);
 		}
 
 		private function readPropertiesFile(file:File):Object

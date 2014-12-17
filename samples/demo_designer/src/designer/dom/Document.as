@@ -1,120 +1,58 @@
 package designer.dom
 {
+	import designer.dom.assets.DirectoryAsset;
+	import designer.dom.assets.FontAsset;
+	import designer.dom.assets.PrototypeAsset;
+	import designer.dom.assets.StyleAsset;
+	import designer.dom.assets.TextureAsset;
 	import designer.dom.files.DocumentFileReference;
-	import designer.dom.files.DocumentFileReferenceList;
+	import designer.dom.files.DocumentFileReferenceCollection;
 	import designer.dom.files.DocumentFileType;
 	import designer.utils.TalonDesignerFactory;
-	import designer.utils.findFiles;
-
-	import flash.display.Bitmap;
-	import flash.display.Loader;
+	import flash.events.TimerEvent;
 	import flash.filesystem.File;
-	import flash.utils.ByteArray;
+	import flash.utils.Timer;
 
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
-	import starling.textures.AtfData;
-	import starling.textures.Texture;
 
 	[Event(name="change", type="starling.events.Event")]
 	public class Document extends EventDispatcher
 	{
-		private var _files:DocumentFileReferenceList;
+		private var _files:DocumentFileReferenceCollection;
 		private var _factory:TalonDesignerFactory;
 		private var _source:File;
 		private var _properties:Object;
-		private var _tracker:TaskTracker;
+
+		private var _tracker:DocumentTaskTracker;
+		private var _trackerTimer:Timer;
 
 		public function Document(properties:Object):void
 		{
-			_tracker = new TaskTracker(onTaskEnd);
+			_tracker = new DocumentTaskTracker(onTasksEnd);
+			_trackerTimer = new Timer(1000);
+			_trackerTimer.addEventListener(TimerEvent.TIMER, onTimer);
+
 			_properties = properties;
 			_factory = new TalonDesignerFactory();
-			_files = new DocumentFileReferenceList();
-			_files.registerDocumentFileType(DocumentFileType.DIRECTORY, null, asDirectory);
-			_files.registerDocumentFileType(DocumentFileType.IMAGE, asImage, asImage, asImageRemoved);
-			_files.registerDocumentFileType(DocumentFileType.PROTOTYPE, asPrototype);
-			_files.registerDocumentFileType(DocumentFileType.STYLE, asStyle, asStyle);
+			_files = new DocumentFileReferenceCollection(this);
+			_files.registerDocumentFileType(DocumentFileType.DIRECTORY, DirectoryAsset);
+			_files.registerDocumentFileType(DocumentFileType.IMAGE, TextureAsset);
+			_files.registerDocumentFileType(DocumentFileType.PROTOTYPE, PrototypeAsset);
+			_files.registerDocumentFileType(DocumentFileType.STYLE, StyleAsset);
+			_files.registerDocumentFileType(DocumentFileType.FONT, FontAsset);
 		}
 
-		//
-		// File types
-		//
-		private function asDirectory(reference:DocumentFileReference):void
+		/** Background task counter. */
+		public function get tasks():DocumentTaskTracker
 		{
-			var files:Vector.<File> = findFiles(reference.file, false, false);
-			var references:Vector.<DocumentFileReference> = new Vector.<DocumentFileReference>();
-			for each (var file:File in files) references[references.length] = new DocumentFileReference(file);
-			addFiles(references);
+			return _tracker;
 		}
 
-		private function asImage(reference:DocumentFileReference):void
+		/** Document's files. */
+		public function get files():DocumentFileReferenceCollection
 		{
-			var bytes:ByteArray = reference.read();
-
-			if (AtfData.isAtfData(bytes))
-			{
-				_factory.addResource(_factory.getResourceId(reference.url), Texture.fromAtfData(bytes));
-			}
-			else
-			{
-				_tracker.beginTask();
-
-				var loader:Loader = new Loader();
-				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
-				loader.loadBytes(reference.read());
-
-				function onComplete(e:*):void
-				{
-					_factory.addResource(_factory.getResourceId(reference.url), Texture.fromBitmap(loader.content as Bitmap));
-					_tracker.endTask();
-				}
-			}
-		}
-
-		private function asImageRemoved(reference:DocumentFileReference):void
-		{
-			_tracker.beginTask();
-			_factory.removeResource(_factory.getResourceId(reference.url));
-			_tracker.endTask();
-		}
-
-		private function asPrototype(reference:DocumentFileReference):void
-		{
-			var xml:XML = new XML(reference.read());
-			var type:String = xml.@type;
-			var config:XML = xml.*[0];
-			_factory.addPrototype(type, config);
-		}
-
-		private function asStyle(reference:DocumentFileReference):void
-		{
-			_factory.addStyleSheet(reference.read().toString());
-		}
-
-
-
-
-
-
-
-		private function onTaskEnd():void
-		{
-			dispatchEventWith(Event.CHANGE);
-		}
-
-		public function addFiles(links:Vector.<DocumentFileReference>):void
-		{
-			_tracker.beginTask();
-			for each (var link:DocumentFileReference in links) addFile(link);
-			_tracker.endTask();
-		}
-
-		public function addFile(file:DocumentFileReference):void
-		{
-			_tracker.beginTask();
-			_files.addFile(file);
-			_tracker.endTask();
+			return _files;
 		}
 
 		public function get factory():TalonDesignerFactory
@@ -122,11 +60,23 @@ package designer.dom
 			return _factory;
 		}
 
-		public function get files():Vector.<DocumentFileReference>
+		//
+		// Update timer
+		//
+		private function onTasksEnd():void
 		{
-			return _files.toArray();
+			_trackerTimer.reset();
+			_trackerTimer.start();
 		}
 
+		private function onTimer(e:TimerEvent):void
+		{
+			dispatchEventWith(Event.CHANGE);
+		}
+
+		//
+		// Export
+		//
 		public function get exportFileName():String
 		{
 			return _properties[DesignerConstants.PROPERTY_EXPORT_PATH];
@@ -142,27 +92,5 @@ package designer.dom
 		{
 			_source = file;
 		}
-	}
-}
-
-class TaskTracker
-{
-	private var _taskCount:int = 0;
-	private var _complete:Function;
-
-	public function TaskTracker(complete:Function)
-	{
-		_complete = complete;
-	}
-
-	public function beginTask():void
-	{
-		_taskCount++;
-	}
-
-	public function endTask():void
-	{
-		_taskCount--;
-		_taskCount == 0 && _complete();
 	}
 }

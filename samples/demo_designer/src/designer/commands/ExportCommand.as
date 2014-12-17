@@ -27,7 +27,7 @@ package designer.commands
 			// Create archive
 			var zip:FZip = new FZip();
 
-			for each (var file:DocumentFileReference in _document.files)
+			for each (var file:DocumentFileReference in _document.files.toArray())
 			{
 				if (file.type == DocumentFileType.DIRECTORY) continue;
 				if (file.type == DocumentFileType.UNKNOWN) continue;

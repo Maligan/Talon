@@ -1,6 +1,5 @@
 package designer.dom.files
 {
-	import designer.dom.*;
 	import com.adobe.air.filesystem.FileMonitor;
 	import com.adobe.air.filesystem.events.FileMonitorEvent;
 	import flash.events.Event;
@@ -33,18 +32,12 @@ package designer.dom.files
 
 		private function onFileChange(e:FileMonitorEvent):void
 		{
-			trace(_file.nativePath, e.type);
 			dispatchEventWith(Event.CHANGE);
-		}
-
-		public function equals(link:DocumentFileReference):Boolean
-		{
-			return url == link.url;
 		}
 
 		public function read():ByteArray
 		{
-			if (removed) throw new ArgumentError("File was removed");
+			if (!exits) throw new ArgumentError("File not exists");
 
 			var result:ByteArray = new ByteArray();
 			var stream:FileStream = new FileStream();
@@ -91,10 +84,9 @@ package designer.dom.files
 			return _file.url;
 		}
 
-		/** File is obsolete and must be removed from document. */
-		public function get removed():Boolean
+		public function get exits():Boolean
 		{
-			return !_file.exists;
+			return _file.exists;
 		}
 
 		/** @private For internal usage ONLY. */

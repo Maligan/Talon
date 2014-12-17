@@ -1,33 +1,49 @@
 package designer.dom.files
 {
+	import designer.dom.Document;
 	import flash.utils.Dictionary;
-
 	import starling.events.Event;
 
-	public class DocumentFileReferenceList
+	public class DocumentFileReferenceCollection
 	{
+		private var _document:Document;
+
 		private var _files:Dictionary;
 		private var _types:Dictionary;
+		private var _controllers:Dictionary;
 
-		public function DocumentFileReferenceList()
+		public function DocumentFileReferenceCollection(document:Document)
 		{
+			_document = document;
 			_files = new Dictionary();
 			_types = new Dictionary();
+			_controllers = new Dictionary();
 		}
 
-		public function registerDocumentFileType(type:String, attach:Function = null, refresh:Function = null, detach:Function = null):void
+		public function registerDocumentFileType(typeName:String, typeClass:Class):void
 		{
-			_types[type] = { attach: attach, refresh: refresh, detach: detach };
+			_types[typeName] = typeClass;
+		}
+
+		public function addFiles(files:Vector.<DocumentFileReference>):void
+		{
+			for each (var file:DocumentFileReference in files)
+			{
+				addFile(file);
+			}
 		}
 
 		public function addFile(file:DocumentFileReference):void
 		{
 			if (_files[file.url] == null)
 			{
-				_files[file.url] = file;
-				file.addEventListener(Event.CHANGE, onFileChange);
-				var attach:Function = _types[file.type] && _types[file.type].attach;
-				if (attach) attach(file);
+				var type:Class = _types[file.type];
+				if (type != null)
+				{
+					var controller:DocumentFileController = new type();
+					controller.initialize(_document, file);
+					_controllers[file.url] = controller;
+				}
 			}
 		}
 
@@ -39,23 +55,14 @@ package designer.dom.files
 				file = _files[file.url];
 				file.removeEventListener(Event.CHANGE, onFileChange);
 				delete _files[file.url];
-				var detach:Function = _types[file.type] && _types[file.type].detach;
-				if (detach) detach(file);
+				delete _controllers[file.url];
 			}
 		}
 
 		private function onFileChange(e:Event):void
 		{
 			var file:DocumentFileReference = DocumentFileReference(e.target);
-			if (file.removed)
-			{
-				removeFile(file);
-			}
-			else
-			{
-				var refresh:Function = _types[file.type] && _types[file.type].refresh;
-				if (refresh) refresh(file);
-			}
+			if (!file.exits) removeFile(file);
 		}
 
 		public function toArray():Vector.<DocumentFileReference>

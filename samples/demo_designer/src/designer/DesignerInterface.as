@@ -30,11 +30,6 @@ package designer
 		[Embed(source="/../assets/interface.zip", mimeType="application/octet-stream")]
 		private static const INTERFACE:Class;
 
-		[Embed(source="/../assets/FrizQuadrata.fnt", mimeType="application/octet-stream")]
-		private static const FNT:Class;
-		[Embed(source="/../assets/FrizQuadrata.png")]
-		private static const FNT_PNG:Class;
-
 		private var _document:Document;
 		private var _factory:TalonFactory;
 		private var _interface:TalonSprite;
@@ -50,10 +45,6 @@ package designer
 
 		public function DesignerInterface()
 		{
-			var xml:XML = new XML(new FNT());
-			var texture:Texture = Texture.fromEmbeddedAsset(FNT_PNG);
-			TextField.registerBitmapFont(new BitmapFont(texture, xml), "FrizQuadrata");
-
 			_factory = new TalonFactory();
 			_factory.addEventListener(Event.COMPLETE, onFactoryComplete);
 			_factory.addArchiveAsync(new INTERFACE() as ByteArray);

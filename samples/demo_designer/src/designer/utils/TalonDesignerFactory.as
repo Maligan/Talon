@@ -28,6 +28,11 @@ package designer.utils
 			return getBasename(url);
 		}
 
+		public function getResource(id:String):*
+		{
+			return _resources[id];
+		}
+
 		public function get resourceIds():Vector.<String>
 		{
 			var result:Vector.<String> = new Vector.<String>();

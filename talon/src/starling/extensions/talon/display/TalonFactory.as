@@ -84,34 +84,49 @@ package starling.extensions.talon.display
 		//
 		// Library
 		//
+
+		/** Trivial prototype. */
 		public function addPrototype(id:String, xml:XML):void
 		{
 			_prototypes[id] = xml;
 		}
 
+		/** Trivial resource. */
 		public function addResource(id:String, resource:*):void
 		{
 			_resources[id] = resource;
 		}
 
+		/** Trivial stylesheet. */
 		public function addStyleSheet(css:String):void
 		{
 			_style.parse(css);
 		}
 
-		/** Import all files from zip archive to library. */
+		/** Complex library. */
+		public function addLibrary(xml:XML):void
+		{
+
+		}
+
+		/** Complex archive. Import all files from zip archive to library. */
 		public function addArchiveAsync(bytes:ByteArray, getNameCallback:Function = null):void
 		{
 			if (bytes == null) throw new ArgumentError("Parameter bytes must be non-null");
 
-			var loader:ZipLoader = new ZipLoader(getNameCallback || getBasename);
-			loader.addEventListener(Event.COMPLETE, onZipLoaderComplete);
-			loader.addEventListener(Event.COMPLETE, dispatchEvent);
-			loader.loadBytes(bytes);
+			var manager:AssetManagerExtended = new AssetManagerExtended();
+			manager.enqueueZip(bytes);
+			manager.loadQueue(onProgress);
+
+			function onProgress(ratio:Number):void
+			{
+				if (ratio == 1)
+					onZipLoaderComplete(manager);
+			}
 		}
 
-		/** Get filename without extension. */
-		protected final function getBasename(path:String):String
+		/** Get basename (filename without extension). */
+		protected final function getName(path:String):String
 		{
 			var regexp:RegExp = /([^\?\/\\]+?)(?:\.([\w\-]+))?(?:\?.*)?$/;
 			var matches:Array = regexp.exec(path);
@@ -125,195 +140,123 @@ package starling.extensions.talon.display
 			}
 		}
 
-		private function onZipLoaderComplete(e:*):void
+		private function onZipLoaderComplete(manager:AssetManagerExtended):void
 		{
-			var loader:ZipLoader = ZipLoader(e.target);
 
-			for (var prototypeId:String in loader.prototypes)
-				addPrototype(prototypeId, loader.prototypes[prototypeId]);
+			trace('complete');
 
-			for (var stylesheetId:String in loader.stylesheets)
-				addStyleSheet(loader.stylesheets[stylesheetId]);
-
-			for (var resourceId:String in loader.resources)
-				addResource(resourceId, loader.resources[resourceId]);
+//			for (var prototypeId:String in loader.prototypes)
+//				addPrototype(prototypeId, loader.prototypes[prototypeId]);
+//
+//			for (var stylesheetId:String in loader.stylesheets)
+//				addStyleSheet(loader.stylesheets[stylesheetId]);
+//
+//			for (var resourceId:String in loader.resources)
+//				addResource(resourceId, loader.resources[resourceId]);
 		}
 	}
 }
 
 import deng.fzip.FZip;
-import deng.fzip.FZipErrorEvent;
 import deng.fzip.FZipFile;
 
-import flash.display.Bitmap;
 import flash.display.Loader;
-import flash.events.Event;
+import flash.display.LoaderInfo;
 import flash.events.IOErrorEvent;
-import flash.events.SecurityErrorEvent;
 import flash.system.ImageDecodingPolicy;
 import flash.system.LoaderContext;
 import flash.utils.ByteArray;
-import flash.utils.Dictionary;
 
-import starling.events.EventDispatcher;
-import starling.textures.AtfData;
-import starling.textures.Texture;
+import starling.events.Event;
+import starling.utils.AssetManager;
+import starling.utils.SystemUtil;
 
-class ZipLoader extends EventDispatcher
+class AssetManagerExtended extends AssetManager
 {
-	private var _resources:Dictionary = new Dictionary();
-	private var _prototypes:Dictionary = new Dictionary();
-	private var _stylesheets:Dictionary = new Dictionary();
-	private var _fonts:Dictionary = new Dictionary();
+	private static const PNG:String = "\u0089PNG\r\n\u001A\n";
+	private static const JPG:String = "\u00FF\u00D8\u00FF";
+	private static const GIF87a:String = "\u0047\u0049\u0046\u0038\u0037\u0061";
+	private static const GIF89a:String = "\u0047\u0049\u0046\u0038\u0039\u0061";
 
-	private var _getNameCallback:Function;
-	private var _taskCount:int = 0;
-
-	public function ZipLoader(getNameCallback:Function):void
-	{
-		_getNameCallback = getNameCallback;
-	}
-
-	public function loadBytes(bytes:ByteArray):void
+	public function enqueueZip(bytes:ByteArray):void
 	{
 		var zip:FZip = new FZip();
-		zip.addEventListener(FZipErrorEvent.PARSE_ERROR, onParseError);
 		zip.loadBytes(bytes);
-		parse(zip);
-
-		function onParseError(e:Event):void
-		{
-			throw new Error("Zip parse error");
-		}
-	}
-
-	private function parse(zip:FZip):void
-	{
-		taskBegin();
 
 		var numFiles:int = zip.getFileCount();
 		for (var i:int = 0; i < numFiles; i++)
 		{
 			var file:FZipFile = zip.getFileAt(i);
-			var id:String = _getNameCallback(file.filename);
+			enqueueWithName(file.content, getBasenameFromUrl(file.filename));
+		}
+	}
 
-			if (isImage(file))
-			{
-				decodeTexture(id, file);
-			}
-			else
-			{
-				if (isXML(file))
-				{
-					var xml:XML = new XML(file.content);
-					if (xml.name() == "prototype")
-					{
-						_prototypes[xml.@id.toString()] = xml.*[0];
-					}
-					if (xml.name() == "font")
-					{
+	protected override function loadRawAsset(rawAsset:Object, onProgress:Function, onComplete:Function):void
+	{
+		var loaderInfo:LoaderInfo = null;
+		var hasImageSignature:Boolean = false;
 
-					}
-					else
-					{
-						_resources[id] = xml;
-					}
-				}
-				else
-				{
-					if (isCSS(file))
-					{
-						_stylesheets[id] = file.content.toString();
-					}
-					else
-					{
-						_resources[id] = file.content;
-					}
-				}
-			}
+		if (rawAsset is ByteArray)
+		{
+			var bytes:ByteArray = ByteArray(rawAsset);
+			hasImageSignature ||= hasSignature(bytes, PNG);
+			hasImageSignature ||= hasSignature(bytes, JPG);
+			hasImageSignature ||= hasSignature(bytes, GIF87a);
+			hasImageSignature ||= hasSignature(bytes, GIF89a);
 		}
 
-		taskEnd();
-	}
-
-	private function isImage(file:FZipFile):Boolean
-	{
-		if (file.filename.indexOf(".png") != -1) return true;
-		if (file.filename.indexOf(".jpg") != -1) return true;
-		if (file.filename.indexOf(".gif") != -1) return true;
-		if (file.filename.indexOf(".atf") != -1) return true;
-		return false;
-	}
-
-	private function isXML(file:FZipFile):Boolean
-	{
-		if (file.filename.indexOf(".xml") != -1) return true;
-		return false;
-	}
-
-	private function isCSS(file:FZipFile):Boolean
-	{
-		if (file.filename.indexOf(".css") != -1) return true;
-		return false;
-	}
-
-	private function decodeTexture(id:String, file:FZipFile):void
-	{
-		taskBegin();
-
-		var bytes:ByteArray = file.content;
-
-		if (AtfData.isAtfData(bytes))
+		if (hasImageSignature)
 		{
-			_resources[id] = Texture.fromAtfData(bytes, 1, true, taskEnd)
+			var loaderContext:LoaderContext = new LoaderContext(checkPolicyFile);
+			var loader:Loader = new Loader();
+			loaderContext.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
+			loaderInfo = loader.contentLoaderInfo;
+			loaderInfo.addEventListener(Event.IO_ERROR, onIoError);
+			loaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete);
+			loader.loadBytes(bytes, loaderContext);
 		}
 		else
 		{
-			var loader:Loader = new Loader();
-			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete);
-			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onLoaderComplete);
-			loader.contentLoaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoaderComplete);
-
-			var context:LoaderContext = new LoaderContext();
-			context.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
-
-			loader.loadBytes(bytes, context);
+			super.loadRawAsset(rawAsset, onProgress, onComplete);
 		}
 
-		function onLoaderComplete(e:Event):void
+		function onIoError(event:IOErrorEvent):void
 		{
-			if (e.type == Event.COMPLETE)
-			{
-				_resources[id] = Texture.fromBitmap(loader.content as Bitmap);
-			}
-			else
-			{
-				trace("[TalonFactory]", "Error while decoding bitmap")
-			}
+			log("IO error: " + event.text);
+			dispatchEventWith(Event.IO_ERROR);
+			complete(null);
+		}
 
-			taskEnd();
+		function onLoaderComplete(event:Object):void
+		{
+			complete(event.target.content);
+		}
+
+		function complete(asset:Object):void
+		{
+			loaderInfo.removeEventListener(Event.IO_ERROR, onIoError);
+			loaderInfo.removeEventListener(Event.COMPLETE, onLoaderComplete);
+
+			// On mobile, it is not allowed / endorsed to make stage3D calls while the app
+			// is in the background. Thus, we pause queue processing if that's the case.
+
+			if (SystemUtil.isDesktop)
+				onComplete(asset);
+			else
+				SystemUtil.executeWhenApplicationIsActive(onComplete, asset);
 		}
 	}
 
-	private function taskBegin():void { ++_taskCount; }
-
-	private function taskEnd():void { if (--_taskCount == 0) dispatchEventWith(Event.COMPLETE); }
-
-	//
-	// Results
-	//
-	public function get resources():Dictionary
+	/** Check whenever byte array starts with signature. */
+	private function hasSignature(source:ByteArray, signature:String):Boolean
 	{
-		return _resources;
-	}
+		if (source.bytesAvailable < signature.length) return false;
 
-	public function get prototypes():Dictionary
-	{
-		return _prototypes;
-	}
+		for (var i:int = 0; i < signature.length; i++)
+		{
+			if (signature.charCodeAt(i) != source[i]) return false;
+		}
 
-	public function get stylesheets():Dictionary
-	{
-		return _stylesheets;
+		return true;
 	}
 }

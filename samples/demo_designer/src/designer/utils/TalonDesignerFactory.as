@@ -25,7 +25,7 @@ package designer.utils
 
 		public function getResourceId(url:String):String
 		{
-			return getBasename(url);
+			return "1" //getBasename(url);
 		}
 
 		public function getResource(id:String):*

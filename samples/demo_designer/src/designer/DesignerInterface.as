@@ -11,6 +11,7 @@ package designer
 	import flash.filesystem.File;
 	import flash.net.FileFilter;
 	import flash.utils.ByteArray;
+	import flash.utils.Endian;
 
 	import starling.core.Starling;
 
@@ -29,6 +30,9 @@ package designer
 	{
 		[Embed(source="/../assets/interface.zip", mimeType="application/octet-stream")]
 		private static const INTERFACE:Class;
+
+		[Embed(source="/../assets/FrizQuadrata.png", mimeType="application/octet-stream")]
+		private static const PNG:Class;
 
 		private var _document:Document;
 		private var _factory:TalonFactory;
@@ -51,6 +55,23 @@ package designer
 
 			_layer = new Sprite();
 			initializeNativeMenu();
+
+
+
+			trace(checkSignature(new PNG(), "\u0089PNG\r\n\u001A\n"));
+			trace("end");
+		}
+
+		private function checkSignature(byteArray:ByteArray, signature:String):Boolean
+		{
+			if (byteArray.bytesAvailable < signature.length) return false;
+
+			for (var i:int = 0; i < signature.length; i++)
+			{
+				if (signature.charCodeAt(i) != byteArray[i]) return false;
+			}
+
+			return true;
 		}
 
 		private function initializeNativeMenu():void

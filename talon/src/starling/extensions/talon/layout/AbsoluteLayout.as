@@ -1,9 +1,12 @@
 package starling.extensions.talon.layout
 {
 	import starling.extensions.talon.core.Node;
+	import starling.extensions.talon.enums.Visibility;
 
 	public class AbsoluteLayout extends Layout
 	{
+		private static const VISIBILITY:String = "visibility";
+
 		public override function arrange(node:Node, width:Number, height:Number):void
 		{
 			// Node padding
@@ -19,6 +22,7 @@ package starling.extensions.talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
+				if (child.getAttribute(VISIBILITY) != Visibility.VISIBLE) continue;
 
 				// Child margin
 				var marginTop:Number = child.margin.top.toPixels(node.ppmm, node.ppem, node.pppt, height, 0, 0, width, height);
@@ -29,52 +33,52 @@ package starling.extensions.talon.layout
 				with (child.anchor)
 				{
 					//
-					// Horizontal (Width/X)
+					// Horizontal (width/x/left/right)
 					//
-					/**/ if ( left.isNone  &&  right.isNone)
+					/**/ if ( left.isNone &&  right.isNone)
 					{
 						child.bounds.width = child.width.toPixels(child.ppmm, child.ppem, node.pppt, width, 0, 0, width, height);
 						child.bounds.x = originX;
-						child.bounds.x += child.position.x.toPixels(child.ppmm, child.ppem, node.pppt, height, 0, 0, width, height);
-						child.bounds.x -= child.pivot.x.toPixels(child.ppmm, child.ppem, child.pppt, child.bounds.height, 0, 0, width, height);
+						child.bounds.x += child.position.x.toPixels(child.ppmm, child.ppem, node.pppt, width, 0, 0, width, height);
+						child.bounds.x -= child.pivot.x.toPixels(child.ppmm, child.ppem, child.pppt, child.bounds.width, 0, 0, width, height);
 					}
-					else if ( left.isNone  && !right.isNone)
+					else if ( left.isNone && !right.isNone)
 					{
 						child.bounds.right = paddingRight - marginRight + right.toPixels(child.ppmm, child.ppem, node.pppt, width, 0, 0, width, height);
 						child.bounds.left = child.bounds.right - child.width.toPixels(child.ppmm, child.ppem, node.pppt, width, 0, 0, width, height);
 					}
-					else if (!left.isNone  &&  right.isNone)
+					else if (!left.isNone &&  right.isNone)
 					{
 						child.bounds.left = paddingLeft + marginRight + left.toPixels(child.ppmm, child.ppem, node.pppt, width, 0, 0, width, height);
 						child.bounds.right = child.bounds.left + child.width.toPixels(child.ppmm, child.ppem, node.pppt, width, 0, 0, width, height);
 					}
-					else if (!left.isNone  && !right.isNone)
+					else if (!left.isNone && !right.isNone)
 					{
 						child.bounds.left = paddingLeft + marginLeft + left.toPixels(child.ppmm, child.ppem, node.pppt, width, 0, 0, width, height);
 						child.bounds.right = paddingRight - marginRight + right.toPixels(child.ppmm, child.ppem, node.pppt, width, 0, 0, width, height);
 					}
 
 					//
-					// Vertical (Height/Y)
+					// Vertical (height/y/top/bottom)
 					//
-					/**/ if ( top.isNone  &&  bottom.isNone)
+					/**/ if ( top.isNone &&  bottom.isNone)
 					{
 						child.bounds.height = child.height.toPixels(child.ppmm, child.ppem, node.pppt, height, 0, 0, width, height);
 						child.bounds.y = originY;
 						child.bounds.y += child.position.y.toPixels(child.ppmm, child.ppem, node.pppt, height, 0, 0, width, height);
 						child.bounds.y -= child.pivot.y.toPixels(child.ppmm, child.ppem, child.pppt, child.bounds.height, 0, 0, width, height);
 					}
-					else if ( top.isNone  && !bottom.isNone)
+					else if ( top.isNone && !bottom.isNone)
 					{
 						child.bounds.bottom = paddingBottom - marginBottom + bottom.toPixels(child.ppmm, child.ppem, node.pppt, height, 0, 0, width, height);
 						child.bounds.top = child.bounds.bottom - child.height.toPixels(child.ppmm, child.ppem, node.pppt, height, 0, 0, width, height);
 					}
-					else if (!top.isNone  &&  bottom.isNone)
+					else if (!top.isNone &&  bottom.isNone)
 					{
 						child.bounds.top = paddingTop + marginTop + top.toPixels(child.ppmm, child.ppem, node.pppt, height, 0, 0, width, height);
 						child.bounds.bottom = child.bounds.top + child.height.toPixels(child.ppmm, child.ppem, node.pppt, height, 0, 0, width, height);
 					}
-					else if (!top.isNone  && !bottom.isNone)
+					else if (!top.isNone && !bottom.isNone)
 					{
 						child.bounds.top = paddingTop + marginTop + top.toPixels(child.ppmm, child.ppem, node.pppt, height, 0, 0, width, height);
 						child.bounds.bottom = paddingBottom - marginBottom + bottom.toPixels(child.ppmm, child.ppem, node.pppt, height, 0, 0, width, height);

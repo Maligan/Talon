@@ -47,11 +47,12 @@ package designer
 		{
 			_controller = controller;
 
-				_factory = new TalonFactory();
+			_factory = new TalonFactory();
 			_factory.addEventListener(Event.COMPLETE, onFactoryComplete);
 			_factory.addArchiveAsync(new INTERFACE() as ByteArray);
 
 			_layer = new Sprite();
+			_layer.scaleX = _layer.scaleY = 0.5;
 			initializeNativeMenu();
 		}
 
@@ -266,7 +267,7 @@ package designer
 			if (_view is ITalonTarget)
 			{
 				var node:Node = ITalonTarget(_view).node;
-				node.bounds.setTo(0, 0, _container.node.bounds.width, _container.node.bounds.height);
+				node.bounds.setTo(0, 0, _container.node.bounds.width/_layer.scaleX, _container.node.bounds.height/_layer.scaleY);
 				node.commit();
 			}
 		}

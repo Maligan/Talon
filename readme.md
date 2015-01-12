@@ -13,17 +13,19 @@ Talon — библиотека для создания резиновых инт
 - **\*** - Относительная единица. *Вес* относительно других дочерних элементов, c целевой величиной определяемой по контексту.
 
 ### Talon Layouts:
-#### abs
+#### absolute
 Used children attributes:	
 - anchor (GaugeQuad)
 - x, y (*px*, *pt*, *em*, *%*)
 - width, height (*px*, *pt*, *em*, *%*)
 - minWidth, minHeight (*px*, *pt*, *em*, *%*)
 - maxWidth, maxHeight (*px*, *pt*, *em*, *%*)
-- scaleX, scaleY
+- (?) scaleX, scaleY
+- margin
 - pivotX, pivotY (*px*, *pt*, *em*, *%*)
 Used self attributes:
 - originX, originY
+- padding
 
 #### flow
 Used self attributes:
@@ -39,13 +41,13 @@ Used children attributes:
 - minWidth, minHeight (*px*, *pt*, *em*, *%*)
 - maxWidth, maxHeight (*px*, *pt*, *em*, *%*)
 - break (*true*, *false*)
-- ihalign ???
-- ivalign ???
+- (?) ihalign 
+- (?) ivalign
 
 #### grid
 
 ### Talon CSS:
-В отличии от стандарта CSS разработанного W3C стили не содержатся в отдельном свойстве узла *styles*, а выставляют значение аттрбутов *по-умолчанию*.
+В отличии от стандарта CSS разработанного W3C стили содержатся не в отдельном свойстве узла *styles*, а выставляют значение аттрбутов *по-умолчанию*.
 То есть если есть такая структура:
 
 **Верно**
@@ -97,7 +99,7 @@ Used children attributes:
 - background9Scale
 
 - cursor (*default*, *pointer*)
-- filter (*grayscale*, *sepia*, *blur*, *drop-shapow* etc)
+- filter (*brightness*, *grayscale*, *sepia*, *blur*, *drop-shapow* etc)
 
 ## Under the Hood
 Ключевые моменты:

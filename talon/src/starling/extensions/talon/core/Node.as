@@ -8,9 +8,9 @@ package starling.extensions.talon.core
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 	import starling.extensions.talon.layout.Layout;
-	import starling.extensions.talon.utils.FillMode;
-	import starling.extensions.talon.utils.Orientation;
-	import starling.extensions.talon.utils.Visibility;
+	import starling.extensions.talon.enums.FillMode;
+	import starling.extensions.talon.enums.Orientation;
+	import starling.extensions.talon.enums.Visibility;
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
 
@@ -105,6 +105,7 @@ package starling.extensions.talon.core
 			// Layout
 			bind("layout", Layout.FLOW, true);
 			bind("visibility", Visibility.VISIBLE, true);
+			bind("zindex", ZERO, true);
 
 			bind("orientation", Orientation.HORIZONTAL, true);
 			bind("halign", HAlign.LEFT, true);
@@ -285,7 +286,7 @@ package starling.extensions.talon.core
 			var invalidate:Boolean = Layout.isChildAttribute(getAttribute("layout"), e.data as String);
 			if (invalidate)
 			{
-				trace("Rearrage");
+				commit();
 			}
 		}
 

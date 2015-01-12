@@ -1,4 +1,4 @@
-package starling.extensions.talon.utils
+package starling.extensions.talon.enums
 {
 	import starling.errors.AbstractClassError;
 
@@ -16,6 +16,7 @@ package starling.extensions.talon.utils
 				|| mode == REPEAT;
 		}
 
+		/** @private */
 		public function FillMode()
 		{
 			throw new AbstractClassError();

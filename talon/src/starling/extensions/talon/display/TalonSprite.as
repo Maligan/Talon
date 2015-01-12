@@ -21,8 +21,9 @@ package starling.extensions.talon.display
 	import starling.extensions.talon.core.GaugeQuad;
 	import starling.extensions.talon.display.ITalonTarget;
 	import starling.extensions.talon.core.Node;
-	import starling.extensions.talon.utils.FillMode;
+	import starling.extensions.talon.enums.FillMode;
 	import starling.extensions.talon.utils.parseColor;
+	import starling.extensions.talon.utils.parseFilter;
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
 	import starling.text.TextFieldAutoSize;
@@ -163,7 +164,7 @@ package starling.extensions.talon.display
 			else if (e.data == "filter")
 			{
 				var filterString:String = node.getAttribute("filter");
-				filter = FilterFactory.fromString(filterString);
+				filter = parseFilter(filterString);
 			}
 		}
 

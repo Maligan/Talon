@@ -40,7 +40,7 @@ package starling.extensions.talon.layout
 			if (_initialized == false)
 			{
 				_initialized = true;
-				if (!_layout[FLOW]) registerLayoutAlias(FLOW, new FlowLayout());
+				if (!_layout[FLOW]) registerLayoutAlias(FLOW, new FlowLayout(), null, ["width", "height"]);
 				if (!_layout[ABSOLUTE]) registerLayoutAlias(ABSOLUTE, new AbsoluteLayout());
 			}
 		}
@@ -57,7 +57,7 @@ package starling.extensions.talon.layout
 
 			if (attributeName == "width")
 			{
-				trace("sdf")
+				trace("sdf", _layoutChildrenAttributes[aliasName][attributeName] === true);
 			}
 
 			return _layoutChildrenAttributes[aliasName][attributeName];

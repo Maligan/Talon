@@ -2,7 +2,7 @@ package starling.extensions.talon.layout
 {
 	import starling.extensions.talon.core.Gauge;
 	import starling.extensions.talon.core.Node;
-	import starling.extensions.talon.utils.Orientation;
+	import starling.extensions.talon.enums.Orientation;
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
 
@@ -16,7 +16,6 @@ package starling.extensions.talon.layout
 		private static const WRAP:String = "wrap";
 		private static const BREAK:String = "break";
 		private static const TRUE:String = "true";
-
 
 		private static const _gaugeHelper:Gauge = new Gauge();
 

@@ -52,7 +52,7 @@ package designer
 			_factory.addArchiveAsync(new INTERFACE() as ByteArray);
 
 			_layer = new Sprite();
-			_layer.scaleX = _layer.scaleY = 0.5;
+			_layer.scaleX = _layer.scaleY = 1;
 			initializeNativeMenu();
 		}
 

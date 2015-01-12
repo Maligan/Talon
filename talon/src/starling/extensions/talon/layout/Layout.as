@@ -54,12 +54,6 @@ package starling.extensions.talon.layout
 		public static function isChildAttribute(aliasName:String, attributeName:String):Boolean
 		{
 			initialize();
-
-			if (attributeName == "width")
-			{
-				trace("sdf", _layoutChildrenAttributes[aliasName][attributeName] === true);
-			}
-
 			return _layoutChildrenAttributes[aliasName][attributeName];
 		}
 

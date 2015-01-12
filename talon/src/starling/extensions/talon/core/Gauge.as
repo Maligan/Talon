@@ -128,6 +128,12 @@ package starling.extensions.talon.core
 			if (_auto != value)
 			{
 				_auto = value;
+
+				if (_auto == null)
+				{
+					_unit = NONE;
+				}
+
 				dispatchEventWith(Event.CHANGE);
 			}
 		}

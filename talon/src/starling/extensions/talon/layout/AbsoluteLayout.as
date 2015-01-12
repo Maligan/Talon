@@ -88,5 +88,39 @@ package starling.extensions.talon.layout
 				child.commit();
 			}
 		}
+
+		public override function measureAutoWidth(node:Node, width:Number, height:Number):Number
+		{
+			var resultWidth:int = 0;
+
+			for (var i:int = 0; i < node.numChildren; i++)
+			{
+				var child:Node = node.getChildAt(i);
+				if (child.getAttribute(VISIBILITY) == Visibility.COLLAPSED) continue;
+
+				var childWidth:int = child.width.toPixels(child.ppmm, child.ppem, child.pppt, 0, 0, 0, 0, 0);
+
+				resultWidth = Math.max(resultWidth, childWidth);
+			}
+
+			return resultWidth;
+		}
+
+		public override function measureAutoHeight(node:Node, width:Number, height:Number):Number
+		{
+			var resultHeight:int = 0;
+
+			for (var i:int = 0; i < node.numChildren; i++)
+			{
+				var child:Node = node.getChildAt(i);
+				if (child.getAttribute(VISIBILITY) == Visibility.COLLAPSED) continue;
+
+				var childHeight:int = child.height.toPixels(child.ppmm, child.ppem, child.pppt, 0, 0, 0, 0, 0);
+
+				resultHeight = Math.max(resultHeight, childHeight);
+			}
+
+			return resultHeight;
+		}
 	}
 }

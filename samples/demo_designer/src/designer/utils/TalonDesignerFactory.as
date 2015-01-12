@@ -14,7 +14,6 @@ package designer.utils
 	/** Extended version of TalonFactory for designer purpose. */
 	public final class TalonDesignerFactory extends TalonFactory
 	{
-
 		private var _styles:Dictionary;
 		private var _styleInvalidated:Boolean;
 
@@ -23,9 +22,42 @@ package designer.utils
 			return _prototypes[id] != null;
 		}
 
+		public function removePrototype(id:String):void
+		{
+			delete _prototypes[id];
+		}
+
+		public function get prototypeIds():Vector.<String>
+		{
+			var result:Vector.<String> = new Vector.<String>();
+			for (var id:String in _prototypes) result[result.length] = id;
+			return result.sort(byName);
+		}
+
+		private function byName(string1:String, string2:String):int
+		{
+			if (string1 > string2) return +1;
+			if (string1 < string2) return -1;
+			return 0;
+		}
+
 		public function getResourceId(url:String):String
 		{
-			return "1" //getBasename(url);
+			return getName(url);
+		}
+
+		private final function getName(path:String):String
+		{
+			var regexp:RegExp = /([^\?\/\\]+?)(?:\.([\w\-]+))?(?:\?.*)?$/;
+			var matches:Array = regexp.exec(path);
+			if (matches && matches.length > 0)
+			{
+				return matches[1];
+			}
+			else
+			{
+				return null;
+			}
 		}
 
 		public function getResource(id:String):*
@@ -37,7 +69,7 @@ package designer.utils
 		{
 			var result:Vector.<String> = new Vector.<String>();
 			for (var resourceId:String in _resources) result[result.length] = resourceId;
-			return result;
+			return result.sort(byName);
 		}
 
 		public function removeResource(id:String):void

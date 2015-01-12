@@ -43,6 +43,7 @@ package starling.extensions.talon.core
 			}
 			else if (string == AUTO)
 			{
+				if (!auto) throw new ArgumentError("Auto value is not allowed");
 				_unit = AUTO;
 				_amount = 0;
 			}
@@ -89,7 +90,7 @@ package starling.extensions.talon.core
 			switch (unit)
 			{
 				case NONE:		return 0;
-				case AUTO:		return auto ? auto(width, height) : 0;
+				case AUTO:		return auto(width, height);
 				case PX:		return amount;
 				case MM:		return amount * ppmm;
 				case EM:        return amount * ppem;
@@ -103,8 +104,9 @@ package starling.extensions.talon.core
 		public function get unit():String { return _unit }
 		public function set unit(value:String):void
 		{
-			if (_unit != unit)
+			if (_unit != value)
 			{
+				if (!auto && value == AUTO) throw new ArgumentError("Auto value is not allowed");
 				_unit = unit;
 				dispatchEventWith(Event.CHANGE);
 			}
@@ -156,7 +158,11 @@ package starling.extensions.talon.core
 
 		public function toString():String
 		{
-			return _unit == AUTO ? AUTO : _unit == STAR && _amount == 1 ? STAR : _amount + _unit;
+			if (isAuto) return AUTO;
+			if (isNone) return NONE;
+			if (_unit==STAR&&_amount==1) return STAR;
+
+			return _amount + _unit;
 		}
 	}
 }

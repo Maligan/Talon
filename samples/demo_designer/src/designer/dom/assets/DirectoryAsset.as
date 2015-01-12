@@ -12,7 +12,7 @@ package designer.dom.assets
 			var files:Vector.<File> = findFiles(file.file, false, false);
 			var references:Vector.<DocumentFileReference> = new Vector.<DocumentFileReference>();
 			for each (var child:File in files) references[references.length] = new DocumentFileReference(child);
-			document.files.addFiles(references);
+			for each (var reference:DocumentFileReference in references) document.files.addFile(reference);
 		}
 	}
 }

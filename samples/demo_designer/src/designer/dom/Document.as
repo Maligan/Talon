@@ -25,13 +25,10 @@ package designer.dom
 		private var _properties:Object;
 
 		private var _tracker:DocumentTaskTracker;
-		private var _trackerTimer:Timer;
 
 		public function Document(properties:Object):void
 		{
 			_tracker = new DocumentTaskTracker(onTasksEnd);
-			_trackerTimer = new Timer(1000);
-			_trackerTimer.addEventListener(TimerEvent.TIMER, onTimer);
 
 			_properties = properties;
 			_factory = new TalonDesignerFactory();
@@ -41,6 +38,11 @@ package designer.dom
 			_files.registerDocumentFileType(DocumentFileType.PROTOTYPE, PrototypeAsset);
 			_files.registerDocumentFileType(DocumentFileType.STYLE, StyleAsset);
 			_files.registerDocumentFileType(DocumentFileType.FONT, FontAsset);
+		}
+
+		public function get isBusy():Boolean
+		{
+			return _tracker.isBusy;
 		}
 
 		/** Background task counter. */
@@ -64,12 +66,6 @@ package designer.dom
 		// Update timer
 		//
 		private function onTasksEnd():void
-		{
-			_trackerTimer.reset();
-			_trackerTimer.start();
-		}
-
-		private function onTimer(e:TimerEvent):void
 		{
 			dispatchEventWith(Event.CHANGE);
 		}

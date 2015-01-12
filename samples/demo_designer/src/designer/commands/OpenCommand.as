@@ -42,7 +42,9 @@ package designer.commands
 			// Add batch of files to document
 			var references:Vector.<DocumentFileReference> = new Vector.<DocumentFileReference>();
 			for each (var file:File in files) references[references.length] = new DocumentFileReference(file);
-			_document.files.addFiles(references);
+			_document.tasks.begin();
+			for each (var reference:DocumentFileReference in references) _document.files.addFile(reference);
+			_document.tasks.end();
 		}
 
 		private function readPropertiesFile(file:File):Object

@@ -169,7 +169,7 @@ package starling.extensions.talon.display
 
 		private function onCursorTouch(e:TouchEvent):void
 		{
-			Mouse.cursor = e.interactsWith(this) ? node.getAttribute("cursor") : MouseCursor.AUTO;
+			Mouse.cursor = e.interactsWith(this) ? (node.getAttribute("cursor") || MouseCursor.AUTO) : MouseCursor.AUTO;
 		}
 
 		private function onBoxResize(e:Event):void

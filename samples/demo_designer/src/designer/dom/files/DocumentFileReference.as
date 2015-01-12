@@ -79,6 +79,12 @@ package designer.dom.files
 			return null;
 		}
 
+		public function equals(reference:DocumentFileReference):Boolean
+		{
+			return reference != null
+				&& reference.url == url;
+		}
+
 		public function get url():String
 		{
 			return _file.url;

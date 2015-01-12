@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<prototype id="interface" type="button">
+<prototype id="interface" type="MessageBox">
   <node width="100%" height="100%" halign="center" valign="center">
     <border>
       <node width="*" height="0px" halign="center">
@@ -9,7 +9,7 @@
       </node>
       <node height="90px">
         <node class="icon"/>
-        <label margin="9px" halign="left" text="And remember all those assets belong to Blizzard Entertainment and cannot be used in your own projects. And bla-bla-bla long text which can be displayed in this mesage box." width="232px"/>
+        <label margin="9px" halign="left" text="and remember all those assets belong to Blizzard Entertainment and cannot be used in your own projects. And bla-bla-bla long text which can be displayed in this mesage box." width="232px"/>
       </node>
       <node gap="16px">
         <button class="disabled">

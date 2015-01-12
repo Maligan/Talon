@@ -29,8 +29,10 @@ package designer.dom.assets
 
 				function onComplete(e:*):void
 				{
-					document.factory.addResource(document.factory.getResourceId(file.url), Texture.fromBitmap(loader.content as Bitmap));
-					document.tasks.end();
+					var id:String = document.factory.getResourceId(file.url);
+					var texture:Texture = Texture.fromBitmap(loader.content as Bitmap);
+					document.factory.addResource(id, texture);
+					document.tasks.end("End texture decoding: " + id);
 				}
 			}
 		}

@@ -28,15 +28,13 @@ package designer
 			_launcher.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			_launcher.console.addCommand("resources", cmdResourceSearch, "RegExp based search project resources", "regexp");
 
-			_interface = new DesignerInterface();
+			_interface = new DesignerInterface(this);
 			_interface.addEventListener(DesignerInterfaceEvent.COMMAND, onCommand);
 
 			_host = host;
 			_host.addChild(_interface);
 
 			resizeTo(_host.stage.stageWidth, _host.stage.stageHeight);
-
-			_prototype = "button";
 		}
 
 		private function onCommand(e:Event):void
@@ -70,15 +68,29 @@ package designer
 
 		private function refresh():void
 		{
-			if (_document && _prototype && _document.factory.hasPrototype(_prototype))
+			// Document/Prototype not selected
+			if (_document == null || _prototype == null)
 			{
-				var view:DisplayObject = _document.factory.build(_prototype, true, true);
-				_interface.setPrototype(view);
+				_interface.showEmpty();
+				return;
 			}
-			else
+
+			// Document is in process
+			if (_document.isBusy)
 			{
-				_interface.setPrototype(null);
+				_interface.showBusyIndicator();
+				return;
 			}
+
+			// Bad prototype name
+			if (_document.factory.hasPrototype(_prototype) == false)
+			{
+				_interface.showError("ERROR");
+				return;
+			}
+
+			// If all is ok - build and show view
+			_interface.showPrototype(_document.factory.build(_prototype));
 		}
 
 		public function resizeTo(width:int, height:int):void
@@ -101,9 +113,24 @@ package designer
 			_document = document;
 			_document && _document.addEventListener(Event.CHANGE, onDocumentChange);
 
+			_prototype = _document.factory.prototypeIds.length > 0 ? _document.factory.prototypeIds[0] : null;
 			_interface.setDocument(_document);
 
 			refresh();
+		}
+
+		public function getCurrentPrototype():String
+		{
+			return _prototype;
+		}
+
+		public function setCurrentPrototype(value:String):void
+		{
+			if (_prototype != value)
+			{
+				_prototype = value;
+				refresh();
+			}
 		}
 
 		//
@@ -115,7 +142,7 @@ package designer
 
 			var split:Array = query.split(" ");
 			var regexp:RegExp = query.length > 1 ? new RegExp(split[1]) : /.*/;
-			var resourceIds:Vector.<String> = _document.factory.resourceIds.filter(byRegExp(regexp)).sort(byName);
+			var resourceIds:Vector.<String> = _document.factory.resourceIds.filter(byRegExp(regexp));
 
 			if (resourceIds.length == 0) _launcher.console.println("Resources not found");
 			else
@@ -125,13 +152,6 @@ package designer
 					_launcher.console.println("*", resourceId);
 				}
 			}
-		}
-
-		private function byName(string1:String, string2:String):int
-		{
-			if (string1 > string2) return +1;
-			if (string1 < string2) return -1;
-			return 0;
 		}
 
 		private function byRegExp(regexp:RegExp):Function

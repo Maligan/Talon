@@ -25,14 +25,6 @@ package designer.dom.files
 			_types[typeName] = typeClass;
 		}
 
-		public function addFiles(files:Vector.<DocumentFileReference>):void
-		{
-			for each (var file:DocumentFileReference in files)
-			{
-				addFile(file);
-			}
-		}
-
 		public function addFile(file:DocumentFileReference):void
 		{
 			if (_files[file.url] == null)
@@ -43,6 +35,7 @@ package designer.dom.files
 					var controller:DocumentFileController = new type();
 					controller.initialize(_document, file);
 					_controllers[file.url] = controller;
+					_files[file.url] = file;
 				}
 			}
 		}

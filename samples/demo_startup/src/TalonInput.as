@@ -59,10 +59,10 @@ package
 		private function getAutoWidth(width:Number, height:Number):Number { return getStageTextBounds().width + (2+2) + 2; }
 		private function getAutoHeight(width:Number, height:Number):Number
 		{
-			var height:Number = getStageTextBounds().height;
-			var lineHeight:Number = _text.fontSize + 2;
-			height = Math.ceil(height/lineHeight) * lineHeight;
-			return height+(2+2);
+//			var height:Number = getStageTextBounds().height;
+//			var lineHeight:Number = _text.fontSize + 2;
+//			height = Math.ceil(height/lineHeight) * lineHeight;
+			return 0; // height+(2+2);
 		}
 
 		private function getStageTextBounds():Rectangle

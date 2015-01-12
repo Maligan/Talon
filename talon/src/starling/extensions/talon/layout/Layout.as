@@ -35,7 +35,7 @@ package starling.extensions.talon.layout
 			_layoutChildrenAttributes[aliasName] = helper;
 		}
 
-		public static function getLayoutByAlias(aliasName:String):Layout
+		private static function initialize():void
 		{
 			if (_initialized == false)
 			{
@@ -43,8 +43,24 @@ package starling.extensions.talon.layout
 				if (!_layout[FLOW]) registerLayoutAlias(FLOW, new FlowLayout());
 				if (!_layout[ABSOLUTE]) registerLayoutAlias(ABSOLUTE, new AbsoluteLayout());
 			}
+		}
 
+		public static function getLayoutByAlias(aliasName:String):Layout
+		{
+			initialize();
 			return _layout[aliasName];
+		}
+
+		public static function isChildAttribute(aliasName:String, attributeName:String):Boolean
+		{
+			initialize();
+
+			if (attributeName == "width")
+			{
+				trace("sdf")
+			}
+
+			return _layoutChildrenAttributes[aliasName][attributeName];
 		}
 
 		//

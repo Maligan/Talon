@@ -208,7 +208,12 @@ package starling.extensions.talon.core
 		// Resource
 		//
 		/** Set current node resources (an object containing key-value pairs). */
-		public function setResources(resources:Object):void { _resources = resources; }
+		public function setResources(resources:Object):void
+		{
+			_resources = resources;
+			resource();
+		}
+
 		/** Find resource in self or ancestors resources. */
 		public function getResource(key:String):*
 		{
@@ -218,6 +223,24 @@ package starling.extensions.talon.core
 			if (_parent) return _parent.getResource(key);
 			// Not found
 			return null;
+		}
+
+		private function resource():void
+		{
+			// Notify resource change
+			for each (var attribute:Attribute in _attributes)
+			{
+				var value:String = attribute.value;
+				if (value == null) continue;
+				if (value.indexOf("resource") == 0) dispatchEventWith(Event.CHANGE, false, attribute.name);
+			}
+
+			// Recursive children notify resource change
+			for (var i:int = 0; i < numChildren; i++)
+			{
+				var child:Node = getChildAt(i);
+				child.resource();
+			}
 		}
 
 		//
@@ -257,6 +280,15 @@ package starling.extensions.talon.core
 		private function measureAutoHeight(width:Number, height:Number):Number { return layout.measureAutoHeight(this, width, height); }
 		private function get layout():Layout { return Layout.getLayoutByAlias(getAttribute("layout")); }
 
+		private function onChildAttributeChange(e:Event):void
+		{
+			var invalidate:Boolean = Layout.isChildAttribute(getAttribute("layout"), e.data as String);
+			if (invalidate)
+			{
+				trace("Rearrage");
+			}
+		}
+
 		//
 		// Complex
 		//
@@ -268,6 +300,8 @@ package starling.extensions.talon.core
 			_children.push(child);
 			child._parent = this;
 			child.restyle();
+			child.resource();
+			child.addEventListener(Event.CHANGE, onChildAttributeChange);
 			child.dispatchEventWith(Event.ADDED);
 		}
 
@@ -276,9 +310,11 @@ package starling.extensions.talon.core
 			var indexOf:int = _children.indexOf(child);
 			if (indexOf == -1) throw new ArgumentError("");
 			_children.splice(indexOf, 1);
+			child.removeEventListener(Event.CHANGE, onChildAttributeChange);
 			child.dispatchEventWith(Event.REMOVED);
 			child._parent = null;
 			child.restyle();
+			child.resource();
 		}
 
 		public function getChildAt(index:int):Node
@@ -303,11 +339,11 @@ internal class Attribute
 	private var _assignedValueSetter:Function;
 	private var _assignedDispatcher:EventDispatcher;
 
-	private var _inheritable:Boolean;
-	private var _inherit:String;
 	private var _assign:String;
 	private var _styleable:Boolean;
 	private var _style:String;
+	private var _inheritable:Boolean;
+	private var _inherit:String;
 	private var _initial:String;
 
 	public function Attribute(node:Node, name:String, initial:String = null, inheritable:Boolean = false, styleable:Boolean = true, getter:Function = null, setter:Function = null, dispatcher:EventDispatcher = null)

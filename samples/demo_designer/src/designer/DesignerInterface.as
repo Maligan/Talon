@@ -3,6 +3,7 @@ package designer
 	import designer.commands.CloseCommand;
 	import designer.commands.ExportCommand;
 	import designer.commands.OpenCommand;
+	import designer.commands.SelectCommand;
 	import designer.dom.Document;
 
 	import flash.desktop.NativeApplication;
@@ -11,7 +12,6 @@ package designer
 	import flash.filesystem.File;
 	import flash.net.FileFilter;
 	import flash.utils.ByteArray;
-	import flash.utils.Endian;
 
 	import starling.core.Starling;
 
@@ -22,24 +22,20 @@ package designer
 	import starling.extensions.talon.display.ITalonTarget;
 	import starling.extensions.talon.display.TalonSprite;
 	import starling.extensions.talon.display.TalonFactory;
-	import starling.text.BitmapFont;
-	import starling.text.TextField;
-	import starling.textures.Texture;
 
 	public class DesignerInterface extends Sprite
 	{
 		[Embed(source="/../assets/interface.zip", mimeType="application/octet-stream")]
 		private static const INTERFACE:Class;
 
-		[Embed(source="/../assets/FrizQuadrata.png", mimeType="application/octet-stream")]
-		private static const PNG:Class;
-
 		private var _document:Document;
 		private var _factory:TalonFactory;
 		private var _interface:TalonSprite;
 		private var _layer:Sprite;
 		private var _container:TalonSprite;
+		private var _controller:DesignerController;
 
+		private var _navigate:NativeMenu;
 		private var _export:NativeMenuItem;
 		private var _close:NativeMenuItem;
 		private var _stats:NativeMenuItem;
@@ -47,31 +43,16 @@ package designer
 
 		private var _view:DisplayObject;
 
-		public function DesignerInterface()
+		public function DesignerInterface(controller:DesignerController)
 		{
-			_factory = new TalonFactory();
+			_controller = controller;
+
+				_factory = new TalonFactory();
 			_factory.addEventListener(Event.COMPLETE, onFactoryComplete);
 			_factory.addArchiveAsync(new INTERFACE() as ByteArray);
 
 			_layer = new Sprite();
 			initializeNativeMenu();
-
-
-
-			trace(checkSignature(new PNG(), "\u0089PNG\r\n\u001A\n"));
-			trace("end");
-		}
-
-		private function checkSignature(byteArray:ByteArray, signature:String):Boolean
-		{
-			if (byteArray.bytesAvailable < signature.length) return false;
-
-			for (var i:int = 0; i < signature.length; i++)
-			{
-				if (signature.charCodeAt(i) != byteArray[i]) return false;
-			}
-
-			return true;
 		}
 
 		private function initializeNativeMenu():void
@@ -102,6 +83,10 @@ package designer
 			close.enabled = false;
 			file.addItem(close);
 			_close = close;
+
+			// Navigate
+			_navigate = new NativeMenu();
+			menu.addSubmenu(_navigate, DesignerConstants.T_MENU_NAVIGATE);
 
 			// View
 			var view:NativeMenu = new NativeMenu();
@@ -187,7 +172,6 @@ package designer
 		private function onConsoleOpen(e:*):void { _console.checked = DesignerApplication.current.console.visible; }
 		private function onConsoleClose(e:*):void { _console.checked = DesignerApplication.current.console.visible; }
 
-
 		private function onOnlineHelpSelect(e:*):void { }
 		private function onAboutSelect(e:*):void { }
 
@@ -206,12 +190,60 @@ package designer
 
 		public function setDocument(document:Document):void
 		{
+			_document && _document.removeEventListener(Event.CHANGE, onDocumentChange);
 			_document = document;
+			_document && _document.addEventListener(Event.CHANGE, onDocumentChange);
 			_export.enabled = _document != null;
 			_close.enabled = _document != null;
+
+			refreshNavigateMenu();
 		}
 
-		public function setPrototype(view:DisplayObject):void
+		private function onDocumentChange(e:Event):void
+		{
+			refreshNavigateMenu();
+		}
+
+		private function refreshNavigateMenu():void
+		{
+			_navigate.removeAllItems();
+
+			if (_document)
+			{
+				var prototypes:Vector.<String> = _document.factory.prototypeIds;
+				for each (var id:String in prototypes)
+				{
+					var item:NativeMenuItem = new NativeMenuItem(id);
+					item.addEventListener(Event.SELECT, onSelect, false, 0, true);
+					item.checked = id == _controller.getCurrentPrototype();
+					_navigate.addItem(item);
+				}
+			}
+
+			function onSelect(e:*):void
+			{
+				var item:NativeMenuItem = NativeMenuItem(e.target);
+				var id:String = null;
+				if (item.checked)
+				{
+					item.checked = false;
+					item = null;
+				}
+				else
+				{
+					for each (var sibling:NativeMenuItem in item.menu.items) sibling.checked = sibling == item;
+					id = item.label;
+				}
+
+				var select:SelectCommand = new SelectCommand(_controller, id);
+				dispatchEventWith(DesignerInterfaceEvent.COMMAND, false, select);
+			}
+		}
+
+		public function showBusyIndicator():void { }
+		public function showEmpty():void { _layer.removeChildren(); }
+		public function showError(message:String):void { }
+		public function showPrototype(view:DisplayObject):void
 		{
 			_view = view;
 			_layer.removeChildren();

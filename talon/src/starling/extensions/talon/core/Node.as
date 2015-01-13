@@ -2,6 +2,7 @@ package starling.extensions.talon.core
 {
 	import flash.geom.Rectangle;
 	import flash.system.Capabilities;
+	import flash.ui.MouseCursor;
 	import flash.utils.Dictionary;
 
 	import starling.core.Starling;
@@ -51,10 +52,18 @@ package starling.extensions.talon.core
 			const ZERO:String = "0px";
 			const TRANSPARENT:String = "transparent";
 			const WHITE:String = "white";
+			const FALSE:String = "false";
+			const ONE:String = "1";
 			const NULL:String = null;
 
 			width.auto = minWidth.auto = maxWidth.auto = measureAutoWidth;
 			height.auto = minHeight.auto = maxHeight.auto = measureAutoHeight;
+
+			// Style (Block styling)
+			bind(Attributes.ID, NULL, false);
+			bind(Attributes.TYPE, NULL, false);
+			bind(Attributes.CLASS, NULL, false);
+			bind(Attributes.STATE, NULL, false);
 
 			// Bounds
 			bind(Attributes.WIDTH, Gauge.AUTO, true, width);
@@ -92,16 +101,15 @@ package starling.extensions.talon.core
 			bind(Attributes.BACKGROUND_COLOR, TRANSPARENT, true);
 			bind(Attributes.BACKGROUND_FILL_MODE, FillMode.SCALE, true);
 
+			// Appearance
+			bind(Attributes.ALPHA, ONE, true);
+			bind(Attributes.CLIPPING, FALSE, true);
+			bind(Attributes.CURSOR, MouseCursor.AUTO, true);
+
 			// Font
 			bind(Attributes.FONT_COLOR, Attribute.INHERIT, true);
 			bind(Attributes.FONT_NAME, Attribute.INHERIT, true);
 			bind(Attributes.FONT_SIZE, Attribute.INHERIT, true);
-
-			// Style (Block styling)
-			bind(Attributes.ID, NULL, false);
-			bind(Attributes.TYPE, NULL, false);
-			bind(Attributes.CLASS, NULL, false);
-			bind(Attributes.STATE, NULL, false);
 
 			// Layout
 			bind(Attributes.LAYOUT, Layout.FLOW, true);

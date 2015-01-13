@@ -2,6 +2,7 @@ package starling.extensions.talon.core
 {
 	import flash.utils.Dictionary;
 
+	/** CSS Object. */
 	public final class StyleSheet
 	{
 		private var _stylesBySelector:Dictionary;
@@ -127,8 +128,6 @@ package starling.extensions.talon.core
 		/** Remove CSS comments. */
 		private function uncomment(string:String):String
 		{
-//			var regexp:RegExp = new RegExp("\\/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+\\/", "g");
-//			-- /\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g
 			return string.replace(/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g, '');
 		}
 

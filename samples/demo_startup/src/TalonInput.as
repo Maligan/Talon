@@ -71,8 +71,8 @@ package
 			var isHorizontal:Boolean = ((autoSizeAttribute==TextFieldAutoSize.HORIZONTAL)||(autoSizeAttribute==TextFieldAutoSize.BOTH_DIRECTIONS));
 			var isVertical:Boolean = ((autoSizeAttribute==TextFieldAutoSize.VERTICAL)||(autoSizeAttribute==TextFieldAutoSize.BOTH_DIRECTIONS));
 
-			var width:Number = node.width.isAuto ? AUTO_CACHE_WIDTH : node.width.toPixels(0, 0, node.pppt, 0, 0, 0, width, height);
-			var height:Number = node.height.isAuto ? AUTO_CACHE_HEIGHT : node.height.toPixels(0, 0, node.pppt, 0, 0, 0, width, height);
+			var width:Number = node.width.isAuto ? AUTO_CACHE_WIDTH : node.width.toPixels(0, 0, node.pppt, 0, width, height, 0, 0);
+			var height:Number = node.height.isAuto ? AUTO_CACHE_HEIGHT : node.height.toPixels(0, 0, node.pppt, 0, width, height, 0, 0);
 
 			var prev:Rectangle = _text.viewPort;
 			var draw:Rectangle = new Rectangle(0, 0, width, height);

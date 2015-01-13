@@ -17,6 +17,7 @@ package starling.extensions.talon.display
 	import starling.events.TouchPhase;
 	import starling.extensions.talon.core.GaugeQuad;
 	import starling.extensions.talon.core.Node;
+	import starling.extensions.talon.utils.Attributes;
 	import starling.extensions.talon.utils.FillMode;
 	import starling.extensions.talon.utils.parseColor;
 	import starling.extensions.talon.utils.parseFilter;
@@ -81,16 +82,17 @@ package starling.extensions.talon.display
 
 		private function onBoxChange(e:Event):void
 		{
-			/**/ if (e.data == "id") name = node.getAttribute("id");
-			else if (e.data == "backgroundColor")
+			/**/ if (e.data == Attributes.ID) name = node.getAttribute(Attributes.ID);
+			else if (e.data == Attributes.ALPHA) alpha = parseFloat(node.getAttribute(Attributes.ALPHA));
+			else if (e.data == Attributes.BACKGROUND_COLOR)
 			{
-				var color:String = node.getAttribute("backgroundColor");
+				var color:String = node.getAttribute(Attributes.BACKGROUND_COLOR);
 				_backgroundColor.visible = color != "transparent";
 				_backgroundColor.color = parseColor(color);
 			}
-			else if (e.data == "backgroundImage" || e.data == "backgroundChromeColor" || e.data == "background9Scale" || e.data == "backgroundFillMode")
+			else if (e.data == Attributes.BACKGROUND_IMAGE || e.data == Attributes.BACKGROUND_TINT || e.data == Attributes.BACKGROUND_9SCALE || e.data == Attributes.BACKGROUND_FILL_MODE)
 			{
-				var image:String = node.getAttribute("backgroundImage");
+				var image:String = node.getAttribute(Attributes.BACKGROUND_IMAGE);
 				var imageResourceKey:String = null;
 
 				var resourcePattern:RegExp = /resource\(["']?([^'"]*)["']?\)/;
@@ -100,8 +102,8 @@ package starling.extensions.talon.display
 				var texture:Texture = node.getResource(imageResourceKey);
 				if (texture != null)
 				{
-					var tint:uint = parseColor(node.getAttribute("backgroundTint"));
-					var fillMode:String = node.getAttribute("backgroundFillMode");
+					var tint:uint = parseColor(node.getAttribute(Attributes.BACKGROUND_TINT));
+					var fillMode:String = node.getAttribute(Attributes.BACKGROUND_FILL_MODE);
 
 					switch (fillMode)
 					{
@@ -109,11 +111,11 @@ package starling.extensions.talon.display
 							var texture9Scale:Rectangle = new Rectangle(0, 0, texture.width, texture.height);
 							var texture9ScaleGauge:GaugeQuad = new GaugeQuad();
 
-							texture9ScaleGauge.parse(_node.getAttribute("background9Scale"));
-							texture9Scale.top += texture9ScaleGauge.top.toPixels(0, 0, node.pppt, 0, 0, 0, width, height);
-							texture9Scale.right -= texture9ScaleGauge.right.toPixels(0, 0, node.pppt, 0, 0, 0, width, height);
-							texture9Scale.bottom -= texture9ScaleGauge.bottom.toPixels(0, 0, node.pppt, 0, 0, 0, width, height);
-							texture9Scale.left += texture9ScaleGauge.left.toPixels(0, 0, node.pppt, 0, 0, 0, width, height);
+							texture9ScaleGauge.parse(_node.getAttribute(Attributes.BACKGROUND_9SCALE));
+							texture9Scale.top += texture9ScaleGauge.top.toPixels(0, 0, node.pppt, 0, width, height, 0, 0);
+							texture9Scale.right -= texture9ScaleGauge.right.toPixels(0, 0, node.pppt, 0, width, height, 0, 0);
+							texture9Scale.bottom -= texture9ScaleGauge.bottom.toPixels(0, 0, node.pppt, 0, width, height, 0, 0);
+							texture9Scale.left += texture9ScaleGauge.left.toPixels(0, 0, node.pppt, 0, width, height, 0, 0);
 
 							var scale9Texture:Scale9Textures = new Scale9Textures(texture, texture9Scale);
 
@@ -149,21 +151,21 @@ package starling.extensions.talon.display
 					onBoxResize(null)
 				}
 			}
-			else if (e.data == "cursor")
+			else if (e.data == Attributes.CURSOR)
 			{
-				var cursor:String = node.getAttribute("cursor");
+				var cursor:String = node.getAttribute(Attributes.CURSOR);
 				cursor == MouseCursor.AUTO ? removeEventListener(TouchEvent.TOUCH, onCursorTouch) : addEventListener(TouchEvent.TOUCH, onCursorTouch);
 			}
-			else if (e.data == "filter")
+			else if (e.data == Attributes.FILTER)
 			{
-				var filterString:String = node.getAttribute("filter");
+				var filterString:String = node.getAttribute(Attributes.FILTER);
 				filter = parseFilter(filterString);
 			}
 		}
 
 		private function onCursorTouch(e:TouchEvent):void
 		{
-			Mouse.cursor = e.interactsWith(this) ? (node.getAttribute("cursor") || MouseCursor.AUTO) : MouseCursor.AUTO;
+			Mouse.cursor = e.interactsWith(this) ? (node.getAttribute(Attributes.CURSOR) || MouseCursor.AUTO) : MouseCursor.AUTO;
 		}
 
 		private function onBoxResize(e:Event):void
@@ -200,7 +202,7 @@ package starling.extensions.talon.display
 
 		private function get clipping():Boolean
 		{
-			return node.getAttribute("clipping") == "true";
+			return node.getAttribute(Attributes.CLIPPING) == "true";
 		}
 
 		public function get node():Node

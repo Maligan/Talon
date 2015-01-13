@@ -1,6 +1,6 @@
 package starling.extensions.talon.utils
 {
-	[ExcludeClass]
+//	[ExcludeClass]
 	public final class Attributes
 	{
 		public static const ID:String = "id";
@@ -43,6 +43,11 @@ package starling.extensions.talon.utils
 		public static const FONT_COLOR:String = "fontColor";
 		public static const FONT_NAME:String = "fontName";
 		public static const FONT_SIZE:String = "fontSize";
+
+		public static const ALPHA:String = "alpha";
+		public static const CLIPPING:String = "clipping";
+		public static const CURSOR:String = "cursor";
+		public static const FILTER:String = "filter";
 
 		public static const LAYOUT:String = "layout";
 		public static const VISIBILITY:String = "visibility";

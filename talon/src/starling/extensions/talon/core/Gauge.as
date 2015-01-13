@@ -80,13 +80,20 @@ package starling.extensions.talon.core
 		}
 
 		/**
+		 * @private
 		 * Transform gauge to pixels.
+		 * Core & hardcore function.
+		 *
 		 * @param ppmm pixels per millimeter
-		 * @param ppem pixels per ems
-		 * @param percentTarget percentages/starsCount percentTarget (in pixels)
-		 * @param starsCount total amount of starsCount in percentTarget
+		 * @param ppem pixels per em
+		 * @param pppt pixels per point
+		 * @param pp100p pixels per 100%
+		 * @param ppts pixels per total stars
+		 * @param ts total stars
+		 * @param width available width (for auto measure)
+		 * @param height available height (for auto measure)
 		 */
-		public function toPixels(ppmm:Number, ppem:Number, pppt:Number, percentTarget:Number, starsTarget:Number, starsCount:int, width:Number, height:Number):Number
+		public function toPixels(ppmm:Number, ppem:Number, pppt:Number, pp100p:Number, width:Number, height:Number, ppts:Number, ts:int):Number
 		{
 			switch (unit)
 			{
@@ -96,10 +103,35 @@ package starling.extensions.talon.core
 				case MM:		return amount * ppmm;
 				case EM:        return amount * ppem;
 				case PT:        return amount * pppt;
-				case PERCENT:   return amount * percentTarget / 100;
-				case STAR:		return starsCount ? (amount * starsTarget / starsCount) : 0;
+				case PERCENT:   return amount * pp100p/100;
+				case STAR:		return amount * (ts?(ppts/ts):0);
 				default:		throw new Error("Unknown gauge unit: " + unit);
 			}
+		}
+
+		/**
+		 * @private Method toPixels() with optimized signature for most common use cases.
+		 * @param context ppmm, ppem, pppt used from thi node.
+		 * @param min value bottom restrainer
+		 * @param max value top restrainer
+		 */
+		public function toPixelsSugar(context:Node, pp100p:Number = 0, width:Number = 0, height:Number = 0, ppts:Number = 0, ts:int = 0, min:Gauge = null, max:Gauge = null):Number
+		{
+			var value:Number = toPixels(context.ppmm, context.ppem, context.pppt, pp100p, width, height, ppts, ts);
+
+			if (min && !min.isNone)
+			{
+				var minValue:Number = min.toPixels(context.ppmm, context.ppem, context.pppt, pp100p, width, height, ppts, ts);
+				if (minValue > value) value = minValue;
+			}
+
+			if (max && !max.isNone)
+			{
+				var maxValue:Number = max.toPixels(context.ppmm, context.ppem, context.pppt, pp100p, width, height, ppts, ts);
+				if (maxValue < value) value = maxValue;
+			}
+
+			return value;
 		}
 
 		/** Unit of measurement. */

@@ -28,11 +28,11 @@ package starling.extensions.talon.layout
 			var orientation:String = node.getAttribute(Attributes.ORIENTATION);
 			if (Orientation.isValid(orientation) === false) throw new Error("Attribute orientation has invalid value: " + orientation);
 
-			var paddingLeft:Number = node.padding.left.toPixels(node.ppmm, node.ppem, node.pppt, width, 0, 0, width, height);
-			var paddingTop:Number = node.padding.top.toPixels(node.ppmm, node.ppem, node.pppt, height, 0, 0, width, height);
+			var paddingLeft:Number = node.padding.left.toPixels(node.ppmm, node.ppem, node.pppt, width, width, height, 0, 0);
+			var paddingTop:Number = node.padding.top.toPixels(node.ppmm, node.ppem, node.pppt, height, width, height, 0, 0);
 
-			width -= paddingLeft + node.padding.right.toPixels(node.ppmm, node.ppem, node.pppt, width, 0, 0, width, height);
-			height -= paddingTop + node.padding.bottom.toPixels(node.ppmm, node.ppem, node.pppt, height, 0, 0, width, height);
+			width -= paddingLeft + node.padding.right.toPixels(node.ppmm, node.ppem, node.pppt, width, width, height, 0, 0);
+			height -= paddingTop + node.padding.bottom.toPixels(node.ppmm, node.ppem, node.pppt, height, width, height, 0, 0);
 
 			var gap:Number = toPixels(Attributes.GAP, node, (orientation == Orientation.HORIZONTAL? width : height));
 			var interline:Number = toPixels(Attributes.INTERLINE, node, (orientation == Orientation.HORIZONTAL ? width : height));
@@ -92,12 +92,12 @@ package starling.extensions.talon.layout
 					{
 						child.bounds.width = getSize(child.width, child.minWidth, child.maxWidth, child.ppmm, child.ppem, child.pppt, width, line.starLength, line.starAmount);
 						child.bounds.height = getSize(child.height, child.minHeight, child.maxHeight, child.ppmm, child.pppt, node.ppem, height, line.thickness, 1);
-						offsetGap += child.margin.left.toPixels(node.ppmm, node.ppem, node.pppt, width, 0, 0, width, height);
+						offsetGap += child.margin.left.toPixels(node.ppmm, node.ppem, node.pppt, width, width, height, 0, 0);
 						child.bounds.x = offsetGap;
 						offsetGap += child.bounds.width;
-						offsetGap += child.margin.right.toPixels(node.ppmm, node.ppem, node.pppt, width, 0, 0, width, height);
+						offsetGap += child.margin.right.toPixels(node.ppmm, node.ppem, node.pppt, width, width, height, 0, 0);
 						offsetGap += gap;
-						child.bounds.y = offsetInterline + child.margin.top.toPixels(node.ppmm, node.ppem, node.pppt, height, 0, 0, width, height);
+						child.bounds.y = offsetInterline + child.margin.top.toPixels(node.ppmm, node.ppem, node.pppt, height, width, height, 0, 0);
 
 						child.bounds.x += deltaLength;
 						child.bounds.y += deltaThickness;
@@ -106,12 +106,12 @@ package starling.extensions.talon.layout
 					{
 						child.bounds.width = getSize(child.width, child.minWidth, child.maxWidth, child.ppmm, child.ppem, child.pppt, width, line.thickness, 1);
 						child.bounds.height = getSize(child.height, child.minHeight, child.maxHeight, child.ppmm, node.ppem, child.pppt, height, line.starLength, line.starAmount);
-						offsetGap += child.margin.top.toPixels(node.ppmm, node.ppem, node.pppt, width, 0, 0, width, height);
+						offsetGap += child.margin.top.toPixels(node.ppmm, node.ppem, node.pppt, width, width, height, 0, 0);
 						child.bounds.y = offsetGap;
 						offsetGap += child.bounds.height;
-						offsetGap += child.margin.bottom.toPixels(node.ppmm, node.ppem, node.pppt, width, 0, 0, width, height);
+						offsetGap += child.margin.bottom.toPixels(node.ppmm, node.ppem, node.pppt, width, width, height, 0, 0);
 						offsetGap += gap;
-						child.bounds.x = offsetInterline + child.margin.left.toPixels(node.ppmm, node.ppem, node.pppt, width, 0, 0, width, height);
+						child.bounds.x = offsetInterline + child.margin.left.toPixels(node.ppmm, node.ppem, node.pppt, width, width, height, 0, 0);
 
 						child.bounds.x += deltaThickness;
 						child.bounds.y += deltaLength;
@@ -129,15 +129,15 @@ package starling.extensions.talon.layout
 		public override function measureAutoWidth(node:Node, width:Number, height:Number):Number
 		{
 			return measureSide(node, Orientation.HORIZONTAL, width, height)
-				+ node.padding.left.toPixels(node.ppmm, node.ppem, node.pppt, width, 0, 0, width, height)
-				+ node.padding.right.toPixels(node.ppmm, node.ppem, node.pppt, width, 0, 0, width, height)
+				+ node.padding.left.toPixels(node.ppmm, node.ppem, node.pppt, width, width, height, 0, 0)
+				+ node.padding.right.toPixels(node.ppmm, node.ppem, node.pppt, width, width, height, 0, 0)
 		}
 
 		public override function measureAutoHeight(node:Node, width:Number, height:Number):Number
 		{
 			return measureSide(node, Orientation.VERTICAL, width, height)
-				+ node.padding.top.toPixels(node.ppmm, node.ppem, node.pppt, height, 0, 0, width, height)
-				+ node.padding.bottom.toPixels(node.ppmm, node.ppem, node.pppt, height, 0, 0, width, height);
+				+ node.padding.top.toPixels(node.ppmm, node.ppem, node.pppt, height, width, height, 0, 0)
+				+ node.padding.bottom.toPixels(node.ppmm, node.ppem, node.pppt, height, width, height, 0, 0);
 		}
 
 		private function measureSide(node, side:String, width:Number, height:Number):Number
@@ -209,8 +209,8 @@ package starling.extensions.talon.layout
 
 					// Define margin
 					var margin:Number = 0;
-					margin += margin1.toPixels(child.ppmm, child.ppem, node.pppt, lineLengthLimit, 0, 0, width, height);
-					margin += margin2.toPixels(child.ppmm, child.ppem, node.pppt, lineLengthLimit, 0, 0, width, height);
+					margin += margin1.toPixels(child.ppmm, child.ppem, node.pppt, lineLengthLimit, width, height, 0, 0);
+					margin += margin2.toPixels(child.ppmm, child.ppem, node.pppt, lineLengthLimit, width, height, 0, 0);
 
 					// Star unit doesn't add any length
 					if (size.unit == Gauge.STAR)
@@ -242,7 +242,7 @@ package starling.extensions.talon.layout
 					margin1 = isVertical ? child.margin.left : child.margin.top;
 					margin2 = isVertical ? child.margin.right : child.margin.bottom;
 
-					margin = margin1.toPixels(node.ppmm, node.ppem, node.pppt, lineThicknessLimit, 0, 0, width, height) + margin2.toPixels(node.ppmm, node.ppem, node.pppt, lineThicknessLimit, 0, 0, width, height);
+					margin = margin1.toPixels(node.ppmm, node.ppem, node.pppt, lineThicknessLimit, width, height, 0, 0) + margin2.toPixels(node.ppmm, node.ppem, node.pppt, lineThicknessLimit, width, height, 0, 0);
 					line.thickness = Math.max(line.thickness, getSize(size, minSize, maxSize, child.ppmm, child.ppem, lineThicknessLimit, 0, 0) + margin);
 				}
 
@@ -256,9 +256,9 @@ package starling.extensions.talon.layout
 
 		private function getSize(size:Gauge, min:Gauge, max:Gauge, ppmm:Number, ppem:Number, pppt:Number, percentTarget:Number, starTarget:Number = 0, starCount:Number = 0):Number
 		{
-			var value:Number = size.toPixels(ppmm, ppem, pppt, percentTarget, starTarget, starCount, 0, 0);
-			if (!min.isNone) value = Math.max(value, min.toPixels(ppmm, ppem, pppt, percentTarget, starTarget, starCount, 0, 0));
-			if (!max.isNone) value = Math.min(value, max.toPixels(ppmm, ppem, pppt, percentTarget, starTarget, starCount, 0, 0));
+			var value:Number = size.toPixels(ppmm, ppem, pppt, percentTarget, 0, 0, starTarget, starCount);
+			if (!min.isNone) value = Math.max(value, min.toPixels(ppmm, ppem, pppt, percentTarget, 0, 0, starTarget, starCount));
+			if (!max.isNone) value = Math.min(value, max.toPixels(ppmm, ppem, pppt, percentTarget, 0, 0, starTarget, starCount));
 			return value;
 		}
 	}

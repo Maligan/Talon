@@ -3,18 +3,39 @@ package starling.extensions.talon.core
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
+	/** Dispatched after anyone of sub-gauge has been changed. */
+	[Event(name="change", type="starling.events.Event")]
 	/** Group of 2 gauge. Used for strong typed definition of coordinate/size. */
 	public class GaugePair extends EventDispatcher
 	{
+		/** Defines horizontal component. */
 		public const x:Gauge = new Gauge();
+		/** Defines vertical component. */
 		public const y:Gauge = new Gauge();
 
+		/** @private */
 		public function GaugePair()
 		{
 			x.addEventListener(Event.CHANGE, dispatchEvent);
 			y.addEventListener(Event.CHANGE, dispatchEvent);
 		}
 
+		/**
+		 * Parse string and setup sub gauges.
+		 * Parser expects <em>one or two</em> space separated values (else throw ArgumentError):
+		 *
+		 * <p>If string contains one value it expanded (e.g. <code>"string"</code> to <code>"string string"</code>).</p>
+		 *
+		 * <p>
+		 * After subgauges parse substrings:
+		 * <ul>
+		 * <li>x.parse(substring1)</li>
+		 * <li>y.parse(substring2)</li>
+		 * </ul>
+		 * </p>
+		 *
+		 * @see Gauge#parse()
+		 */
 		public function parse(string:String):void
 		{
 			var split:Array = string.split(" ");
@@ -34,6 +55,7 @@ package starling.extensions.talon.core
 			}
 		}
 
+		/** @private */
 		public function toString():String
 		{
 			if (x.equals(y))

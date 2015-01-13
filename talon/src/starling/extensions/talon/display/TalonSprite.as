@@ -4,10 +4,7 @@ package starling.extensions.talon.display
 	import feathers.display.TiledImage;
 	import feathers.textures.Scale9Textures;
 
-	import flash.geom.Point;
-
 	import flash.geom.Rectangle;
-	import flash.net.FileFilter;
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
 
@@ -19,14 +16,10 @@ package starling.extensions.talon.display
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.extensions.talon.core.GaugeQuad;
-	import starling.extensions.talon.display.ITalonTarget;
 	import starling.extensions.talon.core.Node;
-	import starling.extensions.talon.enums.FillMode;
+	import starling.extensions.talon.utils.FillMode;
 	import starling.extensions.talon.utils.parseColor;
 	import starling.extensions.talon.utils.parseFilter;
-	import starling.text.BitmapFont;
-	import starling.text.TextField;
-	import starling.text.TextFieldAutoSize;
 	import starling.textures.Texture;
 
 	public class TalonSprite extends Sprite implements ITalonTarget

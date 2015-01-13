@@ -72,7 +72,7 @@ package starling.extensions.talon.layout
 			return 0;
 		}
 
-		/** Arrange (define bounds & commit) children within size. */
+		/** Arrange (define bounds and commit) children within size. */
 		public function arrange(node:Node, width:Number, height:Number):void
 		{
 			// NOP

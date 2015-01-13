@@ -1,10 +1,7 @@
 package starling.extensions.talon.display
 {
 
-	import flash.filters.DropShadowFilter;
-
 	import starling.events.Event;
-	import starling.extensions.talon.display.ITalonTarget;
 	import starling.extensions.talon.core.Node;
 	import starling.extensions.talon.utils.parseColor;
 	import starling.text.BitmapFont;

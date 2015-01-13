@@ -8,9 +8,10 @@ package starling.extensions.talon.core
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 	import starling.extensions.talon.layout.Layout;
-	import starling.extensions.talon.enums.FillMode;
-	import starling.extensions.talon.enums.Orientation;
-	import starling.extensions.talon.enums.Visibility;
+	import starling.extensions.talon.utils.Attributes;
+	import starling.extensions.talon.utils.FillMode;
+	import starling.extensions.talon.utils.Orientation;
+	import starling.extensions.talon.utils.Visibility;
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
 
@@ -56,74 +57,73 @@ package starling.extensions.talon.core
 			height.auto = minHeight.auto = maxHeight.auto = measureAutoHeight;
 
 			// Bounds
-			bind("width", Gauge.AUTO, true, width);
-			bind("minWidth", Gauge.NONE, true, minWidth);
-			bind("maxWidth", Gauge.NONE, true, maxWidth);
-			bind("height", Gauge.AUTO, true, height);
-			bind("minHeight", Gauge.NONE, true, minHeight);
-			bind("maxHeight", Gauge.NONE, true, maxHeight);
+			bind(Attributes.WIDTH, Gauge.AUTO, true, width);
+			bind(Attributes.MIN_WIDTH, Gauge.NONE, true, minWidth);
+			bind(Attributes.MAX_WIDTH, Gauge.NONE, true, maxWidth);
+			bind(Attributes.HEIGHT, Gauge.AUTO, true, height);
+			bind(Attributes.MIN_HEIGHT, Gauge.NONE, true, minHeight);
+			bind(Attributes.MAX_HEIGHT, Gauge.NONE, true, maxHeight);
 
 			// Margin
-			bind("margin", ZERO, true, margin);
-			bind("marginTop", ZERO, true, margin.top);
-			bind("marginRight", ZERO, true, margin.right);
-			bind("marginBottom", ZERO, true, margin.bottom);
-			bind("marginLeft", ZERO, true, margin.left);
+			bind(Attributes.MARGIN, ZERO, true, margin);
+			bind(Attributes.MARGIN_TOP, ZERO, true, margin.top);
+			bind(Attributes.MARGIN_RIGHT, ZERO, true, margin.right);
+			bind(Attributes.MARGIN_BOTTOM, ZERO, true, margin.bottom);
+			bind(Attributes.MARGIN_LEFT, ZERO, true, margin.left);
 
 			// Padding
-			bind("padding", ZERO, true, padding);
-			bind("paddingTop", ZERO, true, padding.top);
-			bind("paddingRight", ZERO, true, padding.right);
-			bind("paddingBottom", ZERO, true, padding.bottom);
-			bind("paddingLeft", ZERO, true, padding.left);
+			bind(Attributes.PADDING, ZERO, true, padding);
+			bind(Attributes.PADDING_TOP, ZERO, true, padding.top);
+			bind(Attributes.PADDING_RIGHT, ZERO, true, padding.right);
+			bind(Attributes.PADDING_BOTTOM, ZERO, true, padding.bottom);
+			bind(Attributes.PADDING_LEFT, ZERO, true, padding.left);
 
 			// Anchor (Absolute Position)
-			bind("anchor", Gauge.NONE, true, anchor);
-			bind("anchorTop", Gauge.NONE, true, anchor.top);
-			bind("anchorRight", Gauge.NONE, true, anchor.right);
-			bind("anchorBottom", Gauge.NONE, true, anchor.bottom);
-			bind("anchorLeft", Gauge.NONE, true, anchor.left);
+			bind(Attributes.ANCHOR, Gauge.NONE, true, anchor);
+			bind(Attributes.ANCHOR_TOP, Gauge.NONE, true, anchor.top);
+			bind(Attributes.ANCHOR_RIGHT, Gauge.NONE, true, anchor.right);
+			bind(Attributes.ANCHOR_BOTTOM, Gauge.NONE, true, anchor.bottom);
+			bind(Attributes.ANCHOR_LEFT, Gauge.NONE, true, anchor.left);
 
 			// Background
-			bind("backgroundImage", NULL, true);
-			bind("backgroundTint", WHITE, true);
-			bind("background9Scale", ZERO, true);
-			bind("backgroundColor", TRANSPARENT, true);
-			bind("backgroundFillMode", FillMode.SCALE, true);
+			bind(Attributes.BACKGROUND_IMAGE, NULL, true);
+			bind(Attributes.BACKGROUND_TINT, WHITE, true);
+			bind(Attributes.BACKGROUND_9SCALE, ZERO, true);
+			bind(Attributes.BACKGROUND_COLOR, TRANSPARENT, true);
+			bind(Attributes.BACKGROUND_FILL_MODE, FillMode.SCALE, true);
 
 			// Font
-			bind("fontColor", Attribute.INHERIT, true);
-			bind("fontName", Attribute.INHERIT, true);
-			bind("fontSize", Attribute.INHERIT, true);
+			bind(Attributes.FONT_COLOR, Attribute.INHERIT, true);
+			bind(Attributes.FONT_NAME, Attribute.INHERIT, true);
+			bind(Attributes.FONT_SIZE, Attribute.INHERIT, true);
 
 			// Style (Block styling)
-			bind("id", NULL, false);
-			bind("type", NULL, false);
-			bind("class", NULL, false);
-			bind("status", NULL, false);
+			bind(Attributes.ID, NULL, false);
+			bind(Attributes.TYPE, NULL, false);
+			bind(Attributes.CLASS, NULL, false);
+			bind(Attributes.STATE, NULL, false);
 
 			// Layout
-			bind("layout", Layout.FLOW, true);
-			bind("visibility", Visibility.VISIBLE, true);
-			bind("zindex", ZERO, true);
+			bind(Attributes.LAYOUT, Layout.FLOW, true);
+			bind(Attributes.VISIBILITY, Visibility.VISIBLE, true);
 
-			bind("orientation", Orientation.HORIZONTAL, true);
-			bind("halign", HAlign.LEFT, true);
-			bind("valign", VAlign.TOP, true);
-			bind("gap", ZERO, true);
-			bind("interline", ZERO, true);
+			bind(Attributes.ORIENTATION, Orientation.HORIZONTAL, true);
+			bind(Attributes.HALIGN, HAlign.LEFT, true);
+			bind(Attributes.VALIGN, VAlign.TOP, true);
+			bind(Attributes.GAP, ZERO, true);
+			bind(Attributes.INTERLINE, ZERO, true);
 
-			bind("position", ZERO, true, position);
-			bind("x", ZERO, true, position.x);
-			bind("y", ZERO, true, position.y);
+			bind(Attributes.POSITION, ZERO, true, position);
+			bind(Attributes.X, ZERO, true, position.x);
+			bind(Attributes.Y, ZERO, true, position.y);
 
-			bind("pivot", ZERO, true, pivot);
-			bind("pivotX", ZERO, true, pivot.x);
-			bind("pivotY", ZERO, true, pivot.y);
+			bind(Attributes.PIVOT, ZERO, true, pivot);
+			bind(Attributes.PIVOT_X, ZERO, true, pivot.x);
+			bind(Attributes.PIVOT_Y, ZERO, true, pivot.y);
 
-			bind("origin", ZERO, true, origin);
-			bind("originX", ZERO, true, origin.x);
-			bind("originY", ZERO, true, origin.y);
+			bind(Attributes.ORIGIN, ZERO, true, origin);
+			bind(Attributes.ORIGIN_X, ZERO, true, origin.x);
+			bind(Attributes.ORIGIN_Y, ZERO, true, origin.y);
 		}
 
 		private function bind(name:String, initial:String, styleable:Boolean, source:* = null):void
@@ -198,12 +198,12 @@ package starling.extensions.talon.core
 		}
 
 		/** CCS classes which determine node style. */
-		public function get classes():Vector.<String> { return Vector.<String>(getAttribute("class") ? getAttribute("class").split(" ") : []) }
-		public function set classes(value:Vector.<String>):void { setAttribute("states", value.join(" ")); restyle(); }
+		public function get classes():Vector.<String> { return Vector.<String>(getAttribute(Attributes.CLASS) ? getAttribute(Attributes.CLASS).split(" ") : []) }
+		public function set classes(value:Vector.<String>):void { setAttribute(Attributes.CLASS, value.join(" ")); restyle(); }
 
 		/** Current active CSS pseudoClasses. */
-		public function get states():Vector.<String> { return Vector.<String>(getAttribute("states") ? getAttribute("states").split(" ") : []) }
-		public function set states(value:Vector.<String>):void { setAttribute("states", value.join(" ")); restyle(); }
+		public function get states():Vector.<String> { return Vector.<String>(getAttribute(Attributes.STATE) ? getAttribute(Attributes.STATE).split(" ") : []) }
+		public function set states(value:Vector.<String>):void { setAttribute(Attributes.STATE, value.join(" ")); restyle(); }
 
 		//
 		// Resource
@@ -269,7 +269,7 @@ package starling.extensions.talon.core
 		/** Current node 'fontSize' expressed in pixels.*/
 		public function get ppem():Number
 		{
-			var attribute:Attribute = _attributes["fontSize"];
+			var attribute:Attribute = _attributes[Attributes.FONT_SIZE];
 			if (attribute.isInherit) return parent?parent.ppem:12;
 			var gauge:Gauge = new Gauge();
 			gauge.parse(attribute.value);
@@ -279,11 +279,11 @@ package starling.extensions.talon.core
 
 		private function measureAutoWidth(width:Number, height:Number):Number { return layout.measureAutoWidth(this, width, height); }
 		private function measureAutoHeight(width:Number, height:Number):Number { return layout.measureAutoHeight(this, width, height); }
-		private function get layout():Layout { return Layout.getLayoutByAlias(getAttribute("layout")); }
+		private function get layout():Layout { return Layout.getLayoutByAlias(getAttribute(Attributes.LAYOUT)); }
 
 		private function onChildAttributeChange(e:Event):void
 		{
-			var invalidate:Boolean = Layout.isChildAttribute(getAttribute("layout"), e.data as String);
+			var invalidate:Boolean = Layout.isChildAttribute(getAttribute(Attributes.LAYOUT), e.data as String);
 			if (invalidate)
 			{
 				commit();

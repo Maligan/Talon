@@ -126,6 +126,8 @@ package starling.extensions.talon.core
 		/** Remove CSS comments. */
 		private function uncomment(string:String):String
 		{
+//			var regexp:RegExp = new RegExp("\\/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+\\/", "g");
+//			-- /\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g
 			return string.replace(/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g, '');
 		}
 
@@ -163,6 +165,7 @@ package starling.extensions.talon.core
 }
 
 import starling.extensions.talon.core.Node;
+import starling.extensions.talon.utils.Attributes;
 import starling.utils.Color;
 
 class StyleSelector
@@ -218,7 +221,7 @@ class StyleSelector
 
 	private function byType(node:Node):Boolean
 	{
-		return !_type || (node.getAttribute("type") == _type);
+		return !_type || (node.getAttribute(Attributes.TYPE) == _type);
 	}
 
 	private function byAncestor(node:Node):Boolean
@@ -238,7 +241,7 @@ class StyleSelector
 
 	private function byId(node:Node):Boolean
 	{
-		return !_id || (node.getAttribute("id") == _id);
+		return !_id || (node.getAttribute(Attributes.ID) == _id);
 	}
 
 	private function byClasses(node:Node):Boolean

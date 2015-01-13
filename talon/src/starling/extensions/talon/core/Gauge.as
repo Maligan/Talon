@@ -3,17 +3,18 @@ package starling.extensions.talon.core
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
-	/** Measured size. Defined by 'units' and 'amount'. */
+	/** Dispatched when gauge change its amount/unit. */
 	[Event(name="change", type="starling.events.Event")]
+	/** Measured size. Defined by 'units' and 'amount'. */
 	public final class Gauge extends EventDispatcher
 	{
-		/** Value is not set, and must be ignored in layout processing. */
+		/** Value is not set, and must be ignored. This is <code>null</code> analog. */
 		public static const NONE:String = "none";
 		/** Indicates that final value must be defined by measure context. */
 		public static const AUTO:String = "auto";
 		/** Regular pixel. */
 		public static const PX:String = "px";
-		/** Point, retina display set point per pixel as 1:2. */
+		/** Point (e.g. retina display set point per pixel as 1:2). */
 		public static const PT:String = "px";
 		/** Millimeter. NB! Device independent (absolute) unit. (Undesirable to use absolute units. If possible then replace it with em/px). */
 		public static const MM:String = "mm";
@@ -101,6 +102,7 @@ package starling.extensions.talon.core
 			}
 		}
 
+		/** Unit of measurement. */
 		public function get unit():String { return _unit }
 		public function set unit(value:String):void
 		{
@@ -112,6 +114,7 @@ package starling.extensions.talon.core
 			}
 		}
 
+		/** Amount of measurement. */
 		public function get amount():Number { return _amount }
 		public function set amount(value:Number):void
 		{
@@ -122,6 +125,7 @@ package starling.extensions.talon.core
 			}
 		}
 
+		/** Callback used for transform gauge to pixels (instead using <code>amount</code> property). */
 		public function get auto():Function { return _auto }
 		public function set auto(value:Function):void
 		{
@@ -138,6 +142,7 @@ package starling.extensions.talon.core
 			}
 		}
 
+		/** Compares with another gauge and return <code>true</code> if they are equal. */
 		public function equals(gauge:Gauge):Boolean
 		{
 			return gauge.unit == unit
@@ -151,17 +156,19 @@ package starling.extensions.talon.core
 				|| _unit == STAR;
 		}
 
-		/** Unit is AUTO. */
+		/** Gauge unit == AUTO. */
 		public function get isAuto():Boolean
 		{
 			return _unit == AUTO;
 		}
 
+		/** Gauge unit == NONE. */
 		public function get isNone():Boolean
 		{
 			return _unit == NONE;
 		}
 
+		/** @private */
 		public function toString():String
 		{
 			if (isAuto) return AUTO;

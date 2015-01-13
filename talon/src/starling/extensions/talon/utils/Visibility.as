@@ -1,4 +1,4 @@
-package starling.extensions.talon.enums
+package starling.extensions.talon.utils
 {
 	import starling.errors.AbstractClassError;
 

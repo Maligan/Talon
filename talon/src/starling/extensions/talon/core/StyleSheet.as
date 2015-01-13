@@ -10,6 +10,7 @@ package starling.extensions.talon.core
 		private var _selectorsByIdent:Dictionary;
 		private var _selectorsCursor:Vector.<StyleSelector>;
 
+		/** @private */
 		public function StyleSheet()
 		{
 			_stylesBySelector = new Dictionary();

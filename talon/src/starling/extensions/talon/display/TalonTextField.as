@@ -3,6 +3,7 @@ package starling.extensions.talon.display
 
 	import starling.events.Event;
 	import starling.extensions.talon.core.Node;
+	import starling.extensions.talon.utils.Attributes;
 	import starling.extensions.talon.utils.parseColor;
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
@@ -19,11 +20,11 @@ package starling.extensions.talon.display
 			_node = new Node();
 			_node.addEventListener(Event.CHANGE, onNodeChange);
 			_node.addEventListener(Event.RESIZE, onNodeResize);
+
+			// TextField autoSize
 			_node.width.auto = _node.minWidth.auto = _node.maxWidth.auto = getTextWidth;
 			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = getTextHeight;
 			autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
-
-			//nativeFilters = [new DropShadowFilter(1, 270, 0x000000, 0.3, 1, 1, 10)];
 
 			touchable = false;
 		}
@@ -40,13 +41,13 @@ package starling.extensions.talon.display
 
 		private function onNodeChange(e:Event):void
 		{
-			/**/ if (e.data == "text")      text = _node.getAttribute("text");
-			else if (e.data == "halign")    hAlign = _node.getAttribute("halign");
-			else if (e.data == "valign")    vAlign = _node.getAttribute("valign");
-			else if (e.data == "fontName")  fontName = _node.getAttribute("fontName") || BitmapFont.MINI;
-			else if (e.data == "fontColor") color = parseColor(_node.getAttribute("fontColor"));
-			else if (e.data == "fontSize")  fontSize = node.ppem;
-			else if (e.data == "width" || e.data == "height")
+			/**/ if (e.data == Attributes.TEXT)         text = _node.getAttribute(Attributes.TEXT);
+			else if (e.data == Attributes.HALIGN)       hAlign = _node.getAttribute(Attributes.HALIGN);
+			else if (e.data == Attributes.VALIGN)       vAlign = _node.getAttribute(Attributes.VALIGN);
+			else if (e.data == Attributes.FONT_NAME)    fontName = _node.getAttribute(Attributes.FONT_NAME) || BitmapFont.MINI;
+			else if (e.data == Attributes.FONT_COLOR)   color = parseColor(_node.getAttribute(Attributes.FONT_COLOR));
+			else if (e.data == Attributes.FONT_SIZE)    fontSize = node.ppem;
+			else if (e.data == Attributes.WIDTH || e.data == Attributes.HEIGHT)
 			{
 				var isHorizontal:Boolean = _node.width.isAuto;
 				var isVertical:Boolean = _node.height.isAuto;

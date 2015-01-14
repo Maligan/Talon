@@ -108,14 +108,15 @@ package
 			]]></literal>.valueOf();
 
 			var config:XML =
-					<node id="root" width="100%" height="100%" layout="flow" padding="0.5em" valign="center" halign="center" orientation="vertical">
-						<label text="Select button:" fontSize="11px" fontName="Tahoma" marginBottom="0.5em" marginLeft="2px" halign="left" fontColor="#C9C9C9" width="*" />
+					<node id="root" width="100%" height="500px" layout="flow" padding="0.5em" valign="center" halign="center" orientation="vertical">
+						<label text="Select button if none is exist then good this is alskdj or sadf 3443 asdf strings:" height="auto"  fontSize="17px" fontName="Tahoma" marginBottom="0.5em" marginLeft="2px" halign="left" fontColor="#C9C9C9" width="*" />
 						<button><label text="Sed ut perspiciatis unde" /></button>
 						<button><label text="Nor again is there anyone" /></button>
 						<button><label text="Et harum quidem rerum facilis" /></button>
-						<button><label text="Temporibus autem quibusdam" /></button>
-						<input multiline="true" width="auto" height="auto" halign="left" fontColor="#C9C9C9" fontName="Tahoma" fontSize="11px" text="Native Text Field" backgroundColor="#222222" />
 					</node>;
+
+			//<button><label text="Temporibus autem quibusdam" /></button>
+			//<input multiline="true" width="auto" height="auto" halign="left" fontColor="#C9C9C9" fontName="Tahoma" fontSize="11px" text="Native Text Field" backgroundColor="#222222" />
 
 
 			var button:XML = <button onclick="remove_me"><label text="I'm Button!" /></button>;

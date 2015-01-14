@@ -71,5 +71,7 @@ package starling.extensions.talon.utils
 		public static const INTERLINE:String = "interline";
 		public static const WRAP:String = "wrap";
 		public static const BREAK:String = "break";
+
+		public static const TEXT:String = "text";
 	}
 }

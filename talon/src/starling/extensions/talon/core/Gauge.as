@@ -110,7 +110,8 @@ package starling.extensions.talon.core
 		}
 
 		/**
-		 * @private Method toPixels() with optimized signature for most common use cases.
+		 * @private
+		 * Method toPixels() with optimized signature for most common use cases.
 		 * @param context ppmm, ppem, pppt used from thi node.
 		 * @param min value bottom restrainer
 		 * @param max value top restrainer

@@ -47,6 +47,7 @@ package starling.extensions.talon.core
 		private var _children:Vector.<Node> = new Vector.<Node>();
 		private var _bounds:Rectangle = new Rectangle();
 
+		/** @private */
 		public function Node():void
 		{
 			const ZERO:String = "0px";
@@ -132,6 +133,8 @@ package starling.extensions.talon.core
 			bind(Attributes.ORIGIN, ZERO, true, origin);
 			bind(Attributes.ORIGIN_X, ZERO, true, origin.x);
 			bind(Attributes.ORIGIN_Y, ZERO, true, origin.y);
+
+			addEventListener(Event.CHANGE, onAttributeChange);
 		}
 
 		private function bind(name:String, initial:String, styleable:Boolean, source:* = null):void
@@ -209,7 +212,7 @@ package starling.extensions.talon.core
 		public function get classes():Vector.<String> { return Vector.<String>(getAttribute(Attributes.CLASS) ? getAttribute(Attributes.CLASS).split(" ") : []) }
 		public function set classes(value:Vector.<String>):void { setAttribute(Attributes.CLASS, value.join(" ")); restyle(); }
 
-		/** Current active CSS pseudoClasses. */
+		/** Current active states (aka CSS pseudoClasses: hover, active, checked etc.) */
 		public function get states():Vector.<String> { return Vector.<String>(getAttribute(Attributes.STATE) ? getAttribute(Attributes.STATE).split(" ") : []) }
 		public function set states(value:Vector.<String>):void { setAttribute(Attributes.STATE, value.join(" ")); restyle(); }
 
@@ -255,25 +258,25 @@ package starling.extensions.talon.core
 		//
 		// Layout
 		//
-		/** Actual node bounds, calculated by parent. */
-		public function get bounds():Rectangle
-		{
-			return _bounds;
-		}
-
 		/** Apply bounds changes: dispatch RESIZE event, arrange children. */
 		public function commit():void
 		{
 			// Update self view object attached to node
 			dispatchEventWith(Event.RESIZE);
+
 			// Update children nodes
 			layout.arrange(this, bounds.width, bounds.height);
 		}
 
+		/** Actual node bounds. */
+		public function get bounds():Rectangle { return _bounds; }
+
 		/** Pixel per point. (Also known as (csf) content scale factor) */
 		public function get pppt():Number { return Starling.current.contentScaleFactor; }
+
 		/** Pixels per millimeter (in current node). */
 		public function get ppmm():Number { return Capabilities.screenDPI / 25.4; }
+
 		/** Current node 'fontSize' expressed in pixels.*/
 		public function get ppem():Number
 		{
@@ -285,25 +288,48 @@ package starling.extensions.talon.core
 			return gauge.toPixels(ppmm, base, pppt, base, 0, 0, 0, 0);
 		}
 
-		private function measureAutoWidth(width:Number, height:Number):Number { return layout.measureAutoWidth(this, width, height); }
-		private function measureAutoHeight(width:Number, height:Number):Number { return layout.measureAutoHeight(this, width, height); }
-		private function get layout():Layout { return Layout.getLayoutByAlias(getAttribute(Attributes.LAYOUT)); }
+		/** This is 'auto' callback for gauges: width, minWidth, maxWidth. */
+		private function measureAutoWidth(width:Number, height:Number):Number
+		{
+			return layout.measureAutoWidth(this, width, height);
+		}
+
+		/** This is 'auto' callback for gauges: height, minHeight, maxHeight. */
+		private function measureAutoHeight(width:Number, height:Number):Number
+		{
+			return layout.measureAutoHeight(this, width, height);
+		}
+
+		/** Node layout strategy class. */
+		private function get layout():Layout
+		{
+			return Layout.getLayoutByAlias(getAttribute(Attributes.LAYOUT));
+		}
+
+		private function onAttributeChange(e:Event):void
+		{
+			var layoutName:String = getAttribute(Attributes.LAYOUT);
+			var invalidate:Boolean = Layout.isObservableAttribute(layoutName, e.data as String);
+			if (invalidate) commit();
+		}
 
 		private function onChildAttributeChange(e:Event):void
 		{
-			var invalidate:Boolean = Layout.isChildAttribute(getAttribute(Attributes.LAYOUT), e.data as String);
-			if (invalidate)
-			{
-				commit();
-			}
+			var layoutName:String = getAttribute(Attributes.LAYOUT);
+			var invalidate:Boolean = Layout.isObservableChildrenAttribute(layoutName, e.data as String);
+			if (invalidate) commit();
 		}
 
 		//
 		// Complex
 		//
+		/** The node that contains this node. */
 		public function get parent():Node { return _parent; }
+
+		/** The number of children of this node. */
 		public function get numChildren():int { return _children.length; }
 
+		/** Adds a child to the container. It will be at the frontmost position. */
 		public function addChild(child:Node):void
 		{
 			_children.push(child);
@@ -314,10 +340,11 @@ package starling.extensions.talon.core
 			child.dispatchEventWith(Event.ADDED);
 		}
 
+		/** Removes a child from the container. If the object is not a child throws ArgumentError */
 		public function removeChild(child:Node):void
 		{
 			var indexOf:int = _children.indexOf(child);
-			if (indexOf == -1) throw new ArgumentError("");
+			if (indexOf == -1) throw new ArgumentError("Supplied node must be a child of the caller");
 			_children.splice(indexOf, 1);
 			child.removeEventListener(Event.CHANGE, onChildAttributeChange);
 			child.dispatchEventWith(Event.REMOVED);
@@ -326,8 +353,11 @@ package starling.extensions.talon.core
 			child.resource();
 		}
 
+		/** Returns a child object at a certain index. */
 		public function getChildAt(index:int):Node
 		{
+			if (index < 0 || index >= numChildren) new RangeError("Invalid child index");
+
 			return _children[index];
 		}
 	}

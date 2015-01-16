@@ -1,6 +1,7 @@
 package starling.extensions.talon.utils
 {
-//	[ExcludeClass]
+	[ExcludeClass]
+	/** This is set of used attributes. For strong typing purpose. */
 	public final class Attributes
 	{
 		public static const ID:String = "id";

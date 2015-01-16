@@ -3,7 +3,10 @@ package starling.extensions.talon.utils
 	import starling.filters.ColorMatrixFilter;
 	import starling.filters.FragmentFilter;
 
-	/** Maps css filters to starling fragment filter. */
+	/**
+	 * TODO: How to override filter parse/add custom filters?
+	 * Maps css filters to starling fragment filter.
+	 */
 	public function parseFilter(string:String):FragmentFilter
 	{
 		var pattern:RegExp = /(\w+)\(([\d.]+\))/;

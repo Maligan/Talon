@@ -14,10 +14,10 @@ package starling.extensions.talon.layout
 
 		private static var _initialized:Boolean = false;
 		private static var _layout:Dictionary = new Dictionary();
-		private static var _layoutSelfAttributes:Dictionary = new Dictionary();
-		private static var _layoutChildrenAttributes:Dictionary = new Dictionary();
+		private static var _observableAttributes:Dictionary = new Dictionary();
+		private static var _observableChildrenAttributes:Dictionary = new Dictionary();
 
-		public static function registerLayoutAlias(aliasName:String, layout:Layout, selfAttributes:Array = null, childrenAttributes:Array = null):void
+		public static function registerLayoutAlias(aliasName:String, layout:Layout, observableAttributes:Array = null, observableChildrenAttributes:Array = null):void
 		{
 			if (_layout[aliasName] != null) throw new ArgumentError("Layout alias " + aliasName + "already registered");
 
@@ -27,12 +27,33 @@ package starling.extensions.talon.layout
 			var attribute:String;
 
 			helper = new Dictionary();
-			for each (attribute in selfAttributes) helper[attribute] = true;
-			_layoutSelfAttributes[aliasName] = helper;
+			for each (attribute in observableAttributes) helper[attribute] = true;
+			_observableAttributes[aliasName] = helper;
 
 			helper = new Dictionary();
-			for each (attribute in childrenAttributes) helper[attribute] = true;
-			_layoutChildrenAttributes[aliasName] = helper;
+			for each (attribute in observableChildrenAttributes) helper[attribute] = true;
+			_observableChildrenAttributes[aliasName] = helper;
+		}
+
+		/** Get layout strategy by it's name. */
+		public static function getLayoutByAlias(aliasName:String):Layout
+		{
+			initialize();
+			return _layout[aliasName];
+		}
+
+		/** Layout must be invalidated if node attribute changed. */
+		public static function isObservableAttribute(layout:String, attributeName:String):Boolean
+		{
+			initialize();
+			return _observableAttributes[layout][attributeName];
+		}
+
+		/** Layout must be invalidated if node child attribute changed. */
+		public static function isObservableChildrenAttribute(layout:String, attributeName:String):Boolean
+		{
+			initialize();
+			return _observableChildrenAttributes[layout][attributeName];
 		}
 
 		private static function initialize():void
@@ -43,18 +64,6 @@ package starling.extensions.talon.layout
 				if (!_layout[FLOW]) registerLayoutAlias(FLOW, new FlowLayout(), null, ["width", "height"]);
 				if (!_layout[ABSOLUTE]) registerLayoutAlias(ABSOLUTE, new AbsoluteLayout());
 			}
-		}
-
-		public static function getLayoutByAlias(aliasName:String):Layout
-		{
-			initialize();
-			return _layout[aliasName];
-		}
-
-		public static function isChildAttribute(aliasName:String, attributeName:String):Boolean
-		{
-			initialize();
-			return _layoutChildrenAttributes[aliasName][attributeName];
 		}
 
 		//

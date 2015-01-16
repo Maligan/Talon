@@ -57,7 +57,7 @@ package starling.extensions.talon.display
 			}
 			else if (touch.phase == TouchPhase.BEGAN)
 			{
-				node.states = new <String>["active"]; // not hover
+				node.states = new <String>["active"];
 			}
 			else if (touch.phase == TouchPhase.ENDED)
 			{

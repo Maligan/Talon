@@ -15,32 +15,32 @@ Talon — библиотека для создания резиновых инт
 ### Talon Layouts:
 #### absolute
 Used children attributes:	
-- anchor (GaugeQuad)
-- x, y (*px*, *pt*, *em*, *%*)
-- width, height (*px*, *pt*, *em*, *%*)
-- minWidth, minHeight (*px*, *pt*, *em*, *%*)
-- maxWidth, maxHeight (*px*, *pt*, *em*, *%*)
-- (?) scaleX, scaleY
+- anchor
+- x, y
+- width, height
+- minWidth, minHeight
+- maxWidth, maxHeight
 - margin
-- pivotX, pivotY (*px*, *pt*, *em*, *%*)
+- pivotX, pivotY
+- (?) scaleX, scaleY
 Used self attributes:
 - originX, originY
 - padding
 
 #### flow
 Used self attributes:
-- orientation (*horizontal*, *vertical*)
-- gap (*px*, *pt*, *em*, *%*)
-- interline (*px*, *pt*, *em*, *%*)
-- halign (*left*, *center*, *right*)
-- valign (*top*, *center*, *bottom*)
-- wrap (*true*, *false*)
+- orientation
+- gap
+- interline
+- halign
+- valign
+- wrap
 
 Used children attributes:
-- width, height (*px*, *pt*, *em*, *%*)
-- minWidth, minHeight (*px*, *pt*, *em*, *%*)
-- maxWidth, maxHeight (*px*, *pt*, *em*, *%*)
-- break (*true*, *false*)
+- width, height
+- minWidth, minHeight
+- maxWidth, maxHeight
+- break
 - (?) ihalign 
 - (?) ivalign
 
@@ -73,33 +73,7 @@ Used children attributes:
 В названиях аттрбутов используется только *малаяВерблюжьяНотация*, без чёрточек как в W3C/Flex диалектах.
 Следующий список аттрибутов используется в движке:
 
-- width
-- minWidth
-- maxWidth
-- height
-- minHeight
-- maxHeight
-
-- margin
-- marginTop
-- marginRight
-- marginBottom
-- marginLeft
-
-- padding
-- paddingTop
-- paddingRight
-- paddingBottom
-- paddingLeft
-
-- backgroundColor (*transparent*)
-- backgroundImage (*none*)
-- backgroundTint (*white*)
-- backgroundFill (*clip*, *scale*, *repeat*)
-- background9Scale
-
-- cursor (*default*, *pointer*)
-- filter (*brightness*, *grayscale*, *sepia*, *blur*, *drop-shapow* etc)
+@ Подробный и полный список поддерживаемых свойств.
 
 ## Under the Hood
 Ключевые моменты:
@@ -110,3 +84,8 @@ Used children attributes:
 	- Результат: на этапе оределение любые % измерения эквивалентны 0?
 - CSS устанавливает не значения аттрибута style
 - Приоритет: установлено значение, стиль, значение по-умолчанию
+
+0) Демо для привлечения внимания
+1) Overview - общие определения
+1.1) Feature List (CSS, XML, Layouts)
+2) Принцип работы (Gauge (base)/Node (set of attributes)/Layout (Auto - make go down before validate)/Style/Resource )

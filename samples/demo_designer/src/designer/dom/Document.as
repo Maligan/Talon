@@ -1,5 +1,6 @@
 package designer.dom
 {
+	import designer.dom.assets.AtlasAsset;
 	import designer.dom.assets.DirectoryAsset;
 	import designer.dom.assets.FontAsset;
 	import designer.dom.assets.PrototypeAsset;
@@ -36,6 +37,7 @@ package designer.dom
 			_files.registerDocumentFileType(DocumentFileType.DIRECTORY, DirectoryAsset);
 			_files.registerDocumentFileType(DocumentFileType.IMAGE, TextureAsset);
 			_files.registerDocumentFileType(DocumentFileType.PROTOTYPE, PrototypeAsset);
+			_files.registerDocumentFileType(DocumentFileType.ATLAS, AtlasAsset);
 			_files.registerDocumentFileType(DocumentFileType.STYLE, StyleAsset);
 			_files.registerDocumentFileType(DocumentFileType.FONT, FontAsset);
 		}

@@ -19,7 +19,7 @@ package designer
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.extensions.talon.core.Node;
-	import starling.extensions.talon.display.ITalonTarget;
+	import starling.extensions.talon.display.ITalonElement;
 	import starling.extensions.talon.display.TalonSprite;
 	import starling.extensions.talon.display.TalonFactory;
 
@@ -264,9 +264,9 @@ package designer
 				_interface.node.commit();
 			}
 
-			if (_view is ITalonTarget)
+			if (_view is ITalonElement)
 			{
-				var node:Node = ITalonTarget(_view).node;
+				var node:Node = ITalonElement(_view).node;
 				node.bounds.setTo(0, 0, _container.node.bounds.width/_layer.scaleX, _container.node.bounds.height/_layer.scaleY);
 				node.commit();
 			}

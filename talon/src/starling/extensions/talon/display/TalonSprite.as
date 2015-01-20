@@ -23,7 +23,7 @@ package starling.extensions.talon.display
 	import starling.extensions.talon.utils.parseFilter;
 	import starling.textures.Texture;
 
-	public class TalonSprite extends Sprite implements ITalonTarget
+	public class TalonSprite extends Sprite implements ITalonElement
 	{
 		private var _node:Node;
 		private var _backgroundColor:Quad;
@@ -69,14 +69,14 @@ package starling.extensions.talon.display
 
 		public override function addChild(child:DisplayObject):DisplayObject
 		{
-			(child is ITalonTarget) && node.addChild(ITalonTarget(child).node);
+			(child is ITalonElement) && node.addChild(ITalonElement(child).node);
 			return super.addChild(child);
 		}
 
 		override public function removeChildAt(index:int, dispose:Boolean = false):DisplayObject
 		{
 			var child:DisplayObject = getChildAt(index);
-			(child is ITalonTarget) && node.removeChild(ITalonTarget(child).node);
+			(child is ITalonElement) && node.removeChild(ITalonElement(child).node);
 			return super.removeChildAt(index, dispose);
 		}
 

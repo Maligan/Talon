@@ -11,11 +11,11 @@ package
 	import starling.events.Event;
 
 	import starling.extensions.talon.core.Node;
-	import starling.extensions.talon.display.ITalonTarget;
+	import starling.extensions.talon.display.ITalonElement;
 	import starling.extensions.talon.utils.parseColor;
 	import starling.text.TextFieldAutoSize;
 
-	public class TalonInput extends Quad implements ITalonTarget
+	public class TalonInput extends Quad implements ITalonElement
 	{
 		private static var AUTO_CACHE_WIDTH:int = 1000;
 		private static var AUTO_CACHE_HEIGHT:int = 1000;

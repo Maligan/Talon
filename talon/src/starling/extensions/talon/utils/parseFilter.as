@@ -9,6 +9,7 @@ package starling.extensions.talon.utils
 	 */
 	public function parseFilter(string:String):FragmentFilter
 	{
+		// \w+\((["']?)([^)]*?)\1*\)
 		var pattern:RegExp = /(\w+)\(([\d.]+\))/;
 		var split:Array = pattern.exec(string);
 

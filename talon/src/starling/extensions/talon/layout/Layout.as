@@ -86,5 +86,10 @@ package starling.extensions.talon.layout
 		{
 			// NOP
 		}
+
+		//
+		// Utility function
+		//
+
 	}
 }

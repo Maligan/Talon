@@ -32,10 +32,10 @@ package starling.extensions.talon.display
 			if (config == null) throw new ArgumentError("Prototype by id: " + id + " not found");
 
 			var element:DisplayObject = fromXML(config);
-			if (element is ITalonTarget)
+			if (element is ITalonElement)
 			{
-				includeResources && ITalonTarget(element).node.setResources(_resources);
-				includeStyleSheet && ITalonTarget(element).node.setStyleSheet(_style);
+				includeResources && ITalonElement(element).node.setResources(_resources);
+				includeStyleSheet && ITalonElement(element).node.setStyleSheet(_style);
 			}
 
 			return element;
@@ -47,9 +47,9 @@ package starling.extensions.talon.display
 			var elementClass:Class = _linkage[elementType] || _linkageByDefault;
 			var element:DisplayObject = new elementClass();
 
-			if (element is ITalonTarget)
+			if (element is ITalonElement)
 			{
-				var node:Node = ITalonTarget(element).node;
+				var node:Node = ITalonElement(element).node;
 				node.setAttribute("type", elementType);
 
 				for each (var attribute:XML in xml.attributes())

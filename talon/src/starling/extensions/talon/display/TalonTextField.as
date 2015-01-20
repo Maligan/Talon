@@ -9,7 +9,7 @@ package starling.extensions.talon.display
 	import starling.text.TextField;
 	import starling.text.TextFieldAutoSize;
 
-	public class TalonTextField extends TextField implements ITalonTarget
+	public class TalonTextField extends TextField implements ITalonElement
 	{
 		private var _node:Node;
 

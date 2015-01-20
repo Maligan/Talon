@@ -82,16 +82,16 @@ package starling.extensions.talon.core
 		/**
 		 * @private
 		 * Transform gauge to pixels.
-		 * Core & hardcore function.
+		 * Core & Hardcore function.
 		 *
 		 * @param ppmm pixels per millimeter
 		 * @param ppem pixels per em
 		 * @param pppt pixels per point
 		 * @param pp100p pixels per 100%
-		 * @param ppts pixels per total stars
-		 * @param ts total stars
 		 * @param width available width (for auto measure)
 		 * @param height available height (for auto measure)
+		 * @param ppts pixels per total stars
+		 * @param ts total stars
 		 */
 		public function toPixels(ppmm:Number, ppem:Number, pppt:Number, pp100p:Number, width:Number, height:Number, ppts:Number, ts:int):Number
 		{

@@ -2,7 +2,7 @@ package starling.extensions.talon.display
 {
 	import starling.extensions.talon.core.Node;
 
-	public interface ITalonTarget
+	public interface ITalonElement
 	{
 		function get node():Node
 	}

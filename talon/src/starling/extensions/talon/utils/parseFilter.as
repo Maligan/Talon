@@ -25,7 +25,6 @@ package starling.extensions.talon.utils
 				filter.adjustBrightness(value);
 				return filter;
 			}
-
 		}
 
 		return null;

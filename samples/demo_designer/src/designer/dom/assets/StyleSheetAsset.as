@@ -1,6 +1,6 @@
 package designer.dom.assets
 {
-	public class StyleAsset extends Asset
+	public class StyleSheetAsset extends Asset
 	{
 		protected override function onRefresh():void
 		{

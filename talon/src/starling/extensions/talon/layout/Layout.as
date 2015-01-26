@@ -2,6 +2,8 @@ package starling.extensions.talon.layout
 {
 	import flash.utils.Dictionary;
 
+	import starling.extensions.talon.core.Gauge;
+
 	import starling.extensions.talon.core.Node;
 
 	public class Layout
@@ -90,6 +92,30 @@ package starling.extensions.talon.layout
 		//
 		// Utility function
 		//
+		/**
+		 * @private
+		 * Method toPixels() with optimized signature for most common use cases.
+		 * @param context ppmm, ppem, pppt used from thi node.
+		 * @param min value bottom restrainer
+		 * @param max value top restrainer
+		 */
+		public function toPixelsSugar(gauge:Gauge, context:Node, pp100p:Number = 0, width:Number = 0, height:Number = 0, ppts:Number = 0, ts:int = 0, min:Gauge = null, max:Gauge = null):Number
+		{
+			var value:Number = gauge.toPixels(context.ppmm, context.ppem, context.pppt, pp100p, width, height, ppts, ts);
 
+			if (min && !min.isNone)
+			{
+				var minValue:Number = min.toPixels(context.ppmm, context.ppem, context.pppt, pp100p, width, height, ppts, ts);
+				if (minValue > value) value = minValue;
+			}
+
+			if (max && !max.isNone)
+			{
+				var maxValue:Number = max.toPixels(context.ppmm, context.ppem, context.pppt, pp100p, width, height, ppts, ts);
+				if (maxValue < value) value = maxValue;
+			}
+
+			return value;
+		}
 	}
 }

@@ -109,32 +109,6 @@ package starling.extensions.talon.core
 			}
 		}
 
-		/**
-		 * @private
-		 * Method toPixels() with optimized signature for most common use cases.
-		 * @param context ppmm, ppem, pppt used from thi node.
-		 * @param min value bottom restrainer
-		 * @param max value top restrainer
-		 */
-		public function toPixelsSugar(context:Node, pp100p:Number = 0, width:Number = 0, height:Number = 0, ppts:Number = 0, ts:int = 0, min:Gauge = null, max:Gauge = null):Number
-		{
-			var value:Number = toPixels(context.ppmm, context.ppem, context.pppt, pp100p, width, height, ppts, ts);
-
-			if (min && !min.isNone)
-			{
-				var minValue:Number = min.toPixels(context.ppmm, context.ppem, context.pppt, pp100p, width, height, ppts, ts);
-				if (minValue > value) value = minValue;
-			}
-
-			if (max && !max.isNone)
-			{
-				var maxValue:Number = max.toPixels(context.ppmm, context.ppem, context.pppt, pp100p, width, height, ppts, ts);
-				if (maxValue < value) value = maxValue;
-			}
-
-			return value;
-		}
-
 		/** Unit of measurement. */
 		public function get unit():String { return _unit }
 		public function set unit(value:String):void
@@ -162,15 +136,11 @@ package starling.extensions.talon.core
 		public function get auto():Function { return _auto }
 		public function set auto(value:Function):void
 		{
+			if (isAuto && value == null) throw new ArgumentError("Auto callback can't be null, when gauge unit == AUTO");
+
 			if (_auto != value)
 			{
 				_auto = value;
-
-				if (_auto == null)
-				{
-					_unit = NONE;
-				}
-
 				dispatchEventWith(Event.CHANGE);
 			}
 		}
@@ -178,15 +148,10 @@ package starling.extensions.talon.core
 		/** Compares with another gauge and return <code>true</code> if they are equal. */
 		public function equals(gauge:Gauge):Boolean
 		{
+			if (gauge == null) throw new ArgumentError("Parameter gauge must be non-null");
+
 			return gauge.unit == unit
 				&& gauge.amount == amount;
-		}
-
-		/** Unit type is relative depend by parent/siblings. */
-		public function get isRelative():Boolean
-		{
-			return _unit == PERCENT
-				|| _unit == STAR;
 		}
 
 		/** Gauge unit == AUTO. */

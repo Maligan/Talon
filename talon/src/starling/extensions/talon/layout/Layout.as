@@ -3,7 +3,6 @@ package starling.extensions.talon.layout
 	import flash.utils.Dictionary;
 
 	import starling.extensions.talon.core.Gauge;
-
 	import starling.extensions.talon.core.Node;
 
 	public class Layout

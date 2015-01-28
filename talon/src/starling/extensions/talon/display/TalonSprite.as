@@ -19,8 +19,7 @@ package starling.extensions.talon.display
 	import starling.extensions.talon.core.Node;
 	import starling.extensions.talon.utils.Attributes;
 	import starling.extensions.talon.utils.FillMode;
-	import starling.extensions.talon.utils.parseColor;
-	import starling.extensions.talon.utils.parseFilter;
+	import starling.extensions.talon.utils.StringUtil;
 	import starling.textures.Texture;
 
 	public class TalonSprite extends Sprite implements ITalonElement
@@ -88,21 +87,14 @@ package starling.extensions.talon.display
 			{
 				var color:String = node.getAttribute(Attributes.BACKGROUND_COLOR);
 				_backgroundColor.visible = color != "transparent";
-				_backgroundColor.color = parseColor(color);
+				_backgroundColor.color = StringUtil.parseColor(color);
 			}
 			else if (e.data == Attributes.BACKGROUND_IMAGE || e.data == Attributes.BACKGROUND_TINT || e.data == Attributes.BACKGROUND_9SCALE || e.data == Attributes.BACKGROUND_FILL_MODE)
 			{
-				var image:String = node.getAttribute(Attributes.BACKGROUND_IMAGE);
-				var imageResourceKey:String = null;
-
-				var resourcePattern:RegExp = /resource\(["']?([^'"]*)["']?\)/;
-				var split:Array = resourcePattern.exec(image);
-				if (split != null) imageResourceKey = split[1];
-
-				var texture:Texture = node.getResource(imageResourceKey);
+				var texture:Texture = node.getAttribute(Attributes.BACKGROUND_IMAGE) as Texture;
 				if (texture != null)
 				{
-					var tint:uint = parseColor(node.getAttribute(Attributes.BACKGROUND_TINT));
+					var tint:uint = StringUtil.parseColor(node.getAttribute(Attributes.BACKGROUND_TINT));
 					var fillMode:String = node.getAttribute(Attributes.BACKGROUND_FILL_MODE);
 
 					switch (fillMode)
@@ -159,7 +151,7 @@ package starling.extensions.talon.display
 			else if (e.data == Attributes.FILTER)
 			{
 				var filterString:String = node.getAttribute(Attributes.FILTER);
-				filter = parseFilter(filterString);
+				filter = StringUtil.parseFilter(filterString);
 			}
 		}
 

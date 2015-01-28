@@ -5,21 +5,17 @@ package starling.extensions.talon.display
 	import feathers.textures.Scale9Textures;
 
 	import flash.geom.Rectangle;
-
 	import flash.utils.Dictionary;
 
 	import starling.display.Image;
-
 	import starling.display.Quad;
-
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.extensions.talon.core.GaugeQuad;
-
 	import starling.extensions.talon.core.Node;
 	import starling.extensions.talon.utils.Attributes;
 	import starling.extensions.talon.utils.FillMode;
-	import starling.extensions.talon.utils.parseColor;
+	import starling.extensions.talon.utils.StringUtil;
 	import starling.textures.Texture;
 
 	internal class Background extends Sprite
@@ -83,8 +79,8 @@ package starling.extensions.talon.display
 				var fillMode:String = _node.getAttribute(Attributes.BACKGROUND_FILL_MODE);
 				if (fillMode == FillMode.SCALE)
 				{
-					_image9ScaleTextures = new Scale9Textures(texture)
-					_image9Scale = new Scale9Image()
+//					_image9ScaleTextures = new Scale9Textures(texture)
+//					_image9Scale = new Scale9Image()
 				}
 
 				// Remove old
@@ -125,12 +121,12 @@ package starling.extensions.talon.display
 				var texture9ScaleGauge:GaugeQuad = new GaugeQuad();
 				texture9ScaleGauge.parse(_node.getAttribute(Attributes.BACKGROUND_9SCALE));
 
-				_image9ScaleRectangle |= new Rectangle();
-				_image9ScaleRectangle.setTo(0, 0, _imageTexture.width, _imageTexture.height);
-				_image9ScaleRectangle.top += texture9ScaleGauge.top.toPixels(0, 0, _node.pppt, 0, width, height, 0, 0);
-				_image9ScaleRectangle.right -= texture9ScaleGauge.right.toPixels(0, 0, _node.pppt, 0, width, height, 0, 0);
-				_image9ScaleRectangle.bottom -= texture9ScaleGauge.bottom.toPixels(0, 0, _node.pppt, 0, width, height, 0, 0);
-				_image9ScaleRectangle.left += texture9ScaleGauge.left.toPixels(0, 0, _node.pppt, 0, width, height, 0, 0);
+//				_image9ScaleRectangle |= new Rectangle();
+//				_image9ScaleRectangle.setTo(0, 0, _imageTexture.width, _imageTexture.height);
+//				_image9ScaleRectangle.top += texture9ScaleGauge.top.toPixels(0, 0, _node.pppt, 0, width, height, 0, 0);
+//				_image9ScaleRectangle.right -= texture9ScaleGauge.right.toPixels(0, 0, _node.pppt, 0, width, height, 0, 0);
+//				_image9ScaleRectangle.bottom -= texture9ScaleGauge.bottom.toPixels(0, 0, _node.pppt, 0, width, height, 0, 0);
+//				_image9ScaleRectangle.left += texture9ScaleGauge.left.toPixels(0, 0, _node.pppt, 0, width, height, 0, 0);
 			}
 		}
 
@@ -155,7 +151,7 @@ package starling.extensions.talon.display
 			if (_image9Scale || _imageTiled || _imageClip)
 			{
 				var tintString:String = _node.getAttribute(Attributes.BACKGROUND_TINT);
-				var tintValue:uint = parseColor(tintString);
+				var tintValue:uint = StringUtil.parseColor(tintString);
 
 				if (_image9Scale) _image9Scale.color = tintValue;
 				if (_imageTiled) _imageTiled.color = tintValue;
@@ -168,7 +164,7 @@ package starling.extensions.talon.display
 		private function validateColor():void
 		{
 			var colorString:String = _node.getAttribute(Attributes.BACKGROUND_COLOR);
-			var colorValue:uint = parseColor(colorString);
+			var colorValue:uint = StringUtil.parseColor(colorString);
 			var isTransparent:Boolean = colorString == "transparent";
 
 			if (isTransparent && _color!=null)
@@ -182,7 +178,7 @@ package starling.extensions.talon.display
 			}
 			else if (!isTransparent && _color==null)
 			{
-				_color = new Quad(_width, _height, parseColor(colorString));
+				_color = new Quad(_width, _height, StringUtil.parseColor(colorString));
 				addChildAt(_color, 0);
 			}
 

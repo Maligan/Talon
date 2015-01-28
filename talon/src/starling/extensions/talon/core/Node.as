@@ -12,6 +12,7 @@ package starling.extensions.talon.core
 	import starling.extensions.talon.utils.Attributes;
 	import starling.extensions.talon.utils.FillMode;
 	import starling.extensions.talon.utils.Orientation;
+	import starling.extensions.talon.utils.StringUtil;
 	import starling.extensions.talon.utils.Visibility;
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
@@ -43,6 +44,7 @@ package starling.extensions.talon.core
 		private var _attributes:Dictionary = new Dictionary();
 		private var _style:StyleSheet;
 		private var _resources:Object;
+		private var _invokers:Object;
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
 		private var _bounds:Rectangle = new Rectangle();
@@ -56,6 +58,9 @@ package starling.extensions.talon.core
 			const FALSE:String = "false";
 			const ONE:String = "1";
 			const NULL:String = null;
+
+			_invokers = new Object();
+			_invokers["res"] = getResource;
 
 			width.auto = minWidth.auto = maxWidth.auto = measureAutoWidth;
 			height.auto = minHeight.auto = maxHeight.auto = measureAutoHeight;
@@ -151,10 +156,23 @@ package starling.extensions.talon.core
 		//
 		// Attributes
 		//
-		public function getAttribute(name:String):String
+		public function getAttribute(name:String):*
 		{
+			// If attribute doesn't exist return null
 			var attribute:Attribute = _attributes[name];
-			return attribute ? attribute.value : null;
+			if (attribute == null) return null;
+
+			// If attribute is simple return string value
+			var value:String = attribute.value;
+			var invokeInfo:Array = StringUtil.parseFunction(value);
+			if (invokeInfo == null) return value;
+
+			// Obtain invoker via invokeInfo
+			var invokeMethodName:String = invokeInfo.shift();
+			var invokeMethod:Function = _invokers[invokeMethodName];
+			if (invokeMethod == null) return value;
+
+			return invokeMethod.apply(null, invokeInfo);
 		}
 
 		public function setAttribute(name:String, value:String):void
@@ -244,7 +262,7 @@ package starling.extensions.talon.core
 			{
 				var value:String = attribute.value;
 				if (value == null) continue;
-				if (value.indexOf("resource") == 0) dispatchEventWith(Event.CHANGE, false, attribute.name);
+				if (value.indexOf("res") == 0) dispatchEventWith(Event.CHANGE, false, attribute.name);
 			}
 
 			// Recursive children notify resource change

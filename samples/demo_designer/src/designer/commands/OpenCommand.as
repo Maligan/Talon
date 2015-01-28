@@ -3,6 +3,7 @@ package designer.commands
 	import designer.dom.Document;
 	import designer.dom.files.DocumentFileReference;
 	import designer.utils.findFiles;
+	import designer.utils.parseProperties;
 
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
@@ -21,7 +22,7 @@ package designer.commands
 
 		public override function execute():void
 		{
-			var properties:Object = readPropertiesFile(_source);
+			var properties:Object = parseProperties(readFile(_source).toString());
 			var exportName:String = properties[DesignerConstants.PROPERTY_EXPORT_PATH];
 			if (exportName == null) properties[DesignerConstants.PROPERTY_EXPORT_PATH] = _source.name.replace(DesignerConstants.DESIGNER_FILE_EXTENSION, DesignerConstants.ZIP_FILE_EXTENSION);
 
@@ -45,28 +46,6 @@ package designer.commands
 			_document.tasks.begin();
 			for each (var reference:DocumentFileReference in references) _document.files.addFile(reference);
 			_document.tasks.end();
-		}
-
-		private function readPropertiesFile(file:File):Object
-		{
-			var result:Object = new Object();
-
-			var data:String = readFile(file).toString();
-			var values:Array = data.split(/[\n\r]/);
-			var pattern:RegExp = /\s*([\w\.]+)\s*\=\s*(.*)\s*$/;
-
-			for each (var line:String in values)
-			{
-				var property:Array = pattern.exec(line);
-				if (property)
-				{
-					var key:String = property[1];
-					var value:String = property[2];
-					result[key] = value;
-				}
-			}
-
-			return result;
 		}
 
 		private function readFile(file:File):ByteArray

@@ -4,7 +4,7 @@ package starling.extensions.talon.display
 	import starling.events.Event;
 	import starling.extensions.talon.core.Node;
 	import starling.extensions.talon.utils.Attributes;
-	import starling.extensions.talon.utils.parseColor;
+	import starling.extensions.talon.utils.StringUtil;
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
 	import starling.text.TextFieldAutoSize;
@@ -45,7 +45,7 @@ package starling.extensions.talon.display
 			else if (e.data == Attributes.HALIGN)       hAlign = _node.getAttribute(Attributes.HALIGN);
 			else if (e.data == Attributes.VALIGN)       vAlign = _node.getAttribute(Attributes.VALIGN);
 			else if (e.data == Attributes.FONT_NAME)    fontName = _node.getAttribute(Attributes.FONT_NAME) || BitmapFont.MINI;
-			else if (e.data == Attributes.FONT_COLOR)   color = parseColor(_node.getAttribute(Attributes.FONT_COLOR));
+			else if (e.data == Attributes.FONT_COLOR)   color = StringUtil.parseColor(_node.getAttribute(Attributes.FONT_COLOR));
 			else if (e.data == Attributes.FONT_SIZE)    fontSize = node.ppem;
 			else if (e.data == Attributes.WIDTH || e.data == Attributes.HEIGHT)
 			{

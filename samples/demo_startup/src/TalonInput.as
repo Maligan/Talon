@@ -12,7 +12,7 @@ package
 
 	import starling.extensions.talon.core.Node;
 	import starling.extensions.talon.display.ITalonElement;
-	import starling.extensions.talon.utils.parseColor;
+	import starling.extensions.talon.utils.StringUtil;
 	import starling.text.TextFieldAutoSize;
 
 	public class TalonInput extends Quad implements ITalonElement
@@ -93,7 +93,7 @@ package
 
 		private function onNodeChange(e:Event):void
 		{
-			/**/ if (e.data == "fontColor") _text.color = parseColor(node.getAttribute("fontColor"));
+			/**/ if (e.data == "fontColor") _text.color = StringUtil.parseColor(node.getAttribute("fontColor"));
 			else if (e.data == "fontName") _text.fontFamily = node.getAttribute("fontName");
 			else if (e.data == "fontSize") _text.fontSize = node.ppem;
 			else if (e.data == "text") _text.text = node.getAttribute("text");
@@ -115,7 +115,7 @@ package
 			else if (e.data == "backgroundColor")
 			{
 				var backgroundColor:String = node.getAttribute("backgroundColor");
-				var backgroundColorHex:int = parseColor(node.getAttribute("backgroundColor"));
+				var backgroundColorHex:int = StringUtil.parseColor(node.getAttribute("backgroundColor"));
 				visible = backgroundColor != "transparent";
 				visible && (color = backgroundColorHex);
 			}

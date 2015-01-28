@@ -20,6 +20,7 @@ package
 
 	import starling.extensions.talon.display.TalonSprite;
 	import starling.extensions.talon.display.TalonFactory;
+	import starling.extensions.talon.utils.StringUtil;
 	import starling.textures.Texture;
 
 	[SWF(backgroundColor="#444444")]
@@ -83,11 +84,11 @@ package
 				}
 
 				/* Default button skin. */
-				button:hover { backgroundImage: resource(over); }
-				button:active { backgroundImage: resource(down); }
+				button:hover { backgroundImage: res(over); }
+				button:active { backgroundImage: res(down); }
 				button
 				{
-					backgroundImage: resource(up);
+					backgroundImage: res(up);
 					background9Scale: 4px;
 					cursor: button;
 
@@ -111,7 +112,7 @@ package
 					<node id="root" width="100%" height="500px" layout="flow" padding="0.5em" valign="center" halign="center" orientation="vertical">
 						<label text="Select button if none is exist then good this is alskdj or sadf 3443 asdf strings:" height="auto"  fontSize="17px" fontName="Tahoma" marginBottom="0.5em" marginLeft="2px" halign="left" fontColor="#C9C9C9" width="*" />
 						<button><label text="Sed ut perspiciatis unde" /></button>
-						<button><label text="Nor again is there anyone" /></button>
+						<button><label text="res(button_text)" /></button>
 						<button><label text="Et harum quidem rerum facilis" /></button>
 					</node>;
 
@@ -130,6 +131,7 @@ package
 			_factory.addResource("up", Texture.fromEmbeddedAsset(UP_BYTES));
 			_factory.addResource("over", Texture.fromEmbeddedAsset(OVER_BYTES));
 			_factory.addResource("down", Texture.fromEmbeddedAsset(DOWN_BYTES));
+			_factory.addResource("button_text", "Привет я текст на русском языке!");
 
 			_talon = _factory.build("root") as TalonSprite;
 			_talon.addEventListener("invalidate", onInvalidate);

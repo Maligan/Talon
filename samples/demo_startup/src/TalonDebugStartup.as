@@ -84,7 +84,7 @@ package
 				}
 
 				/* Default button skin. */
-				button:hover { backgroundImage: res(over); }
+				button:hover { backgroundImage: res(over); filter: glow(#ff0000, 1) }
 				button:active { backgroundImage: res(down); }
 				button
 				{
@@ -109,7 +109,7 @@ package
 			]]></literal>.valueOf();
 
 			var config:XML =
-					<node id="root" width="100%" height="500px" layout="flow" padding="0.5em" valign="center" halign="center" orientation="vertical">
+					<node id="root" width="100%" height="500px" layout="flow" padding="0.5em" valign="center" halign="center" orientation="vertical" gap="4px">
 						<label text="Select button if none is exist then good this is alskdj or sadf 3443 asdf strings:" height="auto"  fontSize="17px" fontName="Tahoma" marginBottom="0.5em" marginLeft="2px" halign="left" fontColor="#C9C9C9" width="*" />
 						<button><label text="Sed ut perspiciatis unde" /></button>
 						<button><label text="res(button_text)" /></button>

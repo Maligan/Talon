@@ -20,6 +20,7 @@ package starling.extensions.talon.display
 	import starling.extensions.talon.utils.Attributes;
 	import starling.extensions.talon.utils.FillMode;
 	import starling.extensions.talon.utils.StringUtil;
+	import starling.filters.FragmentFilter;
 	import starling.textures.Texture;
 
 	public class TalonSprite extends Sprite implements ITalonElement
@@ -150,8 +151,7 @@ package starling.extensions.talon.display
 			}
 			else if (e.data == Attributes.FILTER)
 			{
-				var filterString:String = node.getAttribute(Attributes.FILTER);
-				filter = StringUtil.parseFilter(filterString);
+				filter = node.getAttribute(Attributes.FILTER) as FragmentFilter;
 			}
 		}
 

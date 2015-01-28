@@ -140,7 +140,7 @@ package starling.extensions.talon.layout
 				+ node.padding.bottom.toPixels(node.ppmm, node.ppem, node.pppt, height, width, height, 0, 0);
 		}
 
-		private function measureSide(node, side:String, width:Number, height:Number):Number
+		private function measureSide(node:Node, side:String, width:Number, height:Number):Number
 		{
 			var orientation:String = node.getAttribute(Attributes.ORIENTATION);
 			if (Orientation.isValid(orientation) === false) throw new Error("Attribute orientation has invalid value: " + orientation);

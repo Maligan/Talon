@@ -1,5 +1,6 @@
 package starling.extensions.talon.utils
 {
+	import starling.filters.BlurFilter;
 	import starling.filters.ColorMatrixFilter;
 	import starling.filters.FragmentFilter;
 	import starling.utils.Color;
@@ -56,28 +57,24 @@ package starling.extensions.talon.utils
 			return args;
 		}
 
-		/**
-		 * TODO: How to override filter parse/add custom filters?
-		 * Maps css filters to starling fragment filter.
-		 */
-		public static function parseFilter(string:String):FragmentFilter
+		public static function handleBrightness(brightness:String):FragmentFilter
 		{
-			var split:Array = StringUtil.parseFunction(string);
-			if (split)
-			{
-				var type:String = split[1];
-				var value:Number = parseFloat(split[2]);
-				if (value != value) throw new ArgumentError("Bad filter value: " + value);
+			var value:Number = parseFloat(brightness);
+			if (value != value) throw new ArgumentError("Bad filter value: " + value);
 
-				if (type == "brightness")
-				{
-					var filter:ColorMatrixFilter = new ColorMatrixFilter();
-					filter.adjustBrightness(value);
-					return filter;
-				}
-			}
+			var filter:ColorMatrixFilter = new ColorMatrixFilter();
+			filter.adjustBrightness(value);
+			return filter;
+		}
 
-			return null;
+		public static function handleBlur(blurX:String, blurY:String):FragmentFilter
+		{
+			return new BlurFilter(parseFloat(blurX), parseFloat(blurY), 1);
+		}
+
+		public static function handleGlow(color:String, blur:String):FragmentFilter
+		{
+			return BlurFilter.createGlow(parseColor(color), 1, parseFloat(blur), 1)
 		}
 	}
 }

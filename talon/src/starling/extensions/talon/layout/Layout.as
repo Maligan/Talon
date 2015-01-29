@@ -15,10 +15,10 @@ package starling.extensions.talon.layout
 
 		private static var _initialized:Boolean = false;
 		private static var _layout:Dictionary = new Dictionary();
-		private static var _observableAttributes:Dictionary = new Dictionary();
-		private static var _observableChildrenAttributes:Dictionary = new Dictionary();
+		private static var _observableAttribute:Dictionary = new Dictionary();
+		private static var _observableChildrenAttribute:Dictionary = new Dictionary();
 
-		public static function registerLayoutAlias(aliasName:String, layout:Layout, observableAttributes:Array = null, observableChildrenAttributes:Array = null):void
+		public static function registerLayoutAlias(aliasName:String, layout:Layout, observableAttribute:Array = null, observableChildrenAttribute:Array = null):void
 		{
 			if (_layout[aliasName] != null) throw new ArgumentError("Layout alias " + aliasName + "already registered");
 
@@ -28,12 +28,12 @@ package starling.extensions.talon.layout
 			var attribute:String;
 
 			helper = new Dictionary();
-			for each (attribute in observableAttributes) helper[attribute] = true;
-			_observableAttributes[aliasName] = helper;
+			for each (attribute in observableAttribute) helper[attribute] = true;
+			_observableAttribute[aliasName] = helper;
 
 			helper = new Dictionary();
-			for each (attribute in observableChildrenAttributes) helper[attribute] = true;
-			_observableChildrenAttributes[aliasName] = helper;
+			for each (attribute in observableChildrenAttribute) helper[attribute] = true;
+			_observableChildrenAttribute[aliasName] = helper;
 		}
 
 		/** Get layout strategy by it's name. */
@@ -47,14 +47,14 @@ package starling.extensions.talon.layout
 		public static function isObservableAttribute(layout:String, attributeName:String):Boolean
 		{
 			initialize();
-			return _observableAttributes[layout][attributeName];
+			return _observableAttribute[layout][attributeName];
 		}
 
 		/** Layout must be invalidated if node child attribute changed. */
 		public static function isObservableChildrenAttribute(layout:String, attributeName:String):Boolean
 		{
 			initialize();
-			return _observableChildrenAttributes[layout][attributeName];
+			return _observableChildrenAttribute[layout][attributeName];
 		}
 
 		private static function initialize():void

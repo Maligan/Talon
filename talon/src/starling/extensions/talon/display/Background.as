@@ -11,9 +11,9 @@ package starling.extensions.talon.display
 	import starling.display.Quad;
 	import starling.display.Sprite;
 	import starling.events.Event;
+	import starling.extensions.talon.core.Attribute;
 	import starling.extensions.talon.core.GaugeQuad;
 	import starling.extensions.talon.core.Node;
-	import starling.extensions.talon.utils.Attributes;
 	import starling.extensions.talon.utils.FillMode;
 	import starling.extensions.talon.utils.StringUtil;
 	import starling.textures.Texture;
@@ -28,7 +28,7 @@ package starling.extensions.talon.display
 
 		private var _node:Node;
 		private var _invalidate:uint;
-		private var _invalidateAttributes:Dictionary;
+		private var _invalidateAttribute:Dictionary;
 
 		private var _width:Number;
 		private var _height:Number;
@@ -46,23 +46,23 @@ package starling.extensions.talon.display
 			_node = node;
 			_node.addEventListener(Event.CHANGE, onNodeChange);
 
-			_invalidateAttributes = new Dictionary();
-			addAttributeListener(Attributes.BACKGROUND_FILL_MODE,   FILL_MODE);
-			addAttributeListener(Attributes.BACKGROUND_IMAGE,       TEXTURE);
-			addAttributeListener(Attributes.BACKGROUND_TINT,        TINT);
-			addAttributeListener(Attributes.BACKGROUND_9SCALE,      SCALE_9);
-			addAttributeListener(Attributes.BACKGROUND_COLOR,       COLOR);
+			_invalidateAttribute = new Dictionary();
+			addAttributeListener(Attribute.BACKGROUND_FILL_MODE,   FILL_MODE);
+			addAttributeListener(Attribute.BACKGROUND_IMAGE,       TEXTURE);
+			addAttributeListener(Attribute.BACKGROUND_TINT,        TINT);
+			addAttributeListener(Attribute.BACKGROUND_9SCALE,      SCALE_9);
+			addAttributeListener(Attribute.BACKGROUND_COLOR,       COLOR);
 		}
 
 		private function addAttributeListener(name:String, flag:int):void
 		{
-			_invalidateAttributes[name] = flag;
+			_invalidateAttribute[name] = flag;
 		}
 
 		private function onNodeChange(e:Event):void
 		{
 			var attributeName:String = String(e.data);
-			var attributeFlag:int = int(_invalidateAttributes[attributeName]);
+			var attributeFlag:int = int(_invalidateAttribute[attributeName]);
 			if (attributeFlag != 0) _invalidate |= attributeFlag;
 		}
 
@@ -76,7 +76,7 @@ package starling.extensions.talon.display
 			if (_invalidate || FILL_MODE)
 			{
 				// Create new
-				var fillMode:String = _node.getAttribute(Attributes.BACKGROUND_FILL_MODE);
+				var fillMode:String = _node.getAttribute(Attribute.BACKGROUND_FILL_MODE);
 				if (fillMode == FillMode.SCALE)
 				{
 //					_image9ScaleTextures = new Scale9Textures(texture)
@@ -97,7 +97,7 @@ package starling.extensions.talon.display
 
 		private function validateTexture():void
 		{
-			var image:String = _node.getAttribute(Attributes.BACKGROUND_IMAGE);
+			var image:String = _node.getAttribute(Attribute.BACKGROUND_IMAGE);
 			var resourcePattern:RegExp = /resource\(["']?([^'"]*)["']?\)/;
 			var split:Array = resourcePattern.exec(image);
 			var imageResourceKey:String = null;
@@ -119,7 +119,7 @@ package starling.extensions.talon.display
 			if (_imageTexture != null)
 			{
 				var texture9ScaleGauge:GaugeQuad = new GaugeQuad();
-				texture9ScaleGauge.parse(_node.getAttribute(Attributes.BACKGROUND_9SCALE));
+				texture9ScaleGauge.parse(_node.getAttribute(Attribute.BACKGROUND_9SCALE));
 
 //				_image9ScaleRectangle |= new Rectangle();
 //				_image9ScaleRectangle.setTo(0, 0, _imageTexture.width, _imageTexture.height);
@@ -150,7 +150,7 @@ package starling.extensions.talon.display
 		{
 			if (_image9Scale || _imageTiled || _imageClip)
 			{
-				var tintString:String = _node.getAttribute(Attributes.BACKGROUND_TINT);
+				var tintString:String = _node.getAttribute(Attribute.BACKGROUND_TINT);
 				var tintValue:uint = StringUtil.parseColor(tintString);
 
 				if (_image9Scale) _image9Scale.color = tintValue;
@@ -163,7 +163,7 @@ package starling.extensions.talon.display
 
 		private function validateColor():void
 		{
-			var colorString:String = _node.getAttribute(Attributes.BACKGROUND_COLOR);
+			var colorString:String = _node.getAttribute(Attribute.BACKGROUND_COLOR);
 			var colorValue:uint = StringUtil.parseColor(colorString);
 			var isTransparent:Boolean = colorString == "transparent";
 

@@ -1,7 +1,7 @@
 package starling.extensions.talon.layout
 {
+	import starling.extensions.talon.core.Attribute;
 	import starling.extensions.talon.core.Node;
-	import starling.extensions.talon.utils.Attributes;
 	import starling.extensions.talon.utils.Visibility;
 
 	public class AbsoluteLayout extends Layout
@@ -21,7 +21,7 @@ package starling.extensions.talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				if (child.getAttribute(Attributes.VISIBILITY) != Visibility.VISIBLE) continue;
+				if (child.getAttribute(Attribute.VISIBILITY) != Visibility.VISIBLE) continue;
 
 				// Child margin
 				var marginTop:Number = child.margin.top.toPixelsSugar(node, height);
@@ -99,7 +99,7 @@ package starling.extensions.talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				if (child.getAttribute(Attributes.VISIBILITY) == Visibility.COLLAPSED) continue;
+				if (child.getAttribute(Attribute.VISIBILITY) == Visibility.COLLAPSED) continue;
 
 				var childWidth:int = child.width.toPixelsSugar(child, width, width, height, 0, 0, child.minWidth, child.maxWidth);
 				childWidth += child.margin.left.toPixelsSugar(child, width);
@@ -118,7 +118,7 @@ package starling.extensions.talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				if (child.getAttribute(Attributes.VISIBILITY) == Visibility.COLLAPSED) continue;
+				if (child.getAttribute(Attribute.VISIBILITY) == Visibility.COLLAPSED) continue;
 
 				var childHeight:int = child.height.toPixelsSugar(child, height, width, height, 0, 0, child.minHeight, child.maxHeight);
 				childHeight += child.margin.top.toPixelsSugar(child, width);

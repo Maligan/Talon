@@ -9,7 +9,6 @@ package starling.extensions.talon.core
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 	import starling.extensions.talon.layout.Layout;
-	import starling.extensions.talon.utils.Attributes;
 	import starling.extensions.talon.utils.FillMode;
 	import starling.extensions.talon.utils.Orientation;
 	import starling.extensions.talon.utils.StringUtil;
@@ -68,78 +67,78 @@ package starling.extensions.talon.core
 			height.auto = minHeight.auto = maxHeight.auto = measureAutoHeight;
 
 			// Style (Block styling)
-			bind(Attributes.ID, NULL, false);
-			bind(Attributes.TYPE, NULL, false);
-			bind(Attributes.CLASS, NULL, false);
-			bind(Attributes.STATE, NULL, false);
+			bind(Attribute.ID, NULL, false);
+			bind(Attribute.TYPE, NULL, false);
+			bind(Attribute.CLASS, NULL, false);
+			bind(Attribute.STATE, NULL, false);
 
 			// Bounds
-			bind(Attributes.WIDTH, Gauge.AUTO, true, width);
-			bind(Attributes.MIN_WIDTH, Gauge.NONE, true, minWidth);
-			bind(Attributes.MAX_WIDTH, Gauge.NONE, true, maxWidth);
-			bind(Attributes.HEIGHT, Gauge.AUTO, true, height);
-			bind(Attributes.MIN_HEIGHT, Gauge.NONE, true, minHeight);
-			bind(Attributes.MAX_HEIGHT, Gauge.NONE, true, maxHeight);
+			bind(Attribute.WIDTH, Gauge.AUTO, true, width);
+			bind(Attribute.MIN_WIDTH, Gauge.NONE, true, minWidth);
+			bind(Attribute.MAX_WIDTH, Gauge.NONE, true, maxWidth);
+			bind(Attribute.HEIGHT, Gauge.AUTO, true, height);
+			bind(Attribute.MIN_HEIGHT, Gauge.NONE, true, minHeight);
+			bind(Attribute.MAX_HEIGHT, Gauge.NONE, true, maxHeight);
 
 			// Margin
-			bind(Attributes.MARGIN, ZERO, true, margin);
-			bind(Attributes.MARGIN_TOP, ZERO, true, margin.top);
-			bind(Attributes.MARGIN_RIGHT, ZERO, true, margin.right);
-			bind(Attributes.MARGIN_BOTTOM, ZERO, true, margin.bottom);
-			bind(Attributes.MARGIN_LEFT, ZERO, true, margin.left);
+			bind(Attribute.MARGIN, ZERO, true, margin);
+			bind(Attribute.MARGIN_TOP, ZERO, true, margin.top);
+			bind(Attribute.MARGIN_RIGHT, ZERO, true, margin.right);
+			bind(Attribute.MARGIN_BOTTOM, ZERO, true, margin.bottom);
+			bind(Attribute.MARGIN_LEFT, ZERO, true, margin.left);
 
 			// Padding
-			bind(Attributes.PADDING, ZERO, true, padding);
-			bind(Attributes.PADDING_TOP, ZERO, true, padding.top);
-			bind(Attributes.PADDING_RIGHT, ZERO, true, padding.right);
-			bind(Attributes.PADDING_BOTTOM, ZERO, true, padding.bottom);
-			bind(Attributes.PADDING_LEFT, ZERO, true, padding.left);
+			bind(Attribute.PADDING, ZERO, true, padding);
+			bind(Attribute.PADDING_TOP, ZERO, true, padding.top);
+			bind(Attribute.PADDING_RIGHT, ZERO, true, padding.right);
+			bind(Attribute.PADDING_BOTTOM, ZERO, true, padding.bottom);
+			bind(Attribute.PADDING_LEFT, ZERO, true, padding.left);
 
 			// Anchor (Absolute Position)
-			bind(Attributes.ANCHOR, Gauge.NONE, true, anchor);
-			bind(Attributes.ANCHOR_TOP, Gauge.NONE, true, anchor.top);
-			bind(Attributes.ANCHOR_RIGHT, Gauge.NONE, true, anchor.right);
-			bind(Attributes.ANCHOR_BOTTOM, Gauge.NONE, true, anchor.bottom);
-			bind(Attributes.ANCHOR_LEFT, Gauge.NONE, true, anchor.left);
+			bind(Attribute.ANCHOR, Gauge.NONE, true, anchor);
+			bind(Attribute.ANCHOR_TOP, Gauge.NONE, true, anchor.top);
+			bind(Attribute.ANCHOR_RIGHT, Gauge.NONE, true, anchor.right);
+			bind(Attribute.ANCHOR_BOTTOM, Gauge.NONE, true, anchor.bottom);
+			bind(Attribute.ANCHOR_LEFT, Gauge.NONE, true, anchor.left);
 
 			// Background
-			bind(Attributes.BACKGROUND_IMAGE, NULL, true);
-			bind(Attributes.BACKGROUND_TINT, WHITE, true);
-			bind(Attributes.BACKGROUND_9SCALE, ZERO, true);
-			bind(Attributes.BACKGROUND_COLOR, TRANSPARENT, true);
-			bind(Attributes.BACKGROUND_FILL_MODE, FillMode.SCALE, true);
+			bind(Attribute.BACKGROUND_IMAGE, NULL, true);
+			bind(Attribute.BACKGROUND_TINT, WHITE, true);
+			bind(Attribute.BACKGROUND_9SCALE, ZERO, true);
+			bind(Attribute.BACKGROUND_COLOR, TRANSPARENT, true);
+			bind(Attribute.BACKGROUND_FILL_MODE, FillMode.SCALE, true);
 
 			// Appearance
-			bind(Attributes.ALPHA, ONE, true);
-			bind(Attributes.CLIPPING, FALSE, true);
-			bind(Attributes.CURSOR, MouseCursor.AUTO, true);
+			bind(Attribute.ALPHA, ONE, true);
+			bind(Attribute.CLIPPING, FALSE, true);
+			bind(Attribute.CURSOR, MouseCursor.AUTO, true);
 
 			// Font
-			bind(Attributes.FONT_COLOR, Attribute.INHERIT, true);
-			bind(Attributes.FONT_NAME, Attribute.INHERIT, true);
-			bind(Attributes.FONT_SIZE, Attribute.INHERIT, true);
+			bind(Attribute.FONT_COLOR, Attribute.INHERIT, true);
+			bind(Attribute.FONT_NAME, Attribute.INHERIT, true);
+			bind(Attribute.FONT_SIZE, Attribute.INHERIT, true);
 
 			// Layout
-			bind(Attributes.LAYOUT, Layout.FLOW, true);
-			bind(Attributes.VISIBILITY, Visibility.VISIBLE, true);
+			bind(Attribute.LAYOUT, Layout.FLOW, true);
+			bind(Attribute.VISIBILITY, Visibility.VISIBLE, true);
 
-			bind(Attributes.ORIENTATION, Orientation.HORIZONTAL, true);
-			bind(Attributes.HALIGN, HAlign.LEFT, true);
-			bind(Attributes.VALIGN, VAlign.TOP, true);
-			bind(Attributes.GAP, ZERO, true);
-			bind(Attributes.INTERLINE, ZERO, true);
+			bind(Attribute.ORIENTATION, Orientation.HORIZONTAL, true);
+			bind(Attribute.HALIGN, HAlign.LEFT, true);
+			bind(Attribute.VALIGN, VAlign.TOP, true);
+			bind(Attribute.GAP, ZERO, true);
+			bind(Attribute.INTERLINE, ZERO, true);
 
-			bind(Attributes.POSITION, ZERO, true, position);
-			bind(Attributes.X, ZERO, true, position.x);
-			bind(Attributes.Y, ZERO, true, position.y);
+			bind(Attribute.POSITION, ZERO, true, position);
+			bind(Attribute.X, ZERO, true, position.x);
+			bind(Attribute.Y, ZERO, true, position.y);
 
-			bind(Attributes.PIVOT, ZERO, true, pivot);
-			bind(Attributes.PIVOT_X, ZERO, true, pivot.x);
-			bind(Attributes.PIVOT_Y, ZERO, true, pivot.y);
+			bind(Attribute.PIVOT, ZERO, true, pivot);
+			bind(Attribute.PIVOT_X, ZERO, true, pivot.x);
+			bind(Attribute.PIVOT_Y, ZERO, true, pivot.y);
 
-			bind(Attributes.ORIGIN, ZERO, true, origin);
-			bind(Attributes.ORIGIN_X, ZERO, true, origin.x);
-			bind(Attributes.ORIGIN_Y, ZERO, true, origin.y);
+			bind(Attribute.ORIGIN, ZERO, true, origin);
+			bind(Attribute.ORIGIN_X, ZERO, true, origin.x);
+			bind(Attribute.ORIGIN_Y, ZERO, true, origin.y);
 
 			addEventListener(Event.CHANGE, onAttributeChange);
 		}
@@ -156,7 +155,7 @@ package starling.extensions.talon.core
 		}
 
 		//
-		// Attributes
+		// Attribute
 		//
 		public function setInvoker(name:String, invoker:Function):void
 		{
@@ -229,12 +228,12 @@ package starling.extensions.talon.core
 		}
 
 		/** CCS classes which determine node style. */
-		public function get classes():Vector.<String> { return Vector.<String>(getAttribute(Attributes.CLASS) ? getAttribute(Attributes.CLASS).split(" ") : []) }
-		public function set classes(value:Vector.<String>):void { setAttribute(Attributes.CLASS, value.join(" ")); restyle(); }
+		public function get classes():Vector.<String> { return Vector.<String>(getAttribute(Attribute.CLASS) ? getAttribute(Attribute.CLASS).split(" ") : []) }
+		public function set classes(value:Vector.<String>):void { setAttribute(Attribute.CLASS, value.join(" ")); restyle(); }
 
 		/** Current active states (aka CSS pseudoClasses: hover, active, checked etc.) */
-		public function get states():Vector.<String> { return Vector.<String>(getAttribute(Attributes.STATE) ? getAttribute(Attributes.STATE).split(" ") : []) }
-		public function set states(value:Vector.<String>):void { setAttribute(Attributes.STATE, value.join(" ")); restyle(); }
+		public function get states():Vector.<String> { return Vector.<String>(getAttribute(Attribute.STATE) ? getAttribute(Attribute.STATE).split(" ") : []) }
+		public function set states(value:Vector.<String>):void { setAttribute(Attribute.STATE, value.join(" ")); restyle(); }
 
 		//
 		// Resource
@@ -262,9 +261,7 @@ package starling.extensions.talon.core
 			// Notify resource change
 			for each (var attribute:Attribute in _attributes)
 			{
-				var value:String = attribute.value;
-				if (value == null) continue;
-				if (value.indexOf("res") == 0) dispatchEventWith(Event.CHANGE, false, attribute.name);
+				if (attribute.isResource) dispatchEventWith(Event.CHANGE, false, attribute.name);
 			}
 
 			// Recursive children notify resource change
@@ -300,7 +297,7 @@ package starling.extensions.talon.core
 		/** Current node 'fontSize' expressed in pixels.*/
 		public function get ppem():Number
 		{
-			var attribute:Attribute = _attributes[Attributes.FONT_SIZE];
+			var attribute:Attribute = _attributes[Attribute.FONT_SIZE];
 			if (attribute.isInherit) return parent?parent.ppem:12;
 			var gauge:Gauge = new Gauge();
 			gauge.parse(attribute.value);
@@ -323,19 +320,19 @@ package starling.extensions.talon.core
 		/** Node layout strategy class. */
 		private function get layout():Layout
 		{
-			return Layout.getLayoutByAlias(getAttribute(Attributes.LAYOUT));
+			return Layout.getLayoutByAlias(getAttribute(Attribute.LAYOUT));
 		}
 
 		private function onAttributeChange(e:Event):void
 		{
-			var layoutName:String = getAttribute(Attributes.LAYOUT);
+			var layoutName:String = getAttribute(Attribute.LAYOUT);
 			var invalidate:Boolean = Layout.isObservableAttribute(layoutName, e.data as String);
 			if (invalidate) commit();
 		}
 
 		private function onChildAttributeChange(e:Event):void
 		{
-			var layoutName:String = getAttribute(Attributes.LAYOUT);
+			var layoutName:String = getAttribute(Attribute.LAYOUT);
 			var invalidate:Boolean = Layout.isObservableChildrenAttribute(layoutName, e.data as String);
 			if (invalidate) commit();
 		}

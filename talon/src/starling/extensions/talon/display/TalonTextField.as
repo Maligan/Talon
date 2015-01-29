@@ -2,8 +2,8 @@ package starling.extensions.talon.display
 {
 
 	import starling.events.Event;
+	import starling.extensions.talon.core.Attribute;
 	import starling.extensions.talon.core.Node;
-	import starling.extensions.talon.utils.Attributes;
 	import starling.extensions.talon.utils.StringUtil;
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
@@ -41,13 +41,13 @@ package starling.extensions.talon.display
 
 		private function onNodeChange(e:Event):void
 		{
-			/**/ if (e.data == Attributes.TEXT)         text = _node.getAttribute(Attributes.TEXT);
-			else if (e.data == Attributes.HALIGN)       hAlign = _node.getAttribute(Attributes.HALIGN);
-			else if (e.data == Attributes.VALIGN)       vAlign = _node.getAttribute(Attributes.VALIGN);
-			else if (e.data == Attributes.FONT_NAME)    fontName = _node.getAttribute(Attributes.FONT_NAME) || BitmapFont.MINI;
-			else if (e.data == Attributes.FONT_COLOR)   color = StringUtil.parseColor(_node.getAttribute(Attributes.FONT_COLOR));
-			else if (e.data == Attributes.FONT_SIZE)    fontSize = node.ppem;
-			else if (e.data == Attributes.WIDTH || e.data == Attributes.HEIGHT)
+			/**/ if (e.data == Attribute.TEXT)         text = _node.getAttribute(Attribute.TEXT);
+			else if (e.data == Attribute.HALIGN)       hAlign = _node.getAttribute(Attribute.HALIGN);
+			else if (e.data == Attribute.VALIGN)       vAlign = _node.getAttribute(Attribute.VALIGN);
+			else if (e.data == Attribute.FONT_NAME)    fontName = _node.getAttribute(Attribute.FONT_NAME) || BitmapFont.MINI;
+			else if (e.data == Attribute.FONT_COLOR)   color = StringUtil.parseColor(_node.getAttribute(Attribute.FONT_COLOR));
+			else if (e.data == Attribute.FONT_SIZE)    fontSize = node.ppem;
+			else if (e.data == Attribute.WIDTH || e.data == Attribute.HEIGHT)
 			{
 				var isHorizontal:Boolean = _node.width.isAuto;
 				var isVertical:Boolean = _node.height.isAuto;

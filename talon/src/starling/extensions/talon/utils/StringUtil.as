@@ -57,6 +57,9 @@ package starling.extensions.talon.utils
 			return args;
 		}
 
+		//
+		// Invokers
+		//
 		public static function handleBrightness(brightness:String):FragmentFilter
 		{
 			var value:Number = parseFloat(brightness);

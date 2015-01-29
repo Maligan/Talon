@@ -164,8 +164,8 @@ package starling.extensions.talon.core
 	}
 }
 
+import starling.extensions.talon.core.Attribute;
 import starling.extensions.talon.core.Node;
-import starling.extensions.talon.utils.Attributes;
 import starling.utils.Color;
 
 class StyleSelector
@@ -221,7 +221,7 @@ class StyleSelector
 
 	private function byType(node:Node):Boolean
 	{
-		return !_type || (node.getAttribute(Attributes.TYPE) == _type);
+		return !_type || (node.getAttribute(Attribute.TYPE) == _type);
 	}
 
 	private function byAncestor(node:Node):Boolean
@@ -241,7 +241,7 @@ class StyleSelector
 
 	private function byId(node:Node):Boolean
 	{
-		return !_id || (node.getAttribute(Attributes.ID) == _id);
+		return !_id || (node.getAttribute(Attribute.ID) == _id);
 	}
 
 	private function byClasses(node:Node):Boolean

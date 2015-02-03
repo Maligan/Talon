@@ -39,23 +39,24 @@ package
 		{
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
-//			stage.addEventListener(Event.RESIZE, onResize);
+			stage.addEventListener(Event.RESIZE, onResize);
 			stage.quality = StageQuality.BEST;
 
 
-			var string:String = "res(key)";
+//			var string:String = "res(key)";
+//
+//			var timer:int = getTimer();
+//
+//			for (var i:int = 0; i < 1000000; i++)
+//			{
+//				StringUtil.parseFunction(string) == null;
+//			}
 
-			var timer:int = getTimer();
+//			throw new Error("timer: " + ((getTimer() - timer)/1000).toFixed(2) + "sec");
+//			trace("tmp"); // 0.6 - 0.7
 
-			for (var i:int = 0; i < 1000000; i++)
-			{
-				StringUtil.parseFunction(string) == null;
-			}
 
-			throw new Error("timer: " + ((getTimer() - timer)/1000).toFixed(2) + "sec");
-			trace("tmp"); // 0.6 - 0.7
 
-			return;
 			var gauge:GaugeQuad = new GaugeQuad();
 			gauge.parse("10px 10px 1em");
 
@@ -153,8 +154,8 @@ package
 			_factory.addResource("up", Texture.fromEmbeddedAsset(UP_BYTES));
 			_factory.addResource("over", Texture.fromEmbeddedAsset(OVER_BYTES));
 			_factory.addResource("down", Texture.fromEmbeddedAsset(DOWN_BYTES));
-			_factory.addResource("locale-string", "Привет я текст на русском языке!");
-//			_factory.addResource("locale-string", "Hello! I'm English text");
+//			_factory.addResource("locale-string", "Привет я текст на русском языке!");
+			_factory.addResource("locale-string", "Hello! I'm English text");
 
 			_talon = _factory.build("root") as TalonSprite;
 			_talon.addEventListener("invalidate", onInvalidate);

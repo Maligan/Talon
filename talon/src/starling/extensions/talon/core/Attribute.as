@@ -1,13 +1,16 @@
 package starling.extensions.talon.core
 {
+	import flash.utils.Dictionary;
+
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
+	import starling.extensions.talon.utils.InvokeUtil;
 	import starling.extensions.talon.utils.StringUtil;
 
 	//[ExcludeClass]
 	public class Attribute
 	{
-		//
+		//1
 		// Standard Attribute list
 		//
 		public static const ID:String = "id";
@@ -86,6 +89,27 @@ package starling.extensions.talon.core
 		//
 		public static const INHERIT:String = "inherit";
 
+		private static var _invokers:Dictionary;
+
+		private static function initialize():void
+		{
+			if (_invokers == null)
+			{
+				_invokers = new Dictionary();
+				registerInvoker("res", InvokeUtil.invokeResource);
+				registerInvoker("brightness", InvokeUtil.invokeBrightnessFilter);
+				registerInvoker("blur", InvokeUtil.invokeBlurFilter);
+				registerInvoker("glow", InvokeUtil.invokeGlowFilter);
+			}
+		}
+
+		/** Add new attribute invoker. TODO: Move to other place... */
+		public static function registerInvoker(name:String, callback:Function):void
+		{
+			if (_invokers == null) initialize();
+			_invokers[name] = callback;
+		}
+
 		private var _node:Node;
 		private var _name:String;
 
@@ -103,11 +127,15 @@ package starling.extensions.talon.core
 
 		public function Attribute(node:Node, name:String)
 		{
+			initialize();
+
 			if (node == null) throw new ArgumentError("Parameter node must be non-null");
 			if (name == null) throw new ArgumentError("Parameter name must be non-null");
 
 			_node = node;
 			_name = name;
+			_styleable = true;
+			_inheritable = false;
 		}
 
 		//
@@ -140,9 +168,10 @@ package starling.extensions.talon.core
 
 			// Obtain invoker via invokeInfo
 			var invokeMethodName:String = invokeInfo.shift();
-			var invokeMethod:Function = null; //_node.getInvoker(invokeMethodName);
+			var invokeMethod:Function = _invokers[invokeMethodName];
 			if (invokeMethod == null) return origin;
 
+			invokeInfo.unshift(this);
 			return invokeMethod.apply(null, invokeInfo);
 		}
 
@@ -158,8 +187,6 @@ package starling.extensions.talon.core
 			{
 				_inheritable = value;
 
-				// FIXME: Check change
-
 				if (_inheritable)
 				{
 					_node.addEventListener(Event.ADDED, onAddedToParent);
@@ -172,7 +199,10 @@ package starling.extensions.talon.core
 					_node.removeEventListener(Event.REMOVED, onRemovedFromParent);
 				}
 
-				validateInherit();
+				if (_inheritable)
+					validateInherit();
+				else if (origin == INHERIT)
+					dispatchChange();
 			}
 		}
 
@@ -245,16 +275,16 @@ package starling.extensions.talon.core
 		/** @private Bind assigned value to same object. */
 		public function bind(dispatcher:EventDispatcher, getter:Function, setter:Function):void
 		{
+			if (dispatcher == null) return;
+			if (getter == null) throw new ArgumentError("Invalid binding getter");
+			if (setter == null) throw new ArgumentError("Invalid binding setter");
+
 			if (dispatcher && getter && setter)
 			{
 				_assignedValueGetter = getter;
 				_assignedValueSetter = setter;
 				_assignedDispatcher = dispatcher;
 				_assignedDispatcher.addEventListener(Event.CHANGE, onAssignedChange);
-			}
-			else
-			{
-				throw new ArgumentError("Invalid binding target");
 			}
 		}
 

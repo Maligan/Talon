@@ -48,6 +48,8 @@ package
 			parent.setAttribute("test", Attribute.INHERIT);
 			node.addEventListener(Event.CHANGE, onChange);
 
+			root.setAttribute("test", "root_value");
+
 			function onChange(e:Event):void
 			{
 				if (e.data == "test")
@@ -56,7 +58,29 @@ package
 				}
 			}
 
+		}
+
+		[Test]
+		public function testName2():void
+		{
+			var dispatched:Boolean = false;
+
+			node.setAttribute("test", Attribute.INHERIT);
+			parent.setAttribute("test", Attribute.INHERIT);
 			root.setAttribute("test", "root_value");
+
+			node.addEventListener(Event.CHANGE, onChange);
+			parent.getOrCreateAttribute("test").inheritable = false;
+			Assert.assertEquals(true, dispatched);
+
+			function onChange(e:Event):void
+			{
+				if (e.data == "test")
+				{
+					dispatched = true;
+					Assert.assertEquals("inherit", attribute.origin);
+				}
+			}
 		}
 	}
 }

@@ -1,8 +1,5 @@
 package starling.extensions.talon.utils
 {
-	import starling.filters.BlurFilter;
-	import starling.filters.ColorMatrixFilter;
-	import starling.filters.FragmentFilter;
 	import starling.utils.Color;
 
 	/** This is utility method to work with strings in different formats and notation. */
@@ -44,6 +41,8 @@ package starling.extensions.talon.utils
 		 */
 		public static function parseFunction(string:String):Array
 		{
+			if (string == null) return null;
+
 			// Optimize negative cases
 			var indexOfOpen:int = string.indexOf("(");
 			if (indexOfOpen == -1) return null;
@@ -62,29 +61,6 @@ package starling.extensions.talon.utils
 			args.unshift(exec[1]);
 
 			return args;
-		}
-
-		//
-		// Invokers
-		//
-		public static function handleBrightness(brightness:String):FragmentFilter
-		{
-			var value:Number = parseFloat(brightness);
-			if (value != value) throw new ArgumentError("Bad filter origin: " + value);
-
-			var filter:ColorMatrixFilter = new ColorMatrixFilter();
-			filter.adjustBrightness(value);
-			return filter;
-		}
-
-		public static function handleBlur(blurX:String, blurY:String):FragmentFilter
-		{
-			return new BlurFilter(parseFloat(blurX), parseFloat(blurY), 1);
-		}
-
-		public static function handleGlow(color:String, blur:String):FragmentFilter
-		{
-			return BlurFilter.createGlow(parseColor(color), 1, parseFloat(blur), 1)
 		}
 	}
 }

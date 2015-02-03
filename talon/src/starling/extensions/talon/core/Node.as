@@ -11,7 +11,6 @@ package starling.extensions.talon.core
 	import starling.extensions.talon.layout.Layout;
 	import starling.extensions.talon.utils.FillMode;
 	import starling.extensions.talon.utils.Orientation;
-	import starling.extensions.talon.utils.StringUtil;
 	import starling.extensions.talon.utils.Visibility;
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
@@ -41,6 +40,7 @@ package starling.extensions.talon.core
 		// Private properties
 		//
 		private var _attributes:Dictionary = new Dictionary();
+		private var _invokers:Dictionary = new Dictionary();
 		private var _style:StyleSheet;
 		private var _resources:Object;
 		private var _parent:Node;
@@ -56,11 +56,6 @@ package starling.extensions.talon.core
 			const FALSE:String = "false";
 			const ONE:String = "1";
 			const NULL:String = null;
-
-//			setInvoker("res", getResource);
-//			setInvoker("brightness", StringUtil.handleBrightness);
-//			setInvoker("blur", StringUtil.handleBlur);
-//			setInvoker("glow", StringUtil.handleGlow);
 
 			width.auto = minWidth.auto = maxWidth.auto = measureAutoWidth;
 			height.auto = minHeight.auto = maxHeight.auto = measureAutoHeight;
@@ -199,7 +194,7 @@ package starling.extensions.talon.core
 			// Addition attributes defined by style
 			for (var name:String in style)
 			{
-				attribute = _attributes[name] || (_attributes[name] = new Attribute(this, name));
+				attribute = getOrCreateAttribute(name);
 				attribute.styled = style[name];
 			}
 
@@ -281,11 +276,15 @@ package starling.extensions.talon.core
 		/** Current node 'fontSize' expressed in pixels.*/
 		public function get ppem():Number
 		{
-			var attribute:Attribute = _attributes[Attribute.FONT_SIZE];
-			if (attribute.isInherit) return parent?parent.ppem:12;
+			var common:int = 12;
+
+			var attribute:Attribute = getOrCreateAttribute(Attribute.FONT_SIZE);
+			if (attribute.isInherit) return parent ? parent.ppem : common;
+
 			var gauge:Gauge = new Gauge();
-			gauge.parse(attribute.origin);
-			var base:Number = parent?parent.ppem:12;
+			gauge.parse(attribute.value);
+
+			var base:Number =  parent? parent.ppem : common;
 			return gauge.toPixels(ppmm, base, pppt, base, 0, 0, 0, 0);
 		}
 

@@ -62,7 +62,7 @@ package starling.extensions.talon.display
 			else if (touch.phase == TouchPhase.ENDED)
 			{
 				node.states = new <String>[];
-				var onclick:String = node.getAttributeExpandedValue("onclick");
+				var onclick:String = node.getAttribute("onclick");
 				if (onclick) dispatchEventWith(Event.TRIGGERED, true, onclick);
 			}
 		}
@@ -82,21 +82,21 @@ package starling.extensions.talon.display
 
 		private function onBoxChange(e:Event):void
 		{
-			/**/ if (e.data == Attribute.ID) name = node.getAttributeExpandedValue(Attribute.ID);
-			else if (e.data == Attribute.ALPHA) alpha = parseFloat(node.getAttributeExpandedValue(Attribute.ALPHA));
+			/**/ if (e.data == Attribute.ID) name = node.getAttribute(Attribute.ID);
+			else if (e.data == Attribute.ALPHA) alpha = parseFloat(node.getAttribute(Attribute.ALPHA));
 			else if (e.data == Attribute.BACKGROUND_COLOR)
 			{
-				var color:String = node.getAttributeExpandedValue(Attribute.BACKGROUND_COLOR);
+				var color:String = node.getAttribute(Attribute.BACKGROUND_COLOR);
 				_backgroundColor.visible = color != "transparent";
 				_backgroundColor.color = StringUtil.parseColor(color);
 			}
 			else if (e.data == Attribute.BACKGROUND_IMAGE || e.data == Attribute.BACKGROUND_TINT || e.data == Attribute.BACKGROUND_9SCALE || e.data == Attribute.BACKGROUND_FILL_MODE)
 			{
-				var texture:Texture = node.getAttributeExpandedValue(Attribute.BACKGROUND_IMAGE) as Texture;
+				var texture:Texture = node.getAttribute(Attribute.BACKGROUND_IMAGE) as Texture;
 				if (texture != null)
 				{
-					var tint:uint = StringUtil.parseColor(node.getAttributeExpandedValue(Attribute.BACKGROUND_TINT));
-					var fillMode:String = node.getAttributeExpandedValue(Attribute.BACKGROUND_FILL_MODE);
+					var tint:uint = StringUtil.parseColor(node.getAttribute(Attribute.BACKGROUND_TINT));
+					var fillMode:String = node.getAttribute(Attribute.BACKGROUND_FILL_MODE);
 
 					switch (fillMode)
 					{
@@ -104,7 +104,7 @@ package starling.extensions.talon.display
 							var texture9Scale:Rectangle = new Rectangle(0, 0, texture.width, texture.height);
 							var texture9ScaleGauge:GaugeQuad = new GaugeQuad();
 
-							texture9ScaleGauge.parse(_node.getAttributeExpandedValue(Attribute.BACKGROUND_9SCALE));
+							texture9ScaleGauge.parse(_node.getAttribute(Attribute.BACKGROUND_9SCALE));
 							texture9Scale.top += texture9ScaleGauge.top.toPixels(0, 0, node.pppt, 0, width, height, 0, 0);
 							texture9Scale.right -= texture9ScaleGauge.right.toPixels(0, 0, node.pppt, 0, width, height, 0, 0);
 							texture9Scale.bottom -= texture9ScaleGauge.bottom.toPixels(0, 0, node.pppt, 0, width, height, 0, 0);
@@ -146,18 +146,18 @@ package starling.extensions.talon.display
 			}
 			else if (e.data == Attribute.CURSOR)
 			{
-				var cursor:String = node.getAttributeExpandedValue(Attribute.CURSOR);
+				var cursor:String = node.getAttribute(Attribute.CURSOR);
 				cursor == MouseCursor.AUTO ? removeEventListener(TouchEvent.TOUCH, onCursorTouch) : addEventListener(TouchEvent.TOUCH, onCursorTouch);
 			}
 			else if (e.data == Attribute.FILTER)
 			{
-				filter = node.getAttributeExpandedValue(Attribute.FILTER) as FragmentFilter;
+				filter = node.getAttribute(Attribute.FILTER) as FragmentFilter;
 			}
 		}
 
 		private function onCursorTouch(e:TouchEvent):void
 		{
-			Mouse.cursor = e.interactsWith(this) ? (node.getAttributeExpandedValue(Attribute.CURSOR) || MouseCursor.AUTO) : MouseCursor.AUTO;
+			Mouse.cursor = e.interactsWith(this) ? (node.getAttribute(Attribute.CURSOR) || MouseCursor.AUTO) : MouseCursor.AUTO;
 		}
 
 		private function onBoxResize(e:Event):void
@@ -194,7 +194,7 @@ package starling.extensions.talon.display
 
 		private function get clipping():Boolean
 		{
-			return node.getAttributeExpandedValue(Attribute.CLIPPING) == "true";
+			return node.getAttribute(Attribute.CLIPPING) == "true";
 		}
 
 		public function get node():Node

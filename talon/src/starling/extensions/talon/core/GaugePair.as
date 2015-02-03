@@ -24,7 +24,7 @@ package starling.extensions.talon.core
 		 * Parse string and setup sub gauges.
 		 * Parser expects <em>one or two</em> space separated values (else throw ArgumentError):
 		 *
-		 * <p>If string contains one value it expanded (e.g. <code>"string"</code> to <code>"string string"</code>).</p>
+		 * <p>If string contains one origin it expanded (e.g. <code>"string"</code> to <code>"string string"</code>).</p>
 		 *
 		 * <p>
 		 * After subgauges parse substrings:

@@ -67,7 +67,7 @@ package
 
 		private function getStageTextBounds():Rectangle
 		{
-			var autoSizeAttribute:String = node.getAttributeExpandedValue("autoSize") || TextFieldAutoSize.BOTH_DIRECTIONS;
+			var autoSizeAttribute:String = node.getAttribute("autoSize") || TextFieldAutoSize.BOTH_DIRECTIONS;
 			var isHorizontal:Boolean = ((autoSizeAttribute==TextFieldAutoSize.HORIZONTAL)||(autoSizeAttribute==TextFieldAutoSize.BOTH_DIRECTIONS));
 			var isVertical:Boolean = ((autoSizeAttribute==TextFieldAutoSize.VERTICAL)||(autoSizeAttribute==TextFieldAutoSize.BOTH_DIRECTIONS));
 
@@ -93,14 +93,14 @@ package
 
 		private function onNodeChange(e:Event):void
 		{
-			/**/ if (e.data == "fontColor") _text.color = StringUtil.parseColor(node.getAttributeExpandedValue("fontColor"));
-			else if (e.data == "fontName") _text.fontFamily = node.getAttributeExpandedValue("fontName");
+			/**/ if (e.data == "fontColor") _text.color = StringUtil.parseColor(node.getAttribute("fontColor"));
+			else if (e.data == "fontName") _text.fontFamily = node.getAttribute("fontName");
 			else if (e.data == "fontSize") _text.fontSize = node.ppem;
-			else if (e.data == "text") _text.text = node.getAttributeExpandedValue("text");
-			else if (e.data == "halign") _text.textAlign = node.getAttributeExpandedValue("halign");
+			else if (e.data == "text") _text.text = node.getAttribute("text");
+			else if (e.data == "halign") _text.textAlign = node.getAttribute("halign");
 			else if (e.data == "multiline")
 			{
-				var multiline:Boolean = node.getAttributeExpandedValue("multiline") == "true";
+				var multiline:Boolean = node.getAttribute("multiline") == "true";
 				if (multiline)
 				{
 					var options:* = new StageTextInitOptions(multiline);
@@ -114,8 +114,8 @@ package
 			}
 			else if (e.data == "backgroundColor")
 			{
-				var backgroundColor:String = node.getAttributeExpandedValue("backgroundColor");
-				var backgroundColorHex:int = StringUtil.parseColor(node.getAttributeExpandedValue("backgroundColor"));
+				var backgroundColor:String = node.getAttribute("backgroundColor");
+				var backgroundColorHex:int = StringUtil.parseColor(node.getAttribute("backgroundColor"));
 				visible = backgroundColor != "transparent";
 				visible && (color = backgroundColorHex);
 			}

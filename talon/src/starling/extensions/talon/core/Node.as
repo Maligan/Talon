@@ -43,7 +43,6 @@ package starling.extensions.talon.core
 		private var _attributes:Dictionary = new Dictionary();
 		private var _style:StyleSheet;
 		private var _resources:Object;
-		private var _invokers:Object = new Object();
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
 		private var _bounds:Rectangle = new Rectangle();
@@ -58,10 +57,10 @@ package starling.extensions.talon.core
 			const ONE:String = "1";
 			const NULL:String = null;
 
-			setInvoker("res", getResource);
-			setInvoker("brightness", StringUtil.handleBrightness);
-			setInvoker("blur", StringUtil.handleBlur);
-			setInvoker("glow", StringUtil.handleGlow);
+//			setInvoker("res", getResource);
+//			setInvoker("brightness", StringUtil.handleBrightness);
+//			setInvoker("blur", StringUtil.handleBlur);
+//			setInvoker("glow", StringUtil.handleGlow);
 
 			width.auto = minWidth.auto = maxWidth.auto = measureAutoWidth;
 			height.auto = minHeight.auto = maxHeight.auto = measureAutoHeight;
@@ -149,47 +148,24 @@ package starling.extensions.talon.core
 			var getter:Function = source ? source["toString"] : null;
 			var dispatcher:EventDispatcher = source;
 
-			if (setter) setter(initial);
-
-			_attributes[name] = new Attribute(this, name, initial, initial == Attribute.INHERIT, styleable, getter, setter, dispatcher);
+			var attribute:Attribute = getOrCreateAttribute(name);
+			attribute.bind(dispatcher, getter, setter);
+			attribute.initial = initial;
+			attribute.inheritable = initial == Attribute.INHERIT;
+			attribute.styleable = styleable;
 		}
 
 		//
 		// Attribute
 		//
-		public function setInvoker(name:String, invoker:Function):void
-		{
-			_invokers[name] = invoker;
-		}
+		/** Get attribute expanded value. */
+		public function getAttribute(name:String):* { return getOrCreateAttribute(name).expanded; }
 
-		public function getInvoker(name:String):Function
-		{
-			return _invokers[name];
-		}
-
-
-
-		// Чтение Attribute
-		// Запись по String
-		// Чтение по Attribute
-		// ? Чтение по String
-
-		/** Get string representation of attribute's value. This method does return 'inherit', 'res(...)', etc. values as are, and doesn't discover them. */
-		public function getAttribute(name:String):String { return getOrCreateAttribute(name).value; }
-		/** Set attribute value via string. */
+		/** Set attribute <strong>assigned</strong> value. */
 		public function setAttribute(name:String, value:String):void { getOrCreateAttribute(name).assigned = value; }
 
-
-		public function getAttributeExpandedValue(name:String):*
-		{
-			return getOrCreateAttribute(name).getValueExpanded();
-		}
-
-		[Exclude]
-		public function getOrCreateAttribute(name:String):Attribute
-		{
-			return _attributes[name] || (_attributes[name] = new Attribute(this, name));
-		}
+		/** Get (create if doesn't exists) attribute. */
+		public function getOrCreateAttribute(name:String):Attribute { return _attributes[name] || (_attributes[name] = new Attribute(this, name)); }
 
 		//
 		// Styling
@@ -236,17 +212,17 @@ package starling.extensions.talon.core
 		}
 
 		/** CCS classes which determine node style. */
-		public function get classes():Vector.<String> { return Vector.<String>(getAttributeExpandedValue(Attribute.CLASS) ? getAttributeExpandedValue(Attribute.CLASS).split(" ") : []) }
+		public function get classes():Vector.<String> { return Vector.<String>(getAttribute(Attribute.CLASS) ? getAttribute(Attribute.CLASS).split(" ") : []) }
 		public function set classes(value:Vector.<String>):void { setAttribute(Attribute.CLASS, value.join(" ")); restyle(); }
 
 		/** Current active states (aka CSS pseudoClasses: hover, active, checked etc.) */
-		public function get states():Vector.<String> { return Vector.<String>(getAttributeExpandedValue(Attribute.STATE) ? getAttributeExpandedValue(Attribute.STATE).split(" ") : []) }
+		public function get states():Vector.<String> { return Vector.<String>(getAttribute(Attribute.STATE) ? getAttribute(Attribute.STATE).split(" ") : []) }
 		public function set states(value:Vector.<String>):void { setAttribute(Attribute.STATE, value.join(" ")); restyle(); }
 
 		//
 		// Resource
 		//
-		/** Set current node resources (an object containing key-value pairs). */
+		/** Set current node resources (an object containing key-origin pairs). */
 		public function setResources(resources:Object):void
 		{
 			_resources = resources;
@@ -308,7 +284,7 @@ package starling.extensions.talon.core
 			var attribute:Attribute = _attributes[Attribute.FONT_SIZE];
 			if (attribute.isInherit) return parent?parent.ppem:12;
 			var gauge:Gauge = new Gauge();
-			gauge.parse(attribute.value);
+			gauge.parse(attribute.origin);
 			var base:Number = parent?parent.ppem:12;
 			return gauge.toPixels(ppmm, base, pppt, base, 0, 0, 0, 0);
 		}
@@ -328,19 +304,19 @@ package starling.extensions.talon.core
 		/** Node layout strategy class. */
 		private function get layout():Layout
 		{
-			return Layout.getLayoutByAlias(getAttributeExpandedValue(Attribute.LAYOUT));
+			return Layout.getLayoutByAlias(getAttribute(Attribute.LAYOUT));
 		}
 
 		private function onAttributeChange(e:Event):void
 		{
-			var layoutName:String = getAttributeExpandedValue(Attribute.LAYOUT);
+			var layoutName:String = getAttribute(Attribute.LAYOUT);
 			var invalidate:Boolean = Layout.isObservableAttribute(layoutName, e.data as String);
 			if (invalidate) commit();
 		}
 
 		private function onChildAttributeChange(e:Event):void
 		{
-			var layoutName:String = getAttributeExpandedValue(Attribute.LAYOUT);
+			var layoutName:String = getAttribute(Attribute.LAYOUT);
 			var invalidate:Boolean = Layout.isObservableChildrenAttribute(layoutName, e.data as String);
 			if (invalidate) commit();
 		}

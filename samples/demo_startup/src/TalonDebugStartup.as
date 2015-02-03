@@ -3,7 +3,7 @@ package
 	import flash.display.MovieClip;
 	import flash.display.StageQuality;
 	import flash.geom.Rectangle;
-	import flash.system.Capabilities;
+	import flash.utils.getTimer;
 
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
@@ -39,12 +39,21 @@ package
 		{
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
-			stage.addEventListener(Event.RESIZE, onResize);
+//			stage.addEventListener(Event.RESIZE, onResize);
 			stage.quality = StageQuality.BEST;
 
 
+			var string:String = "res(key)";
 
+			var timer:int = getTimer();
 
+			for (var i:int = 0; i < 1000000; i++)
+			{
+				StringUtil.parseFunction(string) == null;
+			}
+
+			throw new Error("timer: " + ((getTimer() - timer)/1000).toFixed(2) + "sec");
+			trace("tmp"); // 0.6 - 0.7
 
 			return;
 			var gauge:GaugeQuad = new GaugeQuad();
@@ -60,34 +69,10 @@ package
 			Starling.current.showStats = false;
 		}
 
-		private function attributeTest():void
-		{
-			var node:Node = new Node();
-
-			var parent:Node = new Node();
-			parent.setResources({key: "resource"});
-			parent.addChild(node);
-
-			var root:Node = new Node();
-			root.addChild(parent);
-
-			var attribute:Attribute = node.getOrCreateAttribute("test");
-
-			attribute.initial = "initial";
-			attribute.styled = "styled";
-			attribute.assigned = "assigned";
-
-			attribute.styleable = false;
-			attribute.inheritable = false;
-
-			assert(attribute.value, attribute.assigned);
-			assert(attribute.value, attribute.assigned);
-			assert(attribute.value, attribute.assigned);
-		}
-
 		private function assert(source:String, target:String, message:String = ""):void
 		{
-			if (source != target) throw new Error(message)
+			if (source != target) throw new Error(message);
+			else trace("true");
 		}
 
 		private function onResize(e:*):void

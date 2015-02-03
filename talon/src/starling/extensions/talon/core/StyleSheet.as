@@ -20,7 +20,7 @@ package starling.extensions.talon.core
 			_selectorsCursor = new Vector.<StyleSelector>();
 		}
 
-		/** Get an object (containing key-value pairs) that reflects the style of the node. */
+		/** Get an object (containing key-origin pairs) that reflects the style of the node. */
 		public function getStyle(node:Node, result:Object = null):Object
 		{
 			var style:Object = result || new Object();
@@ -221,7 +221,7 @@ class StyleSelector
 
 	private function byType(node:Node):Boolean
 	{
-		return !_type || (node.getAttributeExpandedValue(Attribute.TYPE) == _type);
+		return !_type || (node.getAttribute(Attribute.TYPE) == _type);
 	}
 
 	private function byAncestor(node:Node):Boolean
@@ -241,7 +241,7 @@ class StyleSelector
 
 	private function byId(node:Node):Boolean
 	{
-		return !_id || (node.getAttributeExpandedValue(Attribute.ID) == _id);
+		return !_id || (node.getAttribute(Attribute.ID) == _id);
 	}
 
 	private function byClasses(node:Node):Boolean

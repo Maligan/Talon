@@ -44,8 +44,15 @@ package starling.extensions.talon.utils
 		 */
 		public static function parseFunction(string:String):Array
 		{
-			const notation:RegExp = /(\w+)\(\s*(["']?)(.*?)\1*\s*\)/;
+			// Optimize negative cases
+			var indexOfOpen:int = string.indexOf("(");
+			if (indexOfOpen == -1) return null;
 
+			var indexOfClose:int = string.indexOf(")", indexOfOpen);
+			if (indexOfClose == -1) return null;
+
+			// Regexp parsing
+			const notation:RegExp = /(\w+)\(\s*(["']?)(.*?)\1*\s*\)/;
 			var exec:Array = notation.exec(string);
 			if (exec == null) return null;
 
@@ -63,7 +70,7 @@ package starling.extensions.talon.utils
 		public static function handleBrightness(brightness:String):FragmentFilter
 		{
 			var value:Number = parseFloat(brightness);
-			if (value != value) throw new ArgumentError("Bad filter value: " + value);
+			if (value != value) throw new ArgumentError("Bad filter origin: " + value);
 
 			var filter:ColorMatrixFilter = new ColorMatrixFilter();
 			filter.adjustBrightness(value);

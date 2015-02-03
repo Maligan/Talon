@@ -167,18 +167,26 @@ package starling.extensions.talon.core
 			return _invokers[name];
 		}
 
-		public function getAttribute(name:String):*
+
+
+		// Чтение Attribute
+		// Запись по String
+		// Чтение по Attribute
+		// ? Чтение по String
+
+		/** Get string representation of attribute's value. This method does return 'inherit', 'res(...)', etc. values as are, and doesn't discover them. */
+		public function getAttribute(name:String):String { return getOrCreateAttribute(name).value; }
+		/** Set attribute value via string. */
+		public function setAttribute(name:String, value:String):void { getOrCreateAttribute(name).assigned = value; }
+
+
+		public function getAttributeExpandedValue(name:String):*
 		{
-			return getAttributeInternal(name).getValue();
+			return getOrCreateAttribute(name).getValueExpanded();
 		}
 
-		public function setAttribute(name:String, value:String):void
-		{
-			getAttributeInternal(name).setAssignedValue(value);
-		}
-
-		/** @private */
-		public function getAttributeInternal(name:String):Attribute
+		[Exclude]
+		public function getOrCreateAttribute(name:String):Attribute
 		{
 			return _attributes[name] || (_attributes[name] = new Attribute(this, name));
 		}
@@ -208,7 +216,7 @@ package starling.extensions.talon.core
 			// Fill all the existing attributes
 			for each (var attribute:Attribute in _attributes)
 			{
-				attribute.setStyledValue(style[attribute.name]);
+				attribute.styled = style[attribute.name];
 				delete style[attribute.name];
 			}
 
@@ -216,7 +224,7 @@ package starling.extensions.talon.core
 			for (var name:String in style)
 			{
 				attribute = _attributes[name] || (_attributes[name] = new Attribute(this, name));
-				attribute.setStyledValue(style[name]);
+				attribute.styled = style[name];
 			}
 
 			// Recursive children restyling
@@ -228,11 +236,11 @@ package starling.extensions.talon.core
 		}
 
 		/** CCS classes which determine node style. */
-		public function get classes():Vector.<String> { return Vector.<String>(getAttribute(Attribute.CLASS) ? getAttribute(Attribute.CLASS).split(" ") : []) }
+		public function get classes():Vector.<String> { return Vector.<String>(getAttributeExpandedValue(Attribute.CLASS) ? getAttributeExpandedValue(Attribute.CLASS).split(" ") : []) }
 		public function set classes(value:Vector.<String>):void { setAttribute(Attribute.CLASS, value.join(" ")); restyle(); }
 
 		/** Current active states (aka CSS pseudoClasses: hover, active, checked etc.) */
-		public function get states():Vector.<String> { return Vector.<String>(getAttribute(Attribute.STATE) ? getAttribute(Attribute.STATE).split(" ") : []) }
+		public function get states():Vector.<String> { return Vector.<String>(getAttributeExpandedValue(Attribute.STATE) ? getAttributeExpandedValue(Attribute.STATE).split(" ") : []) }
 		public function set states(value:Vector.<String>):void { setAttribute(Attribute.STATE, value.join(" ")); restyle(); }
 
 		//
@@ -320,19 +328,19 @@ package starling.extensions.talon.core
 		/** Node layout strategy class. */
 		private function get layout():Layout
 		{
-			return Layout.getLayoutByAlias(getAttribute(Attribute.LAYOUT));
+			return Layout.getLayoutByAlias(getAttributeExpandedValue(Attribute.LAYOUT));
 		}
 
 		private function onAttributeChange(e:Event):void
 		{
-			var layoutName:String = getAttribute(Attribute.LAYOUT);
+			var layoutName:String = getAttributeExpandedValue(Attribute.LAYOUT);
 			var invalidate:Boolean = Layout.isObservableAttribute(layoutName, e.data as String);
 			if (invalidate) commit();
 		}
 
 		private function onChildAttributeChange(e:Event):void
 		{
-			var layoutName:String = getAttribute(Attribute.LAYOUT);
+			var layoutName:String = getAttributeExpandedValue(Attribute.LAYOUT);
 			var invalidate:Boolean = Layout.isObservableChildrenAttribute(layoutName, e.data as String);
 			if (invalidate) commit();
 		}

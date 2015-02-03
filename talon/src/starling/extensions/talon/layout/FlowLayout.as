@@ -15,7 +15,7 @@ package starling.extensions.talon.layout
 
 		private static function toPixels(attribute:String, node:Node, target:Number):Number
 		{
-			var source:String = node.getAttribute(attribute);
+			var source:String = node.getAttributeExpandedValue(attribute);
 			_gaugeHelper.parse(source);
 			return _gaugeHelper.toPixels(node.ppmm, node.ppem, node.pppt, target, 0, 0, 0, 0);
 		}
@@ -25,7 +25,7 @@ package starling.extensions.talon.layout
 			// Optimization
 			if (node.numChildren == 0) return;
 
-			var orientation:String = node.getAttribute(Attribute.ORIENTATION);
+			var orientation:String = node.getAttributeExpandedValue(Attribute.ORIENTATION);
 			if (Orientation.isValid(orientation) === false) throw new Error("Attribute orientation has invalid value: " + orientation);
 
 			var paddingLeft:Number = node.padding.left.toPixels(node.ppmm, node.ppem, node.pppt, width, width, height, 0, 0);
@@ -43,8 +43,8 @@ package starling.extensions.talon.layout
 
 			var lengthAlign:Number = 0;
 			var thicknessAlign:Number = 0;
-			var valign:String = node.getAttribute(Attribute.VALIGN);
-			var halign:String = node.getAttribute(Attribute.HALIGN);
+			var valign:String = node.getAttributeExpandedValue(Attribute.VALIGN);
+			var halign:String = node.getAttributeExpandedValue(Attribute.HALIGN);
 
 			if (orientation == Orientation.HORIZONTAL)
 			{
@@ -142,7 +142,7 @@ package starling.extensions.talon.layout
 
 		private function measureSide(node:Node, side:String, width:Number, height:Number):Number
 		{
-			var orientation:String = node.getAttribute(Attribute.ORIENTATION);
+			var orientation:String = node.getAttributeExpandedValue(Attribute.ORIENTATION);
 			if (Orientation.isValid(orientation) === false) throw new Error("Attribute orientation has invalid value: " + orientation);
 			return getMeasureSize(measure(node, width, height), orientation == side, toPixels(Attribute.INTERLINE, node, orientation==Orientation.HORIZONTAL?height:width));
 		}
@@ -170,11 +170,11 @@ package starling.extensions.talon.layout
 			var result:Vector.<Line> = new Vector.<Line>();
 			var line:Line;
 
-			var orientation:String = node.getAttribute(Attribute.ORIENTATION);
+			var orientation:String = node.getAttributeExpandedValue(Attribute.ORIENTATION);
 			var isHorizontal:Boolean = orientation == Orientation.HORIZONTAL;
 			var isVertical:Boolean = orientation == Orientation.VERTICAL;
 
-			var wrap:Boolean = node.getAttribute(Attribute.WRAP) == TRUE;
+			var wrap:Boolean = node.getAttributeExpandedValue(Attribute.WRAP) == TRUE;
 			var gap:Number = toPixels(Attribute.GAP, node, (isHorizontal ? width : height));
 			var isAuto:Boolean = (isHorizontal ? node.width : node.height).isAuto;
 
@@ -198,7 +198,7 @@ package starling.extensions.talon.layout
 					var child:Node = node.getChildAt(i);
 
 					// If child require new line - break it
-					var childIsBreak:Boolean = wrap && (line.firstChildIndex != i) && (child.getAttribute(Attribute.BREAK) == TRUE);
+					var childIsBreak:Boolean = wrap && (line.firstChildIndex != i) && (child.getAttributeExpandedValue(Attribute.BREAK) == TRUE);
 					if (childIsBreak) break;
 
 					var size:Gauge = isHorizontal ? child.width : child.height;

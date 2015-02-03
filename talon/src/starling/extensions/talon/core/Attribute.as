@@ -93,12 +93,14 @@ package starling.extensions.talon.core
 		private var _assignedValueSetter:Function;
 		private var _assignedDispatcher:EventDispatcher;
 
-		private var _assign:String;
+		private var _assigned:String;
 		private var _styleable:Boolean;
-		private var _style:String;
+		private var _styled:String;
 		private var _inheritable:Boolean;
-		private var _inherit:String;
 		private var _initial:String;
+
+		private var _value:*;
+		private var _valueCached:Boolean;
 
 		public function Attribute(node:Node, name:String, initial:String = null, inheritable:Boolean = false, styleable:Boolean = true, getter:Function = null, setter:Function = null, dispatcher:EventDispatcher = null)
 		{
@@ -113,8 +115,8 @@ package starling.extensions.talon.core
 
 			if (_inheritable)
 			{
-				_node.addEventListener(Event.ADDED, onNodeAdded);
-				_node.addEventListener(Event.REMOVED, onNodeRemoved);
+				_node.addEventListener(Event.ADDED, onAddedToParent);
+				_node.addEventListener(Event.REMOVED, onRemovedFromParent);
 			}
 
 			_assignedValueGetter = getter;
@@ -125,48 +127,31 @@ package starling.extensions.talon.core
 
 		private function onAssignedChange(e:Event):void
 		{
-			_assign = _assignedValueGetter();
+			_assigned = _assignedValueGetter();
 			dispatchChange();
 		}
 
 		//
 		// Inherit observation
 		//
-		private function onNodeAdded(e:Event):void
-		{
-			_node.parent.addEventListener(Event.CHANGE, onParentNodeChange);
-			setInheritValue(_node.parent.getAttribute(name));
-		}
-
-		private function onNodeRemoved(e:Event):void
-		{
-			_node.parent.removeEventListener(Event.CHANGE, onParentNodeChange);
-			setInheritValue(null);
-		}
-
-		private function onParentNodeChange(e:Event):void
-		{
-			if (e.data == name)
-			{
-				setInheritValue(_node.parent.getAttribute(name));
-			}
-		}
 
 		//
 		// Properties
 		//
-		public function get name():String
+
+
+
+		private function dispatchChange():void
 		{
-			return _name;
+			_value = null;
+			_valueCached = false;
+			_node.dispatchEventWith(Event.CHANGE, false, name);
 		}
 
-		public function get value():String
+		public function getValueExpanded():*
 		{
-			return isInherit ? _inherit : (_assign || (_styleable ? _style : null) || _initial);
-		}
+			var value:String = getValue(true);
 
-		public function getValue():*
-		{
 			// If attribute is simple return string value
 			var invokeInfo:Array = StringUtil.parseFunction(value);
 			if (invokeInfo == null) return value;
@@ -179,40 +164,117 @@ package starling.extensions.talon.core
 			return invokeMethod.apply(null, invokeInfo);
 		}
 
-		/** Attribute value mapped to resource. */
-		public function get isResource():Boolean
+		/** Get string value representation. @param deep - expand 'inherit' keyword. */
+		public function getValue(deep:Boolean):String
 		{
-			var split:Array = StringUtil.parseFunction(value);
-			return split && split[0] == "res";
+			if (deep && inheritable && getValue(false)==INHERIT)
+			{
+				return inherit;
+			}
+			else
+			{
+				return assigned || (styleable?styled:null) || initial;
+			}
 		}
 
-		public function setAssignedValue(value:String):void
+		//
+		// Inherit
+		//
+		public function get inherit():String { return node.parent ? node.getOrCreateAttribute(name).getValue(true) : null; }
+
+		public function get inheritable():Boolean { return _inheritable; }
+		public function set inheritable(value:Boolean):void
+		{
+			if (_inheritable != value)
+			{
+				_inheritable = value;
+				// TODO: Check change
+			}
+		}
+
+		private function onAddedToParent(e:Event):void
+		{
+			_node.parent.addEventListener(Event.CHANGE, onParentNodeAttributeChange);
+			setInheritValue();
+		}
+
+		private function onRemovedFromParent(e:Event):void
+		{
+			_node.parent.removeEventListener(Event.CHANGE, onParentNodeAttributeChange);
+			setInheritValue();
+		}
+
+		private function onParentNodeAttributeChange(e:Event):void
+		{
+			if (e.data == name)
+			{
+				setInheritValue();
+			}
+		}
+
+		private function setInheritValue():void
+		{
+			if (getValue(false) == INHERIT) dispatchChange();
+		}
+
+		//
+		// Initial
+		//
+		public function get initial():String { return _initial }
+		public function set initial(value:String):void
+		{
+			if (_initial != value)
+			{
+				_initial = value;
+				// TODO: Check change
+			}
+		}
+
+		//
+		// Assign
+		//
+		public function get assigned():String { return _assigned; }
+		public function set assigned(value:String):void
 		{
 			if (_assignedValueSetter != null)
 			{
 				_assignedValueSetter(value);
 			}
-			else if (_assign != value)
+			else if (_assigned != value)
 			{
 				// FIXME: Set assigned value while value == this.value
-				_assign = value;
+				_assigned = value;
 				dispatchChange();
 			}
 		}
 
-		public function setStyledValue(value:String):void
+		//
+		// Style
+		//
+		public function get styleable():Boolean { return _styleable; }
+		public function set styleable(value:Boolean):void
 		{
-			if (_style != value)
+			if (_styleable != value)
 			{
-				_style = value;
+				_styleable = value;
+				// TODO: Check change
+			}
+		}
 
-				if (_styleable && _assign == null)
+		public function get styled():String { return _styled }
+		public function set styled(value:String):void
+		{
+			if (_styled != value)
+			{
+				_styled = value;
+
+				if (_styleable && _assigned == null)
 				{
 					if (_assignedValueSetter != null)
 					{
-						// Для того что бы в onAssignedChange не установилось значение _assign
+						// Для того что бы в onAssignedChange не установилось значение _assigned
 						_assignedDispatcher.removeEventListener(Event.CHANGE, onAssignedChange);
-						_assignedValueSetter(this.value);
+						_assignedValueSetter(getValue(true));
 						_assignedDispatcher.addEventListener(Event.CHANGE, onAssignedChange);
 					}
 
@@ -221,24 +283,36 @@ package starling.extensions.talon.core
 			}
 		}
 
-		private function setInheritValue(value:String):void
+		//
+		// Misc
+		//
+		public function get node():Node
 		{
-			if (_inherit != value)
+			return _node;
+		}
+
+		public function get name():String
+		{
+			return _name;
+		}
+
+		/** Cached analog of getValueExpanded. */
+		public function get value():*
+		{
+			if (_valueCached == false)
 			{
-				_inherit = value;
-				isInherit && dispatchChange();
+				_valueCached = true;
+				_value = getValueExpanded();
 			}
+
+			return _value;
 		}
 
-		/** Value must be inherit from parent. */
-		public function get isInherit():Boolean
+		/** Attribute value mapped to resource. */
+		public function get isResource():Boolean
 		{
-			return _inheritable && (_assign || (_styleable ? _style : null) || _initial) == INHERIT;
-		}
-
-		private function dispatchChange():void
-		{
-			_node.dispatchEventWith(Event.CHANGE, false, name);
+			var split:Array = StringUtil.parseFunction(getValue(true));
+			return split && split[0] == "res";
 		}
 	}
 }

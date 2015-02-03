@@ -109,25 +109,6 @@ package starling.extensions.talon.core
 			}
 		}
 
-		public function toPixelsSugar(context:Node, pp100p:Number = 0, width:Number = 0, height:Number = 0, ppts:Number = 0, ts:int = 0, min:Gauge = null, max:Gauge = null):Number
-		{
-			var value:Number = toPixels(context.ppmm, context.ppem, context.pppt, pp100p, width, height, ppts, ts);
-
-			if (min && !min.isNone)
-			{
-				var minValue:Number = min.toPixels(context.ppmm, context.ppem, context.pppt, pp100p, width, height, ppts, ts);
-				if (minValue > value) value = minValue;
-			}
-
-			if (max && !max.isNone)
-			{
-				var maxValue:Number = max.toPixels(context.ppmm, context.ppem, context.pppt, pp100p, width, height, ppts, ts);
-				if (maxValue < value) value = maxValue;
-			}
-
-			return value;
-		}
-
 		/** Unit of measurement. */
 		public function get unit():String { return _unit }
 		public function set unit(value:String):void
@@ -135,6 +116,7 @@ package starling.extensions.talon.core
 			if (_unit != value)
 			{
 				if (!auto && value == AUTO) throw new ArgumentError("Auto value is not allowed");
+
 				_unit = unit;
 				dispatchEventWith(Event.CHANGE);
 			}

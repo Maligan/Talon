@@ -41,11 +41,11 @@ package starling.extensions.talon.display
 
 		private function onNodeChange(e:Event):void
 		{
-			/**/ if (e.data == Attribute.TEXT)         text = _node.getAttribute(Attribute.TEXT);
-			else if (e.data == Attribute.HALIGN)       hAlign = _node.getAttribute(Attribute.HALIGN);
-			else if (e.data == Attribute.VALIGN)       vAlign = _node.getAttribute(Attribute.VALIGN);
-			else if (e.data == Attribute.FONT_NAME)    fontName = _node.getAttribute(Attribute.FONT_NAME) || BitmapFont.MINI;
-			else if (e.data == Attribute.FONT_COLOR)   color = StringUtil.parseColor(_node.getAttribute(Attribute.FONT_COLOR));
+			/**/ if (e.data == Attribute.TEXT)         text = _node.getAttributeExpandedValue(Attribute.TEXT);
+			else if (e.data == Attribute.HALIGN)       hAlign = _node.getAttributeExpandedValue(Attribute.HALIGN);
+			else if (e.data == Attribute.VALIGN)       vAlign = _node.getAttributeExpandedValue(Attribute.VALIGN);
+			else if (e.data == Attribute.FONT_NAME)    fontName = _node.getAttributeExpandedValue(Attribute.FONT_NAME) || BitmapFont.MINI;
+			else if (e.data == Attribute.FONT_COLOR)   color = StringUtil.parseColor(_node.getAttributeExpandedValue(Attribute.FONT_COLOR));
 			else if (e.data == Attribute.FONT_SIZE)    fontSize = node.ppem;
 			else if (e.data == Attribute.WIDTH || e.data == Attribute.HEIGHT)
 			{

@@ -76,7 +76,7 @@ package starling.extensions.talon.display
 			if (_invalidate || FILL_MODE)
 			{
 				// Create new
-				var fillMode:String = _node.getAttribute(Attribute.BACKGROUND_FILL_MODE);
+				var fillMode:String = _node.getAttributeExpandedValue(Attribute.BACKGROUND_FILL_MODE);
 				if (fillMode == FillMode.SCALE)
 				{
 //					_image9ScaleTextures = new Scale9Textures(texture)
@@ -97,7 +97,7 @@ package starling.extensions.talon.display
 
 		private function validateTexture():void
 		{
-			var image:String = _node.getAttribute(Attribute.BACKGROUND_IMAGE);
+			var image:String = _node.getAttributeExpandedValue(Attribute.BACKGROUND_IMAGE);
 			var resourcePattern:RegExp = /resource\(["']?([^'"]*)["']?\)/;
 			var split:Array = resourcePattern.exec(image);
 			var imageResourceKey:String = null;
@@ -119,7 +119,7 @@ package starling.extensions.talon.display
 			if (_imageTexture != null)
 			{
 				var texture9ScaleGauge:GaugeQuad = new GaugeQuad();
-				texture9ScaleGauge.parse(_node.getAttribute(Attribute.BACKGROUND_9SCALE));
+				texture9ScaleGauge.parse(_node.getAttributeExpandedValue(Attribute.BACKGROUND_9SCALE));
 
 //				_image9ScaleRectangle |= new Rectangle();
 //				_image9ScaleRectangle.setTo(0, 0, _imageTexture.width, _imageTexture.height);
@@ -150,7 +150,7 @@ package starling.extensions.talon.display
 		{
 			if (_image9Scale || _imageTiled || _imageClip)
 			{
-				var tintString:String = _node.getAttribute(Attribute.BACKGROUND_TINT);
+				var tintString:String = _node.getAttributeExpandedValue(Attribute.BACKGROUND_TINT);
 				var tintValue:uint = StringUtil.parseColor(tintString);
 
 				if (_image9Scale) _image9Scale.color = tintValue;
@@ -163,7 +163,7 @@ package starling.extensions.talon.display
 
 		private function validateColor():void
 		{
-			var colorString:String = _node.getAttribute(Attribute.BACKGROUND_COLOR);
+			var colorString:String = _node.getAttributeExpandedValue(Attribute.BACKGROUND_COLOR);
 			var colorValue:uint = StringUtil.parseColor(colorString);
 			var isTransparent:Boolean = colorString == "transparent";
 

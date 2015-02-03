@@ -14,6 +14,8 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 
+	import starling.extensions.talon.core.Attribute;
+
 	import starling.extensions.talon.core.GaugeQuad;
 
 	import starling.extensions.talon.core.Node;
@@ -40,6 +42,11 @@ package
 			stage.addEventListener(Event.RESIZE, onResize);
 			stage.quality = StageQuality.BEST;
 
+
+
+
+
+			return;
 			var gauge:GaugeQuad = new GaugeQuad();
 			gauge.parse("10px 10px 1em");
 
@@ -51,6 +58,36 @@ package
 			Starling.current.addEventListener(Event.ROOT_CREATED, onRootCreated);
 			Starling.current.start();
 			Starling.current.showStats = false;
+		}
+
+		private function attributeTest():void
+		{
+			var node:Node = new Node();
+
+			var parent:Node = new Node();
+			parent.setResources({key: "resource"});
+			parent.addChild(node);
+
+			var root:Node = new Node();
+			root.addChild(parent);
+
+			var attribute:Attribute = node.getOrCreateAttribute("test");
+
+			attribute.initial = "initial";
+			attribute.styled = "styled";
+			attribute.assigned = "assigned";
+
+			attribute.styleable = false;
+			attribute.inheritable = false;
+
+			assert(attribute.value, attribute.assigned);
+			assert(attribute.value, attribute.assigned);
+			assert(attribute.value, attribute.assigned);
+		}
+
+		private function assert(source:String, target:String, message:String = ""):void
+		{
+			if (source != target) throw new Error(message)
 		}
 
 		private function onResize(e:*):void

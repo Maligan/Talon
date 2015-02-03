@@ -10,8 +10,9 @@ package starling.extensions.talon.layout
 		//
 		// Static Layout Registry
 		//
+		public static const ABSOLUTE:String = "abs";
 		public static const FLOW:String = "flow";
-		public static const ABSOLUTE:String = "absolute";
+		public static const GRID:String = "grid";
 
 		private static var _initialized:Boolean = false;
 		private static var _layout:Dictionary = new Dictionary();
@@ -62,8 +63,9 @@ package starling.extensions.talon.layout
 			if (_initialized == false)
 			{
 				_initialized = true;
-				if (!_layout[FLOW]) registerLayoutAlias(FLOW, new FlowLayout(), null, ["width", "height"]);
 				if (!_layout[ABSOLUTE]) registerLayoutAlias(ABSOLUTE, new AbsoluteLayout());
+				if (!_layout[FLOW]) registerLayoutAlias(FLOW, new FlowLayout(), null, ["width", "height"]);
+				if (!_layout[GRID]) registerLayoutAlias(GRID, new GridLayout());
 			}
 		}
 
@@ -98,7 +100,7 @@ package starling.extensions.talon.layout
 		 * @param min value bottom restrainer
 		 * @param max value top restrainer
 		 */
-		public function toPixelsSugar(gauge:Gauge, context:Node, pp100p:Number = 0, width:Number = 0, height:Number = 0, ppts:Number = 0, ts:int = 0, min:Gauge = null, max:Gauge = null):Number
+		protected final function toPixelsSugar(gauge:Gauge, context:Node, pp100p:Number = 0, width:Number = 0, height:Number = 0, ppts:Number = 0, ts:int = 0, min:Gauge = null, max:Gauge = null):Number
 		{
 			var value:Number = gauge.toPixels(context.ppmm, context.ppem, context.pppt, pp100p, width, height, ppts, ts);
 

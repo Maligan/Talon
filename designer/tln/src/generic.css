@@ -1,8 +1,8 @@
-button:hover { backgroundImage: resource('over') }
-button:active { backgroundImage: resource('down') }
+button:hover { backgroundImage: res('over') }
+button:active { backgroundImage: res('down') }
 button
 {
-	backgroundImage: resource('up');
+	backgroundImage: res('up');
 	background9Scale: 4px;
 	cursor: button;
 
@@ -43,7 +43,7 @@ button
 	wrap: true;
 	padding: 32px;
 	backgroundFillMode: repeat;
-	backgroundImage: resource('transparent')
+	backgroundImage: res('transparent')
 }
 
 preview:hover { backgroundColor: #4F4F4F; }

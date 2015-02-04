@@ -64,7 +64,14 @@ package designer.dom.files
 		private function getType():String
 		{
 			if (extension == "css") return DocumentFileType.STYLE;
-			if (extension == "xml") return DocumentFileType.PROTOTYPE;
+			if (extension == "xml")
+			{
+				var xml:XML = new XML(read());
+				var root:String = xml.name();
+				if (root == "prototype") return DocumentFileType.PROTOTYPE;
+				if (root == "TextureAtlas") return DocumentFileType.ATLAS;
+				return DocumentFileType.UNKNOWN;
+			}
 			if (extension == "fnt") return DocumentFileType.FONT;
 			if (DesignerConstants.SUPPORTED_IMAGE_EXTENSIONS.indexOf(extension) != -1) return DocumentFileType.IMAGE;
 			if (_file.isDirectory) return DocumentFileType.DIRECTORY;

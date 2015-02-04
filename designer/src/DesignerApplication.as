@@ -20,6 +20,8 @@ package
 
 	import starling.display.Sprite;
 	import starling.events.Event;
+	import starling.extensions.talon.core.Attribute;
+	import starling.extensions.talon.utils.QueryUtil;
 
 	[SWF(backgroundColor="#444444")]
 	public class DesignerApplication extends MovieClip
@@ -72,7 +74,7 @@ package
 
 		private function onRootCreated(e:*):void
 		{
-			_controller = new DesignerController(this, Starling.current.root as starling.display.Sprite);
+			_controller = new DesignerController(Starling.current.root as starling.display.Sprite, _console);
 			_invoke && _controller.invoke(_invoke);
 		}
 

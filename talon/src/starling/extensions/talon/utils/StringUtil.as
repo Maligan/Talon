@@ -48,7 +48,7 @@ package starling.extensions.talon.utils
 			if (indexOfOpen == -1) return null;
 
 			// Regexp parsing
-			const notation:RegExp = /(\w+)\(\s*(["']?)(.*?)\1*\s*\)/;
+			const notation:RegExp = /(\w+)\(\s*(["']?)(.*?)\2*\s*\)/;
 			var exec:Array = notation.exec(string);
 			if (exec == null) return null;
 

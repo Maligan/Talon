@@ -63,7 +63,7 @@ package starling.extensions.talon.display
 			{
 				node.states = new <String>[];
 				var onclick:String = node.getAttribute("onclick");
-				if (onclick) dispatchEventWith(Event.TRIGGERED, true, onclick);
+				if (onclick) dispatchEventWith(onclick, true);
 			}
 		}
 
@@ -142,6 +142,11 @@ package starling.extensions.talon.display
 					}
 
 					onNodeResize(null)
+				}
+				else
+				{
+					_backgroundTiledImage && _backgroundTiledImage.removeFromParent();
+					_background9ScaleImage && _background9ScaleImage.removeFromParent();
 				}
 			}
 			else if (e.data == Attribute.CURSOR)

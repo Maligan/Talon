@@ -38,13 +38,18 @@ button
 
 #container
 {
-	gap: 32px;
-	interline: 32px;
-	wrap: true;
-	padding: 32px;
+	width: 100%;
+	height: 100%;
+}
+
+#container.dark { backgroundColor: #444444; }
+#container.light { backgroundColor: #FFFFFF; }
+#container.transparent
+{
 	backgroundFillMode: repeat;
 	backgroundImage: res('transparent')
 }
+
 
 preview:hover { backgroundColor: #4F4F4F; }
 preview

@@ -13,7 +13,7 @@
   <!-- Used as the filename for the application. Required. -->
   <filename>TalonDesigner</filename>
   <!-- The name that is displayed in the AIR application installer. May have multiple values for each language. See samples or xsd schema file. Optional. -->
-  <name>Talon Designer (Beta)</name>
+  <name>Talon Designer</name>
   <!-- A string value of the format <0-999>.<0-999>.<0-999> that represents application version which can be used to check for application upgrade.
          Values can also be 1-part or 2-part. It is not necessary to have a 3-part value.
          An updated version of application must have a versionNumber value higher than the previous version. Required for namespace >= 2.5. -->
@@ -92,6 +92,7 @@
     <image32x32>icons/icon_032.png</image32x32>
     <image48x48>icons/icon_048.png</image48x48>
     <image128x128>icons/icon_128.png</image128x128>
+    <image512x512>icons/icon_512.png</image512x512>
   </icon>
   <!-- Whether the application handles the update when a user double-clicks an update version of the AIR file (true),
          or the default AIR application installer handles the update (false). Optional. Default false. -->
@@ -102,7 +103,7 @@
   <fileTypes>
     <fileType>
       <name>TalonDesignerProject</name>
-      <extension>tdp</extension>
+      <extension>talon</extension>
       <description>Talon Designer Project</description>
       <contentType>text/plain</contentType>
       <icon>
@@ -110,6 +111,7 @@
         <image32x32>icons/icon_032.png</image32x32>
         <image48x48>icons/icon_048.png</image48x48>
         <image128x128>icons/icon_128.png</image128x128>
+        <image512x512>icons/icon_512.png</image512x512>
       </icon>
     </fileType>
   </fileTypes>

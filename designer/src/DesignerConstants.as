@@ -2,7 +2,7 @@ package
 {
 	public class DesignerConstants
 	{
-		public static const DESIGNER_FILE_EXTENSION:String = "tdp";
+		public static const DESIGNER_FILE_EXTENSION:String = "talon";
 		public static const DESIGNER_EXPORT_FILE_EXTENSION:String = "zip";
 		public static const SUPPORTED_IMAGE_EXTENSIONS:Vector.<String> = new <String>["png", "atf", "jpg", "gif"];
 
@@ -19,6 +19,10 @@ package
 		public static const T_MENU_FILE_CLOSE:String = "Close";
 		public static const T_MENU_NAVIGATE:String = "Navigate";
 		public static const T_MENU_VIEW:String = "View";
+		public static const T_MENU_VIEW_BACKGROUND:String = "Background";
+		public static const T_MENU_VIEW_BACKGROUND_WHITE:String = "White";
+		public static const T_MENU_VIEW_BACKGROUND_GRAY:String = "Gray";
+		public static const T_MENU_VIEW_BACKGROUND_CHESS:String = "Chessboard";
 		public static const T_MENU_VIEW_STATS:String = "Starling Stats";
 		public static const T_MENU_VIEW_CONSOLE:String = "Console";
 		public static const T_MENU_HELP:String = "Help";

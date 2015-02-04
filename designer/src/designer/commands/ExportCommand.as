@@ -39,7 +39,7 @@ package designer.commands
 			}
 			else
 			{
-				_target = new File("/" + _controller.document.exportFileName + "." + DesignerConstants.DESIGNER_EXPORT_FILE_EXTENSION);
+				_target = new File("/" + _controller.document.exportFileName);
 				_target.addEventListener(Event.SELECT, onExportFileSelect);
 				_target.browseForSave(DesignerConstants.T_EXPORT_TITLE);
 			}

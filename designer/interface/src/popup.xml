@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<prototype id="popup">
+	  <popup layout="abs" width="256px" height="128px" backgroundColor="olive">
+		  <close onclick="hide" anchor="0% 100% none none" margin="8px" height="32px" width="32px" backgroundColor="red" cursor="button" />
+	  </popup>
+</prototype>

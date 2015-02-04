@@ -195,4 +195,4 @@ Layout.registerLayoutAlias("custom", CustomLayout
 </code>
 
 ===== Appendix 1: CSS Dialect (Working Draft) =====
-
+Важно: при перезаписи ITalonElement контейнер НЕ забывать реализовывать добавление потомков в узел!

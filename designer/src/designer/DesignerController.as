@@ -19,7 +19,7 @@ package designer
 		private var _console:Console;
 		private var _document:Document;
 		private var _prototypeId:String;
-		private var _interface:DesignerInterface;
+		private var _ui:DesignerUI;
 
 		public function DesignerController(host:DisplayObjectContainer, console:Console)
 		{
@@ -28,8 +28,8 @@ package designer
 			_console = console;
 			_console.addCommand("resources", cmdResourceSearch, "RegExp based search project resources", "regexp");
 
-			_interface = new DesignerInterface(this);
-			_host.addChild(_interface);
+			_ui = new DesignerUI(this);
+			_host.addChild(_ui);
 
 			resizeTo(_host.stage.stageWidth, _host.stage.stageHeight);
 		}
@@ -41,12 +41,12 @@ package designer
 
 		private function refresh():void
 		{
-			_interface.refresh();
+			_ui.refresh();
 		}
 
 		public function resizeTo(width:int, height:int):void
 		{
-			_interface.resizeTo(width, height);
+			_ui.resizeTo(width, height);
 		}
 
 		public function invoke(path:String):void
@@ -55,6 +55,11 @@ package designer
 			if (file.exists == false) return;
 			var open:OpenCommand = new OpenCommand(this, file);
 			open.execute();
+		}
+
+		public function get ui():DesignerUI
+		{
+			return _ui;
 		}
 
 		public function get document():Document { return _document; }

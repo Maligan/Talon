@@ -1,4 +1,4 @@
-package designer.menu
+package designer.utils
 {
 	import designer.commands.DesignerCommand;
 

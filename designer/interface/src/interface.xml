@@ -1,15 +1,17 @@
 <?xml version="1.0"?>
-<prototype id="interface" type="button">
-  <node width="100%" height="100%">
-    <node id="container" width="*" height="100%"/>
+<prototype id="interface">
+  <node width="100%" height="100%" layout="abs">
+	  <node id="container" class="transparent" />
+	  <node id="shade" width="100%" height="100%" backgroundColor="black" alpha="0.7" />
+	  <node id="popups" width="100%" height="100%" layout="flow" halign="center" valign="center" />
     <!--<node id="tools">-->
-      <!--<node orientation="vertical" gap="16px" padding="8px" backgroundColor="#222222">-->
-        <!--<button backgroundImage="resource('settings')"/>-->
-        <!--<hr/>-->
-        <!--<button onclick="grid" backgroundImage="resource('grid')"/>-->
-        <!--<hr/>-->
-        <!--<button onclick="export" backgroundImage="resource('export')"/>-->
-      <!--</node>-->
+    <!--<node orientation="vertical" gap="16px" padding="8px" backgroundColor="#222222">-->
+    <!--<button backgroundImage="resource('settings')"/>-->
+    <!--<hr/>-->
+    <!--<button onclick="grid" backgroundImage="resource('grid')"/>-->
+    <!--<hr/>-->
+    <!--<button onclick="export" backgroundImage="resource('export')"/>-->
+    <!--</node>-->
     <!--</node>-->
   </node>
 </prototype>

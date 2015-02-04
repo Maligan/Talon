@@ -40,7 +40,6 @@ package starling.extensions.talon.core
 		// Private properties
 		//
 		private var _attributes:Dictionary = new Dictionary();
-		private var _invokers:Dictionary = new Dictionary();
 		private var _style:StyleSheet;
 		private var _resources:Object;
 		private var _parent:Node;
@@ -153,13 +152,13 @@ package starling.extensions.talon.core
 		//
 		// Attribute
 		//
-		/** Get attribute expanded value. */
+		/** Get attribute <strong>expanded</strong> value. */
 		public function getAttribute(name:String):* { return getOrCreateAttribute(name).expanded; }
 
-		/** Set attribute <strong>assigned</strong> value. */
+		/** Set attribute string <strong>assigned</strong> value. */
 		public function setAttribute(name:String, value:String):void { getOrCreateAttribute(name).assigned = value; }
 
-		/** Get (create if doesn't exists) attribute. */
+		/** @private Get (create if doesn't exists) attribute. */
 		public function getOrCreateAttribute(name:String):Attribute { return _attributes[name] || (_attributes[name] = new Attribute(this, name)); }
 
 		//
@@ -206,11 +205,11 @@ package starling.extensions.talon.core
 			}
 		}
 
-		/** CCS classes which determine node style. */
+		/** CCS classes which determine node style. TODO: Optimize. */
 		public function get classes():Vector.<String> { return Vector.<String>(getAttribute(Attribute.CLASS) ? getAttribute(Attribute.CLASS).split(" ") : []) }
 		public function set classes(value:Vector.<String>):void { setAttribute(Attribute.CLASS, value.join(" ")); restyle(); }
 
-		/** Current active states (aka CSS pseudoClasses: hover, active, checked etc.) */
+		/** Current active states (aka CSS pseudoClasses: hover, active, checked etc.). TODO: Optimize. */
 		public function get states():Vector.<String> { return Vector.<String>(getAttribute(Attribute.STATE) ? getAttribute(Attribute.STATE).split(" ") : []) }
 		public function set states(value:Vector.<String>):void { setAttribute(Attribute.STATE, value.join(" ")); restyle(); }
 

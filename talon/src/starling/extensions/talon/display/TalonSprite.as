@@ -33,8 +33,8 @@ package starling.extensions.talon.display
 		public function TalonSprite()
 		{
 			_node = new Node();
-			_node.addEventListener(Event.CHANGE, onBoxChange);
-			_node.addEventListener(Event.RESIZE, onBoxResize);
+			_node.addEventListener(Event.CHANGE, onNodeChange);
+			_node.addEventListener(Event.RESIZE, onNodeResize);
 
 			_backgroundColor = new Quad(1, 1, 0);
 			_backgroundColor.visible = false;
@@ -80,7 +80,7 @@ package starling.extensions.talon.display
 			return super.removeChildAt(index, dispose);
 		}
 
-		private function onBoxChange(e:Event):void
+		private function onNodeChange(e:Event):void
 		{
 			/**/ if (e.data == Attribute.ID) name = node.getAttribute(Attribute.ID);
 			else if (e.data == Attribute.ALPHA) alpha = parseFloat(node.getAttribute(Attribute.ALPHA));
@@ -141,7 +141,7 @@ package starling.extensions.talon.display
 							break;
 					}
 
-					onBoxResize(null)
+					onNodeResize(null)
 				}
 			}
 			else if (e.data == Attribute.CURSOR)
@@ -160,7 +160,7 @@ package starling.extensions.talon.display
 			Mouse.cursor = e.interactsWith(this) ? (node.getAttribute(Attribute.CURSOR) || MouseCursor.AUTO) : MouseCursor.AUTO;
 		}
 
-		private function onBoxResize(e:Event):void
+		private function onNodeResize(e:Event):void
 		{
 			node.bounds.left = Math.round(node.bounds.left);
 			node.bounds.right = Math.round(node.bounds.right);

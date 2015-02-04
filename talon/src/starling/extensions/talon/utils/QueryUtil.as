@@ -5,14 +5,14 @@ package starling.extensions.talon.utils
 	import starling.filters.ColorMatrixFilter;
 	import starling.filters.FragmentFilter;
 
-	public class InvokeUtil
+	public class QueryUtil
 	{
-		public static function invokeResource(attribute:Attribute, key:String):*
+		public static function queryResource(attribute:Attribute, key:String):*
 		{
 			return attribute.node.getResource(key);
 		}
 
-		public static function invokeBrightnessFilter(attribute:Attribute, brightness:String):FragmentFilter
+		public static function queryBrightnessFilter(attribute:Attribute, brightness:String):FragmentFilter
 		{
 			var value:Number = parseFloat(brightness);
 			if (value != value) throw new ArgumentError("Bad filter origin: " + value);
@@ -22,12 +22,12 @@ package starling.extensions.talon.utils
 			return filter;
 		}
 
-		public static function invokeBlurFilter(attribute:Attribute, blurX:String, blurY:String):FragmentFilter
+		public static function queryBlurFilter(attribute:Attribute, blurX:String, blurY:String):FragmentFilter
 		{
 			return new BlurFilter(parseFloat(blurX), parseFloat(blurY), 1);
 		}
 
-		public static function invokeGlowFilter(attribute:Attribute, color:String, blur:String):FragmentFilter
+		public static function queryGlowFilter(attribute:Attribute, color:String, blur:String):FragmentFilter
 		{
 			return BlurFilter.createGlow(StringUtil.parseColor(color), 1, parseFloat(blur), 1)
 		}

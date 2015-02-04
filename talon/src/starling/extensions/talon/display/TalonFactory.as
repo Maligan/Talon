@@ -22,6 +22,7 @@ package starling.extensions.talon.display
 		{
 			_linkageByDefault = defaultLinkageClass || TalonSprite;
 			setLinkage("node", TalonSprite);
+			setLinkage("image", TalonImage);
 			setLinkage("label", TalonTextField);
 		}
 

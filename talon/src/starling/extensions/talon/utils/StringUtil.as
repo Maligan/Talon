@@ -47,9 +47,6 @@ package starling.extensions.talon.utils
 			var indexOfOpen:int = string.indexOf("(");
 			if (indexOfOpen == -1) return null;
 
-			var indexOfClose:int = string.indexOf(")", indexOfOpen);
-			if (indexOfClose == -1) return null;
-
 			// Regexp parsing
 			const notation:RegExp = /(\w+)\(\s*(["']?)(.*?)\1*\s*\)/;
 			var exec:Array = notation.exec(string);

@@ -1,9 +1,14 @@
 package
 {
+	import flash.display.Bitmap;
+	import flash.display.Loader;
 	import flash.display.MovieClip;
+	import flash.display.StageAlign;
 	import flash.display.StageQuality;
+	import flash.display.StageScaleMode;
 	import flash.geom.Rectangle;
-	import flash.utils.getTimer;
+	import flash.net.URLRequest;
+	import flash.utils.Dictionary;
 
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
@@ -11,8 +16,6 @@ package
 	import starling.display.Sprite;
 
 	import starling.events.Event;
-	import flash.display.StageAlign;
-	import flash.display.StageScaleMode;
 
 	import starling.extensions.talon.core.Attribute;
 
@@ -56,6 +59,7 @@ package
 //			trace("tmp"); // 0.6 - 0.7
 
 
+			Attribute.registerQueryAlias("url", url);
 
 			var gauge:GaugeQuad = new GaugeQuad();
 			gauge.parse("10px 10px 1em");
@@ -70,11 +74,33 @@ package
 			Starling.current.showStats = false;
 		}
 
-		private function assert(source:String, target:String, message:String = ""):void
+
+		private var _cache:Dictionary = new Dictionary();
+		private function url(attr:Attribute, url:String):*
 		{
-			if (source != target) throw new Error(message);
-			else trace("true");
+			if (_cache[url] == null)
+			{
+				var loader = new Loader();
+				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoadComplete);
+				loader.load(new URLRequest(url));
+			}
+			else if (_cache[url] is Loader)
+			{
+				return null;
+			}
+			else if (_cache[url] is Texture)
+			{
+				return _cache[url];
+			}
+
+			function onLoadComplete(e:*):void
+			{
+				loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoadComplete);
+				_cache[url] = Texture.fromBitmap(loader.content as Bitmap);
+				attr.node.dispatchEventWith(Event.CHANGE, false, attr.name);
+			}
 		}
+
 
 		private function onResize(e:*):void
 		{
@@ -107,7 +133,7 @@ package
 				}
 
 				/* Default button skin. */
-				button:hover { backgroundImage: res(over); filter: blur(1, 1) }
+				button:hover { backgroundImage: res(over); filter: glow(red, 3) }
 				button:active { backgroundImage: res(down); }
 				button
 				{
@@ -133,7 +159,8 @@ package
 
 			var config:XML =
 					<node id="root" width="100%" height="500px" layout="flow" padding="0.5em" valign="center" halign="center" orientation="vertical" gap="4px">
-						<label text="Select button if none is exist then good this is alskdj or sadf 3443 asdf strings:" height="auto"  fontSize="17px" fontName="Tahoma" marginBottom="0.5em" marginLeft="2px" halign="left" fontColor="#C9C9C9" width="*" />
+						<label text="Urban fantasy online game with real world venues. Become a vampire, werewolf or shadow hunter!" height="auto"  fontSize="17px" fontName="Tahoma" marginBottom="0.5em" marginLeft="2px" halign="left" fontColor="#C9C9C9" width="*" />
+						<image src="url(http://images.clipartpanda.com/hulk-clip-art-d6fe7f8d430a063ff9a0682a33621a34.png)" />
 						<button><label text="Sed ut perspiciatis unde" /></button>
 						<button><label text="res(locale-string)" /></button>
 						<button><label text="Et harum quidem rerum facilis" /></button>

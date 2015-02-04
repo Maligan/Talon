@@ -4,7 +4,7 @@ package starling.extensions.talon.core
 
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
-	import starling.extensions.talon.utils.InvokeUtil;
+	import starling.extensions.talon.utils.QueryUtil;
 	import starling.extensions.talon.utils.StringUtil;
 
 	//[ExcludeClass]
@@ -89,25 +89,25 @@ package starling.extensions.talon.core
 		//
 		public static const INHERIT:String = "inherit";
 
-		private static var _invokers:Dictionary;
+		private static var _queries:Dictionary;
 
 		private static function initialize():void
 		{
-			if (_invokers == null)
+			if (_queries == null)
 			{
-				_invokers = new Dictionary();
-				registerInvoker("res", InvokeUtil.invokeResource);
-				registerInvoker("brightness", InvokeUtil.invokeBrightnessFilter);
-				registerInvoker("blur", InvokeUtil.invokeBlurFilter);
-				registerInvoker("glow", InvokeUtil.invokeGlowFilter);
+				_queries = new Dictionary();
+				registerQueryAlias("res", QueryUtil.queryResource);
+				registerQueryAlias("brightness", QueryUtil.queryBrightnessFilter);
+				registerQueryAlias("blur", QueryUtil.queryBlurFilter);
+				registerQueryAlias("glow", QueryUtil.queryGlowFilter);
 			}
 		}
 
-		/** Add new attribute invoker. TODO: Move to other place... */
-		public static function registerInvoker(name:String, callback:Function):void
+		/** Add new attribute query. TODO: Move to other place... */
+		public static function registerQueryAlias(aliasName:String, callback:Function):void
 		{
-			if (_invokers == null) initialize();
-			_invokers[name] = callback;
+			if (_queries == null) initialize();
+			_queries[aliasName] = callback;
 		}
 
 		private var _node:Node;
@@ -162,17 +162,17 @@ package starling.extensions.talon.core
 		/** NB! Optimize <code>value</code>property. Expand 'inherit' value and call invokers (like 'url(...)', 'res(...)', 'blur(...)' etc.) for convert value to strongly typed object. */
 		public function get expanded():*
 		{
-			// If attribute has no invoker - return origin value
-			var invokeInfo:Array = StringUtil.parseFunction(origin);
-			if (invokeInfo == null) return origin;
+			// If attribute has no query - return origin value
+			var queryInfo:Array = StringUtil.parseFunction(origin);
+			if (queryInfo == null) return origin;
 
-			// Obtain invoker via invokeInfo
-			var invokeMethodName:String = invokeInfo.shift();
-			var invokeMethod:Function = _invokers[invokeMethodName];
-			if (invokeMethod == null) return origin;
+			// Obtain query method via queryInfo
+			var queryMethodName:String = queryInfo.shift();
+			var queryMethod:Function = _queries[queryMethodName];
+			if (queryMethod == null) return origin;
 
-			invokeInfo.unshift(this);
-			return invokeMethod.apply(null, invokeInfo);
+			queryInfo.unshift(this);
+			return queryMethod.apply(null, queryInfo);
 		}
 
 		//

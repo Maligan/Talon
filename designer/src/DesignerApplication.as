@@ -23,8 +23,6 @@ package
 	[SWF(backgroundColor="#C7C7C7")]
 	public class DesignerApplication extends MovieClip
 	{
-		public static var current:DesignerApplication;
-
 		private var _dropTarget:flash.display.Sprite;
 		private var _controller:DesignerController;
 		private var _console:Console;
@@ -32,8 +30,6 @@ package
 
 		public function DesignerApplication()
 		{
-			current = this;
-
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
@@ -73,7 +69,7 @@ package
 
 		private function onRootCreated(e:*):void
 		{
-			_controller = new DesignerController(Starling.current.root as starling.display.Sprite, _console);
+			_controller = new DesignerController(this, Starling.current.root as starling.display.Sprite, _console);
 			_invoke && _controller.invoke(_invoke);
 		}
 
@@ -84,16 +80,6 @@ package
 				_invoke = e.arguments[0];
 				_controller && _controller.invoke(_invoke);
 			}
-		}
-
-		public function get console():Console
-		{
-			return _console;
-		}
-
-		public function get controller():DesignerController
-		{
-			return _controller;
 		}
 	}
 }

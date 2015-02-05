@@ -3,11 +3,14 @@ package designer
 	import designer.commands.CloseCommand;
 	import designer.commands.ExportCommand;
 	import designer.commands.OpenCommand;
+	import designer.commands.OrientationCommand;
+	import designer.commands.ProfileCommand;
 	import designer.commands.SelectCommand;
 	import designer.commands.SettingCommand;
 	import designer.commands.ZoomCommand;
 	import designer.popups.DebugPopup;
 	import designer.popups.Popup;
+	import designer.utils.DeviceProfile;
 	import designer.utils.NativeMenuAdapter;
 
 	import flash.desktop.NativeApplication;
@@ -29,6 +32,7 @@ package designer
 	import starling.extensions.talon.display.TalonFactory;
 	import starling.extensions.talon.display.TalonSprite;
 	import starling.extensions.talon.layout.Layout;
+	import starling.extensions.talon.utils.Orientation;
 	import starling.filters.BlurFilter;
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
@@ -80,43 +84,25 @@ package designer
 			_menu.addItem("file/-1");
 			_menu.addItem("file/export",  DesignerConstants.T_MENU_FILE_EXPORT,   new ExportCommand(_controller), "s");
 
-			_menu.addItem("view",                   DesignerConstants.T_MENU_VIEW);
-			_menu.addItem("view/theme",             DesignerConstants.T_MENU_VIEW_BACKGROUND);
-			_menu.addItem("view/theme/transparent", DesignerConstants.T_MENU_VIEW_BACKGROUND_CHESS, new SettingCommand(_controller, DesignerConstants.SETTING_BACKGROUND, DesignerConstants.SETTING_BACKGROUND_CHESS));
-			_menu.addItem("view/theme/dark",        DesignerConstants.T_MENU_VIEW_BACKGROUND_DARK,  new SettingCommand(_controller, DesignerConstants.SETTING_BACKGROUND, DesignerConstants.SETTING_BACKGROUND_DARK));
-			_menu.addItem("view/theme/light",       DesignerConstants.T_MENU_VIEW_BACKGROUND_LIGHT, new SettingCommand(_controller, DesignerConstants.SETTING_BACKGROUND, DesignerConstants.SETTING_BACKGROUND_LIGHT));
-			_menu.addItem("view/stats",             DesignerConstants.T_MENU_VIEW_STATS,            new SettingCommand(_controller, DesignerConstants.SETTING_STATS, "1", "0"));
+			_menu.addItem("view",                       DesignerConstants.T_MENU_VIEW);
+			_menu.addItem("view/theme",                 DesignerConstants.T_MENU_VIEW_BACKGROUND);
+			_menu.addItem("view/theme/transparent",     DesignerConstants.T_MENU_VIEW_BACKGROUND_CHESS, new SettingCommand(_controller, DesignerConstants.SETTING_BACKGROUND, DesignerConstants.SETTING_BACKGROUND_CHESS));
+			_menu.addItem("view/theme/dark",            DesignerConstants.T_MENU_VIEW_BACKGROUND_DARK,  new SettingCommand(_controller, DesignerConstants.SETTING_BACKGROUND, DesignerConstants.SETTING_BACKGROUND_DARK));
+			_menu.addItem("view/theme/light",           DesignerConstants.T_MENU_VIEW_BACKGROUND_LIGHT, new SettingCommand(_controller, DesignerConstants.SETTING_BACKGROUND, DesignerConstants.SETTING_BACKGROUND_LIGHT));
+			_menu.addItem("view/stats",                 DesignerConstants.T_MENU_VIEW_STATS,            new SettingCommand(_controller, DesignerConstants.SETTING_STATS, "1", "0"));
 			_menu.addItem("view/-1");
-			_menu.addItem("view/zoomIn",            DesignerConstants.T_MENU_VIEW_ZOOM_IN,          new ZoomCommand(_controller, +25),   "+");
-			_menu.addItem("view/zoomOut",           DesignerConstants.T_MENU_VIEW_ZOOM_OUT,         new ZoomCommand(_controller, -25),   "-");
+			_menu.addItem("view/zoomIn",                DesignerConstants.T_MENU_VIEW_ZOOM_IN,          new ZoomCommand(_controller, +25),   "+");
+			_menu.addItem("view/zoomOut",               DesignerConstants.T_MENU_VIEW_ZOOM_OUT,         new ZoomCommand(_controller, -25),   "-");
 			_menu.addItem("view/-2");
-			_menu.addItem("view/Device Orientation");
-			_menu.addItem("view/Device Orientation/Portrait");
-			_menu.addItem("view/Device Orientation/Landscape");
-			_menu.addItem("view/Device Profile/Custom");
-			_menu.addItem("view/Device Profile/-1");
-			_menu.addItem("view/Device Profile/iPhone 4");
-			_menu.addItem("view/Device Profile/iPhone 4s (Retina)");
-			_menu.addItem("view/Device Profile/iPhone 5");
-			_menu.addItem("view/Device Profile/iPhone 6");
-			_menu.addItem("view/Device Profile/iPhone 6 Plus");
-			_menu.addItem("view/Device Profile/iPad");
-			_menu.addItem("view/Device Profile/iPad Air (Retina)");
-			_menu.addItem("view/Device Profile/-2");
-			_menu.addItem("view/Device Profile/Droid");
-			_menu.addItem("view/Device Profile/Nexus One");
-			_menu.addItem("view/Device Profile/Samsung Galaxy S");
-			_menu.addItem("view/Device Profile/Samsung Galaxy Tab");
-			_menu.addItem("view/Device Profile/-4");
-			_menu.addItem("view/Device Profile/QVGA");
-			_menu.addItem("view/Device Profile/VGA");
-			_menu.addItem("view/Device Profile/FWQBGA");
-			_menu.addItem("view/Device Profile/HVGA");
-			_menu.addItem("view/Device Profile/-5");
-			_menu.addItem("view/Device Profile/1080p");
-			_menu.addItem("view/Device Profile/720p");
-			_menu.addItem("view/Device Profile/480p");
+			_menu.addItem("view/orientation",           DesignerConstants.T_MENU_VIEW_ORIENTATION);
+			_menu.addItem("view/orientation/Portrait",  DesignerConstants.T_MENU_VIEW_ORIENTATION_PORTRAIT,     new OrientationCommand(_controller, Orientation.VERTICAL));
+			_menu.addItem("view/orientation/Landscape", DesignerConstants.T_MENU_VIEW_ORIENTATION_LANDSCAPE,    new OrientationCommand(_controller, Orientation.HORIZONTAL));
 
+			_menu.addItem("view/profile",               DesignerConstants.T_MENU_VIEW_PROFILE);
+			_menu.addItem("view/profile/custom",        DesignerConstants.T_MENU_VIEW_PROFILE_CUSTOM);
+			_menu.addItem("view/profile/-1");
+			for each (var profile:DeviceProfile in DeviceProfile.getProfiles())
+				_menu.addItem("view/profile/" + profile.id, null, new ProfileCommand(_controller, profile));
 
 			_menu.addItem("navigate",               DesignerConstants.T_MENU_NAVIGATE);
 

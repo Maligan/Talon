@@ -8,7 +8,7 @@ package designer.popups
 		{
 			var view:DisplayObject = factory.build("popup");
 			addChild(view);
-			addEventListener("hide", hide);
+			addEventListener("hide", close);
 		}
 	}
 }

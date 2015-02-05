@@ -1,7 +1,9 @@
 package designer.dom.files
 {
 	import designer.dom.Document;
+
 	import flash.utils.Dictionary;
+
 	import starling.events.Event;
 
 	public class DocumentFileReferenceCollection

@@ -3,6 +3,7 @@ package designer
 	import designer.commands.OpenCommand;
 	import designer.dom.Document;
 	import designer.utils.Console;
+	import designer.utils.Settings;
 
 	import flash.filesystem.File;
 
@@ -20,6 +21,7 @@ package designer
 		private var _document:Document;
 		private var _prototypeId:String;
 		private var _ui:DesignerUI;
+		private var _settings:Settings;
 
 		public function DesignerController(host:DisplayObjectContainer, console:Console)
 		{
@@ -28,6 +30,7 @@ package designer
 			_console = console;
 			_console.addCommand("resources", cmdResourceSearch, "RegExp based search project resources", "regexp");
 
+			_settings = new Settings();
 			_ui = new DesignerUI(this);
 			_host.addChild(_ui);
 
@@ -57,10 +60,8 @@ package designer
 			open.execute();
 		}
 
-		public function get ui():DesignerUI
-		{
-			return _ui;
-		}
+		public function get ui():DesignerUI { return _ui; }
+		public function get settings():Settings { return _settings; }
 
 		public function get document():Document { return _document; }
 		public function set document(value:Document):void

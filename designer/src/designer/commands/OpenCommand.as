@@ -7,7 +7,6 @@ package designer.commands
 	import designer.utils.parseProperties;
 
 	import flash.events.Event;
-
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
@@ -34,7 +33,7 @@ package designer.commands
 			else
 			{
 				var filter:FileFilter = new FileFilter(DesignerConstants.T_DESIGNER_FILE_EXTENSION_NAME, "*." + DesignerConstants.DESIGNER_FILE_EXTENSION);
-				var source = new File();
+				var source:File = new File();
 				source .addEventListener(Event.SELECT, onOpenFileSelect);
 				source.browseForOpen(DesignerConstants.T_MENU_FILE_OPEN, [filter]);
 			}
@@ -45,18 +44,18 @@ package designer.commands
 			_controller.document = readDocument(e.target as File);
 		}
 
-		private function readDocument(file:File):Document
+		private function readDocument(source:File):Document
 		{
-			var properties:Object = parseProperties(readFile(file).toString());
+			var properties:Object = parseProperties(readFile(source).toString());
 			var exportName:String = properties[DesignerConstants.PROPERTY_EXPORT_PATH];
-			if (exportName == null) properties[DesignerConstants.PROPERTY_EXPORT_PATH] = file.name.replace(DesignerConstants.DESIGNER_FILE_EXTENSION, DesignerConstants.DESIGNER_EXPORT_FILE_EXTENSION);
+			if (exportName == null) properties[DesignerConstants.PROPERTY_EXPORT_PATH] = source.name.replace(DesignerConstants.DESIGNER_FILE_EXTENSION, DesignerConstants.DESIGNER_EXPORT_FILE_EXTENSION);
 
 			var document:Document = new Document(properties);
 
 			// Define sourcePath
 			var sourcePathURL:String = properties[DesignerConstants.PROPERTY_SOURCE_PATH];
-			if (sourcePathURL == null) sourcePathURL = file.parent.url;
-			var sourcePath:File = file.parent.resolvePath(sourcePathURL);
+			if (sourcePathURL == null) sourcePathURL = source.parent.url;
+			var sourcePath:File = source.parent.resolvePath(sourcePathURL);
 			if (sourcePath.exists == false) sourcePath.parent;
 
 			// Setup sourcePath

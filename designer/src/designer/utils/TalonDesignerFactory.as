@@ -1,13 +1,8 @@
 package designer.utils
 {
-	import designer.dom.files.DocumentFileReference;
-	import designer.dom.files.DocumentFileType;
-
 	import flash.utils.Dictionary;
 
 	import starling.display.DisplayObject;
-	import starling.events.Event;
-
 	import starling.extensions.talon.core.StyleSheet;
 	import starling.extensions.talon.display.TalonFactory;
 

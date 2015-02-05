@@ -115,7 +115,7 @@ package designer.utils
 
 				if (item == null)
 				{
-					item = new NativeMenuItem(name, name == "-");
+					item = new NativeMenuItem(name, name.charAt(0) == "-");
 					item.name = name;
 					menu.addItem(item);
 				}

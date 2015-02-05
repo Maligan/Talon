@@ -2,6 +2,7 @@ package designer.dom.files
 {
 	import com.adobe.air.filesystem.FileMonitor;
 	import com.adobe.air.filesystem.events.FileMonitorEvent;
+
 	import flash.events.Event;
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;

@@ -1,29 +1,28 @@
 package designer.popups
 {
-	import starling.display.DisplayObjectContainer;
-	import starling.display.Sprite;
-	import starling.events.Event;
+	import designer.DesignerUI;
 
-	import starling.extensions.talon.core.Node;
+	import flash.utils.Dictionary;
+
+	import starling.display.DisplayObjectContainer;
 	import starling.extensions.talon.display.ITalonElement;
 	import starling.extensions.talon.display.TalonFactory;
 	import starling.extensions.talon.display.TalonSprite;
 
 	public class Popup extends TalonSprite implements ITalonElement
 	{
+		private static var _ui:DesignerUI;
 		private static var _layer:DisplayObjectContainer;
-		private static var _factory:TalonFactory;
 		private static var _queue:Vector.<Popup>;
 		private static var _active:Vector.<Popup>;
-		private static var _onActiveChange:Function;
+		private static var _modal:Dictionary = new Dictionary(true);
 
-		public static function initialize(layer:DisplayObjectContainer, factory:TalonFactory, onActiveChange:Function = null):void
+		public static function initialize(ui:DesignerUI, layer:DisplayObjectContainer):void
 		{
 			if (_layer != null) throw new ArgumentError("Already initialized");
 
+			_ui = ui;
 			_layer = layer;
-			_factory = factory;
-			_onActiveChange = onActiveChange;
 			_queue = new <Popup>[];
 			_active = new <Popup>[];
 		}
@@ -40,17 +39,18 @@ package designer.popups
 			node.pivot.parse("50%");
 		}
 
-		public final function show(modal:Boolean = true):void
+		public final function open(modal:Boolean = true):void
 		{
 			if (isActive) return;
 
-			if (_queue.length == 0)
+			if (modal)
 			{
 				_active.push(this);
 				_layer.addChild(this);
-				_onActiveChange && _onActiveChange();
+				_ui.locked = true;
+				_modal[this] = true;
 			}
-			else if (modal)
+			else if (_queue.length == 0)
 			{
 				_active.push(this);
 				_layer.addChild(this);
@@ -61,11 +61,12 @@ package designer.popups
 			}
 		}
 
-		public final function hide():void
+		public final function close():void
 		{
 			if (!isActive) return;
 
 			_active.splice(_active.indexOf(this), 1);
+			delete _modal[this];
 			removeFromParent(true);
 
 			if (_queue.length > 0)
@@ -76,7 +77,7 @@ package designer.popups
 
 			if (_queue.length == 0 && _active.length == 0)
 			{
-				_onActiveChange && _onActiveChange();
+				_ui.locked = false;
 			}
 		}
 
@@ -87,7 +88,7 @@ package designer.popups
 
 		public final function get factory():TalonFactory
 		{
-			return _factory;
+			return _ui.factory;
 		}
 	}
 }

@@ -4,26 +4,23 @@ package
 	import designer.utils.Console;
 
 	import flash.desktop.NativeApplication;
-
 	import flash.display.MovieClip;
+	import flash.display.NativeWindow;
+	import flash.display.NativeWindowInitOptions;
+	import flash.display.NativeWindowRenderMode;
+	import flash.display.NativeWindowSystemChrome;
+	import flash.display.NativeWindowType;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.InvokeEvent;
-	import flash.filesystem.File;
-	import flash.filesystem.FileMode;
-	import flash.filesystem.FileStream;
 	import flash.geom.Rectangle;
-	import flash.utils.ByteArray;
 
 	import starling.core.Starling;
-
 	import starling.display.Sprite;
 	import starling.events.Event;
-	import starling.extensions.talon.core.Attribute;
-	import starling.extensions.talon.utils.QueryUtil;
 
-	[SWF(backgroundColor="#444444")]
+	[SWF(backgroundColor="#C7C7C7")]
 	public class DesignerApplication extends MovieClip
 	{
 		public static var current:DesignerApplication;
@@ -51,6 +48,8 @@ package
 
 			NativeApplication.nativeApplication.setAsDefaultApplication(DesignerConstants.DESIGNER_FILE_EXTENSION);
 			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
+
+
 
 			new Starling(starling.display.Sprite, stage);
 			Starling.current.addEventListener(Event.ROOT_CREATED, onRootCreated);

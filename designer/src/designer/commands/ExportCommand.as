@@ -3,7 +3,6 @@ package designer.commands
 	import deng.fzip.FZip;
 
 	import designer.DesignerController;
-
 	import designer.dom.files.DocumentFileReference;
 	import designer.dom.files.DocumentFileType;
 

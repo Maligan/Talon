@@ -1,14 +1,12 @@
 package designer.utils
 {
-    import flash.display.*;
-    import flash.events.*;
-    import flash.filters.GlowFilter;
-    import flash.geom.ColorTransform;
-    import flash.net.SharedObject;
-    import flash.system.Capabilities;
-    import flash.text.*;
-    import flash.ui.Keyboard;
-    import flash.utils.setTimeout;
+	import flash.display.*;
+	import flash.events.*;
+	import flash.filters.GlowFilter;
+	import flash.net.SharedObject;
+	import flash.system.Capabilities;
+	import flash.text.*;
+	import flash.ui.Keyboard;
 
 	/** Debug console utility. @author Alexandr Frolov. */
     public class Console extends Sprite

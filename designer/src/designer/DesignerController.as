@@ -9,6 +9,7 @@ package designer
 
 	import flash.display.DisplayObject;
 	import flash.display.NativeWindow;
+	import flash.events.NativeWindowBoundsEvent;
 
 	import flash.filesystem.File;
 
@@ -20,6 +21,7 @@ package designer
 	{
 		public static const EVENT_DOCUMENT_CHANGE:String = "documentChange";
 		public static const EVENT_PROTOTYPE_CHANGE:String = "prototypeChange";
+		public static const EVENT_PROFILE_CHANGE:String = "profileChange";
 
 		private var _root:DisplayObject;
 		private var _host:DisplayObjectContainer;
@@ -39,13 +41,21 @@ package designer
 			_console = console;
 			_console.addCommand("resources", cmdResourceSearch, "RegExp based search project resources", "regexp");
 
-			_profile = DeviceProfile.CUSTOM;
+
 			_monitor = new OrientationMonitor(root.stage);
-			_settings = new Settings();
+			_settings = new Settings("settings");
+			_profile = DeviceProfile.CUSTOM;
+			_root.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.RESIZING, onResizing);
 			_ui = new DesignerUI(this);
 			_host.addChild(_ui);
 
+
 			resizeTo(_host.stage.stageWidth, _host.stage.stageHeight);
+		}
+
+		private function onResizing(e:NativeWindowBoundsEvent):void
+		{
+			profile = DeviceProfile.CUSTOM;
 		}
 
 		private function onDocumentChange(e:Event):void
@@ -87,9 +97,23 @@ package designer
 				if (profile != DeviceProfile.CUSTOM)
 				{
 					var window:NativeWindow = root.stage.nativeWindow;
-					window.width = profile.width;
-					window.height = profile.height;
+
+					var min:Number = Math.min(profile.width, profile.height);
+					var max:Number = Math.max(profile.width, profile.height);
+
+					if (_monitor.isPortrait)
+					{
+						window.width = min;
+						window.height = max;
+					}
+					else
+					{
+						window.width = max;
+						window.height = min;
+					}
 				}
+
+				dispatchEventWith(EVENT_PROFILE_CHANGE);
 			}
 		}
 

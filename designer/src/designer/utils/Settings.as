@@ -1,5 +1,6 @@
 package designer.utils
 {
+	import flash.net.SharedObject;
 	import flash.utils.Dictionary;
 
 	import starling.events.Event;
@@ -7,8 +8,15 @@ package designer.utils
 
 	public class Settings extends EventDispatcher
 	{
-		private var _data:Object = new Object();
+		private var _data:Object;
 		private var _listeners:Dictionary = new Dictionary();
+		private var _storage:SharedObject;
+
+		public function Settings(name:String):void
+		{
+			_storage = SharedObject.getLocal(name);
+			_data = _storage.data;
+		}
 
 		public function addSettingListener(name:String, listener:Function):void
 		{
@@ -38,6 +46,7 @@ package designer.utils
 			if (_data[name] != value)
 			{
 				_data[name] = value;
+				_storage.flush();
 				dispatchEventWith(Event.CHANGE, false, name);
 			}
 		}

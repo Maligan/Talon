@@ -100,6 +100,7 @@ package starling.extensions.talon.core
 				registerQueryAlias("brightness", QueryUtil.queryBrightnessFilter);
 				registerQueryAlias("blur", QueryUtil.queryBlurFilter);
 				registerQueryAlias("glow", QueryUtil.queryGlowFilter);
+				registerQueryAlias("drop-shadow", QueryUtil.queryDropShadow);
 			}
 		}
 

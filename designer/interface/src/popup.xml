@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
 <prototype id="popup">
-	  <popup layout="abs" width="256px" height="128px" backgroundColor="olive">
-		  <close onclick="hide" anchor="0% 100% none none" margin="8px" height="32px" width="32px" backgroundColor="red" cursor="button" />
-	  </popup>
+  <popup orientation="vertical">
+	  <node layout="abs" width="100%">
+		  <label text="Custom Device Profile" fontColor="#a0a0a0" halign="left" width="100%" height="100%" x="6px" y="3px" />
+		  <image src="res(close)" anchor="none 100% none none" marginRight="6px" />
+	  </node>
+	  <node orientation="vertical" padding="4px">
+		  <label text="Изменить настройки или нет?" margin="0.5em 2px 1em" maxWidth="100%" />
+		  <node anchor="none 100% 100% none">
+			  <button onclick="hide" minWidth="86px"><label width="100%" text="Cancel"/></button>
+			  <button onclick="hide" minWidth="86px"><label width="100%" text="Accept"/></button>
+		  </node>
+	  </node>
+  </popup>
 </prototype>

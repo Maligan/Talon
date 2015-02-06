@@ -2,9 +2,9 @@ package designer.popups
 {
 	import starling.display.DisplayObject;
 
-	public class DebugPopup extends Popup
+	public class ProfilePopup extends Popup
 	{
-		public function DebugPopup()
+		public function ProfilePopup()
 		{
 			var view:DisplayObject = factory.build("popup");
 			addChild(view);

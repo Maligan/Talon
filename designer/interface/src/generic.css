@@ -6,7 +6,7 @@ button
 	background9Scale: 4px;
 	cursor: button;
 
-	padding: 0.75em 1em 1em 1em;
+	padding: 0.6em 1em 0.85em 1em;
 
 	fontName: Tahoma;
 	fontSize: 11px;
@@ -15,6 +15,24 @@ button
 	minWidth: 20px;
 	minHeight: 20px;
 }
+
+button label
+{
+	width: 100%;
+	halign: center;
+}
+
+popup
+{
+	fontName: Tahoma;
+	fontSize: 11px;
+	fontColor: #C0C0C0;
+	filter: drop-shadow(1, 0.5, black, 1, 1);
+
+	backgroundImage: res('popup');
+	background9Scale: 4px 5px 2px 5px;
+}
+
 
 #tools button
 {

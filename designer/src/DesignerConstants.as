@@ -41,7 +41,7 @@ package
 		public static const T_MENU_VIEW_ORIENTATION_PORTRAIT:String = "Portrait";
 		public static const T_MENU_VIEW_ORIENTATION_LANDSCAPE:String = "Landscape";
 		public static const T_MENU_VIEW_PROFILE:String = "Profile";
-		public static const T_MENU_VIEW_PROFILE_CUSTOM:String = "Custom";
+		public static const T_MENU_VIEW_PROFILE_CUSTOM:String = "Custom...";
 		public static const T_MENU_VIEW_CONSOLE:String = "Console";
 		public static const T_MENU_HELP:String = "Help";
 		public static const T_MENU_HELP_ONLINE:String = "Online Documentation";

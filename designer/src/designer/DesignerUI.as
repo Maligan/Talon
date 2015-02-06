@@ -8,7 +8,7 @@ package designer
 	import designer.commands.SelectCommand;
 	import designer.commands.SettingCommand;
 	import designer.commands.ZoomCommand;
-	import designer.popups.DebugPopup;
+	import designer.popups.ProfilePopup;
 	import designer.popups.Popup;
 	import designer.utils.DeviceProfile;
 	import designer.utils.NativeMenuAdapter;
@@ -99,7 +99,7 @@ package designer
 			_menu.addItem("view/orientation/Landscape", DesignerConstants.T_MENU_VIEW_ORIENTATION_LANDSCAPE,    new OrientationCommand(_controller, Orientation.HORIZONTAL));
 
 			_menu.addItem("view/profile",               DesignerConstants.T_MENU_VIEW_PROFILE);
-			_menu.addItem("view/profile/custom",        DesignerConstants.T_MENU_VIEW_PROFILE_CUSTOM);
+			_menu.addItem("view/profile/custom",        DesignerConstants.T_MENU_VIEW_PROFILE_CUSTOM, new ProfileCommand(_controller, DeviceProfile.CUSTOM));
 			_menu.addItem("view/profile/-1");
 			for each (var profile:DeviceProfile in DeviceProfile.getProfiles())
 				_menu.addItem("view/profile/" + profile.id, null, new ProfileCommand(_controller, profile));
@@ -121,27 +121,14 @@ package designer
 			_interface.getChildByName("shade").visible = false;
 
 			_popupContainer = _interface.getChildByName("popups") as TalonSprite;
-			_popupContainer.node.setAttribute(Attribute.LAYOUT, Layout.ABSOLUTE);
-//			_popupContainer.node.setAttribute(Attribute.VALIGN, VAlign.CENTER);
-//			_popupContainer.node.setAttribute(Attribute.HALIGN, HAlign.CENTER);
-
-			_controller.settings.addSettingListener(DesignerConstants.SETTING_BACKGROUND, onBackgroundChange);
-			_controller.settings.addSettingListener(DesignerConstants.SETTING_STATS, onStatsChange);
-			_controller.settings.addSettingListener(DesignerConstants.SETTING_ZOOM, onZoomChange);
-
 			_isolatorContainer = _interface.getChildByName("container") as TalonSprite;
 			_isolatorContainer.addChild(_isolator);
-			_isolatorContainer.addEventListener(TouchEvent.TOUCH, function(e:TouchEvent):void{if (e.getTouch(_isolatorContainer, TouchPhase.ENDED)) {
-
-				return;
-				var popup:Popup = new DebugPopup();
-				popup.open();
-				resizeTo(stage.stageWidth, stage.stageHeight);
-
-
-			} });
-
 			Popup.initialize(this, _popupContainer);
+
+
+			_controller.settings.addSettingListener(DesignerConstants.SETTING_BACKGROUND, onBackgroundChange); onBackgroundChange(null);
+			_controller.settings.addSettingListener(DesignerConstants.SETTING_STATS, onStatsChange); onStatsChange(null);
+			_controller.settings.addSettingListener(DesignerConstants.SETTING_ZOOM, onZoomChange); onZoomChange(null);
 
 			stage && resizeTo(stage.stageWidth, stage.stageHeight);
 		}

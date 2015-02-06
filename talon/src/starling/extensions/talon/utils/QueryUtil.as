@@ -31,5 +31,10 @@ package starling.extensions.talon.utils
 		{
 			return BlurFilter.createGlow(StringUtil.parseColor(color), 1, parseFloat(blur), 1)
 		}
+
+		public static function queryDropShadow(attribute:Attribute, distance:String, angle:String, color:String, alpha:String, blur:String):FragmentFilter
+		{
+			return BlurFilter.createDropShadow(parseFloat(distance), parseFloat(angle), StringUtil.parseColor(color), parseFloat(alpha), parseFloat(blur));
+		}
 	}
 }

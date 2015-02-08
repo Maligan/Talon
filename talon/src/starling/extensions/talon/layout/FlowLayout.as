@@ -47,6 +47,9 @@ package starling.extensions.talon.layout
 
 				flow.beginChild();
 				// ...
+				flow.setChildLength(100);
+				flow.setChildThickness(100);
+				// ...
 				flow.endChild();
 			}
 
@@ -84,17 +87,35 @@ class Flow
 	private var _lines:Vector.<FlowLine>;
 	private var _lineByChildIndex:Dictionary;
 
+	private var _childIndex:int;
+	private var _childWidth:Number;
+	private var _childHeight:Number;
+
 	private var _rectangle:Rectangle;
 
+	public function Flow()
+	{
+		_rectangle = new Rectangle();
+		_lines = new <FlowLine>[new FlowLine()];
+		_lineByChildIndex = new Dictionary();
+		_childIndex = -1;
+	}
+
 	// Phase 1
-	public function beginChild():void { }
-	public function setChildMarginBefore():void { }
-	public function setChildLength():void { }
-	public function setChildMarginAfter():void { }
-	public function setChildBreakMode():void { }
-	public function setChildThickness():void { }
-	public function setChildAlign():void { }
-	public function endChild():void { }
+	public function beginChild():void { _childIndex++ }
+	public function setChildLength(value:Number):void { _childWidth = value; }
+	public function setChildThickness(value:Number):void { _childHeight = value; }
+
+//	public function setChildMarginBefore():void { }
+//	public function setChildMarginAfter():void { }
+//	public function setChildBreakMode():void { }
+//	public function setChildAlign():void { }
+
+	public function endChild():void
+	{
+		var line:FlowLine = _lines[_lines.length-1];
+//		line.
+	}
 
 	public function complete():void
 	{
@@ -110,6 +131,17 @@ class Flow
 	}
 
 	// Phase 2
+	public function getChildBounds(index:int):Rectangle
+	{
+		_rectangle.setTo(index*100 + 10*index, 10, 100, 50);
+		return _rectangle;
+
+
+//		var line:FlowLine = _lineByChildIndex[index];
+//		var lineChildIndex:int = index - line.firstChildIndex;
+//		return line.getChildBounds(lineChildIndex, _rectangle);
+	}
+
 	public function getSize(orientation:String):Number
 	{
 		var size:Number = (orientation==Orientation.HORIZONTAL) ? _width : _height;
@@ -128,13 +160,6 @@ class Flow
 		}
 
 		return size;
-	}
-
-	public function getChildBounds(index:int):Rectangle
-	{
-		var line:FlowLine = _lineByChildIndex[index];
-		var lineChildIndex:int = index - line.firstChildIndex;
-		return line.getChildBounds(lineChildIndex, _rectangle);
 	}
 }
 

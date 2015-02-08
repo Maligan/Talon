@@ -28,7 +28,7 @@ package
 	import starling.extensions.talon.utils.StringUtil;
 	import starling.textures.Texture;
 
-	[SWF(backgroundColor="#444444")]
+	[SWF(backgroundColor="#444444", width="800", height="500")]
 	public class TalonDebugStartup extends MovieClip
 	{
 		[Embed(source="../assets/up.png")] private static const UP_BYTES:Class;
@@ -158,13 +158,22 @@ package
 			]]></literal>.valueOf();
 
 			var config:XML =
-					<node id="root" width="100%" height="500px" layout="flow" padding="0.5em" valign="center" halign="center" orientation="vertical" gap="4px">
-						<label text="Urban fantasy online game with real world venues. Become a vampire, werewolf or shadow hunter!" height="auto"  fontSize="17px" fontName="Tahoma" marginBottom="0.5em" marginLeft="2px" halign="left" fontColor="#C9C9C9" width="*" />
-						<image src="url(http://images.clipartpanda.com/hulk-clip-art-d6fe7f8d430a063ff9a0682a33621a34.png)" />
-						<button><label text="Sed ut perspiciatis unde" /></button>
-						<button><label text="res(locale-string)" /></button>
-						<button><label text="Et harum quidem rerum facilis" /></button>
+					<node>
+						<node width="100px" height="100px" backgroundColor="red" />
+						<node width="100px" height="100px" backgroundColor="blue" />
+						<node width="100px" height="100px" backgroundColor="gray" />
+						<node width="100px" height="100px" backgroundColor="yellow" />
+						<node width="100px" height="100px" backgroundColor="olive" />
 					</node>;
+
+
+//			<node id="root" width="100%" height="500px" layout="flow" padding="0.5em" valign="center" halign="center" orientation="vertical" gap="4px">
+//				<label text="Urban fantasy online game with real world venues. Become a vampire, werewolf or shadow hunter!" height="auto"  fontSize="17px" fontName="Tahoma" marginBottom="0.5em" marginLeft="2px" halign="left" fontColor="#C9C9C9" width="*" />
+//				<image src="url(http://images.clipartpanda.com/hulk-clip-art-d6fe7f8d430a063ff9a0682a33621a34.png)" />
+//				<button><label text="Sed ut perspiciatis unde" /></button>
+//				<button><label text="res(locale-string)" /></button>
+//				<button><label text="Et harum quidem rerum facilis" /></button>
+//			</node>;
 
 			//<button><label text="Temporibus autem quibusdam" /></button>
 			//<input multiline="true" width="auto" height="auto" halign="left" fontColor="#C9C9C9" fontName="Tahoma" fontSize="11px" text="Native Text Field" backgroundColor="#222222" />

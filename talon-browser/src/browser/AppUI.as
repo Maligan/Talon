@@ -90,7 +90,8 @@ package browser
 			_menu.addItem("view/theme/transparent",     Constants.T_MENU_VIEW_BACKGROUND_CHESS, new SettingCommand(_controller, Constants.SETTING_BACKGROUND, Constants.SETTING_BACKGROUND_CHESS));
 			_menu.addItem("view/theme/dark",            Constants.T_MENU_VIEW_BACKGROUND_DARK,  new SettingCommand(_controller, Constants.SETTING_BACKGROUND, Constants.SETTING_BACKGROUND_DARK));
 			_menu.addItem("view/theme/light",           Constants.T_MENU_VIEW_BACKGROUND_LIGHT, new SettingCommand(_controller, Constants.SETTING_BACKGROUND, Constants.SETTING_BACKGROUND_LIGHT));
-			_menu.addItem("view/stats",                 Constants.T_MENU_VIEW_STATS,            new SettingCommand(_controller, Constants.SETTING_STATS, "1", "0"));
+			_menu.addItem("view/stats",                 Constants.T_MENU_VIEW_STATS,            new SettingCommand(_controller, Constants.SETTING_STATS, true, false));
+			_menu.addItem("view/resize",                Constants.T_MENU_VIEW_LOCK_RESIZE,      new SettingCommand(_controller, Constants.SETTING_LOCK_RESIZE, true, false));
 			_menu.addItem("view/-1");
 			_menu.addItem("view/zoomIn",                Constants.T_MENU_VIEW_ZOOM_IN,          new ZoomCommand(_controller, +25),   "+");
 			_menu.addItem("view/zoomOut",               Constants.T_MENU_VIEW_ZOOM_OUT,         new ZoomCommand(_controller, -25),   "-");

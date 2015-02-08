@@ -1,6 +1,5 @@
 package browser.dom
 {
-	import browser.utils.Constants;
 	import browser.dom.assets.AtlasAsset;
 	import browser.dom.assets.DirectoryAsset;
 	import browser.dom.assets.FontAsset;
@@ -10,7 +9,9 @@ package browser.dom
 	import browser.dom.files.DocumentFileReference;
 	import browser.dom.files.DocumentFileReferenceCollection;
 	import browser.dom.files.DocumentFileType;
-	import browser.utils.TalonDesignerFactory;
+	import browser.dom.log.DocumentMessageCollection;
+	import browser.dom.log.DocumentTaskTracker;
+	import browser.utils.Constants;
 
 	import flash.filesystem.File;
 
@@ -21,18 +22,19 @@ package browser.dom
 	public class Document extends EventDispatcher
 	{
 		private var _files:DocumentFileReferenceCollection;
-		private var _factory:TalonDesignerFactory;
+		private var _factory:DocumentTalonFactory;
 		private var _source:File;
 		private var _properties:Object;
-
+		private var _messages:DocumentMessageCollection;
 		private var _tracker:DocumentTaskTracker;
 
 		public function Document(properties:Object):void
 		{
 			_tracker = new DocumentTaskTracker(onTasksEnd);
+			_messages = new DocumentMessageCollection();
 
 			_properties = properties;
-			_factory = new TalonDesignerFactory();
+			_factory = new DocumentTalonFactory(this);
 			_files = new DocumentFileReferenceCollection(this);
 			_files.registerDocumentFileType(DocumentFileType.DIRECTORY, DirectoryAsset);
 			_files.registerDocumentFileType(DocumentFileType.IMAGE, TextureAsset);
@@ -40,11 +42,6 @@ package browser.dom
 			_files.registerDocumentFileType(DocumentFileType.ATLAS, AtlasAsset);
 			_files.registerDocumentFileType(DocumentFileType.STYLE, StyleSheetAsset);
 			_files.registerDocumentFileType(DocumentFileType.FONT, FontAsset);
-		}
-
-		public function get isBusy():Boolean
-		{
-			return _tracker.isBusy;
 		}
 
 		/** Background task counter. */
@@ -59,9 +56,14 @@ package browser.dom
 			return _files;
 		}
 
-		public function get factory():TalonDesignerFactory
+		public function get factory():DocumentTalonFactory
 		{
 			return _factory;
+		}
+
+		public function get messages():DocumentMessageCollection
+		{
+			return _messages;
 		}
 
 		//

@@ -1,4 +1,4 @@
-package browser.dom
+package browser.dom.log
 {
 	public class DocumentTaskTracker
 	{
@@ -10,15 +10,13 @@ package browser.dom
 			_complete = complete;
 		}
 
-		public function begin(msg:String = null):void
+		public function begin():void
 		{
-//			msg && trace(msg);
 			_taskCount++;
 		}
 
-		public function end(msg:String = null):void
+		public function end():void
 		{
-//			msg && trace(msg);
 			_taskCount--;
 			_taskCount == 0 && _complete();
 		}

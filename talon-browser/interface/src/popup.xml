@@ -1,16 +1,20 @@
 <?xml version="1.0"?>
 <prototype id="popup">
   <popup orientation="vertical">
-	  <node layout="abs" width="100%">
-		  <label text="Custom Device Profile" fontColor="#a0a0a0" halign="left" width="100%" height="100%" x="6px" y="3px" />
-		  <image src="res(close)" anchor="none 100% none none" marginRight="6px" />
-	  </node>
-	  <node orientation="vertical" padding="4px">
-		  <label text="Изменить настройки или нет?" margin="0.5em 2px 1em" maxWidth="100%" />
-		  <node anchor="none 100% 100% none">
-			  <button onclick="hide" minWidth="86px"><label width="100%" text="Cancel"/></button>
-			  <button onclick="hide" minWidth="86px"><label width="100%" text="Accept"/></button>
-		  </node>
-	  </node>
+    <node layout="abs" width="100%">
+      <label text="Custom Device Profile" fontColor="#a0a0a0" halign="left" width="100%" height="100%" x="6px" y="3px"/>
+      <image src="res(close)" anchor="none 100% none none" marginRight="6px"/>
+    </node>
+    <node orientation="vertical" padding="4px">
+      <label text="&#x418;&#x437;&#x43C;&#x435;&#x43D;&#x438;&#x442;&#x44C; &#x43D;&#x430;&#x441;&#x442;&#x440;&#x43E;&#x439;&#x43A;&#x438; &#x438;&#x43B;&#x438; &#x43D;&#x435;&#x442;?" margin="0.5em 2px 1em" maxWidth="100%"/>
+      <node anchor="none 100% 100% none">
+        <button onclick="hide" minWidth="86px">
+          <label width="100%" text="Cancel"/>
+        </button>
+        <button onclick="hide" minWidth="86px">
+          <label width="100%" text="Accept"/>
+        </button>
+      </node>
+    </node>
   </popup>
 </prototype>

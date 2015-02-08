@@ -35,7 +35,7 @@ package browser.dom.files
 				if (type != null)
 				{
 					var controller:DocumentFileController = new type();
-					controller.initialize(_document, file);
+					controller.initialize(file);
 					_controllers[file.url] = controller;
 					_files[file.url] = file;
 				}

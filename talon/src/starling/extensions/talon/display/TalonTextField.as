@@ -26,6 +26,7 @@ package starling.extensions.talon.display
 			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = getTextHeight;
 			autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
 
+			border = true;
 			touchable = false;
 		}
 
@@ -52,10 +53,10 @@ package starling.extensions.talon.display
 				var isHorizontal:Boolean = _node.width.isAuto;
 				var isVertical:Boolean = _node.height.isAuto;
 
-				/**/ if ( isHorizontal &&  isVertical) (autoSize = TextFieldAutoSize.BOTH_DIRECTIONS);
-				else if ( isHorizontal && !isVertical) (autoSize = TextFieldAutoSize.HORIZONTAL);
-				else if (!isHorizontal &&  isVertical) (autoSize = TextFieldAutoSize.VERTICAL);
-				else if (!isHorizontal && !isVertical) (autoSize = TextFieldAutoSize.NONE);
+//				/**/ if ( isHorizontal &&  isVertical) (autoSize = TextFieldAutoSize.BOTH_DIRECTIONS);
+//				else if ( isHorizontal && !isVertical) (autoSize = TextFieldAutoSize.HORIZONTAL);
+//				else if (!isHorizontal &&  isVertical) (autoSize = TextFieldAutoSize.VERTICAL);
+//				else if (!isHorizontal && !isVertical) (autoSize = TextFieldAutoSize.NONE);
 			}
 		}
 
@@ -65,6 +66,8 @@ package starling.extensions.talon.display
 			y = Math.round(_node.bounds.y) - 2;
 			width = Math.round(_node.bounds.width) - 2;
 			height = Math.round(_node.bounds.height) - 2;
+
+			autoSize = TextFieldAutoSize.NONE;
 		}
 
 		public function get node():Node

@@ -78,3 +78,29 @@ preview
 	cursor: button;
 }
 
+/* Messages */
+
+message
+{
+	width: 100%;
+	backgroundColor: white;
+	/*padding: 8px;*/
+	gap: 12px;
+	fontColor: black;
+	fontName: Tahoma;
+	fontSize: 14px;
+	filter: glow(black, 1);
+	valign: center;
+}
+
+message #icon
+{
+	width: 24px;
+	height: 24px;
+}
+
+message.error { backgroundColor: #ffdfdf }
+message.error #icon { src: res(msg_type_error) }
+
+message.warning { backgroundColor: #ffffdf }
+message.warning #icon { src: res(msg_type_warning) }

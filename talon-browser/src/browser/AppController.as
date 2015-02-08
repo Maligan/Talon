@@ -3,15 +3,21 @@ package browser
 	import browser.commands.OpenCommand;
 	import browser.dom.Document;
 	import browser.utils.Console;
+	import browser.utils.Constants;
 	import browser.utils.DeviceProfile;
 	import browser.utils.OrientationMonitor;
 	import browser.utils.Settings;
 
+	import flash.desktop.NotificationType;
+
 	import flash.display.DisplayObject;
+	import flash.display.NativeWindow;
 	import flash.display.NativeWindow;
 	import flash.events.NativeWindowBoundsEvent;
 
 	import flash.filesystem.File;
+	import flash.ui.Mouse;
+	import flash.ui.MouseCursor;
 
 	import starling.display.DisplayObjectContainer;
 	import starling.events.Event;
@@ -40,6 +46,7 @@ package browser
 
 			_console = console;
 			_console.addCommand("resources", cmdResourceSearch, "RegExp based search project resources", "regexp");
+			_console.addCommand("resources_miss", cmdResourceMiss, "Missing used resources");
 
 
 			_monitor = new OrientationMonitor(root.stage);
@@ -55,7 +62,15 @@ package browser
 
 		private function onResizing(e:NativeWindowBoundsEvent):void
 		{
-			profile = DeviceProfile.CUSTOM;
+			var prevent:Boolean = settings.getValueOrDefault(Constants.SETTING_LOCK_RESIZE, false);
+			if (prevent)
+			{
+				e.preventDefault();
+			}
+			else
+			{
+				profile = DeviceProfile.CUSTOM;
+			}
 		}
 
 		private function onDocumentChange(e:Event):void
@@ -170,6 +185,17 @@ package browser
 			return function (value:String, index:int, vector:Vector.<String>):Boolean
 			{
 				return regexp.test(value);
+			}
+		}
+
+		private function cmdResourceMiss(query:String):void
+		{
+			if (_document == null) throw new Error("Document not opened");
+			if (_prototypeId == null) throw new Error("Prototype not selected");
+
+			for each (var resourceId:String in document.factory.missedResourceIds)
+			{
+				_console.println("*", resourceId);
 			}
 		}
 	}

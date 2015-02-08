@@ -4,7 +4,7 @@ package browser.utils
 	{
 		public static const DESIGNER_FILE_EXTENSION:String = "talon";
 		public static const DESIGNER_EXPORT_FILE_EXTENSION:String = "zip";
-		public static const SUPPORTED_IMAGE_EXTENSIONS:Vector.<String> = new <String>["png", "atf", "jpg", "gif"];
+		public static const SUPPORTED_IMAGE_EXTENSIONS:Vector.<String> = new <String>["atf", "png", "jpg", "gif"];
 
 		public static const PROPERTY_SOURCE_PATH:String = "source.path";
 		public static const PROPERTY_EXPORT_PATH:String = "export.path";
@@ -16,6 +16,7 @@ package browser.utils
 
 		public static const SETTING_STATS:String = "stats";
 		public static const SETTING_ZOOM:String = "zoom";
+		public static const SETTING_LOCK_RESIZE:String = "lockWindowResize";
 
 		public static const ZOOM_MIN:int = 25;
 		public static const ZOOM_MAX:int = 300;
@@ -34,9 +35,10 @@ package browser.utils
 		public static const T_MENU_VIEW_BACKGROUND_LIGHT:String = "Light";
 		public static const T_MENU_VIEW_BACKGROUND_DARK:String = "Dark";
 		public static const T_MENU_VIEW_BACKGROUND_CHESS:String = "Transparent";
+		public static const T_MENU_VIEW_STATS:String = "Starling Stats";
+		public static const T_MENU_VIEW_LOCK_RESIZE:String = "Resize Lock";
 		public static const T_MENU_VIEW_ZOOM_IN:String = "Zoom In";
 		public static const T_MENU_VIEW_ZOOM_OUT:String = "Zoom Out";
-		public static const T_MENU_VIEW_STATS:String = "Starling Stats";
 		public static const T_MENU_VIEW_ORIENTATION:String = "Orientation";
 		public static const T_MENU_VIEW_ORIENTATION_PORTRAIT:String = "Portrait";
 		public static const T_MENU_VIEW_ORIENTATION_LANDSCAPE:String = "Landscape";

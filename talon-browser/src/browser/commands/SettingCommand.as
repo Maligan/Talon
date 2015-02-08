@@ -7,10 +7,10 @@ package browser.commands
 	{
 		private var _controller:AppController;
 		private var _name:String;
-		private var _value:String;
-		private var _alternate:String;
+		private var _value:*;
+		private var _alternate:*;
 
-		public function SettingCommand(controller:AppController, name:String, value:String, alternate:String = null)
+		public function SettingCommand(controller:AppController, name:String, value:*, alternate:* = null)
 		{
 			_controller = controller;
 			_controller.settings.addSettingListener(name, dispatchEvent);
@@ -21,12 +21,12 @@ package browser.commands
 
 		public override function execute():void
 		{
-			_controller.settings.setValue(_name, (isActive && _alternate) ? _alternate : _value);
+			_controller.settings.setValue(_name, (isActive && _alternate!=null) ? _alternate : _value);
 		}
 
 		public override function get isActive():Boolean
 		{
-			return _controller.settings.getValueOrDefault(_name, Constants.SETTING_BACKGROUND_CHESS) == _value;
+			return _controller.settings.getValueOrDefault(_name) == _value;
 		}
 	}
 }

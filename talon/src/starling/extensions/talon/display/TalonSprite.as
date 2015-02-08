@@ -22,6 +22,8 @@ package starling.extensions.talon.display
 	import starling.extensions.talon.utils.StringUtil;
 	import starling.filters.FragmentFilter;
 	import starling.textures.Texture;
+	import starling.utils.Color;
+	import starling.utils.Color;
 
 	public class TalonSprite extends Sprite implements ITalonElement
 	{
@@ -86,9 +88,11 @@ package starling.extensions.talon.display
 			else if (e.data == Attribute.ALPHA) alpha = parseFloat(node.getAttribute(Attribute.ALPHA));
 			else if (e.data == Attribute.BACKGROUND_COLOR)
 			{
-				var color:String = node.getAttribute(Attribute.BACKGROUND_COLOR);
-				_backgroundColor.visible = color != "transparent";
-				_backgroundColor.color = StringUtil.parseColor(color);
+				var colorString:String = node.getAttribute(Attribute.BACKGROUND_COLOR);
+				_backgroundColor.visible = colorString != "transparent";
+				var color:uint = StringUtil.parseColor(colorString);
+				_backgroundColor.color = color;
+
 			}
 			else if (e.data == Attribute.BACKGROUND_IMAGE || e.data == Attribute.BACKGROUND_TINT || e.data == Attribute.BACKGROUND_9SCALE || e.data == Attribute.BACKGROUND_FILL_MODE)
 			{

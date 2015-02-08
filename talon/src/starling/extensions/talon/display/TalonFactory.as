@@ -15,7 +15,7 @@ package starling.extensions.talon.display
 		protected var _linkageByDefault:Class;
 		protected var _linkage:Dictionary = new Dictionary();
 		protected var _prototypes:Dictionary = new Dictionary();
-		protected var _resources:Dictionary = new Dictionary();
+		protected var _resources:Object = new Dictionary();
 		protected var _style:StyleSheet = new StyleSheet();
 
 		public function TalonFactory(defaultLinkageClass:Class = null):void

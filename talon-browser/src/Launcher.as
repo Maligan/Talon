@@ -8,6 +8,7 @@ package
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
+	import flash.display.StageQuality;
 	import flash.display.StageScaleMode;
 	import flash.events.InvokeEvent;
 	import flash.geom.Rectangle;
@@ -29,6 +30,7 @@ package
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
+			stage.quality = StageQuality.BEST;
 
 			// NativeDragManager do not work with empty document root
 			// add this object to fix this problem

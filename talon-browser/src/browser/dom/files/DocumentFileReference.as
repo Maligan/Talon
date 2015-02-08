@@ -1,5 +1,7 @@
 package browser.dom.files
 {
+	import browser.dom.Document;
+
 	import com.adobe.air.filesystem.FileMonitor;
 	import com.adobe.air.filesystem.events.FileMonitorEvent;
 
@@ -16,15 +18,18 @@ package browser.dom.files
 	[Event(name="change", type="starling.events.Event")]
 	public class DocumentFileReference extends EventDispatcher
 	{
+		private var _document:Document;
 		private var _file:File;
 		private var _monitor:FileMonitor;
 		private var _type:String;
 
-		public function DocumentFileReference(file:File)
+		public function DocumentFileReference(document:Document, file:File)
 		{
+			if (!document) throw new ArgumentError("Document must be non null");
 			if (!file) throw new ArgumentError("File must be non null");
 			if (!file.exists) throw new ArgumentError("File must be exists");
 
+			_document = document;
 			_file = file;
 			_monitor = new FileMonitor(_file);
 			_monitor.addEventListener(FileMonitorEvent.CHANGE, onFileChange);
@@ -103,6 +108,11 @@ package browser.dom.files
 		public function get exits():Boolean
 		{
 			return _file.exists;
+		}
+
+		public function get document():Document
+		{
+			return _document;
 		}
 
 		/** @private For internal usage ONLY. */

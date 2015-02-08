@@ -8,12 +8,10 @@ package browser.dom.assets
 
 	internal class Asset implements DocumentFileController
 	{
-		private var _document:Document;
 		private var _file:DocumentFileReference;
 
-		public function initialize(document:Document, file:DocumentFileReference):void
+		public function initialize(file:DocumentFileReference):void
 		{
-			_document = document;
 			_file = file;
 			_file.addEventListener(Event.CHANGE, onFileChange);
 
@@ -38,7 +36,7 @@ package browser.dom.assets
 		//
 		protected function get document():Document
 		{
-			return _document;
+			return _file.document;
 		}
 
 		protected function get file():DocumentFileReference

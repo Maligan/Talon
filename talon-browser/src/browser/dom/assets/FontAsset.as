@@ -1,6 +1,5 @@
 package browser.dom.assets
 {
-	import browser.dom.Document;
 	import browser.dom.files.DocumentFileReference;
 
 	import starling.events.Event;
@@ -14,9 +13,9 @@ package browser.dom.assets
 		private var _fontTexture:Texture;
 		private var _font:BitmapFont;
 
-		public override function initialize(document:Document, file:DocumentFileReference):void
+		public override function initialize(file:DocumentFileReference):void
 		{
-			super.initialize(document, file);
+			super.initialize(file);
 			document.addEventListener(Event.CHANGE, onDocumentChange);
 		}
 

@@ -232,7 +232,7 @@ class StyleSelector
 
 		while (node)
 		{
-			if (_ancestor.match(node.parent)) return true;
+			if (_ancestor.match(node)) return true;
 			node = node.parent;
 		}
 

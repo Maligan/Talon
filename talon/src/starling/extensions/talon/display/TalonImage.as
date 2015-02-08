@@ -39,6 +39,8 @@ package starling.extensions.talon.display
 					node.height.isAuto  && node.dispatchEventWith(Event.CHANGE, false, Attribute.HEIGHT);
 				}
 			}
+
+			trace(e.data, node.getAttribute(e.data as String));
 		}
 
 		private function onNodeResize(e:Event):void

@@ -67,7 +67,7 @@ package browser.commands
 
 			// Add batch of files to document
 			var references:Vector.<DocumentFileReference> = new Vector.<DocumentFileReference>();
-			for each (var file:File in files) references[references.length] = new DocumentFileReference(file);
+			for each (var file:File in files) references[references.length] = new DocumentFileReference(document, file);
 			document.tasks.begin();
 			for each (var reference:DocumentFileReference in references) document.files.addFile(reference);
 			document.tasks.end();

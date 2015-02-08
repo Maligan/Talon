@@ -88,17 +88,17 @@ package starling.extensions.talon.core
 		 * @param ppem pixels per em
 		 * @param pppt pixels per point
 		 * @param pp100p pixels per 100%
-		 * @param width available width (for auto measure)
-		 * @param height available height (for auto measure)
+		 * @param aw available width (for auto measure)
+		 * @param ah available height (for auto measure)
 		 * @param ppts pixels per total stars
 		 * @param ts total stars
 		 */
-		public function toPixels(ppmm:Number, ppem:Number, pppt:Number, pp100p:Number, width:Number, height:Number, ppts:Number, ts:int):Number
+		public function toPixels(ppmm:Number, ppem:Number, pppt:Number, pp100p:Number, aw:Number, ah:Number, ppts:Number, ts:int):Number
 		{
 			switch (unit)
 			{
 				case NONE:		return 0;
-				case AUTO:		return auto(width, height);
+				case AUTO:		return auto(aw, ah);
 				case PX:		return amount;
 				case MM:		return amount * ppmm;
 				case EM:        return amount * ppem;
@@ -142,7 +142,8 @@ package starling.extensions.talon.core
 			if (_auto != value)
 			{
 				_auto = value;
-				dispatchEventWith(Event.CHANGE);
+				// Bug in Attribute & TalonImage
+				// dispatchEventWith(Event.CHANGE);
 			}
 		}
 

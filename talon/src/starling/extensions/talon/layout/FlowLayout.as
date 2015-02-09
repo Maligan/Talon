@@ -43,7 +43,12 @@ package starling.extensions.talon.layout
 			var isVertical:Boolean = orientation == Orientation.VERTICAL;
 
 			var flow:Flow = new Flow();
-			flow._length = width;
+
+			isHorizontal
+				? flow.setSize(width, height)
+				: flow.setSize(height, width);
+
+
 
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
@@ -75,7 +80,7 @@ import starling.extensions.talon.utils.Orientation;
 class Flow
 {
 	// Properties
-	public var _length:Number;
+	private var _length:Number;
 	private var _lengthPaddingBegin:Number;
 	private var _lengthPaddingEnd:Number;
 	private var _gap:Number;
@@ -104,6 +109,13 @@ class Flow
 		_lines = new <FlowLine>[new FlowLine()];
 		_lineByChildIndex = new Dictionary();
 		_childIndex = -1;
+	}
+
+	// Phase 0
+	public function setSize(length:Number, thickness:Number):void
+	{
+		_length = length;
+		_thickness = thickness;
 	}
 
 	// Phase 1
@@ -239,16 +251,11 @@ class FlowLine
 
 	public function getChildBounds(index:int, orientation:String, result:Rectangle):Rectangle
 	{
-		var rect:FlowElement = _children[index];
+		var child:FlowElement = _children[index];
 
-		if (orientation == Orientation.HORIZONTAL)
-		{
-			result.setTo(rect.a, rect.b, rect.asize, rect.bsize);
-		}
-		else
-		{
-			result.setTo(rect.b, rect.a, rect.bsize, rect.asize);
-		}
+		orientation == Orientation.HORIZONTAL
+			? result.setTo(child.a, child.b, child.asize, child.bsize)
+			: result.setTo(child.b, child.a, child.bsize, child.asize);
 
 		return result;
 	}

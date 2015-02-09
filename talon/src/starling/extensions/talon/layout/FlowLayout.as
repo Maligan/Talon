@@ -9,22 +9,25 @@ package starling.extensions.talon.layout
 	{
 		public override function measureAutoWidth(node:Node, width:Number, height:Number):Number
 		{
-			return measure(node, width, height).getSize(Orientation.HORIZONTAL);
+			var flow:Flow = measure(node, width, height);
+			return getOrientation(node) == Orientation.HORIZONTAL ? flow.getLength() : flow.getThickness();
 		}
 
 		public override function measureAutoHeight(node:Node, width:Number, height:Number):Number
 		{
-			return measure(node, width, height).getSize(Orientation.VERTICAL);
+			var flow:Flow = measure(node, width, height);
+			return getOrientation(node) == Orientation.VERTICAL ? flow.getLength() : flow.getThickness();
 		}
 
 		public override function arrange(node:Node, width:Number, height:Number):void
 		{
+			var orientation:String = getOrientation(node);
 			var flow:Flow = measure(node, width, height);
 
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				var childBounds:Rectangle = flow.getChildBounds(i);
+				var childBounds:Rectangle = flow.getChildBounds(i, orientation);
 				child.bounds.copyFrom(childBounds);
 				child.commit();
 			}
@@ -40,6 +43,7 @@ package starling.extensions.talon.layout
 			var isVertical:Boolean = orientation == Orientation.VERTICAL;
 
 			var flow:Flow = new Flow();
+			flow._length = width;
 
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
@@ -47,8 +51,8 @@ package starling.extensions.talon.layout
 
 				flow.beginChild();
 				// ...
-				flow.setChildLength(100);
-				flow.setChildThickness(100);
+				flow.setChildLength(child.width.amount);
+				flow.setChildThickness(child.height.amount);
 				// ...
 				flow.endChild();
 			}
@@ -71,16 +75,17 @@ import starling.extensions.talon.utils.Orientation;
 class Flow
 {
 	// Properties
-	private var _orientation:Number;
-	private var _width:Number;
-	private var _height:Number;
+	public var _length:Number;
+	private var _lengthPaddingBegin:Number;
+	private var _lengthPaddingEnd:Number;
 	private var _gap:Number;
+
+	private var _thickness:Number;
+	private var _thicknessPaddingBegin:Number;
+	private var _thicknessPaddingEnd:Number;
 	private var _interline:Number;
+
 	private var _wrap:Boolean;
-	private var _paddingLeft:Number;
-	private var _paddingRight:Number;
-	private var _paddingTop:Number;
-	private var _paddingBottom:Number;
 	private var _halign:int;
 	private var _valign:int;
 
@@ -88,8 +93,8 @@ class Flow
 	private var _lineByChildIndex:Dictionary;
 
 	private var _childIndex:int;
-	private var _childWidth:Number;
-	private var _childHeight:Number;
+	private var _childLength:Number;
+	private var _childThickness:Number;
 
 	private var _rectangle:Rectangle;
 
@@ -102,77 +107,181 @@ class Flow
 	}
 
 	// Phase 1
-	public function beginChild():void { _childIndex++ }
-	public function setChildLength(value:Number):void { _childWidth = value; }
-	public function setChildThickness(value:Number):void { _childHeight = value; }
+	public function beginChild():void
+	{
+		_childIndex++;
+		_childLength = 0;
+		_childThickness = 0;
+	}
 
-//	public function setChildMarginBefore():void { }
-//	public function setChildMarginAfter():void { }
-//	public function setChildBreakMode():void { }
-//	public function setChildAlign():void { }
-
+	public function setChildLength(value:Number):void { _childLength = value; }
+	public function setChildThickness(value:Number):void { _childThickness = value; }
 	public function endChild():void
 	{
 		var line:FlowLine = _lines[_lines.length-1];
-//		line.
+		_lineByChildIndex[_childIndex] = line;
+
+		line.addChild();
+		line.addChildLength(0, _childLength, 0);
+		line.addChildThickness(0, _childThickness, 0);
 	}
 
 	public function complete():void
 	{
+		var line:FlowLine = _lines[_lines.length-1];
+		line.setMaxASideSum(_length);
+		line.complete();
+
 		// HAlign
 		// VAlign
 		// Padding
 
-		for each (var line:FlowLine in _lines)
-		{
-			line.delta = 0;
-			line.shift = 0;
-		}
+		// for each (var line:FlowLine in _lines)
+		// {
+		//      line.delta = 0;
+		//      line.shift = 0;
+		// }
 	}
 
 	// Phase 2
-	public function getChildBounds(index:int):Rectangle
+	public function getChildBounds(index:int, orientation:String):Rectangle
 	{
-		_rectangle.setTo(index*100 + 10*index, 10, 100, 50);
-		return _rectangle;
-
-
-//		var line:FlowLine = _lineByChildIndex[index];
-//		var lineChildIndex:int = index - line.firstChildIndex;
-//		return line.getChildBounds(lineChildIndex, _rectangle);
+		var line:FlowLine = _lineByChildIndex[index];
+		var lineChildIndex:int = index - line.firstChildIndex;
+		return line.getChildBounds(lineChildIndex, orientation, _rectangle);
 	}
 
-	public function getSize(orientation:String):Number
+	public function getLength():Number
 	{
-		var size:Number = (orientation==Orientation.HORIZONTAL) ? _width : _height;
+		var result:Number = _length;
 
-		if (size == Infinity)
+		if (result == Infinity)
 		{
-			size = (orientation==Orientation.HORIZONTAL) ? (_paddingLeft+_paddingRight) : (_paddingTop+_paddingBottom);
-
-			var isPrimary:Boolean = _orientation == orientation;
-
-			if (isPrimary === false && _lines.length > 0)
-				size += _interline * (_lines.length-1);
-
-			for each (var line:FlowLine in _lines)
-				size += isPrimary ? line.length : line.thickness;
+			result = _lengthPaddingBegin + _lengthPaddingEnd;
+			for each (var line:FlowLine in _lines) result = Math.max(result, line.aSize);
 		}
 
-		return size;
+		return result;
+	}
+
+	public function getThickness():Number
+	{
+		var result:Number = _thickness;
+
+		if (result == Infinity)
+		{
+			result = _thicknessPaddingBegin + _thicknessPaddingEnd;
+			if (_lines.length > 0) result += (_lines.length - 1) * _interline;
+			for each (var line:FlowLine in _lines) result += line.bSize;
+		}
+
+		return result;
 	}
 }
 
 class FlowLine
 {
-	public function complete():void { }
-	public function getChildBounds(index:int, result:Rectangle):Rectangle { return null }
-	public function get length():int { return 0 }
-	public function get thickness():int { return 0 }
+	private var _children:Vector.<FlowElement> = new <FlowElement>[];
+	private var _maxBSide:Number = 0;
+	private var _maxASideSum:Number = Infinity;
+	private var _aSideSum:Number = 0;
+	private var _aSideSumStars:Number = 0;
+
+	public function setMaxASideSum(value:Number):void
+	{
+		_maxASideSum = value;
+	}
+
+	public function addChild():void
+	{
+		_children.push(new FlowElement());
+	}
+
+	public function addChildLength(begin:Number, length:Number, end:Number):void
+	{
+		var element:FlowElement = _children[_children.length - 1];
+		element.aBefore = begin;
+		element.aSize = length;
+		element.aStar = _children.length == 3;
+		element.aAfter = end;
+
+		if (!element.aStar) _aSideSum += length;
+		else _aSideSumStars += length;
+	}
+
+	public function addChildThickness(begin:Number, thickness:Number, end:Number):void
+	{
+		var element:FlowElement = _children[_children.length - 1];
+		element.bBefore = begin;
+		element.bSize = thickness;
+		element.bAfter = end;
+
+		_maxBSide = Math.max(_maxBSide, thickness);
+	}
+
+	public function complete():void
+	{
+		var loffset:Number = 0;
+
+		for each (var element:FlowElement in _children)
+		{
+			element.a = loffset;
+			element.b = (_maxBSide-element.bSize)*element.bAlignMultiplier;
+			element.bsize = element.bSize;
+
+			if (!element.aStar) element.asize = element.aSize;
+			else if (_maxASideSum != Infinity) element.asize = (_maxASideSum-_aSideSum)-(element.aSize/_aSideSumStars);
+			else element.asize = 0;
+
+			loffset += element.asize;
+		}
+	}
+
+	public function getChildBounds(index:int, orientation:String, result:Rectangle):Rectangle
+	{
+		var rect:FlowElement = _children[index];
+
+		if (orientation == Orientation.HORIZONTAL)
+		{
+			result.setTo(rect.a, rect.b, rect.asize, rect.bsize);
+		}
+		else
+		{
+			result.setTo(rect.b, rect.a, rect.bsize, rect.asize);
+		}
+
+		return result;
+	}
+
+	public function get aSize():int { return 0 }
+	public function get bSize():int { return 0 }
+
+	public function set aOffset(value:Number):void { }
+	public function set bOffset(value:Number):void { }
 
 	public function get firstChildIndex():int { return 0 }
 	public function get index():int { return null }
 
-	public function set delta(value:Number):void { }
-	public function set shift(value:Number):void { }
+}
+
+class FlowElement
+{
+	public var aBefore:Number;
+	public var aSize:Number;
+	public var aStar:Boolean;
+	public var aAfter:Number;
+
+	public var bBefore:Number;
+	public var bSize:Number;
+	public var bStar:Boolean;
+	public var bAfter:Number;
+
+	public var bAlignMultiplier:Number = int(Math.random() * 3)/2;
+
+	//
+
+	public var a:Number;
+	public var b:Number;
+	public var asize:Number;
+	public var bsize:Number;
 }

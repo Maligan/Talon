@@ -158,12 +158,12 @@ package
 			]]></literal>.valueOf();
 
 			var config:XML =
-					<node>
-						<node width="100px" height="100px" backgroundColor="red" />
-						<node width="100px" height="100px" backgroundColor="blue" />
-						<node width="100px" height="100px" backgroundColor="gray" />
-						<node width="100px" height="100px" backgroundColor="yellow" />
-						<node width="100px" height="100px" backgroundColor="olive" />
+					<node orientation="horizontal">
+						<node width="100px" height="50px" backgroundColor="red" />
+						<node width="50px" height="100px" backgroundColor="blue" />
+						<node width="100px" height="50px" backgroundColor="gray" />
+						<node width="50px" height="100px" backgroundColor="yellow" />
+						<node width="100px" height="50px" backgroundColor="olive" />
 					</node>;
 
 

@@ -26,6 +26,14 @@ package starling.extensions.talon.core
 		public static const STAR:String = "*";
 
 		private static const PATTERN:RegExp = /^(-?\d*\.?\d+)(px|mm|em|%|\*|)$/;
+		private static const HELPER:Gauge = new Gauge();
+
+		/** @private */
+		public static function toPixels(string:String, ppmm:Number, ppem:Number, pppt:Number, pp100p:Number, aw:Number, ah:Number, ppts:Number, ts:int):Number
+		{
+			HELPER.parse(string);
+			return HELPER.toPixels(ppmm, ppem, pppt, pp100p, aw, ah, ppts, ts);
+		}
 
 		private var _unit:String = NONE;
 		private var _amount:Number = 0;

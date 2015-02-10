@@ -2,22 +2,22 @@ package starling.extensions.talon.utils
 {
 	import starling.errors.AbstractClassError;
 
-	public class BreakMode
+	public class WrapMode
 	{
-		public static const BEFORE:String = "before";
-		public static const AFTER:String = "after";
-		public static const BOTH:String = "both";
+		public static const NEVER:String = "never";
+		public static const AUTO:String = "auto";
+		public static const MANUAL:String = "manual";
 
 		/** Indicates whether the given break mode string is valid. */
 		public static function isValid(mode:String):Boolean
 		{
-			return mode == BEFORE
-				|| mode == AFTER
-				|| mode == BOTH;
+			return mode == NEVER
+				|| mode == AUTO
+				|| mode == MANUAL;
 		}
 
 		/** @private */
-		public function BreakMode()
+		public function WrapMode()
 		{
 			throw new AbstractClassError();
 		}

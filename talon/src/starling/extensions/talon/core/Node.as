@@ -275,16 +275,11 @@ package starling.extensions.talon.core
 		/** Current node 'fontSize' expressed in pixels.*/
 		public function get ppem():Number
 		{
-			var common:int = 12;
-
+			var base:int = 12;
+			var inherit:Number =  parent ? parent.ppem : base;
 			var attribute:Attribute = getOrCreateAttribute(Attribute.FONT_SIZE);
-			if (attribute.isInherit) return parent ? parent.ppem : common;
-
-			var gauge:Gauge = new Gauge();
-			gauge.parse(attribute.value);
-
-			var base:Number =  parent? parent.ppem : common;
-			return gauge.toPixels(ppmm, base, pppt, base, 0, 0, 0, 0);
+			if (attribute.isInherit) return inherit;
+			return Gauge.toPixels(attribute.value, ppmm, inherit, pppt, inherit, 0, 0, 0, 0);
 		}
 
 		/** This is 'auto' callback for gauges: width, minWidth, maxWidth. */

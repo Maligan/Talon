@@ -77,6 +77,8 @@ package starling.extensions.talon.core
 		public static const ORIENTATION:String = "orientation";
 		public static const HALIGN:String = "halign";
 		public static const VALIGN:String = "valign";
+		public static const IHALIGN:String = "ivalign";
+		public static const IVALIGN:String = "ivalign";
 		public static const GAP:String = "gap";
 		public static const INTERLINE:String = "interline";
 		public static const WRAP:String = "wrap";

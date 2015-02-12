@@ -6,6 +6,7 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageQuality;
 	import flash.display.StageScaleMode;
+	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
 	import flash.net.URLRequest;
 	import flash.utils.Dictionary;
@@ -159,12 +160,16 @@ package
 
 			var config:XML =
 					<node layout="abs">
-						<node orientation="horizontal" backgroundColor="silver" width="auto" height="auto" gap="10">
-							<node layout="abs" width="100px" height="50px" backgroundColor="red" />
-							<node layout="abs" width="50*" height="100px" backgroundColor="blue" />
-							<node layout="abs" width="100px" height="50px" backgroundColor="gray" />
-							<node layout="abs" width="50*" height="100px" backgroundColor="yellow" />
-							<node layout="abs" width="100px" height="50px" backgroundColor="olive" />
+						<node position="50%" pivot="50%" orientation="horizontal" backgroundColor="silver" width="75%" height="auto" gap="0px" wrap="auto" valign="bottom" halign="center">
+							<node layout="abs" width="100px" height="50px" backgroundColor="red" margin="none 0px" />
+							<node layout="abs" width="50px" height="100px" backgroundColor="blue" />
+							<node layout="abs" width="*" height="50px" backgroundColor="gray" />
+							<node layout="abs" width="50px" height="100px" backgroundColor="yellow" />
+							<node layout="abs" width="2*" height="50px" margin="50px" backgroundColor="olive" />
+							<node layout="abs" width="50px" height="100px" backgroundColor="black"  />
+							<node layout="abs" width="100px" height="50px" backgroundColor="white" />
+							<node layout="abs" width="50px" height="100px" backgroundColor="fuchsia" />
+							<node layout="abs" width="100px" height="50px" backgroundColor="navy" />
 						</node>
 					</node>;
 

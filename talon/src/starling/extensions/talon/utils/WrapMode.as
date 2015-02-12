@@ -4,14 +4,14 @@ package starling.extensions.talon.utils
 
 	public class WrapMode
 	{
-		public static const NEVER:String = "never";
+		public static const NONE:String = "none";
 		public static const AUTO:String = "auto";
 		public static const MANUAL:String = "manual";
 
 		/** Indicates whether the given break mode string is valid. */
 		public static function isValid(mode:String):Boolean
 		{
-			return mode == NEVER
+			return mode == NONE
 				|| mode == AUTO
 				|| mode == MANUAL;
 		}

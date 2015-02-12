@@ -53,6 +53,7 @@ package starling.extensions.talon.core
 			const TRANSPARENT:String = "transparent";
 			const WHITE:String = "white";
 			const FALSE:String = "false";
+			const AUTO:String = "auto";
 			const ONE:String = "1";
 			const NULL:String = null;
 
@@ -60,83 +61,84 @@ package starling.extensions.talon.core
 			height.auto = minHeight.auto = maxHeight.auto = measureAutoHeight;
 
 			// Style (Block styling)
-			bind(Attribute.ID, NULL, false);
-			bind(Attribute.TYPE, NULL, false);
-			bind(Attribute.CLASS, NULL, false);
-			bind(Attribute.STATE, NULL, false);
+			init(Attribute.ID, NULL, false);
+			init(Attribute.TYPE, NULL, false);
+			init(Attribute.CLASS, NULL, false);
+			init(Attribute.STATE, NULL, false);
 
 			// Bounds
-			bind(Attribute.WIDTH, Gauge.AUTO, true, width);
-			bind(Attribute.MIN_WIDTH, Gauge.NONE, true, minWidth);
-			bind(Attribute.MAX_WIDTH, Gauge.NONE, true, maxWidth);
-			bind(Attribute.HEIGHT, Gauge.AUTO, true, height);
-			bind(Attribute.MIN_HEIGHT, Gauge.NONE, true, minHeight);
-			bind(Attribute.MAX_HEIGHT, Gauge.NONE, true, maxHeight);
+			init(Attribute.WIDTH, Gauge.AUTO, true, width);
+			init(Attribute.MIN_WIDTH, Gauge.NONE, true, minWidth);
+			init(Attribute.MAX_WIDTH, Gauge.NONE, true, maxWidth);
+			init(Attribute.HEIGHT, Gauge.AUTO, true, height);
+			init(Attribute.MIN_HEIGHT, Gauge.NONE, true, minHeight);
+			init(Attribute.MAX_HEIGHT, Gauge.NONE, true, maxHeight);
 
 			// Margin
-			bind(Attribute.MARGIN, ZERO, true, margin);
-			bind(Attribute.MARGIN_TOP, ZERO, true, margin.top);
-			bind(Attribute.MARGIN_RIGHT, ZERO, true, margin.right);
-			bind(Attribute.MARGIN_BOTTOM, ZERO, true, margin.bottom);
-			bind(Attribute.MARGIN_LEFT, ZERO, true, margin.left);
+			init(Attribute.MARGIN, ZERO, true, margin);
+			init(Attribute.MARGIN_TOP, ZERO, true, margin.top);
+			init(Attribute.MARGIN_RIGHT, ZERO, true, margin.right);
+			init(Attribute.MARGIN_BOTTOM, ZERO, true, margin.bottom);
+			init(Attribute.MARGIN_LEFT, ZERO, true, margin.left);
 
 			// Padding
-			bind(Attribute.PADDING, ZERO, true, padding);
-			bind(Attribute.PADDING_TOP, ZERO, true, padding.top);
-			bind(Attribute.PADDING_RIGHT, ZERO, true, padding.right);
-			bind(Attribute.PADDING_BOTTOM, ZERO, true, padding.bottom);
-			bind(Attribute.PADDING_LEFT, ZERO, true, padding.left);
+			init(Attribute.PADDING, ZERO, true, padding);
+			init(Attribute.PADDING_TOP, ZERO, true, padding.top);
+			init(Attribute.PADDING_RIGHT, ZERO, true, padding.right);
+			init(Attribute.PADDING_BOTTOM, ZERO, true, padding.bottom);
+			init(Attribute.PADDING_LEFT, ZERO, true, padding.left);
 
 			// Anchor (Absolute Position)
-			bind(Attribute.ANCHOR, Gauge.NONE, true, anchor);
-			bind(Attribute.ANCHOR_TOP, Gauge.NONE, true, anchor.top);
-			bind(Attribute.ANCHOR_RIGHT, Gauge.NONE, true, anchor.right);
-			bind(Attribute.ANCHOR_BOTTOM, Gauge.NONE, true, anchor.bottom);
-			bind(Attribute.ANCHOR_LEFT, Gauge.NONE, true, anchor.left);
+			init(Attribute.ANCHOR, Gauge.NONE, true, anchor);
+			init(Attribute.ANCHOR_TOP, Gauge.NONE, true, anchor.top);
+			init(Attribute.ANCHOR_RIGHT, Gauge.NONE, true, anchor.right);
+			init(Attribute.ANCHOR_BOTTOM, Gauge.NONE, true, anchor.bottom);
+			init(Attribute.ANCHOR_LEFT, Gauge.NONE, true, anchor.left);
 
 			// Background
-			bind(Attribute.BACKGROUND_IMAGE, NULL, true);
-			bind(Attribute.BACKGROUND_TINT, WHITE, true);
-			bind(Attribute.BACKGROUND_9SCALE, ZERO, true);
-			bind(Attribute.BACKGROUND_COLOR, TRANSPARENT, true);
-			bind(Attribute.BACKGROUND_FILL_MODE, FillMode.SCALE, true);
+			init(Attribute.BACKGROUND_IMAGE, NULL, true);
+			init(Attribute.BACKGROUND_TINT, WHITE, true);
+			init(Attribute.BACKGROUND_9SCALE, ZERO, true);
+			init(Attribute.BACKGROUND_COLOR, TRANSPARENT, true);
+			init(Attribute.BACKGROUND_FILL_MODE, FillMode.SCALE, true);
 
 			// Appearance
-			bind(Attribute.ALPHA, ONE, true);
-			bind(Attribute.CLIPPING, FALSE, true);
-			bind(Attribute.CURSOR, MouseCursor.AUTO, true);
+			init(Attribute.ALPHA, ONE, true);
+			init(Attribute.CLIPPING, FALSE, true);
+			init(Attribute.CURSOR, MouseCursor.AUTO, true);
 
 			// Font
-			bind(Attribute.FONT_COLOR, Attribute.INHERIT, true);
-			bind(Attribute.FONT_NAME, Attribute.INHERIT, true);
-			bind(Attribute.FONT_SIZE, Attribute.INHERIT, true);
+			init(Attribute.FONT_COLOR, Attribute.INHERIT, true);
+			init(Attribute.FONT_NAME, Attribute.INHERIT, true);
+			init(Attribute.FONT_SIZE, Attribute.INHERIT, true);
 
 			// Layout
-			bind(Attribute.LAYOUT, Layout.FLOW, true);
-			bind(Attribute.VISIBILITY, Visibility.VISIBLE, true);
+			init(Attribute.LAYOUT, Layout.FLOW, true);
+			init(Attribute.VISIBILITY, Visibility.VISIBLE, true);
 
-			bind(Attribute.ORIENTATION, Orientation.HORIZONTAL, true);
-			bind(Attribute.HALIGN, HAlign.LEFT, true);
-			bind(Attribute.VALIGN, VAlign.TOP, true);
-			bind(Attribute.GAP, ZERO, true);
-			bind(Attribute.INTERLINE, ZERO, true);
+			init(Attribute.ORIENTATION, Orientation.HORIZONTAL, true);
+			init(Attribute.HALIGN, HAlign.LEFT, true);
+			init(Attribute.VALIGN, VAlign.TOP, true);
+			init(Attribute.GAP, ZERO, true);
+			init(Attribute.INTERLINE, ZERO, true);
+			init(Attribute.WRAP, AUTO, true);
 
-			bind(Attribute.POSITION, ZERO, true, position);
-			bind(Attribute.X, ZERO, true, position.x);
-			bind(Attribute.Y, ZERO, true, position.y);
+			init(Attribute.POSITION, ZERO, true, position);
+			init(Attribute.X, ZERO, true, position.x);
+			init(Attribute.Y, ZERO, true, position.y);
 
-			bind(Attribute.PIVOT, ZERO, true, pivot);
-			bind(Attribute.PIVOT_X, ZERO, true, pivot.x);
-			bind(Attribute.PIVOT_Y, ZERO, true, pivot.y);
+			init(Attribute.PIVOT, ZERO, true, pivot);
+			init(Attribute.PIVOT_X, ZERO, true, pivot.x);
+			init(Attribute.PIVOT_Y, ZERO, true, pivot.y);
 
-			bind(Attribute.ORIGIN, ZERO, true, origin);
-			bind(Attribute.ORIGIN_X, ZERO, true, origin.x);
-			bind(Attribute.ORIGIN_Y, ZERO, true, origin.y);
+			init(Attribute.ORIGIN, ZERO, true, origin);
+			init(Attribute.ORIGIN_X, ZERO, true, origin.x);
+			init(Attribute.ORIGIN_Y, ZERO, true, origin.y);
 
 			addEventListener(Event.CHANGE, onAttributeChange);
 		}
 
-		private function bind(name:String, initial:String, styleable:Boolean, source:* = null):void
+		private function init(name:String, initial:String, styleable:Boolean, source:* = null):void
 		{
 			var setter:Function = source ? source["parse"] : null;
 			var getter:Function = source ? source["toString"] : null;
@@ -263,7 +265,7 @@ package starling.extensions.talon.core
 			layout.arrange(this, bounds.width, bounds.height);
 		}
 
-		/** Actual node bounds. */
+		/** Actual node bounds in pixels. */
 		public function get bounds():Rectangle { return _bounds; }
 
 		/** Pixel per point. (Also known as (csf) content scale factor) */

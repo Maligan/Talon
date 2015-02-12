@@ -128,6 +128,9 @@ package starling.extensions.talon.core
 		private var _inheritable:Boolean;
 		private var _inherit:String;
 
+		private var _expanded:*;
+		private var _expandedCached:Boolean;
+
 		public function Attribute(node:Node, name:String)
 		{
 			initialize();
@@ -165,17 +168,23 @@ package starling.extensions.talon.core
 		/** NB! Optimize <code>value</code>property. Expand 'inherit' value and call invokers (like 'url(...)', 'res(...)', 'blur(...)' etc.) for convert value to strongly typed object. */
 		public function get expanded():*
 		{
-			// If attribute has no query - return origin value
-			var queryInfo:Array = StringUtil.parseFunction(origin);
-			if (queryInfo == null) return origin;
+			if (_expandedCached == false)
+			{
+				// If attribute has no query - return origin value
+				var queryInfo:Array = StringUtil.parseFunction(origin);
+				if (queryInfo == null) return origin;
 
-			// Obtain query method via queryInfo
-			var queryMethodName:String = queryInfo.shift();
-			var queryMethod:Function = _queries[queryMethodName];
-			if (queryMethod == null) return origin;
+				// Obtain query method via queryInfo
+				var queryMethodName:String = queryInfo.shift();
+				var queryMethod:Function = _queries[queryMethodName];
+				if (queryMethod == null) return origin;
 
-			queryInfo.unshift(this);
-			return queryMethod.apply(null, queryInfo);
+				queryInfo.unshift(this);
+
+				_expanded = queryMethod.apply(null, queryInfo);
+			}
+
+			return _expanded;
 		}
 
 		//
@@ -360,6 +369,8 @@ package starling.extensions.talon.core
 
 		private function dispatchChange():void
 		{
+			_expanded = null;
+			_expandedCached = false;
 			_node.dispatchEventWith(Event.CHANGE, false, name);
 		}
 	}

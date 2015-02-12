@@ -1,6 +1,8 @@
 package starling.extensions.talon.utils
 {
 	import starling.utils.Color;
+	import starling.utils.HAlign;
+	import starling.utils.VAlign;
 
 	/** This is utility method to work with strings in different formats and notation. */
 	public final class StringUtil
@@ -58,6 +60,24 @@ package starling.extensions.talon.utils
 			args.unshift(exec[1]);
 
 			return args;
+		}
+
+		public static function parseAlign(string:String):Number
+		{
+			switch (string)
+			{
+				case HAlign.LEFT:
+				case VAlign.TOP:
+					return 0.0;
+				case HAlign.CENTER:
+				case VAlign.CENTER:
+					return 0.5;
+				case HAlign.RIGHT:
+				case VAlign.BOTTOM:
+					return 1.0;
+				default:
+					return 0.0;
+			}
 		}
 	}
 }

@@ -142,7 +142,7 @@ package browser
 
 		private function onStatsChange(e:Event):void
 		{
-			Starling.current.showStats = parseInt(_controller.settings.getValueOrDefault(Constants.SETTING_STATS)) > 0;
+			Starling.current.showStats = _controller.settings.getValueOrDefault(Constants.SETTING_STATS, false);
 		}
 
 		private function onZoomChange(e:Event):void

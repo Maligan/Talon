@@ -36,7 +36,7 @@ package browser.utils
 		public static const T_MENU_VIEW_BACKGROUND_DARK:String = "Dark";
 		public static const T_MENU_VIEW_BACKGROUND_CHESS:String = "Transparent";
 		public static const T_MENU_VIEW_STATS:String = "Starling Stats";
-		public static const T_MENU_VIEW_LOCK_RESIZE:String = "Resize Lock";
+		public static const T_MENU_VIEW_LOCK_RESIZE:String = "Lock Window Size";
 		public static const T_MENU_VIEW_ZOOM_IN:String = "Zoom In";
 		public static const T_MENU_VIEW_ZOOM_OUT:String = "Zoom Out";
 		public static const T_MENU_VIEW_ORIENTATION:String = "Orientation";

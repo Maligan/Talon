@@ -56,7 +56,6 @@ package browser
 			_ui = new AppUI(this);
 			_host.addChild(_ui);
 
-
 			resizeTo(_host.stage.stageWidth, _host.stage.stageHeight);
 		}
 
@@ -69,7 +68,11 @@ package browser
 			}
 			else
 			{
+				var window:NativeWindow = root.stage.nativeWindow;
 				profile = DeviceProfile.CUSTOM;
+				profile.width = window.width;
+				profile.height = window.height;
+				dispatchEventWith(EVENT_PROFILE_CHANGE);
 			}
 		}
 

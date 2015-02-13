@@ -2,6 +2,9 @@ package browser.utils
 {
 	public class Constants
 	{
+		public static const APP_NAME:String = "Talon Browser";
+		public static const APP_VERSION:String = "0.0.1";
+
 		public static const DESIGNER_FILE_EXTENSION:String = "talon";
 		public static const DESIGNER_EXPORT_FILE_EXTENSION:String = "zip";
 		public static const SUPPORTED_IMAGE_EXTENSIONS:Vector.<String> = new <String>["atf", "png", "jpg", "gif"];
@@ -28,6 +31,7 @@ package browser.utils
 		public static const T_MENU_FILE_OPEN:String = "Open";
 		public static const T_MENU_FILE_RECENT:String = "Open Recent";
 		public static const T_MENU_FILE_EXPORT:String = "Export";
+		public static const T_MENU_FILE_EXPORT_AS:String = "Export As...";
 		public static const T_MENU_FILE_CLOSE:String = "Close";
 		public static const T_MENU_NAVIGATE:String = "Navigate";
 		public static const T_MENU_VIEW:String = "View";
@@ -35,7 +39,7 @@ package browser.utils
 		public static const T_MENU_VIEW_BACKGROUND_LIGHT:String = "Light";
 		public static const T_MENU_VIEW_BACKGROUND_DARK:String = "Dark";
 		public static const T_MENU_VIEW_BACKGROUND_CHESS:String = "Transparent";
-		public static const T_MENU_VIEW_STATS:String = "Starling Stats";
+		public static const T_MENU_VIEW_STATS:String = "Show Stats";
 		public static const T_MENU_VIEW_LOCK_RESIZE:String = "Lock Window Size";
 		public static const T_MENU_VIEW_ZOOM_IN:String = "Zoom In";
 		public static const T_MENU_VIEW_ZOOM_OUT:String = "Zoom Out";

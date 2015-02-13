@@ -36,22 +36,23 @@ package browser.commands
 		{
 			if (_target != null)
 			{
-				writeDocument();
+				writeDocument(_target);
 			}
 			else
 			{
-				_target = new File("/" + _controller.document.exportFileName);
-				_target.addEventListener(Event.SELECT, onExportFileSelect);
-				_target.browseForSave(Constants.T_EXPORT_TITLE);
+				var target:File = new File(_controller.document.exportPath);
+				target.addEventListener(Event.SELECT, onExportFileSelect);
+				target.browseForSave(Constants.T_EXPORT_TITLE);
 			}
 		}
 
 		private function onExportFileSelect(e:*):void
 		{
-			writeDocument();
+			var file:File = File(e.target);
+			writeDocument(file);
 		}
 
-		private function writeDocument():void
+		private function writeDocument(target:File):void
 		{
 			// Create archive
 			var zip:FZip = new FZip();
@@ -66,7 +67,7 @@ package browser.commands
 				zip.addFile(name, data);
 			}
 
-			writeFile(_target, zip);
+			writeFile(target, zip);
 		}
 
 		private function writeFile(file:File, zip:FZip):void

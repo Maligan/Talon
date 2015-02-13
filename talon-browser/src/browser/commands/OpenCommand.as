@@ -60,7 +60,7 @@ package browser.commands
 			if (sourcePath.exists == false) sourcePath.parent;
 
 			// Setup sourcePath
-			document.setSourcePath(sourcePath);
+			document.setSourcePath(source, sourcePath);
 
 			// Find all document files
 			var files:Vector.<File> = findFiles(sourcePath);

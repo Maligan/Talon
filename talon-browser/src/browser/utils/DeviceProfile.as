@@ -1,19 +1,20 @@
 package browser.utils
 {
+	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
 
 	public class DeviceProfile
 	{
-		public static const CUSTOM:DeviceProfile            = new DeviceProfile();
+		public static const CUSTOM:DeviceProfile            = new DeviceProfile(null, NaN, NaN, 1, Capabilities.screenDPI);
 
 		public static const IPHONE:DeviceProfile            = new DeviceProfile("iPhone",           320,  480,  1, 163);
-		public static const IPHONE_RETINA:DeviceProfile     = new DeviceProfile("iPhoneRetina",     640,  960,  2, 326);
-		public static const IPHONE_5:DeviceProfile          = new DeviceProfile("iPhone5",          640,  1136, 2, 326);
-		public static const IPHONE_6:DeviceProfile          = new DeviceProfile("iPhone6",          750,  1334, 2, 326);
-		public static const IPHONE_6_PLUS:DeviceProfile     = new DeviceProfile("iPhone6Plus",      1080, 1920, 2, 401);
+		public static const IPHONE_RETINA:DeviceProfile     = new DeviceProfile("iPhone (Retina)",  640,  960,  2, 326);
+		public static const IPHONE_5:DeviceProfile          = new DeviceProfile("iPhone 5",         640,  1136, 2, 326);
+		public static const IPHONE_6:DeviceProfile          = new DeviceProfile("iPhone 6",         750,  1334, 2, 326);
+		public static const IPHONE_6_PLUS:DeviceProfile     = new DeviceProfile("iPhone 6+",        1080, 1920, 2, 401);
 		public static const IPAD:DeviceProfile              = new DeviceProfile("iPad",             1024, 768,  1, 132);
-		public static const IPAD_RETINA:DeviceProfile       = new DeviceProfile("iPadRetina",       2048, 1536, 2, 264);
-		public static const IPAD_MINI_RETINA:DeviceProfile  = new DeviceProfile("iPadMiniRetina",   2048, 1536, 2, 326);
+		public static const IPAD_RETINA:DeviceProfile       = new DeviceProfile("iPad (Retina)",    2048, 1536, 2, 264);
+		public static const IPAD_MINI_RETINA:DeviceProfile  = new DeviceProfile("iPad Mini",        2048, 1536, 2, 326);
 
 		private static var _profiles:Array;
 		private static var _profilesById:Dictionary;

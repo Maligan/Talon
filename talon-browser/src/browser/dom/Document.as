@@ -15,6 +15,8 @@ package browser.dom
 
 	import flash.filesystem.File;
 
+	import flash.filesystem.File;
+
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
@@ -24,6 +26,7 @@ package browser.dom
 		private var _files:DocumentFileReferenceCollection;
 		private var _factory:DocumentTalonFactory;
 		private var _source:File;
+		private var _document:File;
 		private var _properties:Object;
 		private var _messages:DocumentMessageCollection;
 		private var _tracker:DocumentTaskTracker;
@@ -77,9 +80,11 @@ package browser.dom
 		//
 		// Export
 		//
-		public function get exportFileName():String
+		public function get exportPath():String
 		{
-			return _properties[Constants.PROPERTY_EXPORT_PATH];
+			var path:String = _properties[Constants.PROPERTY_EXPORT_PATH];
+			var resolved:String = _document.parent.resolvePath(path).nativePath;
+			return resolved;
 		}
 
 		/** Get in export document file name. */
@@ -88,9 +93,10 @@ package browser.dom
 			return _source.getRelativePath(documentFile.file);
 		}
 
-		public function setSourcePath(file:File):void
+		public function setSourcePath(document:File, source:File):void
 		{
-			_source = file;
+			_document = document;
+			_source = source;
 		}
 	}
 }

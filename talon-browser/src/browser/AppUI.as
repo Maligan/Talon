@@ -59,6 +59,7 @@ package browser
 		public function AppUI(controller:AppController)
 		{
 			_controller = controller;
+			_controller.addEventListener(AppController.EVENT_PROFILE_CHANGE, refreshWindowTitle);
 
 			_factory = new TalonFactory();
 			_factory.addEventListener(Event.COMPLETE, onFactoryComplete);
@@ -80,10 +81,15 @@ package browser
 			_menu = new NativeMenuAdapter();
 
 			_menu.addItem("file",         Constants.T_MENU_FILE);
-			_menu.addItem("file/open",    Constants.T_MENU_FILE_OPEN,     new OpenCommand(_controller),   "o");
-			_menu.addItem("file/close",   Constants.T_MENU_FILE_CLOSE,    new CloseCommand(_controller),  "w");
+			_menu.addItem("file/open",    Constants.T_MENU_FILE_OPEN,      new OpenCommand(_controller),   "o");
+			_menu.addItem("file/recent",  Constants.T_MENU_FILE_RECENT);
+			_menu.addItem("file/recent/f1");
+			_menu.addItem("file/recent/f2");
+			_menu.addItem("file/recent/f3");
+			_menu.addItem("file/close",   Constants.T_MENU_FILE_CLOSE,     new CloseCommand(_controller),  "w");
 			_menu.addItem("file/-1");
-			_menu.addItem("file/export",  Constants.T_MENU_FILE_EXPORT,   new ExportCommand(_controller), "s");
+			_menu.addItem("file/exportas",Constants.T_MENU_FILE_EXPORT,    null                          , "enter");
+			_menu.addItem("file/export",  Constants.T_MENU_FILE_EXPORT_AS, new ExportCommand(_controller), "s");
 
 			_menu.addItem("view",                       Constants.T_MENU_VIEW);
 			_menu.addItem("view/theme",                 Constants.T_MENU_VIEW_BACKGROUND);
@@ -193,6 +199,27 @@ package browser
 				_container.node.bounds.setTo(0, 0, width/zoom, height/zoom);
 				_container.node.commit();
 			}
+		}
+
+		private function refreshWindowTitle():void
+		{
+			var result:Array = [];
+			result.push("...\\plinkandplop\\interface\\interface.talon");
+
+
+			var profile:DeviceProfile = _controller.profile;
+			if (profile != DeviceProfile.CUSTOM)
+			{
+				result.push("[" + _controller.profile.id + "]");
+			}
+			else
+			{
+				result.push("[" + profile.width + "x" + profile.height + ", CSF=" + profile.csf + ", DPI=" + profile.dpi + "]")
+			}
+
+			result.push(Constants.APP_NAME + " " + Constants.APP_VERSION);
+
+			_controller.root.stage.nativeWindow.title = result.join(" - ");
 		}
 
 

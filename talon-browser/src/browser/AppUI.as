@@ -8,18 +8,15 @@ package browser
 	import browser.commands.SelectCommand;
 	import browser.commands.SettingCommand;
 	import browser.commands.ZoomCommand;
-	import browser.popups.ProfilePopup;
+	import browser.dom.Document;
 	import browser.popups.Popup;
 	import browser.utils.Constants;
 	import browser.utils.DeviceProfile;
+	import browser.utils.EventDispatcherAdapter;
 	import browser.utils.NativeMenuAdapter;
 
 	import flash.desktop.NativeApplication;
-	import flash.display.NativeWindow;
-	import flash.display.NativeWindowInitOptions;
-	import flash.display.NativeWindowRenderMode;
-	import flash.display.NativeWindowSystemChrome;
-	import flash.display.NativeWindowType;
+	import flash.filesystem.File;
 	import flash.utils.ByteArray;
 	import flash.utils.setTimeout;
 
@@ -27,8 +24,6 @@ package browser
 	import starling.display.DisplayObject;
 	import starling.display.Sprite;
 	import starling.events.Event;
-	import starling.events.TouchEvent;
-	import starling.events.TouchPhase;
 	import starling.extensions.talon.core.Attribute;
 	import starling.extensions.talon.display.TalonFactory;
 	import starling.extensions.talon.display.TalonSprite;
@@ -52,6 +47,7 @@ package browser
 		private var _isolator:Sprite;
 		private var _container:TalonSprite;
 
+		private var _documentDispatcher:EventDispatcherAdapter;
 		private var _menu:NativeMenuAdapter;
 		private var _prototype:DisplayObject;
 		private var _locked:Boolean;
@@ -60,6 +56,11 @@ package browser
 		{
 			_controller = controller;
 			_controller.addEventListener(AppController.EVENT_PROFILE_CHANGE, refreshWindowTitle);
+			_controller.addEventListener(AppController.EVENT_PROTOTYPE_CHANGE, refreshCurrentPrototype);
+			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+
+			_documentDispatcher = new EventDispatcherAdapter();
+			_documentDispatcher.addEventListener(Event.CHANGE, onDocumentDispatcherChange);
 
 			_factory = new TalonFactory();
 			_factory.addEventListener(Event.COMPLETE, onFactoryComplete);
@@ -81,14 +82,9 @@ package browser
 			_menu = new NativeMenuAdapter();
 
 			_menu.addItem("file",         Constants.T_MENU_FILE);
-			_menu.addItem("file/open",    Constants.T_MENU_FILE_OPEN,      new OpenCommand(_controller),   "o");
-			_menu.addItem("file/recent",  Constants.T_MENU_FILE_RECENT);
-			_menu.addItem("file/recent/f1");
-			_menu.addItem("file/recent/f2");
-			_menu.addItem("file/recent/f3");
+			_menu.addItem("file/open",    Constants.T_MENU_FILE_OPEN,      new OpenCommand(_controller),   "o", 2);
 			_menu.addItem("file/close",   Constants.T_MENU_FILE_CLOSE,     new CloseCommand(_controller),  "w");
 			_menu.addItem("file/-1");
-			_menu.addItem("file/exportas",Constants.T_MENU_FILE_EXPORT,    null                          , "enter");
 			_menu.addItem("file/export",  Constants.T_MENU_FILE_EXPORT_AS, new ExportCommand(_controller), "s");
 
 			_menu.addItem("view",                       Constants.T_MENU_VIEW);
@@ -112,8 +108,8 @@ package browser
 			for each (var profile:DeviceProfile in DeviceProfile.getProfiles())
 				_menu.addItem("view/profile/" + profile.id, null, new ProfileCommand(_controller, profile));
 
-			_menu.addItem("navigate",               Constants.T_MENU_NAVIGATE);
-
+			_controller.settings.addSettingListener(Constants.SETTING_RECENT_ARRAY, refreshRecent);
+			refreshRecent();
 
 			NativeApplication.nativeApplication.activeWindow.menu = _menu.menu;
 		}
@@ -132,7 +128,6 @@ package browser
 			_isolatorContainer = _interface.getChildByName("container") as TalonSprite;
 			_isolatorContainer.addChild(_isolator);
 			Popup.initialize(this, _popupContainer);
-
 
 			_controller.settings.addSettingListener(Constants.SETTING_BACKGROUND, onBackgroundChange); onBackgroundChange(null);
 			_controller.settings.addSettingListener(Constants.SETTING_STATS, onStatsChange); onStatsChange(null);
@@ -156,34 +151,9 @@ package browser
 			zoom = _controller.settings.getValueOrDefault(Constants.SETTING_ZOOM, 100) / 100;
 		}
 
-		public function refresh():void
+		private function onDocumentChange(e:Event):void
 		{
-			// Refresh Menu
-			_menu.removeItemChildren("navigate");
-
-			if (_controller.document != null)
-			{
-				for each (var prototypeId:String in _controller.document.factory.prototypeIds)
-				{
-					_menu.addItem("navigate/" + prototypeId, null, new SelectCommand(_controller, prototypeId));
-				}
-			}
-
-			// Refresh current prototype
-			var canShow:Boolean = true;
-			canShow &&= _controller.prototypeId != null;
-			canShow &&= _controller.document != null;
-			canShow &&= _controller.document.factory.hasPrototype(_controller.prototypeId);
-
-			_container.removeChildren();
-
-			if (canShow)
-			{
-				_prototype = _controller.document.factory.build(_controller.prototypeId);
-				_container.addChild(_prototype);
-
-				stage && resizeTo(stage.stageWidth, stage.stageHeight);
-			}
+			_documentDispatcher.target = _controller.document;
 		}
 
 		public function resizeTo(width:int, height:int):void
@@ -201,16 +171,25 @@ package browser
 			}
 		}
 
+		private function onDocumentDispatcherChange(e:Event):void
+		{
+			refreshPrototypes();
+			refreshCurrentPrototype();
+		}
+
+		//
+		// Refresh
+		//
 		private function refreshWindowTitle():void
 		{
 			var result:Array = [];
-			result.push("...\\plinkandplop\\interface\\interface.talon");
+			//			result.push("...\\plinkandplop\\interface\\interface.talon");
 
 
 			var profile:DeviceProfile = _controller.profile;
 			if (profile != DeviceProfile.CUSTOM)
 			{
-				result.push("[" + _controller.profile.id + "]");
+				result.push(_controller.profile.id);
 			}
 			else
 			{
@@ -222,7 +201,67 @@ package browser
 			_controller.root.stage.nativeWindow.title = result.join(" - ");
 		}
 
+		private function refreshPrototypes():void
+		{
+			// Refresh Menu
+			_menu.removeItem("navigate");
 
+			if (_controller.document && _controller.document.factory.prototypeIds.length > 0)
+			{
+				_menu.addItem("navigate", Constants.T_MENU_NAVIGATE);
+
+				for each (var prototypeId:String in _controller.document.factory.prototypeIds)
+				{
+					_menu.addItem("navigate/" + prototypeId, null, new SelectCommand(_controller, prototypeId));
+				}
+			}
+		}
+
+		private function refreshCurrentPrototype():void
+		{
+			// Refresh current prototype
+			var canShow:Boolean = true;
+			canShow &&= _controller.prototypeId != null;
+			canShow &&= _controller.document != null;
+			canShow &&= _controller.document.factory.hasPrototype(_controller.prototypeId);
+
+			_container.removeChildren();
+
+			if (canShow)
+			{
+				_prototype = _controller.document.factory.build(_controller.prototypeId);
+				_container.addChild(_prototype);
+
+				stage && resizeTo(stage.stageWidth, stage.stageHeight);
+			}
+		}
+
+		private function refreshRecent():void
+		{
+			// Refresh recent files
+			_menu.removeItem("file/recent");
+			var recent:Array = _controller.settings.getValueOrDefault(Constants.SETTING_RECENT_ARRAY, []);
+			if (recent.length > 0)
+			{
+				_menu.addItem("file/recent",  Constants.T_MENU_FILE_RECENT, null, null, 1);
+
+				for each (var path:String in recent)
+				{
+					var file:File = new File(path);
+					if (file.exists)
+					{
+						_menu.addItem("file/recent/" + path, null, new OpenCommand(_controller, file));
+					}
+				}
+
+				_menu.addItem("file/recent/-1");
+				_menu.addItem("file/recent/clear", Constants.T_MENU_FILE_RECENT_CLEAR, new SettingCommand(_controller, Constants.SETTING_RECENT_ARRAY, []));
+			}
+		}
+
+		//
+		// Properties
+		//
 		public function get factory():TalonFactory { return _factory; }
 
 		public function get locked():Boolean { return _locked; }

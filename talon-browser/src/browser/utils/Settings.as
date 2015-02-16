@@ -24,7 +24,9 @@ package browser.utils
 			{
 				if (e.data == name)
 				{
-					listener(e);
+					listener.length
+						? listener(e)
+						: listener();
 				}
 			};
 
@@ -43,12 +45,9 @@ package browser.utils
 
 		public function setValue(name:String, value:*):void
 		{
-			if (_data[name] != value)
-			{
-				_data[name] = value;
-				_storage.flush();
-				dispatchEventWith(Event.CHANGE, false, name);
-			}
+			_data[name] = value;
+			_storage.flush();
+			dispatchEventWith(Event.CHANGE, false, name);
 		}
 	}
 }

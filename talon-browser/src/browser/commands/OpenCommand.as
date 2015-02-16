@@ -16,12 +16,11 @@ package browser.commands
 
 	public class OpenCommand extends Command
 	{
-		private var _controller:AppController;
 		private var _source:File;
 
 		public function OpenCommand(controller:AppController, source:File = null)
 		{
-			_controller = controller;
+			super(controller);
 			_source = source;
 		}
 
@@ -29,7 +28,7 @@ package browser.commands
 		{
 			if (_source != null)
 			{
-				_controller.document = readDocument(_source);
+				openDocument(_source);
 			}
 			else
 			{
@@ -42,7 +41,18 @@ package browser.commands
 
 		private function onOpenFileSelect(e:Event):void
 		{
-			_controller.document = readDocument(e.target as File);
+			openDocument(e.target as File);
+		}
+
+		private function openDocument(source:File):void
+		{
+			controller.document = readDocument(source);
+
+			var recent:Array = controller.settings.getValueOrDefault(Constants.SETTING_RECENT_ARRAY, []);
+			var indexOf:int = recent.indexOf(source.nativePath);
+			if (indexOf != -1) recent.splice(indexOf, 1);
+			recent.unshift(source.nativePath);
+			controller.settings.setValue(Constants.SETTING_RECENT_ARRAY, recent);
 		}
 
 		private function readDocument(source:File):Document

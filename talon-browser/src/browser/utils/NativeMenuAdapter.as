@@ -12,12 +12,14 @@ package browser.utils
 		private var _menu:NativeMenu;
 		private var _locale:Dictionary;
 		private var _itemsByCommand:Dictionary;
+		private var _itemsPriority:Dictionary;
 
 		public function NativeMenuAdapter(menu:NativeMenu = null)
 		{
 			_menu = menu || new NativeMenu();
 			_locale = new Dictionary();
 			_itemsByCommand = new Dictionary();
+			_itemsPriority = new Dictionary();
 		}
 
 		public function removeItem(path:String):void
@@ -61,8 +63,9 @@ package browser.utils
 			}
 		}
 
-		public function addItem(path:String, label:String = null, command:Command = null, keyEquivalent:String = null):void
+		public function addItem(path:String, label:String = null, command:Command = null, keyEquivalent:String = null, priority:int = 0):void
 		{
+			_itemsPriority[path] = priority;
 			var item:NativeMenuItem = getOrCreateMenuItem(path);
 			item.data = command;
 			if (label) item.label = label;
@@ -117,13 +120,36 @@ package browser.utils
 				{
 					item = new NativeMenuItem(name, name.charAt(0) == "-");
 					item.name = name;
-					menu.addItem(item);
+					var index:int = searchIndexOf(path, menu);
+					menu.addItemAt(item, index);
 				}
 
 				menu = item.submenu;
 			}
 
 			return item;
+		}
+
+		private function searchIndexOf(path:String, parent:NativeMenu):int
+		{
+			var priority:int = _itemsPriority[path];
+			var split:Array = path.split("/");
+
+			var i:int = parent.numItems;
+			while (i > 0)
+			{
+				var item:NativeMenuItem = parent.getItemAt(i-1);
+
+				split.pop();
+				split.push(item.name);
+				var name:String = split.join("/");
+				var p:int = _itemsPriority[name];
+
+				if (priority <= p) break;
+				i--;
+			}
+
+			return i;
 		}
 
 		public function get menu():NativeMenu

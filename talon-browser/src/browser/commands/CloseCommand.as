@@ -6,12 +6,10 @@ package browser.commands
 
 	public class CloseCommand extends Command
 	{
-		private var _controller:AppController;
-
 		public function CloseCommand(controller:AppController):void
 		{
-			_controller = controller;
-			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			super(controller);
+			controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);
 		}
 
 		private function onDocumentChange(e:Event):void
@@ -21,12 +19,12 @@ package browser.commands
 
 		public override function execute():void
 		{
-			_controller.document = null;
+			controller.document = null;
 		}
 
 		public override function get isExecutable():Boolean
 		{
-			return _controller.document != null;
+			return controller.document != null;
 		}
 	}
 }

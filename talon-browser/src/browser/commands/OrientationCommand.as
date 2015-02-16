@@ -8,13 +8,12 @@ package browser.commands
 
 	public class OrientationCommand extends Command
 	{
-		private var _controller:AppController;
 		private var _orientation:String;
 
 		public function OrientationCommand(controller:AppController, orientation:String)
 		{
-			_controller = controller;
-			_controller.monitor.addEventListener(Event.CHANGE, onOrientationChange);
+			super(controller);
+			controller.monitor.addEventListener(Event.CHANGE, onOrientationChange);
 			_orientation = orientation;
 		}
 
@@ -27,7 +26,7 @@ package browser.commands
 		{
 			if (isActive) return;
 
-			var window:NativeWindow  = _controller.root.stage.nativeWindow;
+			var window:NativeWindow  = controller.root.stage.nativeWindow;
 			var min:Number = Math.min(window.width, window.height);
 			var max:Number = Math.max(window.width, window.height);
 
@@ -45,8 +44,8 @@ package browser.commands
 
 		public override function get isActive():Boolean
 		{
-			return (_orientation == Orientation.VERTICAL    && _controller.monitor.isPortrait)
-				|| (_orientation == Orientation.HORIZONTAL  && _controller.monitor.isLandscape)
+			return (_orientation == Orientation.VERTICAL    && controller.monitor.isPortrait)
+				|| (_orientation == Orientation.HORIZONTAL  && controller.monitor.isLandscape)
 		}
 	}
 }

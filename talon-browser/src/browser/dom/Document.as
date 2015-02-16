@@ -83,7 +83,7 @@ package browser.dom
 		public function get exportPath():String
 		{
 			var path:String = _properties[Constants.PROPERTY_EXPORT_PATH];
-			var resolved:String = _document.parent.resolvePath(path).nativePath;
+			var resolved:String = _document.parent ? _document.parent.resolvePath(path).nativePath : null;
 			return resolved;
 		}
 

@@ -81,7 +81,7 @@ package
 		{
 			if (_cache[url] == null)
 			{
-				var loader = new Loader();
+				var loader:Loader = new Loader();
 				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoadComplete);
 				loader.load(new URLRequest(url));
 			}
@@ -160,7 +160,7 @@ package
 
 			var config:XML =
 					<node layout="abs">
-						<node position="50%" pivot="50%" orientation="horizontal" backgroundColor="silver" width="75%" height="auto" gap="0px" wrap="auto" valign="bottom" halign="center">
+						<node position="50%" pivot="50%" orientation="horizontal" backgroundColor="silver" width="75%" height="auto" gap="0px" wrap="true" valign="bottom" halign="center">
 							<node layout="abs" width="100px" height="50px" backgroundColor="red" margin="none 0px" />
 							<node layout="abs" width="50px" height="100px" backgroundColor="blue" />
 							<node layout="abs" width="*" height="50px" backgroundColor="gray" />

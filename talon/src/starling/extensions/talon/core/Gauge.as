@@ -101,7 +101,7 @@ package starling.extensions.talon.core
 		 * @param ppts pixels per total stars
 		 * @param ts total stars
 		 */
-		public function toPixels(ppmm:Number, ppem:Number, pppt:Number, pp100p:Number, aw:Number, ah:Number, ppts:Number, ts:int):Number
+		public function toPixels(ppmm:Number, ppem:Number, pppt:Number, pp100p:Number, aw:Number = Infinity, ah:Number = Infinity, ppts:Number = 0, ts:int = 0):Number
 		{
 			switch (unit)
 			{

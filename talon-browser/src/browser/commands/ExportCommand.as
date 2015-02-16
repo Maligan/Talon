@@ -17,13 +17,12 @@ package browser.commands
 
 	public class ExportCommand extends Command
 	{
-		private var _controller:AppController;
 		private var _target:File;
 
 		public function ExportCommand(controller:AppController, target:File = null)
 		{
-			_controller = controller;
-			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			super(controller);
+			controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);
 			_target = target;
 		}
 
@@ -40,7 +39,7 @@ package browser.commands
 			}
 			else
 			{
-				var target:File = new File(_controller.document.exportPath);
+				var target:File = new File(controller.document.exportPath);
 				target.addEventListener(Event.SELECT, onExportFileSelect);
 				target.browseForSave(Constants.T_EXPORT_TITLE);
 			}
@@ -57,12 +56,12 @@ package browser.commands
 			// Create archive
 			var zip:FZip = new FZip();
 
-			for each (var file:DocumentFileReference in _controller.document.files.toArray())
+			for each (var file:DocumentFileReference in controller.document.files.toArray())
 			{
 				if (file.type == DocumentFileType.DIRECTORY) continue;
 				if (file.type == DocumentFileType.UNKNOWN) continue;
 
-				var name:String = _controller.document.getExportFileName(file);
+				var name:String = controller.document.getExportFileName(file);
 				var data:ByteArray = file.read();
 				zip.addFile(name, data);
 			}
@@ -88,7 +87,7 @@ package browser.commands
 
 		public override function get isExecutable():Boolean
 		{
-			return _controller.document != null;
+			return controller.document != null;
 		}
 	}
 }

@@ -5,13 +5,12 @@ package browser.commands
 
 	public class ZoomCommand extends Command
 	{
-		private var _controller:AppController;
 		private var _delta:int;
 
 		public function ZoomCommand(controller:AppController, delta:int)
 		{
-			_controller = controller;
-			_controller.settings.addSettingListener(Constants.SETTING_ZOOM, dispatchEvent);
+			super(controller);
+			controller.settings.addSettingListener(Constants.SETTING_ZOOM, dispatchEvent);
 			_delta = delta;
 		}
 
@@ -30,7 +29,7 @@ package browser.commands
 			return true;
 		}
 
-		private function get zoom():int { return _controller.settings.getValueOrDefault(Constants.SETTING_ZOOM, 100) }
-		private function set zoom(value:int):void { _controller.settings.setValue(Constants.SETTING_ZOOM, value) }
+		private function get zoom():int { return controller.settings.getValueOrDefault(Constants.SETTING_ZOOM, 100) }
+		private function set zoom(value:int):void { controller.settings.setValue(Constants.SETTING_ZOOM, value) }
 	}
 }

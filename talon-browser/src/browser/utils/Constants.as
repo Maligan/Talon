@@ -21,6 +21,8 @@ package browser.utils
 		public static const SETTING_ZOOM:String = "zoom";
 		public static const SETTING_LOCK_RESIZE:String = "lockWindowResize";
 
+		public static const SETTING_RECENT_ARRAY:String = "recent";
+
 		public static const ZOOM_MIN:int = 25;
 		public static const ZOOM_MAX:int = 300;
 
@@ -28,8 +30,9 @@ package browser.utils
 		public static const T_DESIGNER_FILE_EXTENSION_NAME:String = "Talon Designer Project";
 		public static const T_DESIGNER_EXPORT_FILE_EXTENSION_NAME:String = "Zip Archive";
 		public static const T_MENU_FILE:String = "File";
-		public static const T_MENU_FILE_OPEN:String = "Open";
+		public static const T_MENU_FILE_OPEN:String = "Open...";
 		public static const T_MENU_FILE_RECENT:String = "Open Recent";
+		public static const T_MENU_FILE_RECENT_CLEAR:String = "Clear";
 		public static const T_MENU_FILE_EXPORT:String = "Export";
 		public static const T_MENU_FILE_EXPORT_AS:String = "Export As...";
 		public static const T_MENU_FILE_CLOSE:String = "Close";

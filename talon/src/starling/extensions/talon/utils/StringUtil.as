@@ -20,7 +20,10 @@ package starling.extensions.talon.utils
 			if (string == null) return NaN;
 			if (string.indexOf("#") == 0) return parseInt(string.substr(1), 16);
 			if (Color[string.toUpperCase()] is uint) return Color[string.toUpperCase()];
-			if ((rgb=parseFunction(string)) && (rgb[0]=="rgb")) return Color.rgb(parseInt(rgb[1]), parseInt(rgb[2]), parseInt(rgb[3]));
+
+			var method:Array = parseFunction(string);
+			if (method && method[0]=="rgb") return Color.rgb(parseInt(method[1]), parseInt(method[2]), parseInt(method[3]));
+
 			return NaN;
 		}
 

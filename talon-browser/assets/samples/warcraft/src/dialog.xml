@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <prototype id="message" type="MessageBox">
-  <border>
+  <border layout="abs">
     <node width="*" height="0px" halign="center">
       <node id="header" valign="center" halign="center" paddingBottom="22px">
         <label text="Attention"/>

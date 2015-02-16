@@ -9,13 +9,12 @@ package browser.commands
 
 	public class ProfileCommand extends Command
 	{
-		private var _controller:AppController;
 		private var _profile:DeviceProfile;
 
 		public function ProfileCommand(controller:AppController, profile:DeviceProfile)
 		{
-			_controller = controller;
-			_controller.addEventListener(AppController.EVENT_PROFILE_CHANGE, onProfileChange);
+			super(controller);
+			controller.addEventListener(AppController.EVENT_PROFILE_CHANGE, onProfileChange);
 			_profile = profile;
 		}
 
@@ -33,13 +32,13 @@ package browser.commands
 			}
 			else
 			{
-				_controller.profile = _profile;
+				controller.profile = _profile;
 			}
 		}
 
 		public override function get isActive():Boolean
 		{
-			return _profile != DeviceProfile.CUSTOM && _controller.profile == _profile;
+			return _profile != DeviceProfile.CUSTOM && controller.profile == _profile;
 		}
 	}
 }

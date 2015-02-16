@@ -76,16 +76,6 @@ package browser
 			}
 		}
 
-		private function onDocumentChange(e:Event):void
-		{
-			refresh();
-		}
-
-		private function refresh():void
-		{
-			_ui.refresh();
-		}
-
 		public function resizeTo(width:int, height:int):void
 		{
 			_ui.resizeTo(width, height);
@@ -140,12 +130,8 @@ package browser
 		{
 			if (_document != value)
 			{
-				_document && _document.removeEventListener(Event.CHANGE, onDocumentChange);
 				_document = value;
-				_document && _document.addEventListener(Event.CHANGE, onDocumentChange);
-
 				dispatchEventWith(EVENT_DOCUMENT_CHANGE);
-
 				prototypeId = _document ? _document.factory.prototypeIds.shift() : null;
 			}
 		}
@@ -157,8 +143,6 @@ package browser
 			{
 				_prototypeId = value;
 				dispatchEventWith(EVENT_PROTOTYPE_CHANGE);
-
-				refresh();
 			}
 		}
 

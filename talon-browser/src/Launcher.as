@@ -17,7 +17,7 @@ package
 	import starling.display.Sprite;
 	import starling.events.Event;
 
-	[SWF(backgroundColor="#C7C7C7")]
+	[SWF(backgroundColor="#C7C7C7", frameRate="60")]
 	public class Launcher extends MovieClip
 	{
 		private var _dropTarget:flash.display.Sprite;

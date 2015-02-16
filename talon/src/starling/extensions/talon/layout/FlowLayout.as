@@ -11,7 +11,6 @@ package starling.extensions.talon.layout
 	{
 		public override function measureAutoWidth(node:Node, width:Number, height:Number):Number
 		{
-			if (!node.height.isAuto) height = node.height.toPixels(node.ppmm, node.ppem, node.pppt, height, 0, 0, height, 1);
 			var flow:Flow = measure(node, width, height, false);
 			var flowWidth:Number = node.getAttribute(Attribute.ORIENTATION) == Orientation.HORIZONTAL ? flow.getLength() : flow.getThickness();
 			flow.dispose();
@@ -20,7 +19,6 @@ package starling.extensions.talon.layout
 
 		public override function measureAutoHeight(node:Node, width:Number, height:Number):Number
 		{
-			if (!node.width.isAuto) width = node.width.toPixels(node.ppmm, node.ppem, node.pppt, width, 0, 0, width, 1);
 			var flow:Flow = measure(node, width, height, false);
 			var flowHeight:Number = node.getAttribute(Attribute.ORIENTATION) == Orientation.VERTICAL ? flow.getLength() : flow.getThickness();
 			flow.dispose();
@@ -55,7 +53,7 @@ package starling.extensions.talon.layout
 			if (orientation == Orientation.HORIZONTAL)
 			{
 				flow.setMaxSize(width, height);
-				flow.setWrap(node.getAttribute(Attribute.WRAP));
+				flow.setWrap(getWrap(node));
 				flow.setAlign(getAlign(node, Attribute.HALIGN), getAlign(node, Attribute.VALIGN));
 
 				for (var i:int = 0; i < node.numChildren; i++)
@@ -81,6 +79,7 @@ package starling.extensions.talon.layout
 			return flow;
 		}
 
+		private function getWrap(node:Node):Boolean { return node.getAttribute(Attribute.WRAP) == "true"; }
 		private function getAlign(node:Node, name:String):Number { return StringUtil.parseAlign(node.getAttribute(name)) }
 		private function getGap(node:Node):Number { return Gauge.toPixels(node.getAttribute(Attribute.GAP), node.ppmm, node.ppem, node.pppt, -1, 0, 0, 0, 0); }
 		private function getInterline(node:Node):Number { return Gauge.toPixels(node.getAttribute(Attribute.INTERLINE), node.ppmm, node.ppem, node.pppt, -1, 0, 0, 0, 0); }
@@ -89,11 +88,8 @@ package starling.extensions.talon.layout
 
 import flash.geom.Rectangle;
 import flash.utils.Dictionary;
-
 import starling.extensions.talon.utils.BreakMode;
-
 import starling.extensions.talon.utils.Orientation;
-import starling.extensions.talon.utils.WrapMode;
 
 class Flow
 {
@@ -108,7 +104,7 @@ class Flow
 	private var _thicknessPaddingEnd:Number = 0;
 	private var _interline:Number;
 
-	private var _wrap:String;
+	private var _wrap:Boolean;
 	private var _alignLengthwise:Number;
 	private var _alignThicknesswise:Number;
 
@@ -145,7 +141,7 @@ class Flow
 		_maxThickness = maxThickness;
 	}
 
-	public function setWrap(wrap:String):void
+	public function setWrap(wrap:Boolean):void
 	{
 		_wrap = wrap;
 	}
@@ -189,7 +185,7 @@ class Flow
 	{
 		var line:FlowLine = _lines[_lines.length-1];
 
-		if (_wrap != WrapMode.NONE)
+		if (_wrap)
 		{
 			_break = _childBreakMode == BreakMode.AFTER || _childBreakMode == BreakMode.BOTH;
 			var hasBreakBefore:Boolean = _childBreakMode == BreakMode.BEFORE || _childBreakMode == BreakMode.BOTH;

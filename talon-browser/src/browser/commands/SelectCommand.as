@@ -6,13 +6,12 @@ package browser.commands
 
 	public class SelectCommand extends Command
 	{
-		private var _controller:AppController;
 		private var _prototypeId:String;
 
 		public function SelectCommand(controller:AppController, prototypeId:String)
 		{
-			_controller = controller;
-			_controller.addEventListener(AppController.EVENT_PROTOTYPE_CHANGE, onControllerPrototypeChange);
+			super(controller);
+			controller.addEventListener(AppController.EVENT_PROTOTYPE_CHANGE, onControllerPrototypeChange);
 			_prototypeId = prototypeId;
 		}
 
@@ -23,12 +22,12 @@ package browser.commands
 
 		public override function execute():void
 		{
-			_controller.prototypeId = _prototypeId;
+			controller.prototypeId = _prototypeId;
 		}
 
 		public override function get isActive():Boolean
 		{
-			return _controller.prototypeId == _prototypeId;
+			return controller.prototypeId == _prototypeId;
 		}
 	}
 }

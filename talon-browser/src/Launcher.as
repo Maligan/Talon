@@ -3,9 +3,12 @@ package
 	import browser.utils.Constants;
 	import browser.AppController;
 	import browser.utils.Console;
+	import browser.utils.DeviceProfile;
+	import browser.utils.Settings;
 
 	import flash.desktop.NativeApplication;
 	import flash.display.MovieClip;
+	import flash.display.NativeWindow;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageQuality;
@@ -31,6 +34,7 @@ package
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
 			stage.quality = StageQuality.BEST;
+			adjust();
 
 			// NativeDragManager do not work with empty document root
 			// add this object to fix this problem
@@ -42,8 +46,6 @@ package
 
 			NativeApplication.nativeApplication.setAsDefaultApplication(Constants.DESIGNER_FILE_EXTENSION);
 			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
-
-
 
 			new Starling(starling.display.Sprite, stage);
 			Starling.current.addEventListener(Event.ROOT_CREATED, onRootCreated);
@@ -77,6 +79,32 @@ package
 			{
 				_invoke = e.arguments[0];
 				_controller && _controller.invoke(_invoke);
+			}
+		}
+
+		private function adjust():void
+		{
+			var settings:Settings = new Settings("settings");
+			var profileId:String = settings.getValueOrDefault(Constants.SETTING_PROFILE, null);
+			var profile:DeviceProfile = DeviceProfile.getById(profileId) || DeviceProfile.CUSTOM;
+
+			if (profile != DeviceProfile.CUSTOM)
+			{
+				var isPortrait:Boolean = settings.getValueOrDefault(Constants.SETTING_IS_PORTRAIT, false);
+				var window:NativeWindow = root.stage.nativeWindow;
+				var min:Number = Math.min(profile.width, profile.height);
+				var max:Number = Math.max(profile.width, profile.height);
+
+				if (isPortrait)
+				{
+					window.width = min;
+					window.height = max;
+				}
+				else
+				{
+					window.width = max;
+					window.height = min;
+				}
 			}
 		}
 	}

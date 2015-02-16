@@ -51,7 +51,7 @@ package browser
 
 			_monitor = new OrientationMonitor(root.stage);
 			_settings = new Settings("settings");
-			_profile = DeviceProfile.CUSTOM;
+			_profile = DeviceProfile.getById(settings.getValueOrDefault(Constants.SETTING_PROFILE, null)) || DeviceProfile.CUSTOM;
 			_root.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.RESIZING, onResizing);
 			_ui = new AppUI(this);
 			_host.addChild(_ui);
@@ -78,6 +78,7 @@ package browser
 
 		public function resizeTo(width:int, height:int):void
 		{
+			settings.setValue(Constants.SETTING_IS_PORTRAIT, _monitor.isPortrait);
 			_ui.resizeTo(width, height);
 		}
 
@@ -104,24 +105,29 @@ package browser
 
 				if (profile != DeviceProfile.CUSTOM)
 				{
-					var window:NativeWindow = root.stage.nativeWindow;
-
-					var min:Number = Math.min(profile.width, profile.height);
-					var max:Number = Math.max(profile.width, profile.height);
-
-					if (_monitor.isPortrait)
-					{
-						window.width = min;
-						window.height = max;
-					}
-					else
-					{
-						window.width = max;
-						window.height = min;
-					}
+					adjust(profile.width, profile.height, _monitor.isPortrait);
 				}
 
+				settings.setValue(Constants.SETTING_PROFILE, _profile.id);
 				dispatchEventWith(EVENT_PROFILE_CHANGE);
+			}
+		}
+
+		private function adjust(width:int, height:int, isPortrait:Boolean):void
+		{
+			var window:NativeWindow = root.stage.nativeWindow;
+			var min:Number = Math.min(width, height);
+			var max:Number = Math.max(width, height);
+
+			if (isPortrait)
+			{
+				window.width = min;
+				window.height = max;
+			}
+			else
+			{
+				window.width = max;
+				window.height = min;
 			}
 		}
 

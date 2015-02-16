@@ -36,7 +36,7 @@ package browser.utils
 
 		public function get isLandscape():Boolean
 		{
-			return  stageWidth > stageHeight;
+			return stageWidth > stageHeight;
 		}
 
 		public function get stageWidth():int

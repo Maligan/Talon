@@ -16,12 +16,13 @@ package browser.utils
 		public static const SETTING_BACKGROUND_CHESS:String = "transparent";
 		public static const SETTING_BACKGROUND_DARK:String = "dark";
 		public static const SETTING_BACKGROUND_LIGHT:String = "light";
-
+		public static const SETTING_BACKGROUND_DEFAULT:String = SETTING_BACKGROUND_DARK;
 		public static const SETTING_STATS:String = "stats";
 		public static const SETTING_ZOOM:String = "zoom";
 		public static const SETTING_LOCK_RESIZE:String = "lockWindowResize";
-
 		public static const SETTING_RECENT_ARRAY:String = "recent";
+		public static const SETTING_PROFILE:String = "profile";
+		public static const SETTING_IS_PORTRAIT:String = "isPortrait";
 
 		public static const ZOOM_MIN:int = 25;
 		public static const ZOOM_MAX:int = 300;

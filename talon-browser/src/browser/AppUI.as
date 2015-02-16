@@ -8,7 +8,6 @@ package browser
 	import browser.commands.SelectCommand;
 	import browser.commands.SettingCommand;
 	import browser.commands.ZoomCommand;
-	import browser.dom.Document;
 	import browser.popups.Popup;
 	import browser.utils.Constants;
 	import browser.utils.DeviceProfile;
@@ -138,7 +137,7 @@ package browser
 
 		private function onBackgroundChange(e:Event):void
 		{
-			_isolatorContainer.node.classes = new <String>[_controller.settings.getValueOrDefault(Constants.SETTING_BACKGROUND, Constants.SETTING_BACKGROUND_CHESS)];
+			_isolatorContainer.node.classes = new <String>[_controller.settings.getValueOrDefault(Constants.SETTING_BACKGROUND, Constants.SETTING_BACKGROUND_DEFAULT)];
 		}
 
 		private function onStatsChange(e:Event):void

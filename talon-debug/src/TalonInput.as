@@ -11,7 +11,7 @@ package
 	import starling.events.Event;
 
 	import talon.Node;
-	import talon.starling.ITalonElement;
+	import talon.ITalonElement;
 	import talon.utils.StringUtil;
 	import starling.text.TextFieldAutoSize;
 

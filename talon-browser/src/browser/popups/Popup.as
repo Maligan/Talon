@@ -5,7 +5,7 @@ package browser.popups
 	import flash.utils.Dictionary;
 
 	import starling.display.DisplayObjectContainer;
-	import talon.starling.ITalonElement;
+	import talon.ITalonElement;
 	import talon.utils.TalonFactory;
 	import talon.starling.SpriteElement;
 

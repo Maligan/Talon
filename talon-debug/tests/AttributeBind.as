@@ -2,7 +2,7 @@ package
 {
 	import flexunit.framework.Assert;
 
-	import talon.Gauge;
+	import talon.types.Gauge;
 
 	import talon.Node;
 

@@ -1,4 +1,4 @@
-package talon
+package talon.types
 {
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
@@ -47,7 +47,7 @@ package talon
 		 * </ul>
 		 * </p>
 		 *
-		 * @see talon.Gauge#parse()
+		 * @see talon.types.Gauge#parse()
 		 */
 		public function parse(string:String):void
 		{

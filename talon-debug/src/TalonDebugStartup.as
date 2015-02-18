@@ -20,7 +20,7 @@ package
 
 	import talon.Attribute;
 
-	import talon.GaugeQuad;
+	import talon.types.GaugeQuad;
 
 	import talon.Node;
 

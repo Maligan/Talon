@@ -2,7 +2,7 @@ package talon.layout
 {
 	import flash.utils.Dictionary;
 
-	import talon.Gauge;
+	import talon.types.Gauge;
 	import talon.Node;
 
 	public class Layout
@@ -97,8 +97,8 @@ package talon.layout
 		 * @private
 		 * Method toPixels() with optimized signature for most common use cases.
 		 * @param context ppmm, ppem, pppt used from thi node.
-		 * @param min origin bottom restrainer
-		 * @param max origin top restrainer
+		 * @param min value bottom restrainer
+		 * @param max value top restrainer
 		 */
 		protected final function toPixelsSugar(gauge:Gauge, context:Node, pp100p:Number = 0, width:Number = 0, height:Number = 0, ppts:Number = 0, ts:int = 0, min:Gauge = null, max:Gauge = null):Number
 		{

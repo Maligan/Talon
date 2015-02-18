@@ -16,7 +16,7 @@ package talon.utils
 		public static function queryBrightnessFilter(attribute:Attribute, brightness:String):FragmentFilter
 		{
 			var value:Number = parseFloat(brightness);
-			if (value != value) throw new ArgumentError("Bad filter origin: " + value);
+			if (value != value) throw new ArgumentError("Bad filter value: " + value);
 
 			var filter:ColorMatrixFilter = new ColorMatrixFilter();
 			filter.adjustBrightness(value);

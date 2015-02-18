@@ -1,4 +1,4 @@
-package talon
+package talon.types
 {
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
@@ -24,7 +24,7 @@ package talon
 		 * Parse string and setup sub gauges.
 		 * Parser expects <em>one or two</em> space separated values (else throw ArgumentError):
 		 *
-		 * <p>If string contains one origin it expanded (e.g. <code>"string"</code> to <code>"string string"</code>).</p>
+		 * <p>If string contains one value it expanded (e.g. <code>"string"</code> to <code>"string string"</code>).</p>
 		 *
 		 * <p>
 		 * After subgauges parse substrings:
@@ -34,7 +34,7 @@ package talon
 		 * </ul>
 		 * </p>
 		 *
-		 * @see talon.Gauge#parse()
+		 * @see talon.types.Gauge#parse()
 		 */
 		public function parse(string:String):void
 		{

@@ -3,7 +3,7 @@ package talon.layout
 	import flash.geom.Rectangle;
 
 	import talon.Attribute;
-	import talon.Gauge;
+	import talon.types.Gauge;
 	import talon.Node;
 	import talon.utils.Orientation;
 	import talon.utils.StringUtil;

@@ -12,6 +12,9 @@ package talon
 	import starling.utils.VAlign;
 
 	import talon.layout.Layout;
+	import talon.types.Gauge;
+	import talon.types.GaugePair;
+	import talon.types.GaugeQuad;
 	import talon.utils.FillMode;
 	import talon.utils.Orientation;
 	import talon.utils.Visibility;
@@ -219,7 +222,7 @@ package talon
 		//
 		// Resource
 		//
-		/** Set current node resources (an object containing key-origin pairs). */
+		/** Set current node resources (an object containing key-value pairs). */
 		public function setResources(resources:Object):void
 		{
 			_resources = resources;

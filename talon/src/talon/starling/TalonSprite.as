@@ -19,7 +19,7 @@ package talon.starling
 	import starling.textures.Texture;
 
 	import talon.Attribute;
-	import talon.GaugeQuad;
+	import talon.types.GaugeQuad;
 	import talon.Node;
 	import talon.utils.FillMode;
 	import talon.utils.StringUtil;

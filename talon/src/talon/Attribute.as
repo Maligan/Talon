@@ -279,8 +279,8 @@ package talon
 			}
 			else if (_assigned != value)
 			{
-				// FIXME: Set assigned origin while origin == this.origin
 				_assigned = value;
+				// TODO: value can be not changed (_assigned == styled || initial)
 				dispatchChange();
 			}
 		}

@@ -1,4 +1,4 @@
-package talon
+package talon.types
 {
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
@@ -10,7 +10,7 @@ package talon
 	{
 		/** Value is not set, and must be ignored. This is <code>null</code> analog. */
 		public static const NONE:String = "none";
-		/** Indicates that final origin must be defined by measure context. */
+		/** Indicates that final value must be defined by measure context. */
 		public static const AUTO:String = "auto";
 		/** Regular pixel. */
 		public static const PX:String = "px";
@@ -18,7 +18,7 @@ package talon
 		public static const PT:String = "px";
 		/** Millimeter. NB! Device independent (absolute) unit. (Undesirable to use absolute units. If possible then replace it with em/px). */
 		public static const MM:String = "mm";
-		/** Ems has dynamic origin, 1em equals 'fontSize' of current node. */
+		/** Ems has dynamic value, 1em equals 'fontSize' of current node. */
 		public static const EM:String = "em";
 		/** Relative unit. Percentages target defined by parent node. */
 		public static const PERCENT:String = "%";
@@ -39,7 +39,7 @@ package talon
 		private var _amount:Number = 0;
 		private var _auto:Function = null;
 
-		/** Read string and parse it origin, throw ArgumentError if string has not valid format. */
+		/** Read string and parse it value, throw ArgumentError if string has not valid format. */
 		public function parse(string:String):void
 		{
 			const prevUnit:String = _unit;
@@ -52,7 +52,7 @@ package talon
 			}
 			else if (string == AUTO)
 			{
-				if (!auto) throw new ArgumentError("Auto origin is not allowed");
+				if (!auto) throw new ArgumentError("Auto value is not allowed");
 				_unit = AUTO;
 				_amount = 0;
 			}
@@ -123,7 +123,7 @@ package talon
 		{
 			if (_unit != value)
 			{
-				if (!auto && value == AUTO) throw new ArgumentError("Auto origin is not allowed");
+				if (!auto && value == AUTO) throw new ArgumentError("Auto value is not allowed");
 
 				_unit = unit;
 				dispatchEventWith(Event.CHANGE);
@@ -164,13 +164,13 @@ package talon
 				&& gauge.amount == amount;
 		}
 
-		/** talon.Gauge unit == AUTO. */
+		/** talon.types.Gauge unit == AUTO. */
 		public function get isAuto():Boolean
 		{
 			return _unit == AUTO;
 		}
 
-		/** talon.Gauge unit == NONE. */
+		/** talon.types.Gauge unit == NONE. */
 		public function get isNone():Boolean
 		{
 			return _unit == NONE;

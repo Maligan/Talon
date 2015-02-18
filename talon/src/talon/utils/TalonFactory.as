@@ -1,6 +1,6 @@
 package talon.utils
 {
-	import talon.ITalonElement;
+	import talon.utils.ITalonElement;
 	import talon.starling.*;
 	import flash.events.Event;
 	import flash.utils.ByteArray;

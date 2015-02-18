@@ -24,14 +24,14 @@ package talon.starling
 	import talon.utils.FillMode;
 	import talon.utils.StringUtil;
 
-	public class TalonSprite extends Sprite implements ITalonElement
+	public class SpriteElement extends Sprite implements ITalonElement
 	{
 		private var _node:Node;
 		private var _backgroundColor:Quad;
 		private var _background9ScaleImage:Scale9Image;
 		private var _backgroundTiledImage:TiledImage;
 
-		public function TalonSprite()
+		public function SpriteElement()
 		{
 			_node = new Node();
 			_node.addEventListener(Event.CHANGE, onNodeChange);

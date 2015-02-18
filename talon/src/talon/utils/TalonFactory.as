@@ -1,5 +1,6 @@
-package talon.starling
+package talon.utils
 {
+	import talon.starling.*;
 	import flash.events.Event;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
@@ -21,10 +22,10 @@ package talon.starling
 
 		public function TalonFactory(defaultLinkageClass:Class = null):void
 		{
-			_linkageByDefault = defaultLinkageClass || TalonSprite;
-			setLinkage("node", TalonSprite);
-			setLinkage("image", TalonImage);
-			setLinkage("label", TalonTextField);
+			_linkageByDefault = defaultLinkageClass || SpriteElement;
+			setLinkage("node", SpriteElement);
+			setLinkage("image", ImageElement);
+			setLinkage("label", TextFieldElement);
 		}
 
 		public function build(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):DisplayObject

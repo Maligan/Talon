@@ -10,11 +10,11 @@ package talon.starling
 	import talon.Node;
 	import talon.utils.StringUtil;
 
-	public class TalonTextField extends TextField implements ITalonElement
+	public class TextFieldElement extends TextField implements ITalonElement
 	{
 		private var _node:Node;
 
-		public function TalonTextField()
+		public function TextFieldElement()
 		{
 			super(0, 0, null);
 

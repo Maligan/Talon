@@ -24,8 +24,8 @@ package
 
 	import talon.Node;
 
-	import talon.starling.TalonSprite;
-	import talon.starling.TalonFactory;
+	import talon.starling.SpriteElement;
+	import talon.utils.TalonFactory;
 	import talon.utils.StringUtil;
 	import starling.textures.Texture;
 
@@ -37,7 +37,7 @@ package
 		[Embed(source="../assets/down.png")] private static const DOWN_BYTES:Class;
 
 		private var _document:Sprite;
-		private var _talon:TalonSprite;
+		private var _talon:SpriteElement;
 
 		public function TalonDebugStartup()
 		{
@@ -199,7 +199,7 @@ package
 //			_factory.addResource("locale-string", "Привет я текст на русском языке!");
 			_factory.addResource("locale-string", "Hello! I'm English text");
 
-			_talon = _factory.build("root") as TalonSprite;
+			_talon = _factory.build("root") as SpriteElement;
 			_talon.addEventListener("invalidate", onInvalidate);
 			_document.addChild(_talon);
 			_document.addEventListener(Event.TRIGGERED, onTriggered);

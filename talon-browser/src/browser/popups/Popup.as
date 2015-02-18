@@ -6,10 +6,10 @@ package browser.popups
 
 	import starling.display.DisplayObjectContainer;
 	import talon.starling.ITalonElement;
-	import talon.starling.TalonFactory;
-	import talon.starling.TalonSprite;
+	import talon.utils.TalonFactory;
+	import talon.starling.SpriteElement;
 
-	public class Popup extends TalonSprite implements ITalonElement
+	public class Popup extends SpriteElement implements ITalonElement
 	{
 		private static var _ui:AppUI;
 		private static var _layer:DisplayObjectContainer;

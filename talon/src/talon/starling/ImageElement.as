@@ -7,13 +7,13 @@ package talon.starling
 	import talon.Attribute;
 	import talon.Node;
 
-	public class TalonImage extends Image implements ITalonElement
+	public class ImageElement extends Image implements ITalonElement
 	{
 		private static var _empty:Texture;
 
 		private var _node:Node;
 
-		public function TalonImage()
+		public function ImageElement()
 		{
 			super(_empty || (_empty = Texture.empty(1, 1)));
 

@@ -24,8 +24,8 @@ package browser
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import talon.Attribute;
-	import talon.starling.TalonFactory;
-	import talon.starling.TalonSprite;
+	import talon.utils.TalonFactory;
+	import talon.starling.SpriteElement;
 	import talon.layout.Layout;
 	import talon.utils.Orientation;
 	import starling.filters.BlurFilter;
@@ -40,11 +40,11 @@ package browser
 		private var _controller:AppController;
 
 		private var _factory:TalonFactory;
-		private var _interface:TalonSprite;
-		private var _popupContainer:TalonSprite;
-		private var _isolatorContainer:TalonSprite;
+		private var _interface:SpriteElement;
+		private var _popupContainer:SpriteElement;
+		private var _isolatorContainer:SpriteElement;
 		private var _isolator:Sprite;
-		private var _container:TalonSprite;
+		private var _container:SpriteElement;
 
 		private var _documentDispatcher:EventDispatcherAdapter;
 		private var _menu:NativeMenuAdapter;
@@ -65,7 +65,7 @@ package browser
 			_factory.addEventListener(Event.COMPLETE, onFactoryComplete);
 			_factory.addArchiveAsync(new INTERFACE() as ByteArray);
 
-			_container = new TalonSprite();
+			_container = new SpriteElement();
 			_container.node.setAttribute(Attribute.LAYOUT, Layout.FLOW);
 			_container.node.setAttribute(Attribute.VALIGN, VAlign.CENTER);
 			_container.node.setAttribute(Attribute.HALIGN, HAlign.CENTER);
@@ -118,13 +118,13 @@ package browser
 		//
 		private function onFactoryComplete(e:Event):void
 		{
-			_interface = _factory.build("interface") as TalonSprite;
+			_interface = _factory.build("interface") as SpriteElement;
 			addChild(_interface);
 
 			_interface.getChildByName("shade").visible = false;
 
-			_popupContainer = _interface.getChildByName("popups") as TalonSprite;
-			_isolatorContainer = _interface.getChildByName("container") as TalonSprite;
+			_popupContainer = _interface.getChildByName("popups") as SpriteElement;
+			_isolatorContainer = _interface.getChildByName("container") as SpriteElement;
 			_isolatorContainer.addChild(_isolator);
 			Popup.initialize(this, _popupContainer);
 

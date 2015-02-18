@@ -128,7 +128,7 @@ package talon
 		/** Remove CSS comments. */
 		private function uncomment(string:String):String
 		{
-			return string.replace(/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g, '');
+			return string.replace(/\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\//g, '');
 		}
 
 		//

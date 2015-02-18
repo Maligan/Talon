@@ -1,10 +1,11 @@
-package starling.extensions.talon.display
+package talon.starling
 {
 	import starling.display.Image;
 	import starling.events.Event;
-	import starling.extensions.talon.core.Attribute;
-	import starling.extensions.talon.core.Node;
 	import starling.textures.Texture;
+
+	import talon.Attribute;
+	import talon.Node;
 
 	public class TalonImage extends Image implements ITalonElement
 	{

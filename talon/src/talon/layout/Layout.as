@@ -1,9 +1,9 @@
-package starling.extensions.talon.layout
+package talon.layout
 {
 	import flash.utils.Dictionary;
 
-	import starling.extensions.talon.core.Gauge;
-	import starling.extensions.talon.core.Node;
+	import talon.Gauge;
+	import talon.Node;
 
 	public class Layout
 	{

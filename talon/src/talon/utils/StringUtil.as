@@ -1,4 +1,4 @@
-package starling.extensions.talon.utils
+package talon.utils
 {
 	import starling.utils.Color;
 	import starling.utils.HAlign;

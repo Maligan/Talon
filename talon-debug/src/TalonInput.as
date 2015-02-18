@@ -10,9 +10,9 @@ package
 	import starling.display.Quad;
 	import starling.events.Event;
 
-	import starling.extensions.talon.core.Node;
-	import starling.extensions.talon.display.ITalonElement;
-	import starling.extensions.talon.utils.StringUtil;
+	import talon.Node;
+	import talon.starling.ITalonElement;
+	import talon.utils.StringUtil;
 	import starling.text.TextFieldAutoSize;
 
 	public class TalonInput extends Quad implements ITalonElement

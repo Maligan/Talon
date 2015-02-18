@@ -1,13 +1,14 @@
-package starling.extensions.talon.display
+package talon.starling
 {
 
 	import starling.events.Event;
-	import starling.extensions.talon.core.Attribute;
-	import starling.extensions.talon.core.Node;
-	import starling.extensions.talon.utils.StringUtil;
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
 	import starling.text.TextFieldAutoSize;
+
+	import talon.Attribute;
+	import talon.Node;
+	import talon.utils.StringUtil;
 
 	public class TalonTextField extends TextField implements ITalonElement
 	{

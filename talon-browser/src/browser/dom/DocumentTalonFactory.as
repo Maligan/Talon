@@ -3,8 +3,8 @@ package browser.dom
 	import flash.utils.Dictionary;
 
 	import starling.display.DisplayObject;
-	import starling.extensions.talon.core.StyleSheet;
-	import starling.extensions.talon.display.TalonFactory;
+	import talon.StyleSheet;
+	import talon.starling.TalonFactory;
 
 	/** Extended version of TalonFactory for browser purpose. */
 	public final class DocumentTalonFactory extends TalonFactory

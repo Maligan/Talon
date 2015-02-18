@@ -1,4 +1,4 @@
-package starling.extensions.talon.core
+package talon
 {
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
@@ -164,13 +164,13 @@ package starling.extensions.talon.core
 				&& gauge.amount == amount;
 		}
 
-		/** Gauge unit == AUTO. */
+		/** talon.Gauge unit == AUTO. */
 		public function get isAuto():Boolean
 		{
 			return _unit == AUTO;
 		}
 
-		/** Gauge unit == NONE. */
+		/** talon.Gauge unit == NONE. */
 		public function get isNone():Boolean
 		{
 			return _unit == NONE;

@@ -1,4 +1,4 @@
-package starling.extensions.talon.core
+package talon
 {
 	import flash.utils.Dictionary;
 
@@ -164,9 +164,10 @@ package starling.extensions.talon.core
 	}
 }
 
-import starling.extensions.talon.core.Attribute;
-import starling.extensions.talon.core.Node;
 import starling.utils.Color;
+
+import talon.Attribute;
+import talon.Node;
 
 class StyleSelector
 {

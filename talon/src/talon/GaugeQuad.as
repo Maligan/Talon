@@ -1,4 +1,4 @@
-package starling.extensions.talon.core
+package talon
 {
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
@@ -47,7 +47,7 @@ package starling.extensions.talon.core
 		 * </ul>
 		 * </p>
 		 *
-		 * @see Gauge#parse()
+		 * @see talon.Gauge#parse()
 		 */
 		public function parse(string:String):void
 		{

@@ -1,16 +1,17 @@
-package starling.extensions.talon.core
+package talon
 {
 	import flash.utils.Dictionary;
 
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
-	import starling.extensions.talon.utils.QueryUtil;
-	import starling.extensions.talon.utils.StringUtil;
+
+	import talon.utils.QueryUtil;
+	import talon.utils.StringUtil;
 
 	//[ExcludeClass]
 	public class Attribute
 	{
-		//1
+		//
 		// Standard Attribute list
 		//
 		public static const ID:String = "id";
@@ -154,7 +155,7 @@ package starling.extensions.talon.core
 		public function get name():String { return _name; }
 
 		/**
-		 * Attribute value (based on assigned, styled and initial values)
+		 * talon.Attribute value (based on assigned, styled and initial values)
 		 * NB! There are two optimized version of this property: origin & expanded, but remember this value is basis for them.
 		 */
 		public function get value():String { return assigned || (styleable?styled:null) || initial; }
@@ -327,7 +328,7 @@ package starling.extensions.talon.core
 			}
 		}
 
-		/** Attribute value from node style sheet. */
+		/** talon.Attribute value from node style sheet. */
 		public function get styled():String { return _styled }
 		public function set styled(value:String):void
 		{
@@ -354,14 +355,14 @@ package starling.extensions.talon.core
 		// Misc
 		//
 
-		/** Attribute value is mapped to resource. */
+		/** talon.Attribute value is mapped to resource. */
 		public function get isResource():Boolean
 		{
 			var split:Array = StringUtil.parseFunction(origin);
 			return split && split[0] == "res";
 		}
 
-		/** Attribute value user inherit from parent. */
+		/** talon.Attribute value user inherit from parent. */
 		public function get isInherit():Boolean
 		{
 			return inheritable && value==INHERIT;

@@ -1,7 +1,8 @@
-package starling.extensions.talon.layout
+package talon.layout
 {
 	import starling.errors.AbstractMethodError;
-	import starling.extensions.talon.core.Node;
+
+	import talon.Node;
 
 	public class GridLayout extends Layout
 	{

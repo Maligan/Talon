@@ -1,4 +1,4 @@
-package starling.extensions.talon.display
+package talon.starling
 {
 	import flash.events.Event;
 	import flash.utils.ByteArray;
@@ -7,8 +7,9 @@ package starling.extensions.talon.display
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
 	import starling.events.EventDispatcher;
-	import starling.extensions.talon.core.Node;
-	import starling.extensions.talon.core.StyleSheet;
+
+	import talon.Node;
+	import talon.StyleSheet;
 
 	public class TalonFactory extends EventDispatcher
 	{

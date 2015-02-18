@@ -1,4 +1,4 @@
-package starling.extensions.talon.display
+package talon.starling
 {
 	import feathers.display.Scale9Image;
 	import feathers.display.TiledImage;
@@ -11,12 +11,13 @@ package starling.extensions.talon.display
 	import starling.display.Quad;
 	import starling.display.Sprite;
 	import starling.events.Event;
-	import starling.extensions.talon.core.Attribute;
-	import starling.extensions.talon.core.GaugeQuad;
-	import starling.extensions.talon.core.Node;
-	import starling.extensions.talon.utils.FillMode;
-	import starling.extensions.talon.utils.StringUtil;
 	import starling.textures.Texture;
+
+	import talon.Attribute;
+	import talon.GaugeQuad;
+	import talon.Node;
+	import talon.utils.FillMode;
+	import talon.utils.StringUtil;
 
 	internal class Background extends Sprite
 	{

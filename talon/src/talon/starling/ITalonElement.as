@@ -1,6 +1,6 @@
-package starling.extensions.talon.display
+package talon.starling
 {
-	import starling.extensions.talon.core.Node;
+	import talon.Node;
 
 	/** Interface created only for ITalonElement can identify other ITalonElement.*/
 	public interface ITalonElement

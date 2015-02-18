@@ -1,4 +1,4 @@
-package starling.extensions.talon.core
+package talon
 {
 	import flash.geom.Rectangle;
 	import flash.system.Capabilities;
@@ -8,12 +8,13 @@ package starling.extensions.talon.core
 	import starling.core.Starling;
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
-	import starling.extensions.talon.layout.Layout;
-	import starling.extensions.talon.utils.FillMode;
-	import starling.extensions.talon.utils.Orientation;
-	import starling.extensions.talon.utils.Visibility;
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
+
+	import talon.layout.Layout;
+	import talon.utils.FillMode;
+	import talon.utils.Orientation;
+	import talon.utils.Visibility;
 
 	public final class Node extends EventDispatcher
 	{
@@ -296,7 +297,7 @@ package starling.extensions.talon.core
 			return layout.measureAutoHeight(this, width, height);
 		}
 
-		/** Node layout strategy class. */
+		/** talon.Node layout strategy class. */
 		private function get layout():Layout
 		{
 			return Layout.getLayoutByAlias(getAttribute(Attribute.LAYOUT));

@@ -2,9 +2,9 @@ package
 {
 	import flexunit.framework.Assert;
 
-	import starling.extensions.talon.core.Gauge;
+	import talon.Gauge;
 
-	import starling.extensions.talon.core.Node;
+	import talon.Node;
 
 	public class AttributeBind
 	{

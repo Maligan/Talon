@@ -4,8 +4,8 @@ package
 
 	import starling.events.Event;
 
-	import starling.extensions.talon.core.Attribute;
-	import starling.extensions.talon.core.Node;
+	import talon.Attribute;
+	import talon.Node;
 
 	public class AttributeInherit
 	{

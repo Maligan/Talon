@@ -1,8 +1,8 @@
-package starling.extensions.talon.layout
+package talon.layout
 {
-	import starling.extensions.talon.core.Attribute;
-	import starling.extensions.talon.core.Node;
-	import starling.extensions.talon.utils.Visibility;
+	import talon.Attribute;
+	import talon.Node;
+	import talon.utils.Visibility;
 
 	public class AbsoluteLayout extends Layout
 	{

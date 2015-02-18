@@ -23,11 +23,11 @@ package browser
 	import starling.display.DisplayObject;
 	import starling.display.Sprite;
 	import starling.events.Event;
-	import starling.extensions.talon.core.Attribute;
-	import starling.extensions.talon.display.TalonFactory;
-	import starling.extensions.talon.display.TalonSprite;
-	import starling.extensions.talon.layout.Layout;
-	import starling.extensions.talon.utils.Orientation;
+	import talon.Attribute;
+	import talon.starling.TalonFactory;
+	import talon.starling.TalonSprite;
+	import talon.layout.Layout;
+	import talon.utils.Orientation;
 	import starling.filters.BlurFilter;
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;

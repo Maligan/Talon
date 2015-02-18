@@ -4,7 +4,7 @@ package browser.commands
 	import flash.display.NativeWindow;
 	import flash.events.Event;
 
-	import starling.extensions.talon.utils.Orientation;
+	import talon.utils.Orientation;
 
 	public class OrientationCommand extends Command
 	{

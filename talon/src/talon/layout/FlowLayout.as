@@ -1,11 +1,12 @@
-package starling.extensions.talon.layout
+package talon.layout
 {
 	import flash.geom.Rectangle;
-	import starling.extensions.talon.core.Attribute;
-	import starling.extensions.talon.core.Gauge;
-	import starling.extensions.talon.core.Node;
-	import starling.extensions.talon.utils.Orientation;
-	import starling.extensions.talon.utils.StringUtil;
+
+	import talon.Attribute;
+	import talon.Gauge;
+	import talon.Node;
+	import talon.utils.Orientation;
+	import talon.utils.StringUtil;
 
 	public class FlowLayout extends Layout
 	{
@@ -88,8 +89,9 @@ package starling.extensions.talon.layout
 
 import flash.geom.Rectangle;
 import flash.utils.Dictionary;
-import starling.extensions.talon.utils.BreakMode;
-import starling.extensions.talon.utils.Orientation;
+
+import talon.utils.BreakMode;
+import talon.utils.Orientation;
 
 class Flow
 {

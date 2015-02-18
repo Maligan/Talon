@@ -5,9 +5,9 @@ package browser.popups
 	import flash.utils.Dictionary;
 
 	import starling.display.DisplayObjectContainer;
-	import starling.extensions.talon.display.ITalonElement;
-	import starling.extensions.talon.display.TalonFactory;
-	import starling.extensions.talon.display.TalonSprite;
+	import talon.starling.ITalonElement;
+	import talon.starling.TalonFactory;
+	import talon.starling.TalonSprite;
 
 	public class Popup extends TalonSprite implements ITalonElement
 	{

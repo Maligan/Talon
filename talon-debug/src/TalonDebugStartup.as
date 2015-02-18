@@ -18,15 +18,15 @@ package
 
 	import starling.events.Event;
 
-	import starling.extensions.talon.core.Attribute;
+	import talon.Attribute;
 
-	import starling.extensions.talon.core.GaugeQuad;
+	import talon.GaugeQuad;
 
-	import starling.extensions.talon.core.Node;
+	import talon.Node;
 
-	import starling.extensions.talon.display.TalonSprite;
-	import starling.extensions.talon.display.TalonFactory;
-	import starling.extensions.talon.utils.StringUtil;
+	import talon.starling.TalonSprite;
+	import talon.starling.TalonFactory;
+	import talon.utils.StringUtil;
 	import starling.textures.Texture;
 
 	[SWF(backgroundColor="#444444", width="800", height="500")]

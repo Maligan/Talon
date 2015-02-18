@@ -1,9 +1,10 @@
-package starling.extensions.talon.utils
+package talon.utils
 {
-	import starling.extensions.talon.core.Attribute;
 	import starling.filters.BlurFilter;
 	import starling.filters.ColorMatrixFilter;
 	import starling.filters.FragmentFilter;
+
+	import talon.Attribute;
 
 	public class QueryUtil
 	{

@@ -1,97 +1,127 @@
 package talon
 {
+	import flash.ui.MouseCursor;
 	import flash.utils.Dictionary;
 
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
+	import starling.utils.HAlign;
+	import starling.utils.VAlign;
+
+	import talon.layout.Layout;
+
+	import talon.types.Gauge;
+	import talon.utils.BreakMode;
+	import talon.utils.FillMode;
+	import talon.utils.Orientation;
 
 	import talon.utils.QueryUtil;
 	import talon.utils.StringUtil;
+	import talon.utils.Visibility;
 
 	//[ExcludeClass]
 	public class Attribute
 	{
+		public static const TRANSPARENT:String = "transparent";
+		public static const WHITE:String = "white";
+		public static const FALSE:String = "false";
+		public static const AUTO:String = Gauge.AUTO;
+		public static const NONE:String = Gauge.NONE;
+		public static const ZERO:String = "0px";
+		public static const ONE:String = "1";
+		public static const INHERIT:String = "inherit";
+
+
+		private static const _dInitial:Dictionary = new Dictionary();
+		private static const _dInheritable:Dictionary = new Dictionary();
+		private static const _dStyleable:Dictionary = new Dictionary();
+
 		//
 		// Standard Attribute list
 		//
-		public static const ID:String = "id";
-		public static const TYPE:String = "type";
-		public static const CLASS:String = "class";
-		public static const STATE:String = "state";
+		public static const ID:String = registerAttributeDefaults("id", null, false, false);
+		public static const TYPE:String = registerAttributeDefaults("type", null, false, false);
+		public static const CLASS:String = registerAttributeDefaults("class", null, false, false);
+		public static const STATE:String = registerAttributeDefaults("state", null, false, false);
 
-		public static const WIDTH:String = "width";
-		public static const MIN_WIDTH:String = "minWidth";
-		public static const MAX_WIDTH:String = "maxWidth";
+		public static const WIDTH:String = registerAttributeDefaults("width", AUTO);
+		public static const MIN_WIDTH:String = registerAttributeDefaults("minWidth", NONE);
+		public static const MAX_WIDTH:String = registerAttributeDefaults("maxWidth", NONE);
 
-		public static const HEIGHT:String = "height";
-		public static const MIN_HEIGHT:String = "minHeight";
-		public static const MAX_HEIGHT:String = "maxHeight";
+		public static const HEIGHT:String = registerAttributeDefaults("height", AUTO);
+		public static const MIN_HEIGHT:String = registerAttributeDefaults("minHeight", NONE);
+		public static const MAX_HEIGHT:String = registerAttributeDefaults("maxHeight", NONE);
 
-		public static const MARGIN:String = "margin";
-		public static const MARGIN_TOP:String = "marginTop";
-		public static const MARGIN_RIGHT:String = "marginRight";
-		public static const MARGIN_BOTTOM:String = "marginBottom";
-		public static const MARGIN_LEFT:String = "marginLeft";
+		public static const MARGIN:String = registerAttributeDefaults("margin", ZERO);
+		public static const MARGIN_TOP:String = registerAttributeDefaults("marginTop", ZERO);
+		public static const MARGIN_RIGHT:String = registerAttributeDefaults("marginRight", ZERO);
+		public static const MARGIN_BOTTOM:String = registerAttributeDefaults("marginBottom", ZERO);
+		public static const MARGIN_LEFT:String = registerAttributeDefaults("marginLeft", ZERO);
 
-		public static const PADDING:String = "padding";
-		public static const PADDING_TOP:String = "paddingTop";
-		public static const PADDING_RIGHT:String = "paddingRight";
-		public static const PADDING_BOTTOM:String = "paddingBottom";
-		public static const PADDING_LEFT:String = "paddingLeft";
+		public static const PADDING:String = registerAttributeDefaults("padding", ZERO);
+		public static const PADDING_TOP:String = registerAttributeDefaults("paddingTop", ZERO);
+		public static const PADDING_RIGHT:String = registerAttributeDefaults("paddingRight", ZERO);
+		public static const PADDING_BOTTOM:String = registerAttributeDefaults("paddingBottom", ZERO);
+		public static const PADDING_LEFT:String = registerAttributeDefaults("paddingLeft", ZERO);
 
-		public static const ANCHOR:String = "anchor";
-		public static const ANCHOR_TOP:String = "anchorTop";
-		public static const ANCHOR_RIGHT:String = "anchorRight";
-		public static const ANCHOR_BOTTOM:String = "anchorBottom";
-		public static const ANCHOR_LEFT:String = "anchorLeft";
+		public static const ANCHOR:String = registerAttributeDefaults("anchor", NONE);
+		public static const ANCHOR_TOP:String = registerAttributeDefaults("anchorTop", NONE);
+		public static const ANCHOR_RIGHT:String = registerAttributeDefaults("anchorRight", NONE);
+		public static const ANCHOR_BOTTOM:String = registerAttributeDefaults("anchorBottom", NONE);
+		public static const ANCHOR_LEFT:String = registerAttributeDefaults("anchorLeft", NONE);
 
-		public static const BACKGROUND_IMAGE:String = "backgroundImage";
-		public static const BACKGROUND_TINT:String = "backgroundTint";
-		public static const BACKGROUND_9SCALE:String = "background9Scale";
-		public static const BACKGROUND_COLOR:String = "backgroundColor";
-		public static const BACKGROUND_FILL_MODE:String = "backgroundFillMode";
+		public static const BACKGROUND_IMAGE:String = registerAttributeDefaults("backgroundImage", NONE);
+		public static const BACKGROUND_TINT:String = registerAttributeDefaults("backgroundTint", WHITE);
+		public static const BACKGROUND_9SCALE:String = registerAttributeDefaults("background9Scale", NONE);
+		public static const BACKGROUND_COLOR:String = registerAttributeDefaults("backgroundColor", TRANSPARENT);
+		public static const BACKGROUND_FILL_MODE:String = registerAttributeDefaults("backgroundFillMode", FillMode.SCALE);
 
-		public static const FONT_COLOR:String = "fontColor";
-		public static const FONT_NAME:String = "fontName";
-		public static const FONT_SIZE:String = "fontSize";
+		public static const FONT_COLOR:String = registerAttributeDefaults("fontColor", INHERIT, true);
+		public static const FONT_NAME:String = registerAttributeDefaults("fontName", INHERIT, true);
+		public static const FONT_SIZE:String = registerAttributeDefaults("fontSize", INHERIT, true);
 
-		public static const ALPHA:String = "alpha";
-		public static const CLIPPING:String = "clipping";
-		public static const CURSOR:String = "cursor";
-		public static const FILTER:String = "filter";
+		public static const ALPHA:String = registerAttributeDefaults("alpha", ONE);
+		public static const CLIPPING:String = registerAttributeDefaults("clipping", FALSE);
+		public static const CURSOR:String = registerAttributeDefaults("cursor", MouseCursor.AUTO);
+		public static const FILTER:String = registerAttributeDefaults("filter", NONE);
 
-		public static const LAYOUT:String = "layout";
-		public static const VISIBILITY:String = "visibility";
+		public static const LAYOUT:String = registerAttributeDefaults("layout", Layout.FLOW);
+		public static const VISIBILITY:String = registerAttributeDefaults("visibility", Visibility.VISIBLE);
 
-		public static const POSITION:String = "position";
-		public static const X:String = "x";
-		public static const Y:String = "y";
+		public static const POSITION:String = registerAttributeDefaults("position", ZERO);
+		public static const X:String = registerAttributeDefaults("x", ZERO);
+		public static const Y:String = registerAttributeDefaults("y", ZERO);
 
-		public static const PIVOT:String = "pivot";
-		public static const PIVOT_X:String = "pivotX";
-		public static const PIVOT_Y:String = "pivotY";
+		public static const PIVOT:String = registerAttributeDefaults("pivot", ZERO);
+		public static const PIVOT_X:String = registerAttributeDefaults("pivotX", ZERO);
+		public static const PIVOT_Y:String = registerAttributeDefaults("pivotY", ZERO);
 
-		public static const ORIGIN:String = "value";
-		public static const ORIGIN_X:String = "originX";
-		public static const ORIGIN_Y:String = "originY";
+		public static const ORIGIN:String = registerAttributeDefaults("value", ZERO);
+		public static const ORIGIN_X:String = registerAttributeDefaults("originX", ZERO);
+		public static const ORIGIN_Y:String = registerAttributeDefaults("originY", ZERO);
 
-		public static const ORIENTATION:String = "orientation";
-		public static const HALIGN:String = "halign";
-		public static const VALIGN:String = "valign";
-		public static const IHALIGN:String = "ivalign";
-		public static const IVALIGN:String = "ivalign";
-		public static const GAP:String = "gap";
-		public static const INTERLINE:String = "interline";
-		public static const WRAP:String = "wrap";
-		public static const BREAK:String = "break";
+		public static const ORIENTATION:String = registerAttributeDefaults("orientation", Orientation.HORIZONTAL);
+		public static const HALIGN:String = registerAttributeDefaults("halign", HAlign.LEFT);
+		public static const VALIGN:String = registerAttributeDefaults("valign", VAlign.TOP);
+		public static const IHALIGN:String = registerAttributeDefaults("ihalign", HAlign.LEFT);
+		public static const IVALIGN:String = registerAttributeDefaults("ivalign", VAlign.TOP);
+		public static const GAP:String = registerAttributeDefaults("gap", ZERO);
+		public static const INTERLINE:String = registerAttributeDefaults("interline", ZERO);
+		public static const WRAP:String = registerAttributeDefaults("wrap", FALSE);
+		public static const BREAK:String = registerAttributeDefaults("break", BreakMode.AUTO);
 
-		public static const TEXT:String = "text";
+		public static const TEXT:String = registerAttributeDefaults("text");
 
+		public static function registerAttributeDefaults(name:String, initial:String = null, inheritable:Boolean = false, styleable:Boolean = true):String
+		{
+			_dInitial[name] = initial;
+			_dInheritable[name] = inheritable;
+			_dStyleable[name] = styleable;
+			return name;
+		}
 		//
-		// Attribute Implementation
+		// Queries
 		//
-		public static const INHERIT:String = "inherit";
-
 		private static var _queries:Dictionary;
 
 		private static function initialize():void
@@ -114,6 +144,9 @@ package talon
 			_queries[aliasName] = callback;
 		}
 
+		//
+		// Attribute Implementation
+		//
 		private var _node:Node;
 		private var _name:String;
 
@@ -141,8 +174,9 @@ package talon
 
 			_node = node;
 			_name = name;
-			_styleable = true;
-			_inheritable = false;
+			_initial = _dInitial[name];
+			_styleable = _dStyleable.hasOwnProperty(name) ? _dStyleable[name] : true;
+			_inheritable = _dInheritable[name];
 		}
 
 		//
@@ -163,10 +197,10 @@ package talon
 		//
 		// Optimization
 		//
-		/** NB! Optimize <code>value</code> property. Expand 'inherit' value if attribute is inheritable. */
+		/** NB! Optimized <code>value</code> property. Expand 'inherit' value if attribute is inheritable. */
 		public function get origin():String { return isInherit ? inherit : value; }
 
-		/** NB! Optimize <code>value</code>property. Expand 'inherit' value and call invokers (like 'url(...)', 'res(...)', 'blur(...)' etc.) for convert value to strongly typed object. */
+		/** NB! Optimized <code>value</code>property. Expand 'inherit' value and call invokers (like 'url(...)', 'res(...)', 'blur(...)' etc.) for convert value to strongly typed object. */
 		public function get expanded():*
 		{
 			if (_expandedCached == false)
@@ -288,16 +322,18 @@ package talon
 		/** @private Bind assigned value to same object. */
 		public function bind(dispatcher:EventDispatcher, getter:Function, setter:Function):void
 		{
-			if (dispatcher == null) return;
-			if (getter == null) throw new ArgumentError("Invalid binding getter");
-			if (setter == null) throw new ArgumentError("Invalid binding setter");
-
 			if (dispatcher && getter && setter)
 			{
 				_assignedValueGetter = getter;
 				_assignedValueSetter = setter;
 				_assignedDispatcher = dispatcher;
 				_assignedDispatcher.addEventListener(Event.CHANGE, onAssignedChange);
+			}
+			else
+			{
+				if (dispatcher == null) throw new ArgumentError("Invalid binding dispatcher");
+				if (getter == null) throw new ArgumentError("Invalid binding getter");
+				if (setter == null) throw new ArgumentError("Invalid binding setter");
 			}
 		}
 
@@ -354,15 +390,14 @@ package talon
 		//
 		// Misc
 		//
-
-		/** talon.Attribute value is mapped to resource. */
+		/** Attribute value is mapped to resource. */
 		public function get isResource():Boolean
 		{
 			var split:Array = StringUtil.parseFunction(origin);
 			return split && split[0] == "res";
 		}
 
-		/** talon.Attribute value user inherit from parent. */
+		/** Attribute value is inherit from parent. */
 		public function get isInherit():Boolean
 		{
 			return inheritable && value==INHERIT;

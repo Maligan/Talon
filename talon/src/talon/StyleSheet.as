@@ -23,12 +23,12 @@ package talon
 		/** Get an object (containing key-value pairs) that reflects the style of the node. */
 		public function getStyle(node:Node, result:Object = null):Object
 		{
-			var style:Object = result || new Object();
+			result ||= new Object();
 			var priorities:Object = new Object();
 
 			for each (var selector:StyleSelector in _selectors)
 			{
-				if (selector.match(node) !== true) continue;
+				if (!selector.match(node)) continue;
 
 				var styles:Object = _stylesBySelector[selector];
 				for (var property:String in styles)
@@ -36,13 +36,13 @@ package talon
 					var priority:int = priorities[property];
 					if (priority <= selector.priority)
 					{
-						style[property] = styles[property];
+						result[property] = styles[property];
 						priorities[property] = selector.priority;
 					}
 				}
 			}
 
-			return style;
+			return result;
 		}
 
 		/** Parse css string and merge style selectors. */

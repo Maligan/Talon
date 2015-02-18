@@ -22,7 +22,7 @@ package talon
 	public final class Node extends EventDispatcher
 	{
 		//
-		// Strong typed attributes
+		// Strong typed attributes accessors
 		//
 		public const width:Gauge = new Gauge();
 		public const minWidth:Gauge = new Gauge();
@@ -53,110 +53,68 @@ package talon
 		/** @private */
 		public function Node():void
 		{
-			const ZERO:String = "0px";
-			const TRANSPARENT:String = "transparent";
-			const WHITE:String = "white";
-			const FALSE:String = "false";
-			const AUTO:String = "auto";
-			const ONE:String = "1";
-			const NULL:String = null;
-
+			// Setup width/height layout callbacks
 			width.auto = minWidth.auto = maxWidth.auto = measureAutoWidth;
 			height.auto = minHeight.auto = maxHeight.auto = measureAutoHeight;
 
-			// Style (Block styling)
-			init(Attribute.ID, NULL, false);
-			init(Attribute.TYPE, NULL, false);
-			init(Attribute.CLASS, NULL, false);
-			init(Attribute.STATE, NULL, false);
+			// Bindings to strong typed accessors
+			bindGauge(width, Attribute.WIDTH);
+			bindGauge(minWidth, Attribute.MIN_WIDTH);
+			bindGauge(maxWidth, Attribute.MAX_WIDTH);
 
-			// Bounds
-			init(Attribute.WIDTH, Gauge.AUTO, true, width);
-			init(Attribute.MIN_WIDTH, Gauge.NONE, true, minWidth);
-			init(Attribute.MAX_WIDTH, Gauge.NONE, true, maxWidth);
-			init(Attribute.HEIGHT, Gauge.AUTO, true, height);
-			init(Attribute.MIN_HEIGHT, Gauge.NONE, true, minHeight);
-			init(Attribute.MAX_HEIGHT, Gauge.NONE, true, maxHeight);
+			bindGauge(height, Attribute.HEIGHT);
+			bindGauge(minHeight, Attribute.MIN_HEIGHT);
+			bindGauge(maxHeight, Attribute.MAX_HEIGHT);
 
-			// Margin
-			init(Attribute.MARGIN, ZERO, true, margin);
-			init(Attribute.MARGIN_TOP, ZERO, true, margin.top);
-			init(Attribute.MARGIN_RIGHT, ZERO, true, margin.right);
-			init(Attribute.MARGIN_BOTTOM, ZERO, true, margin.bottom);
-			init(Attribute.MARGIN_LEFT, ZERO, true, margin.left);
+			bindQuad(margin, Attribute.MARGIN, Attribute.MARGIN_TOP, Attribute.MARGIN_RIGHT, Attribute.MARGIN_BOTTOM, Attribute.MARGIN_LEFT);
+			bindQuad(padding, Attribute.PADDING, Attribute.PADDING_TOP, Attribute.PADDING_RIGHT, Attribute.PADDING_BOTTOM, Attribute.PADDING_LEFT);
+			bindQuad(anchor, Attribute.ANCHOR, Attribute.ANCHOR_TOP, Attribute.ANCHOR_RIGHT, Attribute.ANCHOR_BOTTOM, Attribute.ANCHOR_LEFT);
 
-			// Padding
-			init(Attribute.PADDING, ZERO, true, padding);
-			init(Attribute.PADDING_TOP, ZERO, true, padding.top);
-			init(Attribute.PADDING_RIGHT, ZERO, true, padding.right);
-			init(Attribute.PADDING_BOTTOM, ZERO, true, padding.bottom);
-			init(Attribute.PADDING_LEFT, ZERO, true, padding.left);
+			bindPair(position, Attribute.POSITION, Attribute.X, Attribute.Y);
+			bindPair(origin, Attribute.ORIGIN, Attribute.ORIGIN_X, Attribute.ORIGIN_Y);
+			bindPair(pivot, Attribute.PIVOT, Attribute.PIVOT_X, Attribute.PIVOT_Y);
 
-			// Anchor (Absolute Position)
-			init(Attribute.ANCHOR, Gauge.NONE, true, anchor);
-			init(Attribute.ANCHOR_TOP, Gauge.NONE, true, anchor.top);
-			init(Attribute.ANCHOR_RIGHT, Gauge.NONE, true, anchor.right);
-			init(Attribute.ANCHOR_BOTTOM, Gauge.NONE, true, anchor.bottom);
-			init(Attribute.ANCHOR_LEFT, Gauge.NONE, true, anchor.left);
-
-			// Background
-			init(Attribute.BACKGROUND_IMAGE, NULL, true);
-			init(Attribute.BACKGROUND_TINT, WHITE, true);
-			init(Attribute.BACKGROUND_9SCALE, ZERO, true);
-			init(Attribute.BACKGROUND_COLOR, TRANSPARENT, true);
-			init(Attribute.BACKGROUND_FILL_MODE, FillMode.SCALE, true);
-
-			// Appearance
-			init(Attribute.ALPHA, ONE, true);
-			init(Attribute.CLIPPING, FALSE, true);
-			init(Attribute.CURSOR, MouseCursor.AUTO, true);
-
-			// Font
-			init(Attribute.FONT_COLOR, Attribute.INHERIT, true);
-			init(Attribute.FONT_NAME, Attribute.INHERIT, true);
-			init(Attribute.FONT_SIZE, Attribute.INHERIT, true);
-
-			// Layout
-			init(Attribute.LAYOUT, Layout.FLOW, true);
-			init(Attribute.VISIBILITY, Visibility.VISIBLE, true);
-
-			init(Attribute.ORIENTATION, Orientation.HORIZONTAL, true);
-			init(Attribute.HALIGN, HAlign.LEFT, true);
-			init(Attribute.VALIGN, VAlign.TOP, true);
-			init(Attribute.GAP, ZERO, true);
-			init(Attribute.INTERLINE, ZERO, true);
-			init(Attribute.WRAP, AUTO, true);
-
-			init(Attribute.POSITION, ZERO, true, position);
-			init(Attribute.X, ZERO, true, position.x);
-			init(Attribute.Y, ZERO, true, position.y);
-
-			init(Attribute.PIVOT, ZERO, true, pivot);
-			init(Attribute.PIVOT_X, ZERO, true, pivot.x);
-			init(Attribute.PIVOT_Y, ZERO, true, pivot.y);
-
-			init(Attribute.ORIGIN, ZERO, true, origin);
-			init(Attribute.ORIGIN_X, ZERO, true, origin.x);
-			init(Attribute.ORIGIN_Y, ZERO, true, origin.y);
-
+			// Listen attribute change
 			addEventListener(Event.CHANGE, onAttributeChange);
 		}
 
-		private function init(name:String, initial:String, styleable:Boolean, source:* = null):void
+		//
+		// Bindings
+		//
+		private function bindGauge(gauge:Gauge, name:String):void
 		{
-			var setter:Function = source ? source["parse"] : null;
-			var getter:Function = source ? source["toString"] : null;
+			bind(gauge, name);
+		}
+
+		private function bindPair(pair:GaugePair, name:String, x:String, y:String):void
+		{
+			bind(pair, name);
+			bind(pair.x, x);
+			bind(pair.y, y);
+		}
+
+		private function bindQuad(quad:GaugeQuad, name:String, top:String, right:String, bottom:String, left:String):void
+		{
+			bind(quad, name);
+			bind(quad.top, top);
+			bind(quad.right, right);
+			bind(quad.bottom, bottom);
+			bind(quad.left, left);
+		}
+
+		private function bind(source:*, name:String):void
+		{
+			var setter:Function = source["parse"];
+			var getter:Function = source["toString"];
 			var dispatcher:EventDispatcher = source;
 
 			var attribute:Attribute = getOrCreateAttribute(name);
+			setter(attribute.value);
 			attribute.bind(dispatcher, getter, setter);
-			attribute.initial = initial;
-			attribute.inheritable = initial == Attribute.INHERIT;
-			attribute.styleable = styleable;
 		}
 
 		//
-		// Attribute
+		// Attributes
 		//
 		/** Get attribute <strong>expanded</strong> value. */
 		public function getAttribute(name:String):* { return getOrCreateAttribute(name).expanded; }
@@ -281,8 +239,9 @@ package talon
 		/** Current node 'fontSize' expressed in pixels.*/
 		public function get ppem():Number
 		{
+			// TODO: Optimize calculation (bubbling ppem method call is poor)
 			var base:int = 12;
-			var inherit:Number =  parent ? parent.ppem : base;
+			var inherit:Number = parent ? parent.ppem : base;
 			var attribute:Attribute = getOrCreateAttribute(Attribute.FONT_SIZE);
 			if (attribute.isInherit) return inherit;
 			return Gauge.toPixels(attribute.value, ppmm, inherit, pppt, inherit, 0, 0, 0, 0);
@@ -300,7 +259,7 @@ package talon
 			return layout.measureAutoHeight(this, width, height);
 		}
 
-		/** talon.Node layout strategy class. */
+		/** Node layout strategy class. */
 		private function get layout():Layout
 		{
 			return Layout.getLayoutByAlias(getAttribute(Attribute.LAYOUT));

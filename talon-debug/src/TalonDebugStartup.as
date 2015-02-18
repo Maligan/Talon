@@ -46,7 +46,6 @@ package
 			stage.addEventListener(Event.RESIZE, onResize);
 			stage.quality = StageQuality.BEST;
 
-
 //			var string:String = "res(key)";
 //
 //			var timer:int = getTimer();

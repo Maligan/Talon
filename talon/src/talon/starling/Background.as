@@ -15,8 +15,8 @@ package talon.starling
 
 	import talon.Attribute;
 	import talon.Node;
+	import talon.enums.FillMode;
 	import talon.types.GaugeQuad;
-	import talon.utils.FillMode;
 	import talon.utils.StringUtil;
 
 	internal class Background extends Sprite

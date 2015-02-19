@@ -7,8 +7,8 @@ package talon.starling
 	import starling.text.TextFieldAutoSize;
 
 	import talon.Attribute;
-	import talon.utils.ITalonElement;
 	import talon.Node;
+	import talon.utils.ITalonElement;
 	import talon.utils.StringUtil;
 
 	public class TextFieldElement extends TextField implements ITalonElement

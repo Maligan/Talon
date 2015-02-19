@@ -8,16 +8,14 @@ package talon
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
 
+	import talon.enums.BreakMode;
+	import talon.enums.FillMode;
+	import talon.enums.Orientation;
+	import talon.enums.Visibility;
 	import talon.layout.Layout;
-
 	import talon.types.Gauge;
-	import talon.utils.BreakMode;
-	import talon.utils.FillMode;
-	import talon.utils.Orientation;
-
 	import talon.utils.QueryUtil;
 	import talon.utils.StringUtil;
-	import talon.utils.Visibility;
 
 	//[ExcludeClass]
 	public class Attribute

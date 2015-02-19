@@ -2,22 +2,16 @@ package talon
 {
 	import flash.geom.Rectangle;
 	import flash.system.Capabilities;
-	import flash.ui.MouseCursor;
 	import flash.utils.Dictionary;
 
 	import starling.core.Starling;
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
-	import starling.utils.HAlign;
-	import starling.utils.VAlign;
 
 	import talon.layout.Layout;
 	import talon.types.Gauge;
 	import talon.types.GaugePair;
 	import talon.types.GaugeQuad;
-	import talon.utils.FillMode;
-	import talon.utils.Orientation;
-	import talon.utils.Visibility;
 
 	public final class Node extends EventDispatcher
 	{

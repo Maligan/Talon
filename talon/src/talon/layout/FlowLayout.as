@@ -4,8 +4,8 @@ package talon.layout
 
 	import talon.Attribute;
 	import talon.Node;
+	import talon.enums.Orientation;
 	import talon.types.Gauge;
-	import talon.utils.Orientation;
 	import talon.utils.StringUtil;
 
 	public class FlowLayout extends Layout
@@ -90,8 +90,8 @@ package talon.layout
 import flash.geom.Rectangle;
 import flash.utils.Dictionary;
 
-import talon.utils.BreakMode;
-import talon.utils.Orientation;
+import talon.enums.BreakMode;
+import talon.enums.Orientation;
 
 class Flow
 {

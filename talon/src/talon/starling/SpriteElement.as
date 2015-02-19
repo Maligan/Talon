@@ -19,10 +19,10 @@ package talon.starling
 	import starling.textures.Texture;
 
 	import talon.Attribute;
-	import talon.utils.ITalonElement;
 	import talon.Node;
+	import talon.enums.FillMode;
 	import talon.types.GaugeQuad;
-	import talon.utils.FillMode;
+	import talon.utils.ITalonElement;
 	import talon.utils.StringUtil;
 
 	public class SpriteElement extends Sprite implements ITalonElement

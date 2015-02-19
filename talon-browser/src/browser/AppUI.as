@@ -27,7 +27,7 @@ package browser
 	import talon.utils.TalonFactory;
 	import talon.starling.SpriteElement;
 	import talon.layout.Layout;
-	import talon.utils.Orientation;
+	import talon.enums.Orientation;
 	import starling.filters.BlurFilter;
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;

@@ -1,7 +1,5 @@
 package talon.utils
 {
-	import talon.utils.ITalonElement;
-	import talon.starling.*;
 	import flash.events.Event;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
@@ -12,6 +10,7 @@ package talon.utils
 
 	import talon.Node;
 	import talon.StyleSheet;
+	import talon.starling.*;
 
 	public class TalonFactory extends EventDispatcher
 	{

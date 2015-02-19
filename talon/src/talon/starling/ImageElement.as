@@ -5,8 +5,8 @@ package talon.starling
 	import starling.textures.Texture;
 
 	import talon.Attribute;
-	import talon.utils.ITalonElement;
 	import talon.Node;
+	import talon.utils.ITalonElement;
 
 	public class ImageElement extends Image implements ITalonElement
 	{

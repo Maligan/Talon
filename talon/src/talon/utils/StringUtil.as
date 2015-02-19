@@ -40,7 +40,7 @@ package talon.utils
 		 * The format of functional notation is: 'function('
 		 * followed by optional white space
 		 * followed by an optional single quote (') or double quote (") character
-		 * followed by the URI itself, followed by an optional single quote (') or double quote (") character
+		 * followed by args divided by (,), followed by an optional single quote (') or double quote (") character
 		 * followed by optional white space followed by ')'.
 		 * The two quote characters must be the same.
 		 */

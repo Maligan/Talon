@@ -26,6 +26,7 @@ package browser.utils
 
 		public static const ZOOM_MIN:int = 25;
 		public static const ZOOM_MAX:int = 300;
+		public static const HISTORY_RECENT_MAX:int = 10;
 
 		public static const T_EXPORT_TITLE:String = "Export";
 		public static const T_DESIGNER_FILE_EXTENSION_NAME:String = "Talon Designer Project";
@@ -38,6 +39,7 @@ package browser.utils
 		public static const T_MENU_FILE_EXPORT_AS:String = "Export As...";
 		public static const T_MENU_FILE_CLOSE:String = "Close";
 		public static const T_MENU_NAVIGATE:String = "Navigate";
+		public static const T_MENU_NAVIGATE_SEARCH:String = "Search...";
 		public static const T_MENU_VIEW:String = "View";
 		public static const T_MENU_VIEW_BACKGROUND:String = "Background";
 		public static const T_MENU_VIEW_BACKGROUND_LIGHT:String = "Light";

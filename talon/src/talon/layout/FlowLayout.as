@@ -10,17 +10,17 @@ package talon.layout
 
 	public class FlowLayout extends Layout
 	{
-		public override function measureAutoWidth(node:Node, width:Number, height:Number):Number
+		public override function measureAutoWidth(node:Node, availableWidth:Number, availableHeight:Number):Number
 		{
-			var flow:Flow = measure(node, width, height, false);
+			var flow:Flow = measure(node, availableWidth, availableHeight, false);
 			var flowWidth:Number = node.getAttribute(Attribute.ORIENTATION) == Orientation.HORIZONTAL ? flow.getLength() : flow.getThickness();
 			flow.dispose();
 			return flowWidth;
 		}
 
-		public override function measureAutoHeight(node:Node, width:Number, height:Number):Number
+		public override function measureAutoHeight(node:Node, availableWidth:Number, availableHeight:Number):Number
 		{
-			var flow:Flow = measure(node, width, height, false);
+			var flow:Flow = measure(node, availableWidth, availableHeight, false);
 			var flowHeight:Number = node.getAttribute(Attribute.ORIENTATION) == Orientation.VERTICAL ? flow.getLength() : flow.getThickness();
 			flow.dispose();
 			return flowHeight;
@@ -45,16 +45,16 @@ package talon.layout
 		//
 		// Implementation
 		//
-		private function measure(node:Node, width:Number, height:Number, arrange:Boolean):Flow
+		private function measure(node:Node, availableWidth:Number, availableHeight:Number, arrange:Boolean):Flow
 		{
 			var flow:Flow = new Flow();
 			flow.setSpacings(getGap(node), getInterline(node));
+			flow.setWrap(getWrap(node));
 
 			var orientation:String = node.getAttribute(Attribute.ORIENTATION);
 			if (orientation == Orientation.HORIZONTAL)
 			{
-				flow.setMaxSize(width, height);
-				flow.setWrap(getWrap(node));
+				flow.setMaxSize(availableWidth, availableHeight);
 				flow.setAlign(getAlign(node, Attribute.HALIGN), getAlign(node, Attribute.VALIGN));
 
 				for (var i:int = 0; i < node.numChildren; i++)
@@ -73,7 +73,7 @@ package talon.layout
 			}
 			else
 			{
-				flow.setMaxSize(node.height.isAuto ? Infinity : height, node.width.isAuto ? Infinity : width)
+				flow.setMaxSize(node.height.isAuto ? Infinity : availableHeight, node.width.isAuto ? Infinity : availableWidth)
 			}
 
 			if (arrange) flow.arrange();

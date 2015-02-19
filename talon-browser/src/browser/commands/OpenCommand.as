@@ -1,5 +1,6 @@
 package browser.commands
 {
+	import browser.utils.Console;
 	import browser.utils.Constants;
 	import browser.AppController;
 	import browser.dom.Document;
@@ -52,6 +53,7 @@ package browser.commands
 			var indexOf:int = recent.indexOf(source.nativePath);
 			if (indexOf != -1) recent.splice(indexOf, 1);
 			recent.unshift(source.nativePath);
+			recent = recent.slice(0, Constants.HISTORY_RECENT_MAX);
 			controller.settings.setValue(Constants.SETTING_RECENT_ARRAY, recent);
 		}
 

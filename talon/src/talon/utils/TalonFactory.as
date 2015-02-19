@@ -115,6 +115,7 @@ package talon.utils
 		{
 			var hasFZipLibrary:Boolean = ApplicationDomain.currentDomain.hasDefinition("deng.fzip.FZip");
 			if (hasFZipLibrary == false) throw new Error("FZip library required for archive import");
+
 			if (bytes == null) throw new ArgumentError("Parameter bytes must be non-null");
 
 			var manager:AssetManagerExtended = new AssetManagerExtended(getNameCallback);
@@ -349,8 +350,7 @@ class AssetManagerExtended extends AssetManager
 	}
 
 	/** NB! Copy-Paste from super. */
-	private function getDictionaryKeys(dictionary:Dictionary, prefix:String="",
-		result:Vector.<String>=null):Vector.<String>
+	private function getDictionaryKeys(dictionary:Dictionary, prefix:String="", result:Vector.<String>=null):Vector.<String>
 	{
 		if (result == null) result = new <String>[];
 

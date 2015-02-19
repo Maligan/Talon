@@ -208,6 +208,8 @@ package browser
 			if (_controller.document && _controller.document.factory.prototypeIds.length > 0)
 			{
 				_menu.addItem("navigate", Constants.T_MENU_NAVIGATE);
+				_menu.addItem("navigate/search", Constants.T_MENU_NAVIGATE_SEARCH);
+				_menu.addItem("navigate/-");
 
 				for each (var prototypeId:String in _controller.document.factory.prototypeIds)
 				{

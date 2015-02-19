@@ -5,7 +5,6 @@ package talon.enums
 	public class Break
 	{
 		public static const AUTO:String = "auto";
-		public static const NONE:String = "none";
 		public static const BEFORE:String = "before";
 		public static const AFTER:String = "after";
 		public static const BOTH:String = "both";
@@ -17,7 +16,6 @@ package talon.enums
 				|| mode == AFTER
 				|| mode == BOTH
 				|| mode == AUTO
-				|| mode == NONE;
 		}
 
 		/** @private */

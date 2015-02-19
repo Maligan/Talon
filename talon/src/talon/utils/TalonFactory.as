@@ -1,8 +1,12 @@
 package talon.utils
 {
+	import deng.fzip.FZip;
+
 	import flash.events.Event;
+	import flash.system.ApplicationDomain;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
+	import flash.utils.getDefinitionByName;
 
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
@@ -109,6 +113,8 @@ package talon.utils
 		/** Complex archive. Import all files from zip archive to library. */
 		public function addArchiveAsync(bytes:ByteArray, getNameCallback:Function = null):void
 		{
+			var hasFZipLibrary:Boolean = ApplicationDomain.currentDomain.hasDefinition("deng.fzip.FZip");
+			if (hasFZipLibrary == false) throw new Error("FZip library required for archive import");
 			if (bytes == null) throw new ArgumentError("Parameter bytes must be non-null");
 
 			var manager:AssetManagerExtended = new AssetManagerExtended(getNameCallback);

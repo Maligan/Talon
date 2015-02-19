@@ -90,7 +90,7 @@ package talon.layout
 import flash.geom.Rectangle;
 import flash.utils.Dictionary;
 
-import talon.enums.BreakMode;
+import talon.enums.Break;
 import talon.enums.Orientation;
 
 class Flow
@@ -189,8 +189,8 @@ class Flow
 
 		if (_wrap)
 		{
-			_break = _childBreakMode == BreakMode.AFTER || _childBreakMode == BreakMode.BOTH;
-			var hasBreakBefore:Boolean = _childBreakMode == BreakMode.BEFORE || _childBreakMode == BreakMode.BOTH;
+			_break = _childBreakMode == Break.AFTER || _childBreakMode == Break.BOTH;
+			var hasBreakBefore:Boolean = _childBreakMode == Break.BEFORE || _childBreakMode == Break.BOTH;
 			if (hasBreakBefore && line.numChildren != 0)
 			{
 				line = getNewLine();

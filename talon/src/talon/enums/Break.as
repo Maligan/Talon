@@ -2,7 +2,7 @@ package talon.enums
 {
 	import starling.errors.AbstractClassError;
 
-	public class BreakMode
+	public class Break
 	{
 		public static const AUTO:String = "auto";
 		public static const NONE:String = "none";
@@ -10,7 +10,7 @@ package talon.enums
 		public static const AFTER:String = "after";
 		public static const BOTH:String = "both";
 
-		/** Indicates whether the given break mode string is valid. */
+		/** Indicates whether the given break string is valid. */
 		public static function isValid(mode:String):Boolean
 		{
 			return mode == BEFORE
@@ -21,7 +21,7 @@ package talon.enums
 		}
 
 		/** @private */
-		public function BreakMode()
+		public function Break()
 		{
 			throw new AbstractClassError();
 		}

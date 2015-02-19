@@ -2,14 +2,14 @@ package talon
 {
 	import flash.utils.Dictionary;
 
-	/** CSS Object. */
-	public final class StyleSheet
+	/** Style Sheet Object. */
+	public class StyleSheet
 	{
-		private var _stylesBySelector:Dictionary;
+		protected var _stylesBySelector:Dictionary;
+		protected var _selectors:Vector.<StyleSelector>;
+		protected var _selectorsByIdent:Dictionary;
 
-		private var _selectors:Vector.<StyleSelector>;
-		private var _selectorsByIdent:Dictionary;
-		private var _selectorsCursor:Vector.<StyleSelector>;
+		private var _parseSelectorsCursor:Vector.<StyleSelector>;
 
 		/** @private */
 		public function StyleSheet()
@@ -17,7 +17,7 @@ package talon
 			_stylesBySelector = new Dictionary();
 			_selectors = new Vector.<StyleSelector>();
 			_selectorsByIdent = new Dictionary();
-			_selectorsCursor = new Vector.<StyleSelector>();
+			_parseSelectorsCursor = new Vector.<StyleSelector>();
 		}
 
 		/** Get an object (containing key-value pairs) that reflects the style of the node. */
@@ -117,26 +117,11 @@ package talon
 		}
 
 		//
-		// Utils
-		//
-		/** Remove white spaces from string start or end. */
-		private function trim(string:String):String
-		{
-			return string.replace(/^\s*|\s*$/gm, '');
-		}
-
-		/** Remove CSS comments. */
-		private function uncomment(string:String):String
-		{
-			return string.replace(/\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\//g, '');
-		}
-
-		//
 		// Parsing calls
 		//
 		private function resetCursorSelectors():void
 		{
-			_selectorsCursor.length = 0;
+			_parseSelectorsCursor.length = 0;
 		}
 
 		private function addCursorSelector(ident:String):void
@@ -149,17 +134,32 @@ package talon
 				_selectors.push(selector);
 			}
 
-			_selectorsCursor.push(selector);
+			_parseSelectorsCursor.push(selector);
 		}
 
 		private function addCursorSelectorsProperty(name:String, value:String):void
 		{
-			for each (var selector:StyleSelector in _selectorsCursor)
+			for each (var selector:StyleSelector in _parseSelectorsCursor)
 			{
 				var style:Object = _stylesBySelector[selector];
 				if (style == null) style = _stylesBySelector[selector] = new Object();
 				style[name] = value;
 			}
+		}
+
+		//
+		// Utils
+		//
+		/** Remove white spaces from string start or end. */
+		protected function trim(string:String):String
+		{
+			return string.replace(/^\s*|\s*$/gm, '');
+		}
+
+		/** Remove CSS comments. */
+		protected function uncomment(string:String):String
+		{
+			return string.replace(/\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\//g, '');
 		}
 	}
 }

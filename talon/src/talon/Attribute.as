@@ -8,7 +8,7 @@ package talon
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
 
-	import talon.enums.BreakMode;
+	import talon.enums.Break;
 	import talon.enums.FillMode;
 	import talon.enums.Orientation;
 	import talon.enums.Visibility;
@@ -17,8 +17,7 @@ package talon
 	import talon.utils.QueryUtil;
 	import talon.utils.StringUtil;
 
-	//[ExcludeClass]
-	public class Attribute
+	public final class Attribute
 	{
 		public static const TRANSPARENT:String = "transparent";
 		public static const WHITE:String = "white";
@@ -28,7 +27,6 @@ package talon
 		public static const ZERO:String = "0px";
 		public static const ONE:String = "1";
 		public static const INHERIT:String = "inherit";
-
 
 		private static const _dInitial:Dictionary = new Dictionary();
 		private static const _dInheritable:Dictionary = new Dictionary();
@@ -106,7 +104,7 @@ package talon
 		public static const GAP:String = registerAttributeDefaults("gap", ZERO);
 		public static const INTERLINE:String = registerAttributeDefaults("interline", ZERO);
 		public static const WRAP:String = registerAttributeDefaults("wrap", FALSE);
-		public static const BREAK:String = registerAttributeDefaults("break", BreakMode.AUTO);
+		public static const BREAK:String = registerAttributeDefaults("break", Break.AUTO);
 
 		public static const TEXT:String = registerAttributeDefaults("text");
 

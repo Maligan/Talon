@@ -256,7 +256,8 @@ package talon
 		/** Node layout strategy class. */
 		private function get layout():Layout
 		{
-			return Layout.getLayoutByAlias(getAttribute(Attribute.LAYOUT));
+			var layoutAlias:String = getAttribute(Attribute.LAYOUT);
+			return Layout.getLayoutByAlias(layoutAlias);
 		}
 
 		private function onAttributeChange(e:Event):void

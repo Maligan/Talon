@@ -19,6 +19,7 @@ package
 	import starling.events.Event;
 
 	import talon.Attribute;
+	import talon.types.Gauge;
 
 	import talon.types.GaugeQuad;
 

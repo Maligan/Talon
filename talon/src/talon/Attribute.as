@@ -286,7 +286,6 @@ package talon
 				{
 					if (_assignedValueSetter != null)
 					{
-						// Для того что бы в onAssignedChange не установилось значение _assigned
 						_assignIgnore = true;
 						_assignedValueSetter(this.origin);
 						_assignIgnore = false;
@@ -372,7 +371,6 @@ package talon
 				{
 					if (_assignedValueSetter != null)
 					{
-						// Для того что бы в onAssignedChange не установилось значение _assigned
 						_assignIgnore = true;
 						_assignedValueSetter(this.origin);
 						_assignIgnore = false;

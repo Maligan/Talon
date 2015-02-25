@@ -1,16 +1,15 @@
 package talon.utils
 {
-	import deng.fzip.FZip;
-
 	import flash.events.Event;
 	import flash.system.ApplicationDomain;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
-	import flash.utils.getDefinitionByName;
 
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
 	import starling.events.EventDispatcher;
+
+	import talon.Attribute;
 
 	import talon.Node;
 	import talon.StyleSheet;
@@ -57,7 +56,7 @@ package talon.utils
 			if (element is ITalonElement)
 			{
 				var node:Node = ITalonElement(element).node;
-				node.setAttribute("type", elementType);
+				node.setAttribute(Attribute.TYPE, elementType);
 
 				for each (var attribute:XML in xml.attributes())
 				{

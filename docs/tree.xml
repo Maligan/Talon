@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<define id="Button" type="button">
+	<node>
+		<label id="caption" text="bind(caption)" />
+		<image id="icon" srource="bind(icon)" />
+		<label id="amount" text="bind(amount)" />
+	</node>
+</define>
+
+<define id="BaseDialog">
+	<node>
+		<node id="header" />
+		<node id="content" />
+	</node>
+</define>
+
+<define id="MessageDialog" base="BaseDialog">
+	<rewrite ref="header"><label text="Header" /></rewrite>
+	<rewrite ref="content">
+		<label text="bind(message)" />
+		<node>
+			<button caption="res(locale)" icon="res(diamond)" amount="bind(cost)" />
+			<button caption="Cancel" />
+			<definition ref="BaseDialog">
+				<rewrite ref="header" />
+			</definition>
+		</node>
+	</rewrite>
+</define>
+
+var dialog:DisplayObject = factory.create("dialog-message");
+dialog.node.setAttribute("message", message);
+dialog.node.setAttribute("cost", cost.value.toString());
+
+var purchase:DisplayObject = dialog.getChildrenByPath(".**.purchase");
+
+Keywords:
+ - define - create tree pattern
+	+ id - mandatory
+	+ base - base definition id
+	+ type - linkage tag name
+ - definition - insert exists tree pattern
+	+ ref - mandatory definition id
+ - rewrite - replace any subtree on exists tree pattern
+	+ ref - mandatory subtree root id

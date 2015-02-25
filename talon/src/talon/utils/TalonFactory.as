@@ -17,6 +17,11 @@ package talon.utils
 
 	public class TalonFactory extends EventDispatcher
 	{
+		// Special keyword-tags
+		private static const TAG_DEFINE:String = "define";
+		private static const TAG_DEFINITION:String = "definition";
+		private static const TAG_REWRITE:String = "rewrite";
+
 		protected var _linkageByDefault:Class;
 		protected var _linkage:Dictionary = new Dictionary();
 		protected var _prototypes:Dictionary = new Dictionary();

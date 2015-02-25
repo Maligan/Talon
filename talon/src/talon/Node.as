@@ -8,6 +8,8 @@ package talon
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
+	import talon.Attribute;
+
 	import talon.layout.Layout;
 	import talon.types.Gauge;
 	import talon.types.GaugePair;
@@ -69,7 +71,7 @@ package talon
 			bindPair(pivot, Attribute.PIVOT, Attribute.PIVOT_X, Attribute.PIVOT_Y);
 
 			// Listen attribute change
-			addEventListener(Event.CHANGE, onAttributeChange);
+			addEventListener(Event.CHANGE, onSelfAttributeChange);
 		}
 
 		//
@@ -117,7 +119,23 @@ package talon
 		public function setAttribute(name:String, value:String):void { getOrCreateAttribute(name).assigned = value; }
 
 		/** @private Get (create if doesn't exists) attribute. */
-		public function getOrCreateAttribute(name:String):Attribute { return _attributes[name] || (_attributes[name] = new Attribute(this, name)); }
+		public function getOrCreateAttribute(name:String):Attribute
+		{
+			var result:Attribute = _attributes[name];
+			if (result == null)
+			{
+				result = _attributes[name] = new Attribute(this, name);
+				result.addEventListener(Event.CHANGE, onAttributeChange);
+			}
+
+			return result;
+		}
+
+		private function onAttributeChange(e:Event):void
+		{
+			var attribute:Attribute = Attribute(e.target);
+			dispatchEventWith(Event.CHANGE, false, attribute.name)
+		}
 
 		//
 		// Styling
@@ -260,7 +278,7 @@ package talon
 			return Layout.getLayoutByAlias(layoutAlias);
 		}
 
-		private function onAttributeChange(e:Event):void
+		private function onSelfAttributeChange(e:Event):void
 		{
 			var layoutName:String = getAttribute(Attribute.LAYOUT);
 			var invalidate:Boolean = Layout.isObservableAttribute(layoutName, e.data as String);

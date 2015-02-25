@@ -17,7 +17,7 @@ package talon
 	import talon.utils.QueryUtil;
 	import talon.utils.StringUtil;
 
-	public final class Attribute
+	public final class Attribute extends EventDispatcher
 	{
 		public static const TRANSPARENT:String = "transparent";
 		public static const WHITE:String = "white";
@@ -27,10 +27,6 @@ package talon
 		public static const ZERO:String = "0px";
 		public static const ONE:String = "1";
 		public static const INHERIT:String = "inherit";
-
-		private static const _dInitial:Dictionary = new Dictionary();
-		private static const _dInheritable:Dictionary = new Dictionary();
-		private static const _dStyleable:Dictionary = new Dictionary();
 
 		//
 		// Standard Attribute list
@@ -108,11 +104,19 @@ package talon
 
 		public static const TEXT:String = registerAttributeDefaults("text");
 
+		//
+		// Defaults
+		//
+		private static var _defaults:Dictionary;
+
 		public static function registerAttributeDefaults(name:String, initial:String = null, inheritable:Boolean = false, styleable:Boolean = true):String
 		{
-			_dInitial[name] = initial;
-			_dInheritable[name] = inheritable;
-			_dStyleable[name] = styleable;
+			_defaults ||= new Dictionary();
+			_defaults[name] = {};
+			_defaults[name].initial = initial;
+			_defaults[name].inheritable = inheritable;
+			_defaults[name].styleable = styleable;
+
 			return name;
 		}
 		//
@@ -170,9 +174,16 @@ package talon
 
 			_node = node;
 			_name = name;
-			_initial = _dInitial[name];
-			_styleable = _dStyleable.hasOwnProperty(name) ? _dStyleable[name] : true;
-			_inheritable = _dInheritable[name];
+			_initial = null;
+			_styleable = true;
+			_inheritable = false;
+
+			if (_defaults[name] != null)
+			{
+				_initial = _defaults[name].initial;
+				_styleable = _defaults[name].styleable;
+				_inheritable = _defaults[name].inheritable;
+			}
 		}
 
 		//
@@ -185,7 +196,7 @@ package talon
 		public function get name():String { return _name; }
 
 		/**
-		 * talon.Attribute value (based on assigned, styled and initial values)
+		 * Attribute value (based on assigned, styled and initial values)
 		 * NB! There are two optimized version of this property: origin & expanded, but remember this value is basis for them.
 		 */
 		public function get value():String { return assigned || (styleable?styled:null) || initial; }
@@ -327,9 +338,17 @@ package talon
 			else
 			{
 				if (dispatcher == null) throw new ArgumentError("Invalid binding dispatcher");
-				if (getter == null) throw new ArgumentError("Invalid binding getter");
-				if (setter == null) throw new ArgumentError("Invalid binding setter");
+				if (getter == null)     throw new ArgumentError("Invalid binding getter");
+				if (setter == null)     throw new ArgumentError("Invalid binding setter");
 			}
+		}
+
+		public function unbind():void
+		{
+			_assignedDispatcher.removeEventListener(Event.CHANGE, onAssignedChange);
+			_assignedDispatcher = null;
+			_assignedValueSetter = null;
+			_assignedValueGetter = null;
 		}
 
 		private function onAssignedChange(e:Event):void
@@ -359,7 +378,7 @@ package talon
 			}
 		}
 
-		/** talon.Attribute value from node style sheet. */
+		/** Attribute value from node style sheet. */
 		public function get styled():String { return _styled }
 		public function set styled(value:String):void
 		{
@@ -401,7 +420,7 @@ package talon
 		{
 			_expanded = null;
 			_expandedCached = false;
-			_node.dispatchEventWith(Event.CHANGE, false, name);
+			dispatchEventWith(Event.CHANGE);
 		}
 	}
 }

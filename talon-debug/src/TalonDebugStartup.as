@@ -47,6 +47,35 @@ package
 			stage.addEventListener(Event.RESIZE, onResize);
 			stage.quality = StageQuality.BEST;
 
+
+
+			var parent:Node = new Node();
+			var parentAttribute:Attribute = parent.getOrCreateAttribute("parentA");
+
+			var child:Node = new Node();
+			var childAttribute:Attribute = child.getOrCreateAttribute("childA");
+
+
+			childAttribute.bind(parentAttribute, function():String { return parentAttribute.origin }, function(value:String):void{ parentAttribute.assigned = value });
+
+
+			parentAttribute.addEventListener(Event.CHANGE, onParentChange);
+
+			function onParentChange():void
+			{
+				trace("Change -", parentAttribute.value);
+			}
+
+
+			parent.setAttribute("parentA", "test1");
+			child.setAttribute("childA", "child2");
+
+
+
+
+
+
+
 //			var string:String = "res(key)";
 //
 //			var timer:int = getTimer();

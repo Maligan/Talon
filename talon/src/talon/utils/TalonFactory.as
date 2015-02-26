@@ -22,11 +22,18 @@ package talon.utils
 		private static const TAG_DEFINITION:String = "definition";
 		private static const TAG_REWRITE:String = "rewrite";
 
+		// Special keyword-attributes
+		private static const ATT_ID:String = "id";
+		private static const ATT_TYPE:String = "type";
+		private static const ATT_BASE:String = "base";
+		private static const ATT_REF:String = "ref";
+
 		protected var _linkageByDefault:Class;
 		protected var _linkage:Dictionary = new Dictionary();
 		protected var _prototypes:Dictionary = new Dictionary();
 		protected var _resources:Object = new Dictionary();
 		protected var _style:StyleSheet = new StyleSheet();
+		protected var _defines:Dictionary;
 
 		public function TalonFactory(defaultLinkageClass:Class = null):void
 		{
@@ -50,6 +57,39 @@ package talon.utils
 			}
 
 			return element;
+		}
+
+		//
+		// Factory
+		//
+		private function fromTree(xml:XML, rewrites:XMLList = null):*
+		{
+			var elementType:String = xml.name();
+			var elementId:String = xml.@id.valueOf();
+
+			if (elementType == TAG_DEFINE)
+			{
+				if (xml.@id.length() == 0) throw new Error("Define tag must have id attribute");
+
+				var numChildren:int = xml.*.length();
+				var numRewrites:int = xml.child(TAG_REWRITE).length();
+				if (numChildren != 1 && numChildren != numRewrites) throw new Error("Define tag must contain only one child, or set of rewrites");
+
+				if (numRewrites != 0 && xml.@base.length() == 0) throw new Error("Define tag with rewrites must have base attribute");
+
+				if (numRewrites == 0)
+				{
+					return fromTree(xml.*[0]);
+				}
+				else
+				{
+
+				}
+			}
+			else
+			{
+				return fromXML(xml);
+			}
 		}
 
 		private function fromXML(xml:XML):DisplayObject

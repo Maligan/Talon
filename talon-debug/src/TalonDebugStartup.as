@@ -42,7 +42,35 @@ package
 
 		public function TalonDebugStartup()
 		{
-			stage.addEventListener(Event.RESIZE, onResize);
+//			stage.addEventListener(Event.RESIZE, onResize);
+
+
+			var xml:XML =
+				<define id="Prototype">
+					<rewrite />
+					<rewrite />
+					<rewrite />
+					<tmp />
+				</define>;
+
+
+			trace("base", xml.*.length() == xml.rewrite.length(), "value");
+			trace("finish");
+
+
+
+
+
+			return;
+
+
+
+
+
+
+
+
+
 
 //			var string:String = "res(key)";
 //

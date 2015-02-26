@@ -47,15 +47,38 @@ package
 
 			var xml:XML =
 				<define id="Prototype">
-					<rewrite />
-					<rewrite />
-					<rewrite />
-					<tmp />
+					<node id="root">
+						<node id="child1" />
+						<node id="child2" />
+						<definition ref="Ext" id="root" color="black">
+							<rewrite ref="ext_p2">
+								<label id="l1" />
+								<label id="l2" />
+								<label id="l3" />
+							</rewrite>
+						</definition>
+					</node>
 				</define>;
 
 
-			trace("base", xml.*.length() == xml.rewrite.length(), "value");
-			trace("finish");
+
+			var root:Node = fromXML(xml, {});
+
+			traceTree(root);
+
+
+			function traceTree(node:Node, level:int = 0):void
+			{
+				trace(mul("----", level), node.getAttribute("type"), "(" + node.getAttribute("id") + ")");
+				for (var i:int = 0; i < node.numChildren; i++) traceTree(node.getChildAt(i), level+1);
+			}
+
+			function mul(str:String, value:int):String
+			{
+				var array:Array = new Array(value);
+				for (var i:int = 0; i < value; i++) array[i] = str;
+				return array.join("");
+			}
 
 
 
@@ -98,6 +121,72 @@ package
 			Starling.current.addEventListener(Event.ROOT_CREATED, onRootCreated);
 			Starling.current.start();
 			Starling.current.showStats = false;
+		}
+
+		private function fromXML(xml:XML, rewrites:Object):Node
+		{
+			// rewrites: string (id) -> xml-list (children)
+
+			var result:Node;
+			var tag:String = xml.name();
+
+			switch (tag)
+			{
+				case "define":
+					result = fromXML(xml.*[0], rewrites);
+					result.setAttribute("type", xml.*[0].name());
+					break;
+				case "definition":
+					result = fromXML(getXMLById(xml.@ref.valueOf()), merge(rewrites, xml.rewrite));
+					for each (var attr:XML in xml.attributes()) result.setAttribute(attr.name(), attr.valueOf());
+					//break;
+				default:
+					result = new Node();
+					result.setAttribute("type", xml.name());
+					for each (var attr:XML in xml.attributes()) result.setAttribute(attr.name(), attr.valueOf());
+					var id:String = xml.@id.valueOf();
+					var children:XMLList = rewrites[id] || xml.children();
+					for each (var child:XML in children) result.addChild(fromXML(child, rewrites));
+					break;
+			}
+
+			return result;
+		}
+
+		private function merge(base:Object, children:XMLList):Object
+		{
+			if (children.length() == 0) return base;
+
+			var result:Object = new Object();
+
+			for (var id:String in base) result[id] = base[id];
+			for each (var rewrite:XML in children) result[rewrite.@ref.valueOf()] = rewrite.children();
+
+			return result;
+		}
+
+		private function getXMLById(id:String):XML
+		{
+			if (id == "Proto") return   <define>
+											<node id="proto_root" color="blue" />
+										</define>;
+
+			if (id == "Ext") return <define>
+										<node id="ext_root">
+											<node id="ext_p1" />
+											<node id="ext_p2"><node id="target"/></node>
+											<node id="ext_p3" />
+											<definition ref="Proto">
+												<rewrite ref="proto_root">
+													<node id="ext_proto_e_1" />
+													<node id="ext_proto_e_2" />
+													<node id="ext_proto_e_3" />
+												</rewrite>
+											</definition>
+										</node>
+									</define>;
+
+			throw new Error("Error")
 		}
 
 

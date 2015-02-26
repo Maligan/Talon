@@ -69,22 +69,7 @@ package talon.utils
 
 			if (elementType == TAG_DEFINE)
 			{
-				if (xml.@id.length() == 0) throw new Error("Define tag must have id attribute");
 
-				var numChildren:int = xml.*.length();
-				var numRewrites:int = xml.child(TAG_REWRITE).length();
-				if (numChildren != 1 && numChildren != numRewrites) throw new Error("Define tag must contain only one child, or set of rewrites");
-
-				if (numRewrites != 0 && xml.@base.length() == 0) throw new Error("Define tag with rewrites must have base attribute");
-
-				if (numRewrites == 0)
-				{
-					return fromTree(xml.*[0]);
-				}
-				else
-				{
-
-				}
 			}
 			else
 			{

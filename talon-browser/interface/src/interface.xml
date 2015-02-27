@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
-<prototype id="interface">
+<define id="interface">
   <node width="100%" height="100%" layout="abs">
     <node id="container" class="transparent"/>
     <node id="shade" width="100%" height="100%" backgroundColor="black" alpha="0.7"/>
     <node id="popups" width="100%" height="100%" layout="flow" halign="center" valign="center"/>
-    <message class="error">
-      <image id="icon"/>
-      <node backgroundColor="green" width="*" height="12px" minHeight="*"/>
-      <label text="Can't access to file C:\Projects\Interface\Game\src\img\background.png" width="*" height="auto" minHeight="*" halign="left"/>
-    </message>
+    <!--<message class="error">-->
+      <!--<image id="icon"/>-->
+      <!--<node backgroundColor="green" width="*" height="12px" minHeight="*"/>-->
+      <!--<label text="Can't access to file C:\Projects\Interface\Game\src\img\background.png" width="*" height="auto" minHeight="*" halign="left"/>-->
+    <!--</message>-->
 	<!--<image src="res(crutches)" position="50%" pivot="50%"/>-->
   </node>
-</prototype>
+</define>

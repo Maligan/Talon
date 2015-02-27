@@ -49,7 +49,7 @@ package talon.utils
 			var config:XML = _prototypes[id];
 			if (config == null) throw new ArgumentError("Prototype by id: " + id + " not found");
 
-			var element:DisplayObject = fromXML(config);
+			var element:DisplayObject = fromXML_OLD(config);
 			if (element is ITalonElement)
 			{
 				includeResources && ITalonElement(element).node.setResources(_resources);
@@ -62,22 +62,53 @@ package talon.utils
 		//
 		// Factory
 		//
-		private function fromTree(xml:XML, rewrites:XMLList = null):*
+		private function fromXML(xml:XML, rewrite:Object):Node
 		{
-			var elementType:String = xml.name();
-			var elementId:String = xml.@id.valueOf();
+			var result:Node;
+			var type:String = xml.name();
+			rewrite = merge(rewrite, xml.child(TAG_REWRITE));
 
-			if (elementType == TAG_DEFINE)
+			if (type == TAG_DEFINE)
 			{
-
+				var base:String = xml.attribute(ATT_BASE).toString();
+				result = fromXML(base ? getDefinition(base) : xml.*[0], rewrite);
+				result.setAttribute(Attribute.TYPE, xml.attribute(ATT_TYPE) || type);
+			}
+			else if (type == TAG_DEFINITION || getDefinitionIdByType(type) != null)
+			{
+				var ref:String = getDefinitionIdByType(type) || xml.attribute(ATT_REF).toString();
+				result = fromXML(getDefinition(ref), rewrite);
+				for each (var attribute:XML in xml.attributes()) result.setAttribute(attribute.name(), attribute.toString());
 			}
 			else
 			{
-				return fromXML(xml);
+				result = new Node();
+				result.setAttribute(Attribute.TYPE, type);
+				var children:XMLList = rewrite[xml.attribute(ATT_ID).toString()] || xml.children();
+				for each (var attribute:XML in xml.attributes()) result.setAttribute(attribute.name(), attribute.toString());
+				for each (var child:XML in children) result.addChild(fromXML(child, rewrite));
 			}
+
+			return result;
 		}
 
-		private function fromXML(xml:XML):DisplayObject
+		private function merge(base:Object, children:XMLList):Object
+		{
+			if (children.length() == 0) return base;
+
+			var result:Object = new Object();
+			for (var id:String in base) result[id] = base[id];
+			for each (var rewrite:XML in children) result[rewrite.attribute(ATT_REF)] = rewrite.children();
+			return result;
+		}
+
+		private function getDefinition(id:String):XML { return _defines[id]; }
+		private function getDefinitionIdByType(type:String):String { return null; }
+
+		//
+		// Old
+		//
+		private function fromXML_OLD(xml:XML):DisplayObject
 		{
 			var elementType:String = xml.name();
 			var elementClass:Class = _linkage[elementType] || _linkageByDefault;
@@ -101,7 +132,7 @@ package talon.utils
 				var container:DisplayObjectContainer = DisplayObjectContainer(element);
 				for each (var childXML:XML in xml.children())
 				{
-					var childElement:DisplayObject = fromXML(childXML);
+					var childElement:DisplayObject = fromXML_OLD(childXML);
 					container.addChild(childElement);
 				}
 			}
@@ -177,7 +208,7 @@ package talon.utils
 				if (xml.localName() == "prototype")
 				{
 					var name:String = xml.@id;
-					var body:XML = xml.*[0];
+					var body:XML = xml.*[0];d
 					addPrototype(name, body);
 				}
 			}

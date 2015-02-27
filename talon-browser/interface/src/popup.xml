@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<prototype id="popup">
+<prototype id="define">
   <node width="256px" height="150px" backgroundColor="gray" filter="drop-shadow(0, 0, black, 1, 1)" layout="abs" padding="10px">
     <node anchorRight="100%" anchorBottom="100%" backgroundColor="#1c1c1c" padding="1em" width="80px" height="32px"/>
   </node>

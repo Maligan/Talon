@@ -215,6 +215,7 @@ package talon
 			// Notify resource change
 			for each (var attribute:Attribute in _attributes)
 			{
+				// FIXME: Bug (based on _expandedCache property)
 				if (attribute.isResource) dispatchEventWith(Event.CHANGE, false, attribute.name);
 			}
 
@@ -281,14 +282,14 @@ package talon
 		private function onSelfAttributeChange(e:Event):void
 		{
 			var layoutName:String = getAttribute(Attribute.LAYOUT);
-			var invalidate:Boolean = Layout.isObservableAttribute(layoutName, e.data as String);
+			var invalidate:Boolean = Layout.isObservableSelfAttribute(layoutName, e.data as String);
 			if (invalidate) commit();
 		}
 
 		private function onChildAttributeChange(e:Event):void
 		{
 			var layoutName:String = getAttribute(Attribute.LAYOUT);
-			var invalidate:Boolean = Layout.isObservableChildrenAttribute(layoutName, e.data as String);
+			var invalidate:Boolean = Layout.isObservableChildAttribute(layoutName, e.data as String);
 			if (invalidate) commit();
 		}
 

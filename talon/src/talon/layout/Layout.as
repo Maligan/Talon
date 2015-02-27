@@ -15,10 +15,10 @@ package talon.layout
 
 		private static var _initialized:Boolean = false;
 		private static var _layout:Dictionary = new Dictionary();
-		private static var _observableAttribute:Dictionary = new Dictionary();
-		private static var _observableChildrenAttribute:Dictionary = new Dictionary();
+		private static var _observableSelfAttribute:Dictionary = new Dictionary();
+		private static var _observableChildAttribute:Dictionary = new Dictionary();
 
-		public static function registerLayoutAlias(aliasName:String, layout:Layout, observableAttribute:Array = null, observableChildrenAttribute:Array = null):void
+		public static function registerLayoutAlias(aliasName:String, layout:Layout, observableSelfAttribute:Array = null, observableChildAttribute:Array = null):void
 		{
 			if (_layout[aliasName] != null) throw new ArgumentError("Layout alias " + aliasName + "already registered");
 
@@ -28,12 +28,12 @@ package talon.layout
 			var attribute:String;
 
 			helper = new Dictionary();
-			for each (attribute in observableAttribute) helper[attribute] = true;
-			_observableAttribute[aliasName] = helper;
+			for each (attribute in observableSelfAttribute) helper[attribute] = true;
+			_observableSelfAttribute[aliasName] = helper;
 
 			helper = new Dictionary();
-			for each (attribute in observableChildrenAttribute) helper[attribute] = true;
-			_observableChildrenAttribute[aliasName] = helper;
+			for each (attribute in observableChildAttribute) helper[attribute] = true;
+			_observableChildAttribute[aliasName] = helper;
 		}
 
 		/** Get layout strategy by it's name. */
@@ -44,17 +44,17 @@ package talon.layout
 		}
 
 		/** Layout must be invalidated if node attribute changed. */
-		public static function isObservableAttribute(layout:String, attributeName:String):Boolean
+		public static function isObservableSelfAttribute(layout:String, attributeName:String):Boolean
 		{
 			initialize();
-			return _observableAttribute[layout][attributeName];
+			return _observableSelfAttribute[layout][attributeName];
 		}
 
 		/** Layout must be invalidated if node child attribute changed. */
-		public static function isObservableChildrenAttribute(layout:String, attributeName:String):Boolean
+		public static function isObservableChildAttribute(layout:String, attributeName:String):Boolean
 		{
 			initialize();
-			return _observableChildrenAttribute[layout][attributeName];
+			return _observableChildAttribute[layout][attributeName];
 		}
 
 		private static function initialize():void

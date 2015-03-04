@@ -40,7 +40,29 @@ Keywords:
 	+ id - mandatory
 	+ base - base definition id
 	+ type - linkage tag name
+	? consists from only 1 child (root) OR (if definded base attribute) set of <rewrite>
  - definition - insert exists tree pattern
 	+ ref - mandatory definition id
+	? consists from set of <rewrite>
  - rewrite - replace any subtree on exists tree pattern
 	+ ref - mandatory subtree root id
+	+ mode - attributes | replace | content
+	? consist from 1 child (root) if mode==replace, any count of child if mode==content, empty if mode==attributes
+
+ - library - conainer element (for lazy)
+ - style - define style
+
+
+
+
+<library>
+
+	<style>
+		.tag { shift: 0px; }
+	</style>
+
+	<define id="element">
+		
+	</define>
+
+</library>

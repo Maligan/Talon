@@ -208,7 +208,7 @@ package talon.utils
 				if (xml.localName() == "prototype")
 				{
 					var name:String = xml.@id;
-					var body:XML = xml.*[0];d
+					var body:XML = xml.*[0];
 					addPrototype(name, body);
 				}
 			}

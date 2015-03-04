@@ -217,6 +217,20 @@ package
 			onResize(null)
 		}
 
+		private function getXMLFromId(id:String):XML { return null }
+		private function mergeAttributes(source:Object, rewrite:XML):Object { return null }
+		private function mergeReplacers(source:Object, rewrite:XML):Object { return null }
+		private function mergeContents(source:Object, rewrites:XMLList):Object { return null }
+
+		private function fromXML(xml:XML, attributes:Object, replacers:Object, contents:Object):Node
+		{
+
+		}
+
+
+
+
+
 		private function onInvalidate():void
 		{
 			onResize(null);

@@ -28,6 +28,9 @@ package talon.utils
 		private static const ATT_BASE:String = "base";
 		private static const ATT_REF:String = "ref";
 
+		protected var _parser:TMLParser;
+		protected var _result:*;
+
 		protected var _linkageByDefault:Class;
 		protected var _linkage:Dictionary = new Dictionary();
 		protected var _prototypes:Dictionary = new Dictionary();
@@ -41,22 +44,29 @@ package talon.utils
 			setLinkage("node", SpriteElement);
 			setLinkage("image", ImageElement);
 			setLinkage("label", TextFieldElement);
+
+			_parser = new TMLParser(getDefinition);
+			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
+			_parser.addEventListener(TMLParser.EVENT_END, onElementEnd);
 		}
+
+		private function onElementBegin(e:*):void { }
+		private function onElementEnd(e:*):void { }
 
 		public function build(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):DisplayObject
 		{
-			if (id == null) throw new ArgumentError("Parameter id must be non-null");
-			var config:XML = _prototypes[id];
-			if (config == null) throw new ArgumentError("Prototype by id: " + id + " not found");
+			_parser.parse(id);
 
-			var element:DisplayObject = fromXML_OLD(config);
-			if (element is ITalonElement)
+			var result:* = _result;
+			_result = null;
+
+			if (result is ITalonElement)
 			{
-				includeResources && ITalonElement(element).node.setResources(_resources);
-				includeStyleSheet && ITalonElement(element).node.setStyleSheet(_style);
+				includeResources && ITalonElement(result).node.setResources(_resources);
+				includeStyleSheet && ITalonElement(result).node.setStyleSheet(_style);
 			}
 
-			return element;
+			return result;
 		}
 
 		//

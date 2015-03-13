@@ -45,7 +45,7 @@ package talon.utils
 			setLinkage("image", ImageElement);
 			setLinkage("label", TextFieldElement);
 
-			_parser = new TMLParser(getDefinition);
+			_parser = new TMLParser(Vector.<String>(["node", "label", "image"]));
 			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
 			_parser.addEventListener(TMLParser.EVENT_END, onElementEnd);
 		}
@@ -55,7 +55,7 @@ package talon.utils
 
 		public function build(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):DisplayObject
 		{
-			_parser.parse(id);
+			_parser.parseTemplate(id);
 
 			var result:* = _result;
 			_result = null;

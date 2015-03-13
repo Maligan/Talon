@@ -26,6 +26,7 @@ package
 	import talon.Node;
 
 	import talon.starling.SpriteElement;
+	import talon.utils.TMLParser;
 	import talon.utils.TalonFactory;
 	import talon.utils.StringUtil;
 	import starling.textures.Texture;
@@ -69,6 +70,51 @@ package
 
 //			throw new Error("timer: " + ((getTimer() - timer)/1000).toFixed(2) + "sec");
 //			trace("tmp"); // 0.6 - 0.7
+
+			var button:XML =
+				<node id="button_root">
+					<image id="button_icon" />
+					<node id="button_container">
+						<image id="BC1" />
+						<image id="BC2" />
+						<image id="BC3" />
+					</node>
+					<label id="button_label" />
+				</node>;
+
+			var buttonOverride:XML =
+				<tree ref="Button">
+					<rewrite ref="BC3" mode="replace">
+						<image id="REPLACER" />
+					</rewrite>
+					<rewrite ref="button_icon" mode="attributes" color="!red" />
+				</tree>;
+
+			var buttonOverride2:XML =
+				<tree ref="ButtonOverride">
+					<rewrite ref="button_icon" mode="attributes" color="!blue" />
+				</tree>;
+
+			var tree1:XML =
+				<node id="tree1_root">
+					<node id="child1" />
+					<node id="child2" />
+					<node id="child3" />
+					<costButton2 id="secondButton">
+						<rewrite ref="button_icon" mode="attributes" color="!gray" />
+					</costButton2>
+				</node>;
+
+
+			var parser:TMLParser = new TMLParser(new <String>["node", "label", "image"]);
+			parser.addTemplate("Button", "button", button);
+			parser.addTemplate("ButtonOverride", "costButton", buttonOverride);
+			parser.addTemplate("ButtonOverride2", "costButton2", buttonOverride2);
+			parser.addTemplate("tree1", null, tree1);
+			parser.parseTemplate("tree1");
+
+			return;
+
 
 
 			Attribute.registerQueryAlias("url", url);
@@ -215,16 +261,6 @@ package
 			_document.addChild(_talon);
 			_document.addEventListener(Event.TRIGGERED, onTriggered);
 			onResize(null)
-		}
-
-		private function getXMLFromId(id:String):XML { return null }
-		private function mergeAttributes(source:Object, rewrite:XML):Object { return null }
-		private function mergeReplacers(source:Object, rewrite:XML):Object { return null }
-		private function mergeContents(source:Object, rewrites:XMLList):Object { return null }
-
-		private function fromXML(xml:XML, attributes:Object, replacers:Object, contents:Object):Node
-		{
-
 		}
 
 

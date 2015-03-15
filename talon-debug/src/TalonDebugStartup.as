@@ -73,7 +73,7 @@ package
 
 			var button:XML =
 				<node id="button_root">
-					<image id="button_icon" />
+					<image id="button_icon" color="!default" />
 					<node id="button_container">
 						<image id="BC1" />
 						<image id="BC2" />

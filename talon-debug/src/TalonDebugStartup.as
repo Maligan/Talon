@@ -71,7 +71,10 @@ package
 //			throw new Error("timer: " + ((getTimer() - timer)/1000).toFixed(2) + "sec");
 //			trace("tmp"); // 0.6 - 0.7
 
-			var button:XML =
+
+			var scope:Object = {};
+
+			scope["button"] =
 				<node id="button_root">
 					<image id="button_icon" color="!default" />
 					<node id="button_container">
@@ -82,35 +85,31 @@ package
 					<label id="button_label" />
 				</node>;
 
-			var buttonOverride:XML =
-				<tree ref="Button">
+			scope["buttonOverride"] =
+				<button>
 					<rewrite ref="BC3" mode="replace">
 						<image id="REPLACER" />
 					</rewrite>
 					<rewrite ref="button_icon" mode="attributes" color="!red" />
-				</tree>;
+				</button>;
 
-			var buttonOverride2:XML =
-				<tree ref="ButtonOverride">
+			scope["buttonOverride2"] =
+				<buttonOverride>
 					<rewrite ref="button_icon" mode="attributes" color="!blue" />
-				</tree>;
+				</buttonOverride>;
 
-			var tree1:XML =
+			scope["tree1"] =
 				<node id="tree1_root">
 					<node id="child1" />
 					<node id="child2" />
 					<node id="child3" />
-					<costButton2 id="secondButton">
+					<buttonOverride2 id="secondButton">
 						<rewrite ref="button_icon" mode="attributes" color="!gray" />
-					</costButton2>
+					</buttonOverride2>
 				</node>;
 
 
-			var parser:TMLParser = new TMLParser(new <String>["node", "label", "image"]);
-			parser.addTemplate("Button", "button", button);
-			parser.addTemplate("ButtonOverride", "costButton", buttonOverride);
-			parser.addTemplate("ButtonOverride2", "costButton2", buttonOverride2);
-			parser.addTemplate("tree1", null, tree1);
+			var parser:TMLParser = new TMLParser(scope, new <String>["node", "label", "image"]);
 			parser.parseTemplate("tree1");
 
 			return;

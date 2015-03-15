@@ -45,7 +45,7 @@ package talon.utils
 			setLinkage("image", ImageElement);
 			setLinkage("label", TextFieldElement);
 
-			_parser = new TMLParser(Vector.<String>(["node", "label", "image"]));
+			_parser = new TMLParser(null, Vector.<String>(["node", "label", "image"]));
 			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
 			_parser.addEventListener(TMLParser.EVENT_END, onElementEnd);
 		}

@@ -9,7 +9,6 @@ package talon.utils
 		public static const EVENT_END:String = "end";
 
 		// Special keyword-tags
-		private static const TAG_TREE:String = "tree";
 		private static const TAG_REWRITE:String = "rewrite";
 
 		// Special keyword-attributes
@@ -25,9 +24,7 @@ package talon.utils
 
 		// Types
 		private static const TYPE_TREE:String = "tree";
-		private static const TYPE_TREE_WITH_TYPE:String = "treeWithType";
 		private static const TYPE_TERMINAL:String = "terminal";
-		private static const TYPE_EMPTY:String = "empty";
 
 		// Utils
 		private static const EMPTY_XML:XML = new XML();
@@ -36,53 +33,36 @@ package talon.utils
 		//
 		// Implementation
 		//
-		private var _templatesById:Object;
-		private var _templatesByType:Object;
+		private var _templates:Object;
 		private var _terminals:Vector.<String>;
 
 		private var _stack:Vector.<String>;
 
-		public function TMLParser(terminals:Vector.<String>)
+		public function TMLParser(scope:Object, terminals:Vector.<String>)
 		{
 			_terminals = terminals;
-			_templatesById = new Object();
-			_templatesByType = new Object();
+			_templates = scope;
 			_stack = new Vector.<String>();
-		}
-
-		public function addTemplate(id:String, type:String, xml:XML):void
-		{
-			var template:TMLTemplate = new TMLTemplate(id, type, xml);
-			_templatesById[id] = template;
-			_templatesByType[type] = template;
 		}
 
 		public function parseTemplate(id:String):void
 		{
-			var template:TMLTemplate = _templatesById[id];
+			var template:XML = getTemplateOrDie(id);
 
-			push(template.id);
-			parse(template.xml, null, EMPTY_XML_LIST);
+			push(id);
+			parse(template, null, EMPTY_XML_LIST);
 		}
 
 		private function parse(xml:XML, attributes:Object, rewrites:XMLList):void
 		{
 			var token:String = getNodeType(xml);
-			var template:TMLTemplate = null;
 
 			switch (token)
 			{
 				case TYPE_TREE:
-					template = getTemplateByIdOrDie(getAttributeOrDie(xml, ATT_REF));
-					push(template.id);
-					parse(template.xml, fetchAttributes(xml, attributes, template.type, ATT_REF), fetchRewrites(xml, rewrites));
-					pop();
-					break;
-
-				case TYPE_TREE_WITH_TYPE:
-					template = getTemplateByTypeOrDie(xml.name());
-					push(template.id);
-					parse(template.xml, fetchAttributes(xml), fetchRewrites(xml, rewrites));
+					var templateId:String = xml.name();
+					push(templateId);
+					parse(getTemplateOrDie(xml.name()), fetchAttributes(xml), fetchRewrites(xml, rewrites));
 					pop();
 					break;
 
@@ -95,7 +75,7 @@ package talon.utils
 						for each (var child:XML in rewriteContent(xml, rewrites)) parse(child, null, rewrites);
 						dispatchEnd();
 					}
-					else
+					else if (replacer != EMPTY_XML)
 					{
 						parse(replacer, attributes, rewrites);
 					}
@@ -107,20 +87,12 @@ package talon.utils
 		{
 			var name:String = xml.name();
 
-			// Removed node via <rewrite>
-			if (name == null)
-				return TYPE_EMPTY;
-
-			// Definition usage via <define> tag
-			if (name == TAG_TREE)
-				return TYPE_TREE;
-
 			// Terminal node
 			if (_terminals.indexOf(name) != -1)
 				return TYPE_TERMINAL;
 
 			// Definition usage via alias
-			return TYPE_TREE_WITH_TYPE;
+			return TYPE_TREE;
 		}
 
 		private function push(id:String):void { if (_stack.indexOf(id) != -1) throw new Error("Template is recursive nested"); _stack.push(id); }
@@ -129,25 +101,11 @@ package talon.utils
 		//
 		// Utility methods
 		//
-		private function getTemplateByIdOrDie(id:String):TMLTemplate
+		private function getTemplateOrDie(id:String):XML
 		{
-			var template:TMLTemplate = _templatesById[id];
-			if (template == null) throw new Error("Template with id '" + id + "' not found");
+			var template:XML = _templates[id];
+			if (template == null) throw new Error("Template with type '" + id + "' not found");
 			return template;
-		}
-
-		private function getTemplateByTypeOrDie(type:String):TMLTemplate
-		{
-			var template:TMLTemplate = _templatesByType[type];
-			if (template == null) throw new Error("Template with type '" + type + "' not found");
-			return template;
-		}
-
-		private function getAttributeOrDie(xml:XML, name:String):String
-		{
-			var attribute:XMLList = xml.attribute(name);
-			if (attribute.length() == 0) throw new Error("XML doesn't has mandatory attribute " + name);
-			return attribute.valueOf();
 		}
 
 		/** Fetch rewrites from xml. */
@@ -249,19 +207,5 @@ package talon.utils
 			for (var i:int = 0; i < value; i++) array[i] = str;
 			return array.join("");
 		}
-	}
-}
-
-class TMLTemplate
-{
-	public var id:String;
-	public var type:String;
-	public var xml:XML;
-
-	public function TMLTemplate(id:String, type:String, xml:XML)
-	{
-		this.id = id;
-		this.type = type;
-		this.xml = xml;
 	}
 }

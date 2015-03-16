@@ -34,7 +34,7 @@ package talon.utils
 
 		private var _stack:Vector.<String>;
 
-		public function TMLParser(templates:Object = null, terminals:Vector.<String> = null)
+		public function TMLParser(terminals:Vector.<String> = null, templates:Object = null)
 		{
 			_terminals = terminals || new Vector.<String>();
 			_templates = templates || new Object();

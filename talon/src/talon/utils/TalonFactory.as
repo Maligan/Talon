@@ -1,5 +1,7 @@
 package talon.utils
 {
+	import talon.Attribute;
+	import talon.enums.BindMode;
 	import talon.starling.*;
 	import flash.system.ApplicationDomain;
 	import flash.utils.ByteArray;
@@ -77,7 +79,33 @@ package talon.utils
 				for (var key:String in attributes)
 				{
 					var value:String = attributes[key];
-					node.setAttribute(key, value);
+					var func:Array = StringUtil.parseFunction(value);
+					if (func && func[0] == "bind")
+					{
+						var parent:ITalonElement = _parserStack[_parserStack.length - 1] as ITalonElement;
+						var source:Attribute = parent.node.getOrCreateAttribute(func[1]);
+						var target:Attribute = node.getOrCreateAttribute(key);
+
+						var mode:String = func.length > 2 ? func[2] : BindMode.ONCE;
+						if (BindMode.isValid(mode) == false) new Error("Unknown bind mode: '" + mode + "'");
+
+						switch (mode)
+						{
+							case BindMode.ONCE:
+								target.assigned = source.value;
+								break;
+							case BindMode.ONE_WAY:
+								target.bind(source, bindGetter(source), bindSetter(target));
+								break;
+							case BindMode.TWO_WAY:
+								source.bind(target, bindGetter(source), bindSetter(source));
+								break;
+						}
+					}
+					else
+					{
+						node.setAttribute(key, value);
+					}
 				}
 			}
 
@@ -87,6 +115,9 @@ package talon.utils
 
 			_parserStack.push(element);
 		}
+
+		function bindGetter(attr:Attribute):Function { return function():String { return attr.value } }
+		function bindSetter(attr:Attribute):Function { return function(value:String):void { /*attr.assigned = value;*/ } }
 
 		private function onElementEnd(e:Event):void
 		{

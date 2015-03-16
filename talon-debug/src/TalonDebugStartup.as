@@ -113,11 +113,6 @@ package
 //			var parser:TMLParser = new TMLParser(scope, new <String>["node", "label", "image"]);
 //			parser.parseTemplate("tree1");
 
-			System.disposeXML(null);
-
-			trace('sdf');
-			return;
-
 			Attribute.registerQueryAlias("url", url);
 
 			var gauge:GaugeQuad = new GaugeQuad();

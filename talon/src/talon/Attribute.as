@@ -224,6 +224,7 @@ package talon
 				queryInfo.unshift(this);
 
 				_expanded = queryMethod.apply(null, queryInfo);
+				_expandedCached = true;
 			}
 
 			return _expanded;
@@ -313,6 +314,7 @@ package talon
 		public function get assigned():String { return _assigned; }
 		public function set assigned(value:String):void
 		{
+			// XXX: Binding twoway/oneway
 			if (_assignedValueSetter != null)
 			{
 				_assignedValueSetter(value);
@@ -334,6 +336,7 @@ package talon
 				_assignedValueSetter = setter;
 				_assignedDispatcher = dispatcher;
 				_assignedDispatcher.addEventListener(Event.CHANGE, onAssignedChange);
+				assigned = getter();
 			}
 			else
 			{
@@ -353,9 +356,13 @@ package talon
 
 		private function onAssignedChange(e:Event):void
 		{
-			if (_assignIgnore == false)
+			if (_assignIgnore) return;
+
+			var value:String = _assignedValueGetter();
+
+			if (_assigned != value)
 			{
-				_assigned = _assignedValueGetter();
+				_assigned = value;
 				dispatchChange();
 			}
 		}

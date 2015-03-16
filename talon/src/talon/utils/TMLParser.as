@@ -1,6 +1,6 @@
 package talon.utils
 {
-	import flash.events.EventDispatcher;
+	import starling.events.EventDispatcher;
 
 	public final class TMLParser extends EventDispatcher
 	{
@@ -22,10 +22,6 @@ package talon.utils
 		private static const VAL_CONTENT:String = "content";
 		private static const VAL_ATTRIBUTES:String = "attributes";
 
-		// Types
-		private static const TYPE_TREE:String = "tree";
-		private static const TYPE_TERMINAL:String = "terminal";
-
 		// Utils
 		private static const EMPTY_XML:XML = new XML();
 		private static const EMPTY_XML_LIST:XMLList = new XMLList();
@@ -38,65 +34,59 @@ package talon.utils
 
 		private var _stack:Vector.<String>;
 
-		public function TMLParser(scope:Object, terminals:Vector.<String>)
+		public function TMLParser(templates:Object = null, terminals:Vector.<String> = null)
 		{
-			_terminals = terminals;
-			_templates = scope;
+			_terminals = terminals || new Vector.<String>();
+			_templates = templates || new Object();
 			_stack = new Vector.<String>();
 		}
 
 		public function parseTemplate(id:String):void
 		{
-			var template:XML = getTemplateOrDie(id);
-
-			push(id);
-			parse(template, null, EMPTY_XML_LIST);
+			// XXX: Clean after error? _stack.length = 0;
+			parse(getTemplateOrDie(id), null, EMPTY_XML_LIST);
 		}
 
 		private function parse(xml:XML, attributes:Object, rewrites:XMLList):void
 		{
-			var token:String = getNodeType(xml);
+			var id:String = xml.name();
+			var isTerminal:Boolean = _terminals.indexOf(id) != -1;
 
-			switch (token)
+			// If node can't be expanded - create node
+			if (isTerminal)
 			{
-				case TYPE_TREE:
-					var templateId:String = xml.name();
-					push(templateId);
-					parse(getTemplateOrDie(xml.name()), fetchAttributes(xml), fetchRewrites(xml, rewrites));
-					pop();
-					break;
-
-				case TYPE_TERMINAL:
-					var replacer:XML = rewriteReplace(xml, rewrites);
-					if (replacer == null)
-					{
-						attributes = mergeAttributes(fetchAttributes(xml), rewriteAttributes(xml, rewrites), attributes);
-						dispatchBegin(attributes);
-						for each (var child:XML in rewriteContent(xml, rewrites)) parse(child, null, rewrites);
-						dispatchEnd();
-					}
-					else if (replacer != EMPTY_XML)
-					{
-						parse(replacer, attributes, rewrites);
-					}
-					break;
+				var replacer:XML = rewriteReplace(xml, rewrites);
+				if (replacer == null)
+				{
+					attributes = mergeAttributes(fetchAttributes(xml), rewriteAttributes(xml, rewrites), attributes);
+					dispatchBegin(attributes);
+					for each (var child:XML in rewriteContent(xml, rewrites)) parse(child, null, rewrites);
+					dispatchEnd();
+				}
+				else if (replacer != EMPTY_XML)
+				{
+					parse(replacer, attributes, rewrites);
+				}
+			}
+			// Else if node is template
+			else
+			{
+				push(id);
+				parse(getTemplateOrDie(id), fetchAttributes(xml, attributes), fetchRewrites(xml, rewrites));
+				pop();
 			}
 		}
 
-		private function getNodeType(xml:XML):String
+		private function push(id:String):void
 		{
-			var name:String = xml.name();
-
-			// Terminal node
-			if (_terminals.indexOf(name) != -1)
-				return TYPE_TERMINAL;
-
-			// Definition usage via alias
-			return TYPE_TREE;
+			if (_stack.indexOf(id) != -1) throw new Error("Template is recursive nested");
+			_stack.push(id);
 		}
 
-		private function push(id:String):void { if (_stack.indexOf(id) != -1) throw new Error("Template is recursive nested"); _stack.push(id); }
-		private function pop():void { _stack.pop(); }
+		private function pop():void
+		{
+			_stack.pop();
+		}
 
 		//
 		// Utility methods
@@ -108,24 +98,17 @@ package talon.utils
 			return template;
 		}
 
-		/** Fetch rewrites from xml. */
-		private function fetchRewrites(xml:XML, force:XMLList):XMLList
-		{
-			return xml.child(TAG_REWRITE) + force;
-		}
-
 		/** Fetch attributes from XML to key-value pairs. */
-		private function fetchAttributes(xml:XML, force:Object = null, forceType:String = null, ...ignore):Object
+		private function fetchAttributes(xml:XML, force:Object = null):Object
 		{
 			var result:Object = new Object();
 
 			// Type is only mandatory attribute
-			result[ATT_TYPE] = forceType ? forceType : xml.name().toString();
+			result[ATT_TYPE] = xml.name().toString();
 
 			for each (var attribute:XML in xml.attributes())
 			{
 				var name:String = attribute.name();
-				if (ignore.indexOf(name) != -1) continue;
 				var value:String = attribute.toString();
 				result[name] = value;
 			}
@@ -138,12 +121,8 @@ package talon.utils
 			var result:Object = new Object();
 
 			for each (var source:Object in sources)
-			{
 				for (var key:String in source)
-				{
 					result[key] = source[key];
-				}
-			}
 
 			return result;
 		}
@@ -151,6 +130,12 @@ package talon.utils
 		//
 		// Rewrites
 		//
+		/** Fetch rewrites from xml. */
+		private function fetchRewrites(xml:XML, force:XMLList):XMLList
+		{
+			return xml.child(TAG_REWRITE) + force;
+		}
+
 		private function rewriteReplace(xml:XML, rewrites:XMLList):XML
 		{
 			var replacers:XMLList = getRewrites(xml, rewrites, VAL_REPLACE);
@@ -192,20 +177,33 @@ package talon.utils
 		private function getRewrites(target:XML, rewrites:XMLList, mode:String):XMLList
 		{
 			var id:String = target.attribute(ATT_ID);
-			return rewrites.(@ref==id).(@mode==mode); // XXX: @ref && @mode
+			return rewrites.(@ref==id).(@mode==mode); // XXX: @ref && @mode (ATT_REF, ATT_MODE)
 		}
 
 		//
 		// Output
 		//
-		private var _depth:int = 0;
-		private function dispatchBegin(attributes:Object):void{ trace(mul("---", _depth), "<" + [attributes["type"], "#" + attributes["id"], attributes["color"]].join(" ") + ">"); _depth++ }
-		private function dispatchEnd():void { _depth--; }
-		private function mul(str:String, value:int):String
+		private function dispatchBegin(attributes:Object):void
 		{
-			var array:Array = new Array(value);
-			for (var i:int = 0; i < value; i++) array[i] = str;
-			return array.join("");
+			dispatchEventWith(EVENT_BEGIN, false, attributes);
+		}
+
+		private function dispatchEnd():void
+		{
+			dispatchEventWith(EVENT_END);
+		}
+
+		//
+		// Properties
+		//
+		public function get templates():Object
+		{
+			return _templates;
+		}
+
+		public function get terminals():Vector.<String>
+		{
+			return _terminals;
 		}
 	}
 }

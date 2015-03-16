@@ -72,48 +72,45 @@ package
 //			trace("tmp"); // 0.6 - 0.7
 
 
-			var scope:Object = {};
-
-			scope["button"] =
-				<node id="button_root">
-					<image id="button_icon" color="!default" />
-					<node id="button_container">
-						<image id="BC1" />
-						<image id="BC2" />
-						<image id="BC3" />
-					</node>
-					<label id="button_label" />
-				</node>;
-
-			scope["buttonOverride"] =
-				<button>
-					<rewrite ref="BC3" mode="replace">
-						<image id="REPLACER" />
-					</rewrite>
-					<rewrite ref="button_icon" mode="attributes" color="!red" />
-				</button>;
-
-			scope["buttonOverride2"] =
-				<buttonOverride>
-					<rewrite ref="button_icon" mode="attributes" color="!blue" />
-				</buttonOverride>;
-
-			scope["tree1"] =
-				<node id="tree1_root">
-					<node id="child1" />
-					<node id="child2" />
-					<node id="child3" />
-					<buttonOverride2 id="secondButton">
-						<rewrite ref="button_icon" mode="attributes" color="!gray" />
-					</buttonOverride2>
-				</node>;
-
-
-			var parser:TMLParser = new TMLParser(scope, new <String>["node", "label", "image"]);
-			parser.parseTemplate("tree1");
-
-			return;
-
+//			var scope:Object = {};
+//
+//			scope["button"] =
+//				<node id="button_root">
+//					<image id="button_icon" color="!default" />
+//					<node id="button_container">
+//						<image id="BC1" />
+//						<image id="BC2" />
+//						<image id="BC3" />
+//					</node>
+//					<label id="button_label" />
+//				</node>;
+//
+//			scope["buttonOverride"] =
+//				<button>
+//					<rewrite ref="BC3" mode="replace">
+//						<image id="REPLACER" />
+//					</rewrite>
+//					<rewrite ref="button_icon" mode="attributes" color="!red" />
+//				</button>;
+//
+//			scope["buttonOverride2"] =
+//				<buttonOverride>
+//					<rewrite ref="button_icon" mode="attributes" color="!blue" />
+//				</buttonOverride>;
+//
+//			scope["tree1"] =
+//				<node id="tree1_root">
+//					<node id="child1" />
+//					<node id="child2" />
+//					<node id="child3" />
+//					<buttonOverride2 id="secondButton">
+//						<rewrite ref="button_icon" mode="attributes" color="!gray" />
+//					</buttonOverride2>
+//				</node>;
+//
+//
+//			var parser:TMLParser = new TMLParser(scope, new <String>["node", "label", "image"]);
+//			parser.parseTemplate("tree1");
 
 
 			Attribute.registerQueryAlias("url", url);
@@ -214,19 +211,21 @@ package
 			]]></literal>.valueOf();
 
 			var config:XML =
-					<node layout="abs">
-						<node position="50%" pivot="50%" orientation="horizontal" backgroundColor="silver" width="75%" height="auto" gap="0px" wrap="true" valign="bottom" halign="center">
-							<node layout="abs" width="100px" height="50px" backgroundColor="red" margin="none 0px" />
-							<node layout="abs" width="50px" height="100px" backgroundColor="blue" />
-							<node layout="abs" width="*" height="50px" backgroundColor="gray" />
-							<node layout="abs" width="50px" height="100px" backgroundColor="yellow" />
-							<node layout="abs" width="2*" height="50px" margin="50px" backgroundColor="olive" />
-							<node layout="abs" width="50px" height="100px" backgroundColor="black"  />
-							<node layout="abs" width="100px" height="50px" backgroundColor="white" />
-							<node layout="abs" width="50px" height="100px" backgroundColor="fuchsia" />
-							<node layout="abs" width="100px" height="50px" backgroundColor="navy" />
+					<template id="root">
+						<node layout="abs">
+							<node position="50%" pivot="50%" orientation="horizontal" backgroundColor="silver" width="75%" height="auto" gap="0px" wrap="true" valign="bottom" halign="center">
+								<node layout="abs" width="100px" height="50px" backgroundColor="red" margin="none 0px" />
+								<node layout="abs" width="50px" height="100px" backgroundColor="blue" />
+								<node layout="abs" width="*" height="50px" backgroundColor="gray" />
+								<node layout="abs" width="50px" height="100px" backgroundColor="yellow" />
+								<node layout="abs" width="2*" height="50px" margin="50px" backgroundColor="olive" />
+								<node layout="abs" width="50px" height="100px" backgroundColor="black"  />
+								<node layout="abs" width="100px" height="50px" backgroundColor="white" />
+								<node layout="abs" width="50px" height="100px" backgroundColor="fuchsia" />
+								<node layout="abs" width="100px" height="50px" backgroundColor="navy" />
+							</node>
 						</node>
-					</node>;
+					</template>;
 
 
 //			<node id="root" width="100%" height="500px" layout="flow" padding="0.5em" valign="center" halign="center" orientation="vertical" gap="4px">
@@ -241,18 +240,14 @@ package
 			//<input multiline="true" width="auto" height="auto" halign="left" fontColor="#C9C9C9" fontName="Tahoma" fontSize="11px" text="Native Text Field" backgroundColor="#222222" />
 
 
-			var button:XML = <button onclick="remove_me"><label text="I'm Button!" /></button>;
-
 			_factory = new TalonFactory();
-			_factory.setLinkage("input", TalonInput);
-			_factory.addPrototype("root", config);
-			_factory.addPrototype("button", button);
+			_factory.addTerminal("input", TalonInput);
+			_factory.addTemplate(config);
 
 			_factory.addStyleSheet(css);
 			_factory.addResource("up", Texture.fromEmbeddedAsset(UP_BYTES));
 			_factory.addResource("over", Texture.fromEmbeddedAsset(OVER_BYTES));
 			_factory.addResource("down", Texture.fromEmbeddedAsset(DOWN_BYTES));
-//			_factory.addResource("locale-string", "Привет я текст на русском языке!");
 			_factory.addResource("locale-string", "Hello! I'm English text");
 
 			_talon = _factory.build("root") as SpriteElement;
@@ -261,10 +256,6 @@ package
 			_document.addEventListener(Event.TRIGGERED, onTriggered);
 			onResize(null)
 		}
-
-
-
-
 
 		private function onInvalidate():void
 		{

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<define id="interface">
+<template id="interface">
   <node width="100%" height="100%" layout="abs">
     <node id="container" class="transparent"/>
     <node id="shade" width="100%" height="100%" backgroundColor="black" alpha="0.7"/>
@@ -11,4 +11,4 @@
     <!--</message>-->
 	<!--<image src="res(crutches)" position="50%" pivot="50%"/>-->
   </node>
-</define>
+</template>

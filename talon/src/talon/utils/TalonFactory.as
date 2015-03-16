@@ -1,171 +1,120 @@
 package talon.utils
 {
-	import flash.events.Event;
+	import talon.starling.*;
 	import flash.system.ApplicationDomain;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
+	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
-	import talon.Attribute;
-
 	import talon.Node;
-	import talon.StyleSheet;
-	import talon.starling.*;
 
+	import talon.StyleSheet;
+
+	/** TODO: Move to starling subpackage. */
 	public class TalonFactory extends EventDispatcher
 	{
-		// Special keyword-tags
-		private static const TAG_DEFINE:String = "define";
-		private static const TAG_DEFINITION:String = "definition";
-		private static const TAG_REWRITE:String = "rewrite";
-
-		// Special keyword-attributes
-		private static const ATT_ID:String = "id";
-		private static const ATT_TYPE:String = "type";
-		private static const ATT_BASE:String = "base";
-		private static const ATT_REF:String = "ref";
-
 		protected var _parser:TMLParser;
-		protected var _result:*;
+		protected var _parserStack:Vector.<DisplayObject>;
+		protected var _parserProduct:DisplayObject;
 
-		protected var _linkageByDefault:Class;
 		protected var _linkage:Dictionary = new Dictionary();
-		protected var _prototypes:Dictionary = new Dictionary();
+		protected var _templates:Dictionary = new Dictionary();
 		protected var _resources:Object = new Dictionary();
 		protected var _style:StyleSheet = new StyleSheet();
-		protected var _defines:Dictionary;
 
-		public function TalonFactory(defaultLinkageClass:Class = null):void
+		public function TalonFactory():void
 		{
-			_linkageByDefault = defaultLinkageClass || SpriteElement;
-			setLinkage("node", SpriteElement);
-			setLinkage("image", ImageElement);
-			setLinkage("label", TextFieldElement);
-
-			_parser = new TMLParser(null, Vector.<String>(["node", "label", "image"]));
+			_parser = new TMLParser();
 			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
 			_parser.addEventListener(TMLParser.EVENT_END, onElementEnd);
-		}
+			_parserStack = new <DisplayObject>[];
 
-		private function onElementBegin(e:*):void { }
-		private function onElementEnd(e:*):void { }
-
-		public function build(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):DisplayObject
-		{
-			_parser.parseTemplate(id);
-
-			var result:* = _result;
-			_result = null;
-
-			if (result is ITalonElement)
-			{
-				includeResources && ITalonElement(result).node.setResources(_resources);
-				includeStyleSheet && ITalonElement(result).node.setStyleSheet(_style);
-			}
-
-			return result;
+			addTerminal("node", SpriteElement);
+			addTerminal("image", ImageElement);
+			addTerminal("label", TextFieldElement);
 		}
 
 		//
 		// Factory
 		//
-		private function fromXML(xml:XML, rewrite:Object):Node
-		{
-			var result:Node;
-			var type:String = xml.name();
-			rewrite = merge(rewrite, xml.child(TAG_REWRITE));
 
-			if (type == TAG_DEFINE)
+		public function build(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):DisplayObject
+		{
+			// _parserStack if is not empty?
+			_parser.parseTemplate(id);
+
+			var result:DisplayObject = _parserProduct;
+			_parserProduct = null;
+
+			var node:Node = result is ITalonElement ? ITalonElement(result).node : null;
+			if (node)
 			{
-				var base:String = xml.attribute(ATT_BASE).toString();
-				result = fromXML(base ? getDefinition(base) : xml.*[0], rewrite);
-				result.setAttribute(Attribute.TYPE, xml.attribute(ATT_TYPE) || type);
-			}
-			else if (type == TAG_DEFINITION || getDefinitionIdByType(type) != null)
-			{
-				var ref:String = getDefinitionIdByType(type) || xml.attribute(ATT_REF).toString();
-				result = fromXML(getDefinition(ref), rewrite);
-				for each (var attribute:XML in xml.attributes()) result.setAttribute(attribute.name(), attribute.toString());
-			}
-			else
-			{
-				result = new Node();
-				result.setAttribute(Attribute.TYPE, type);
-				var children:XMLList = rewrite[xml.attribute(ATT_ID).toString()] || xml.children();
-				for each (var attribute:XML in xml.attributes()) result.setAttribute(attribute.name(), attribute.toString());
-				for each (var child:XML in children) result.addChild(fromXML(child, rewrite));
+				includeResources    && node.setResources(_resources);
+				includeStyleSheet   && node.setStyleSheet(_style);
 			}
 
 			return result;
 		}
 
-		private function merge(base:Object, children:XMLList):Object
+		private function onElementBegin(e:Event):void
 		{
-			if (children.length() == 0) return base;
+			var attributes:Object = e.data;
+			var type:String = attributes["type"];
+			var typeClass:Class = _linkage[type];
 
-			var result:Object = new Object();
-			for (var id:String in base) result[id] = base[id];
-			for each (var rewrite:XML in children) result[rewrite.attribute(ATT_REF)] = rewrite.children();
-			return result;
+			var element:DisplayObject = new typeClass();
+			var node:Node = element is ITalonElement ? ITalonElement(element).node : null;
+
+			if (node)
+			{
+				for (var key:String in attributes)
+				{
+					var value:String = attributes[key];
+					node.setAttribute(key, value);
+				}
+			}
+
+			var parentAsDisplayObject:DisplayObjectContainer = _parserStack.length ? _parserStack[_parserStack.length-1] as DisplayObjectContainer : null;
+			if (parentAsDisplayObject)
+				parentAsDisplayObject.addChild(element);
+
+			_parserStack.push(element);
 		}
 
-		private function getDefinition(id:String):XML { return _defines[id]; }
-		private function getDefinitionIdByType(type:String):String { return null; }
-
-		//
-		// Old
-		//
-		private function fromXML_OLD(xml:XML):DisplayObject
+		private function onElementEnd(e:Event):void
 		{
-			var elementType:String = xml.name();
-			var elementClass:Class = _linkage[elementType] || _linkageByDefault;
-			var element:DisplayObject = new elementClass();
-
-			if (element is ITalonElement)
-			{
-				var node:Node = ITalonElement(element).node;
-				node.setAttribute(Attribute.TYPE, elementType);
-
-				for each (var attribute:XML in xml.attributes())
-				{
-					var name:String = attribute.name();
-					var value:String = attribute.valueOf();
-					node.setAttribute(name, value);
-				}
-			}
-
-			if (element is DisplayObjectContainer)
-			{
-				var container:DisplayObjectContainer = DisplayObjectContainer(element);
-				for each (var childXML:XML in xml.children())
-				{
-					var childElement:DisplayObject = fromXML_OLD(childXML);
-					container.addChild(childElement);
-				}
-			}
-
-			return element;
+			_parserProduct = _parserStack.pop();
 		}
 
 		//
 		// Linkage
 		//
-		public function setLinkage(type:String, displayObjectClass:Class):void
+		public function addTerminal(id:String, displayObjectClass:Class):void
 		{
-			_linkage[type] = displayObjectClass;
+			_parser.terminals.push(id);
+			_linkage[id] = displayObjectClass;
 		}
 
 		//
 		// Library
 		//
-
-		/** Trivial prototype. */
-		public function addPrototype(id:String, xml:XML):void
+		/** Trivial template. */
+		public function addTemplate(xml:XML):void
 		{
-			_prototypes[id] = xml;
+			var type:String = xml.name();
+			if (type != "template") throw new ArgumentError("Root node must be <template>");
+
+			var id:String = xml.@id;
+			if (id == null) throw new ArgumentError("Template must contains id attribute");
+
+			if (xml.children().length() != 1) throw new ArgumentError("Template must contains one child");
+			if (_parser.templates[id] != null) throw new ArgumentError("Template with id " + id + "already exists");
+
+			_parser.templates[id] = xml.children()[0];
 		}
 
 		/** Trivial resource. */
@@ -215,12 +164,7 @@ package talon.utils
 			for each (var xmlId:String in xmlIds)
 			{
 				var xml:XML = manager.getXml(xmlId);
-				if (xml.localName() == "prototype")
-				{
-					var name:String = xml.@id;
-					var body:XML = xml.*[0];
-					addPrototype(name, body);
-				}
+				if (xml.name() == "template") addTemplate(xml);
 			}
 		}
 	}

@@ -22,18 +22,18 @@ package browser.dom
 
 		public function hasPrototype(id:String):Boolean
 		{
-			return _prototypes[id] != null;
+			return _templates[id] != null;
 		}
 
 		public function removePrototype(id:String):void
 		{
-			delete _prototypes[id];
+			delete _templates[id];
 		}
 
 		public function get prototypeIds():Vector.<String>
 		{
 			var result:Vector.<String> = new Vector.<String>();
-			for (var id:String in _prototypes) result[result.length] = id;
+			for (var id:String in _templates) result[result.length] = id;
 			return result.sort(byName);
 		}
 

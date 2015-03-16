@@ -15,8 +15,6 @@
  - Зарегистрировать за не терминалом собственное имя тега т.е. <define type="button" />
 
 Tag-Keywords:
- - tree - insert exists tree pattern (consists from set of <rewrite>)
-	+ ref - mandatory tree id
  - rewrite - replace any subtree on exists tree pattern (consist from 1 child (root) if mode==replace, any count of child if mode==content, empty if mode==attributes)
 	+ ref - mandatory subtree root id
 	+ mode - attributes | replace | content

@@ -14,8 +14,8 @@ package talon.types
 		public static const AUTO:String = "auto";
 		/** Regular pixel. */
 		public static const PX:String = "px";
-		/** Point (e.g. retina display set point per pixel as 1:2). */
-		public static const PT:String = "px";
+		/** Density-independent pixel (e.g. retina display set point per pixel as 1:2). */
+		public static const DP:String = "dp";
 		/** Millimeter. NB! Device independent (absolute) unit. (Undesirable to use absolute units. If possible then replace it with em/px). */
 		public static const MM:String = "mm";
 		/** Ems has dynamic value, 1em equals 'fontSize' of current node. */
@@ -25,7 +25,7 @@ package talon.types
 		/** Relative unit (weight based). Unlike percent stars target defined by parent node and siblings. */
 		public static const STAR:String = "*";
 
-		private static const PATTERN:RegExp = /^(-?\d*\.?\d+)(px|mm|em|%|\*|)$/;
+		private static const PATTERN:RegExp = /^(-?\d*\.?\d+)(px|dp|mm|em|%|\*|)$/;
 		private static const HELPER:Gauge = new Gauge();
 
 		/** @private */
@@ -110,7 +110,7 @@ package talon.types
 				case PX:		return amount;
 				case MM:		return amount * ppmm;
 				case EM:        return amount * ppem;
-				case PT:        return amount * pppt;
+				case DP:        return amount * pppt;
 				case PERCENT:   return amount * pp100p/100;
 				case STAR:		return amount * (ts?(ppts/ts):0);
 				default:		throw new Error("Unknown gauge unit: " + unit);

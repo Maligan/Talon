@@ -29,10 +29,10 @@ package talon.types
 		private static const HELPER:Gauge = new Gauge();
 
 		/** @private */
-		public static function toPixels(string:String, ppmm:Number, ppem:Number, pppt:Number, pp100p:Number, aw:Number, ah:Number, ppts:Number, ts:int):Number
+		public static function toPixels(string:String, ppmm:Number, ppem:Number, ppdt:Number, pp100p:Number, aw:Number, ah:Number, ppts:Number, ts:int):Number
 		{
 			HELPER.parse(string);
-			return HELPER.toPixels(ppmm, ppem, pppt, pp100p, aw, ah, ppts, ts);
+			return HELPER.toPixels(ppmm, ppem, ppdt, pp100p, aw, ah, ppts, ts);
 		}
 
 		private var _unit:String = NONE;
@@ -94,14 +94,14 @@ package talon.types
 		 *
 		 * @param ppmm pixels per millimeter
 		 * @param ppem pixels per em
-		 * @param pppt pixels per point
+		 * @param ppdt pixels per point
 		 * @param pp100p pixels per 100%
 		 * @param aw available width (for auto measure)
 		 * @param ah available height (for auto measure)
 		 * @param ppts pixels per total stars
 		 * @param ts total stars
 		 */
-		public function toPixels(ppmm:Number, ppem:Number, pppt:Number, pp100p:Number, aw:Number = Infinity, ah:Number = Infinity, ppts:Number = 0, ts:int = 0):Number
+		public function toPixels(ppmm:Number, ppem:Number, ppdt:Number, pp100p:Number, aw:Number = Infinity, ah:Number = Infinity, ppts:Number = 0, ts:int = 0):Number
 		{
 			switch (unit)
 			{
@@ -110,7 +110,7 @@ package talon.types
 				case PX:		return amount;
 				case MM:		return amount * ppmm;
 				case EM:        return amount * ppem;
-				case DP:        return amount * pppt;
+				case DP:        return amount * ppdt;
 				case PERCENT:   return amount * pp100p/100;
 				case STAR:		return amount * (ts?(ppts/ts):0);
 				default:		throw new Error("Unknown gauge unit: " + unit);

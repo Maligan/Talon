@@ -109,10 +109,10 @@ package talon.starling
 							var texture9ScaleGauge:GaugeQuad = new GaugeQuad();
 
 							texture9ScaleGauge.parse(_node.getAttribute(Attribute.BACKGROUND_9SCALE));
-							texture9Scale.top += texture9ScaleGauge.top.toPixels(0, 0, node.pppt, 0, width, height, 0, 0);
-							texture9Scale.right -= texture9ScaleGauge.right.toPixels(0, 0, node.pppt, 0, width, height, 0, 0);
-							texture9Scale.bottom -= texture9ScaleGauge.bottom.toPixels(0, 0, node.pppt, 0, width, height, 0, 0);
-							texture9Scale.left += texture9ScaleGauge.left.toPixels(0, 0, node.pppt, 0, width, height, 0, 0);
+							texture9Scale.top += texture9ScaleGauge.top.toPixels(0, 0, node.ppdp, 0, width, height, 0, 0);
+							texture9Scale.right -= texture9ScaleGauge.right.toPixels(0, 0, node.ppdp, 0, width, height, 0, 0);
+							texture9Scale.bottom -= texture9ScaleGauge.bottom.toPixels(0, 0, node.ppdp, 0, width, height, 0, 0);
+							texture9Scale.left += texture9ScaleGauge.left.toPixels(0, 0, node.ppdp, 0, width, height, 0, 0);
 
 							var scale9Texture:Scale9Textures = new Scale9Textures(texture, texture9Scale);
 

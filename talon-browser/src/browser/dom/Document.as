@@ -3,7 +3,7 @@ package browser.dom
 	import browser.dom.assets.AtlasAsset;
 	import browser.dom.assets.DirectoryAsset;
 	import browser.dom.assets.FontAsset;
-	import browser.dom.assets.PrototypeAsset;
+	import browser.dom.assets.TemplateAsset;
 	import browser.dom.assets.StyleSheetAsset;
 	import browser.dom.assets.TextureAsset;
 	import browser.dom.files.DocumentFileReference;
@@ -41,7 +41,7 @@ package browser.dom
 			_files = new DocumentFileReferenceCollection(this);
 			_files.registerDocumentFileType(DocumentFileType.DIRECTORY, DirectoryAsset);
 			_files.registerDocumentFileType(DocumentFileType.IMAGE, TextureAsset);
-			_files.registerDocumentFileType(DocumentFileType.PROTOTYPE, PrototypeAsset);
+			_files.registerDocumentFileType(DocumentFileType.TEMPLATE, TemplateAsset);
 			_files.registerDocumentFileType(DocumentFileType.ATLAS, AtlasAsset);
 			_files.registerDocumentFileType(DocumentFileType.STYLE, StyleSheetAsset);
 			_files.registerDocumentFileType(DocumentFileType.FONT, FontAsset);

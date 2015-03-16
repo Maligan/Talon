@@ -19,21 +19,23 @@ package browser.dom
 			_document = document;
 		}
 
-
-		public function hasPrototype(id:String):Boolean
+		//
+		// Templates
+		//
+		public function hasTemplate(id:String):Boolean
 		{
-			return _templates[id] != null;
+			return _parser.templates[id] != null;
 		}
 
-		public function removePrototype(id:String):void
+		public function removeTemplate(id:String):void
 		{
-			delete _templates[id];
+			delete _parser.templates[id];
 		}
 
-		public function get prototypeIds():Vector.<String>
+		public function get templateIds():Vector.<String>
 		{
 			var result:Vector.<String> = new Vector.<String>();
-			for (var id:String in _templates) result[result.length] = id;
+			for (var id:String in _parser.templates) result[result.length] = id;
 			return result.sort(byName);
 		}
 
@@ -44,6 +46,9 @@ package browser.dom
 			return 0;
 		}
 
+		//
+		// Resources
+		//
 		public function getResourceId(url:String):String
 		{
 			return getName(url);
@@ -62,8 +67,6 @@ package browser.dom
 				return null;
 			}
 		}
-
-
 
 		public function getResource(id:String):*
 		{
@@ -87,25 +90,14 @@ package browser.dom
 			delete _resources[id];
 		}
 
-		public function make(id:String):DisplayObject
-		{
-			refreshStyle();
-			resources.reset();
-			return super.build(id);
-		}
-
 		private function get resources():ObjectWithAccessLogger
 		{
 			return ObjectWithAccessLogger(_resources);
 		}
 
-
-		public override function build(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):DisplayObject
-		{
-			return super.build(id);
-			throw new Error("Use make() method");
-		}
-
+		//
+		// Styles
+		//
 		public function addStyleSheetWithId(id:String, css:String):void
 		{
 			_styles[id] = css;

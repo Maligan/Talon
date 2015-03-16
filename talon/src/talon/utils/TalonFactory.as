@@ -22,12 +22,15 @@ package talon.utils
 		protected var _parserProduct:DisplayObject;
 
 		protected var _linkage:Dictionary = new Dictionary();
+		protected var _linkageByDefault:Class;
 		protected var _templates:Dictionary = new Dictionary();
 		protected var _resources:Object = new Dictionary();
 		protected var _style:StyleSheet = new StyleSheet();
 
-		public function TalonFactory():void
+		public function TalonFactory(linkageByDefault:Class = null):void
 		{
+			_linkageByDefault = linkageByDefault || SpriteElement;
+
 			_parser = new TMLParser();
 			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
 			_parser.addEventListener(TMLParser.EVENT_END, onElementEnd);
@@ -64,7 +67,7 @@ package talon.utils
 		{
 			var attributes:Object = e.data;
 			var type:String = attributes["type"];
-			var typeClass:Class = _linkage[type];
+			var typeClass:Class = _linkage[type] || _linkageByDefault;
 
 			var element:DisplayObject = new typeClass();
 			var node:Node = element is ITalonElement ? ITalonElement(element).node : null;
@@ -112,7 +115,7 @@ package talon.utils
 			if (id == null) throw new ArgumentError("Template must contains id attribute");
 
 			if (xml.children().length() != 1) throw new ArgumentError("Template must contains one child");
-			if (_parser.templates[id] != null) throw new ArgumentError("Template with id " + id + "already exists");
+			if (_parser.templates[id] != null) throw new ArgumentError("Template with id " + id + " already exists");
 
 			_parser.templates[id] = xml.children()[0];
 		}

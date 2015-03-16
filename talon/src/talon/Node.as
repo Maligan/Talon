@@ -244,7 +244,7 @@ package talon
 		public function get bounds():Rectangle { return _bounds; }
 
 		/** Pixel per point. (Also known as (csf) content scale factor) */
-		public function get pppt():Number { return Starling.current.contentScaleFactor; }
+		public function get ppdp():Number { return Starling.current.contentScaleFactor; }
 
 		/** Pixels per millimeter (in current node). */
 		public function get ppmm():Number { return Capabilities.screenDPI / 25.4; }
@@ -257,7 +257,7 @@ package talon
 			var inherit:Number = parent ? parent.ppem : base;
 			var attribute:Attribute = getOrCreateAttribute(Attribute.FONT_SIZE);
 			if (attribute.isInherit) return inherit;
-			return Gauge.toPixels(attribute.value, ppmm, inherit, pppt, inherit, 0, 0, 0, 0);
+			return Gauge.toPixels(attribute.value, ppmm, inherit, ppdp, inherit, 0, 0, 0, 0);
 		}
 
 		/** This is 'auto' callback for gauges: width, minWidth, maxWidth. */

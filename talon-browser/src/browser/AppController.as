@@ -138,7 +138,7 @@ package browser
 			{
 				_document = value;
 				dispatchEventWith(EVENT_DOCUMENT_CHANGE);
-				prototypeId = _document ? _document.factory.prototypeIds.shift() : null;
+				prototypeId = _document ? _document.factory.templateIds.shift() : null;
 			}
 		}
 

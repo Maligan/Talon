@@ -205,13 +205,13 @@ package browser
 			// Refresh Menu
 			_menu.removeItem("navigate");
 
-			if (_controller.document && _controller.document.factory.prototypeIds.length > 0)
+			if (_controller.document && _controller.document.factory.templateIds.length > 0)
 			{
 				_menu.addItem("navigate", Constants.T_MENU_NAVIGATE);
 				_menu.addItem("navigate/search", Constants.T_MENU_NAVIGATE_SEARCH);
 				_menu.addItem("navigate/-");
 
-				for each (var prototypeId:String in _controller.document.factory.prototypeIds)
+				for each (var prototypeId:String in _controller.document.factory.templateIds)
 				{
 					_menu.addItem("navigate/" + prototypeId, null, new SelectCommand(_controller, prototypeId));
 				}
@@ -224,7 +224,7 @@ package browser
 			var canShow:Boolean = true;
 			canShow &&= _controller.prototypeId != null;
 			canShow &&= _controller.document != null;
-			canShow &&= _controller.document.factory.hasPrototype(_controller.prototypeId);
+			canShow &&= _controller.document.factory.hasTemplate(_controller.prototypeId);
 
 			_container.removeChildren();
 

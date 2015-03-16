@@ -76,7 +76,7 @@ package browser.dom.files
 			{
 				var xml:XML = new XML(read());
 				var root:String = xml.name();
-				if (root == "define") return DocumentFileType.PROTOTYPE;
+				if (root == "template") return DocumentFileType.TEMPLATE;
 				if (root == "TextureAtlas") return DocumentFileType.ATLAS;
 				return DocumentFileType.UNKNOWN;
 			}

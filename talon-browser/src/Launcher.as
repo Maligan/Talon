@@ -23,7 +23,6 @@ package
 	[SWF(backgroundColor="#C7C7C7", frameRate="60")]
 	public class Launcher extends MovieClip
 	{
-		private var _dropTarget:flash.display.Sprite;
 		private var _controller:AppController;
 		private var _console:Console;
 		private var _invoke:String;
@@ -35,11 +34,6 @@ package
 			stage.addEventListener(Event.RESIZE, onResize);
 			stage.quality = StageQuality.BEST;
 			adjust();
-
-			// NativeDragManager do not work with empty document root
-			// add this object to fix this problem
-			_dropTarget = new flash.display.Sprite();
-			addChild(_dropTarget);
 
 			// Add console
 			addChild(_console = new Console());
@@ -59,10 +53,6 @@ package
 			Starling.current.stage.stageWidth = stage.stageWidth;
 			Starling.current.stage.stageHeight = stage.stageHeight;
 			Starling.current.viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
-
-			_dropTarget.graphics.beginFill(0xFFFFFF, 0);
-			_dropTarget.graphics.drawRect(0, 0, stage.stageWidth, stage.stageHeight);
-			_dropTarget.graphics.endFill();
 
 			_controller && _controller.resizeTo(stage.stageWidth, stage.stageHeight);
 		}

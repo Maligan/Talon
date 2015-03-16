@@ -49,8 +49,8 @@ package talon.utils
 
 		private function parse(xml:XML, attributes:Object, rewrites:XMLList):void
 		{
-			var id:String = xml.name();
-			var isTerminal:Boolean = _terminals.indexOf(id) != -1;
+			var type:String = xml.name();
+			var isTerminal:Boolean = _terminals.indexOf(type) != -1;
 
 			// If node can't be expanded - create node
 			if (isTerminal)
@@ -71,8 +71,8 @@ package talon.utils
 			// Else if node is template
 			else
 			{
-				push(id);
-				parse(getTemplateOrDie(id), fetchAttributes(xml, attributes), fetchRewrites(xml, rewrites));
+				push(type);
+				parse(getTemplateOrDie(type), fetchAttributes(xml, attributes), fetchRewrites(xml, rewrites));
 				pop();
 			}
 		}

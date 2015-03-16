@@ -82,8 +82,8 @@ package talon.layout
 
 		private function getWrap(node:Node):Boolean { return node.getAttribute(Attribute.WRAP) == "true"; }
 		private function getAlign(node:Node, name:String):Number { return StringUtil.parseAlign(node.getAttribute(name)) }
-		private function getGap(node:Node):Number { return Gauge.toPixels(node.getAttribute(Attribute.GAP), node.ppmm, node.ppem, node.pppt, -1, 0, 0, 0, 0); }
-		private function getInterline(node:Node):Number { return Gauge.toPixels(node.getAttribute(Attribute.INTERLINE), node.ppmm, node.ppem, node.pppt, -1, 0, 0, 0, 0); }
+		private function getGap(node:Node):Number { return Gauge.toPixels(node.getAttribute(Attribute.GAP), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0, 0); }
+		private function getInterline(node:Node):Number { return Gauge.toPixels(node.getAttribute(Attribute.INTERLINE), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0, 0); }
 	}
 }
 

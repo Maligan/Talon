@@ -9,6 +9,7 @@ package
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
 	import flash.net.URLRequest;
+	import flash.system.System;
 	import flash.utils.Dictionary;
 
 	import starling.core.Starling;
@@ -112,6 +113,10 @@ package
 //			var parser:TMLParser = new TMLParser(scope, new <String>["node", "label", "image"]);
 //			parser.parseTemplate("tree1");
 
+			System.disposeXML(null);
+
+			trace('sdf');
+			return;
 
 			Attribute.registerQueryAlias("url", url);
 

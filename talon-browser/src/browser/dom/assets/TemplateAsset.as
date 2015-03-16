@@ -1,8 +1,11 @@
 package browser.dom.assets
 {
-	public class PrototypeAsset extends Asset
+	import flash.system.System;
+
+	public class TemplateAsset extends Asset
 	{
 		private var _lastId:String;
+		private var _lastXML:XML;
 
 		protected override function onRefresh():void
 		{
@@ -11,19 +14,22 @@ package browser.dom.assets
 			var xml:XML = new XML(file.read());
 			var id:String = xml.@id;
 
-			if (_lastId != id)
-			{
-				document.factory.removePrototype(_lastId);
-				_lastId = id;
-			}
-
+			document.factory.removeTemplate(_lastId);
 			document.factory.addTemplate(xml);
+
+			System.disposeXML(_lastXML);
+			_lastId = id;
+			_lastXML = xml;
+
 			document.tasks.end();
 		}
 
 		protected override function onExclude():void
 		{
-			document.factory.removePrototype(_lastId);
+			document.factory.removeTemplate(_lastId);
+			System.disposeXML(_lastXML);
+			_lastId = null;
+			_lastXML = null;
 		}
 	}
 }

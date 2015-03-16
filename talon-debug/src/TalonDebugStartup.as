@@ -44,8 +44,6 @@ package
 
 		public function TalonDebugStartup()
 		{
-//			stage.addEventListener(Event.RESIZE, onResize);
-
 //			function traceTree(node:Node, level:int = 0):void
 //			{
 //				trace(mul("----", level), node.getAttribute("type"), "(" + node.getAttribute("id") + ")");
@@ -126,6 +124,8 @@ package
 			Starling.current.addEventListener(Event.ROOT_CREATED, onRootCreated);
 			Starling.current.start();
 			Starling.current.showStats = false;
+
+			stage.addEventListener(Event.RESIZE, onResize);
 		}
 
 		private var _cache:Dictionary = new Dictionary();
@@ -226,7 +226,6 @@ package
 							</node>
 						</node>
 					</template>;
-
 
 //			<node id="root" width="100%" height="500px" layout="flow" padding="0.5em" valign="center" halign="center" orientation="vertical" gap="4px">
 //				<label text="Urban fantasy online game with real world venues. Become a vampire, werewolf or shadow hunter!" height="auto"  fontSize="17px" fontName="Tahoma" marginBottom="0.5em" marginLeft="2px" halign="left" fontColor="#C9C9C9" width="*" />

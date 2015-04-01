@@ -164,13 +164,13 @@ package talon.types
 				&& gauge.amount == amount;
 		}
 
-		/** talon.types.Gauge unit == AUTO. */
+		/** Gauge unit == AUTO. */
 		public function get isAuto():Boolean
 		{
 			return _unit == AUTO;
 		}
 
-		/** talon.types.Gauge unit == NONE. */
+		/** Gauge unit == NONE. */
 		public function get isNone():Boolean
 		{
 			return _unit == NONE;
@@ -181,7 +181,7 @@ package talon.types
 		{
 			if (isAuto) return AUTO;
 			if (isNone) return NONE;
-			if (_unit==STAR&&_amount==1) return STAR;
+			if (_unit==STAR && _amount==1) return STAR;
 
 			return _amount + _unit;
 		}

@@ -136,6 +136,7 @@ package talon.utils
 			return xml.child(TAG_REWRITE) + force;
 		}
 
+		/** Get xml-replacer for current xml defined in rewrites. */
 		private function rewriteReplace(xml:XML, rewrites:XMLList):XML
 		{
 			var replacers:XMLList = getRewrites(xml, rewrites, VAL_REPLACE);
@@ -147,6 +148,7 @@ package talon.utils
 			return replacer.chidren[0] || EMPTY_XML;
 		}
 
+		/** Get xml-children for current xml defined in rewrites. */
 		private function rewriteContent(xml:XML, rewrites:XMLList):XMLList
 		{
 			var contents:XMLList = getRewrites(xml, rewrites, VAL_CONTENT);
@@ -154,6 +156,7 @@ package talon.utils
 			return contents[contents.length() - 1];
 		}
 
+		/** Get xml-attributes for current xml defined in rewrites. */
 		private function rewriteAttributes(xml:XML, rewrites:XMLList):Object
 		{
 			var attributes:XMLList = getRewrites(xml, rewrites, VAL_ATTRIBUTES);
@@ -177,7 +180,8 @@ package talon.utils
 		private function getRewrites(target:XML, rewrites:XMLList, mode:String):XMLList
 		{
 			var id:String = target.attribute(ATT_ID);
-			return rewrites.(@ref==id).(@mode==mode); // XXX: @ref && @mode (ATT_REF, ATT_MODE)
+			// XXX: @ref && @mode (ATT_REF, ATT_MODE)
+			return rewrites.(@ref==id).(@mode==mode);
 		}
 
 		//

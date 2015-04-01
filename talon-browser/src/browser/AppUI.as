@@ -1,6 +1,7 @@
 package browser
 {
 	import browser.commands.CloseCommand;
+	import browser.commands.NewProjectCommand;
 	import browser.commands.ExportCommand;
 	import browser.commands.OpenCommand;
 	import browser.commands.OrientationCommand;
@@ -81,10 +82,11 @@ package browser
 			_menu = new NativeMenuAdapter();
 
 			_menu.addItem("file",         Constants.T_MENU_FILE);
-			_menu.addItem("file/open",    Constants.T_MENU_FILE_OPEN,      new OpenCommand(_controller),   "o", 2);
-			_menu.addItem("file/close",   Constants.T_MENU_FILE_CLOSE,     new CloseCommand(_controller),  "w");
+			_menu.addItem("file/new",     Constants.T_MENU_FILE_NEW_PROJECT,    new NewProjectCommand(_controller), "n", 3);
+			_menu.addItem("file/open",    Constants.T_MENU_FILE_OPEN,           new OpenCommand(_controller),   "o", 2);
+			_menu.addItem("file/close",   Constants.T_MENU_FILE_CLOSE,          new CloseCommand(_controller),  "w");
 			_menu.addItem("file/-1");
-			_menu.addItem("file/export",  Constants.T_MENU_FILE_EXPORT_AS, new ExportCommand(_controller), "s");
+			_menu.addItem("file/export",  Constants.T_MENU_FILE_EXPORT_AS,      new ExportCommand(_controller), "s");
 
 			_menu.addItem("view",                       Constants.T_MENU_VIEW);
 			_menu.addItem("view/theme",                 Constants.T_MENU_VIEW_BACKGROUND);

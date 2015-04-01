@@ -25,7 +25,7 @@ package browser.dom
 	{
 		private var _files:DocumentFileReferenceCollection;
 		private var _factory:DocumentTalonFactory;
-		private var _source:File;
+		private var _root:File;
 		private var _document:File;
 		private var _properties:Object;
 		private var _messages:DocumentMessageCollection;
@@ -90,13 +90,13 @@ package browser.dom
 		/** Get in export document file name. */
 		public function getExportFileName(documentFile:DocumentFileReference):String
 		{
-			return _source.getRelativePath(documentFile.file);
+			return _root.getRelativePath(documentFile.file);
 		}
 
-		public function setSourcePath(document:File, source:File):void
+		public function setSourcePath(document:File, root:File):void
 		{
 			_document = document;
-			_source = source;
+			_root = root;
 		}
 	}
 }

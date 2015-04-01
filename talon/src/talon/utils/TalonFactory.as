@@ -116,8 +116,8 @@ package talon.utils
 			_parserStack.push(element);
 		}
 
-		function bindGetter(attr:Attribute):Function { return function():String { return attr.value } }
-		function bindSetter(attr:Attribute):Function { return function(value:String):void { /*attr.assigned = value;*/ } }
+		private function bindGetter(attr:Attribute):Function { return function():String { return attr.value } }
+		private function bindSetter(attr:Attribute):Function { return function(value:String):void { /*attr.assigned = value;*/ } }
 
 		private function onElementEnd(e:Event):void
 		{

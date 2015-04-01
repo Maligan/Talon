@@ -29,10 +29,14 @@ package browser.utils
 		public static const HISTORY_RECENT_MAX:int = 10;
 
 		public static const T_EXPORT_TITLE:String = "Export";
+		public static const T_PROJECT_ROOT_TITLE:String = "Select project root directory";
+		public static const T_PROJECT_FILE_TITLE:String = "Select project file";
+		public static const T_PROJECT_FILE_DEFAULT_NAME:String = "Untitled";
 		public static const T_DESIGNER_FILE_EXTENSION_NAME:String = "Talon Designer Project";
 		public static const T_DESIGNER_EXPORT_FILE_EXTENSION_NAME:String = "Zip Archive";
 		public static const T_MENU_FILE:String = "File";
 		public static const T_MENU_FILE_OPEN:String = "Open...";
+		public static const T_MENU_FILE_NEW_PROJECT:String = "New Project...";
 		public static const T_MENU_FILE_RECENT:String = "Open Recent";
 		public static const T_MENU_FILE_RECENT_CLEAR:String = "Clear";
 		public static const T_MENU_FILE_EXPORT:String = "Export";

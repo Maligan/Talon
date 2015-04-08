@@ -25,7 +25,8 @@ package browser
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import talon.Attribute;
-	import talon.utils.TalonFactory;
+	import talon.starling.TalonFactoryStarling;
+	import talon.utils.TalonFactoryBase;
 	import talon.starling.SpriteElement;
 	import talon.layout.Layout;
 	import talon.enums.Orientation;
@@ -40,7 +41,7 @@ package browser
 
 		private var _controller:AppController;
 
-		private var _factory:TalonFactory;
+		private var _factory:TalonFactoryBase;
 		private var _interface:SpriteElement;
 		private var _popupContainer:SpriteElement;
 		private var _isolatorContainer:SpriteElement;
@@ -62,9 +63,8 @@ package browser
 			_documentDispatcher = new EventDispatcherAdapter();
 			_documentDispatcher.addEventListener(Event.CHANGE, onDocumentDispatcherChange);
 
-			_factory = new TalonFactory();
-			_factory.addEventListener(Event.COMPLETE, onFactoryComplete);
-			_factory.addArchiveAsync(new INTERFACE() as ByteArray);
+			_factory = new TalonFactoryStarling();
+			_factory.addArchiveContentAsync(new INTERFACE() as ByteArray, onFactoryComplete);
 
 			_container = new SpriteElement();
 			_container.node.setAttribute(Attribute.LAYOUT, Layout.FLOW);
@@ -118,7 +118,7 @@ package browser
 		//
 		// Logic
 		//
-		private function onFactoryComplete(e:Event):void
+		private function onFactoryComplete():void
 		{
 			_interface = _factory.build("interface") as SpriteElement;
 			addChild(_interface);
@@ -265,7 +265,7 @@ package browser
 		//
 		// Properties
 		//
-		public function get factory():TalonFactory { return _factory; }
+		public function get factory():TalonFactoryBase { return _factory; }
 
 		public function get locked():Boolean { return _locked; }
 		public function set locked(value:Boolean):void

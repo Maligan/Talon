@@ -1,6 +1,7 @@
 package talon.utils
 {
-	import starling.events.EventDispatcher;
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
 
 	public final class TMLParser extends EventDispatcher
 	{
@@ -31,9 +32,10 @@ package talon.utils
 		//
 		private var _templates:Object;
 		private var _terminals:Vector.<String>;
-
 		private var _stack:Vector.<String>;
+		private var _cursor:Object;
 
+		/** @private */
 		public function TMLParser(terminals:Vector.<String> = null, templates:Object = null)
 		{
 			_terminals = terminals || new Vector.<String>();
@@ -189,22 +191,34 @@ package talon.utils
 		//
 		private function dispatchBegin(attributes:Object):void
 		{
-			dispatchEventWith(EVENT_BEGIN, false, attributes);
+			_cursor = attributes;
+			var event:Event = new Event(EVENT_BEGIN);
+			dispatchEvent(event);
+			_cursor = null;
 		}
 
 		private function dispatchEnd():void
 		{
-			dispatchEventWith(EVENT_END);
+			var event:Event = new Event(EVENT_END);
+			dispatchEvent(event);
 		}
 
 		//
 		// Properties
 		//
+		/** Set of non terminal symbols (key - string, value - xml) */
 		public function get templates():Object
 		{
 			return _templates;
 		}
 
+		/** This is attached attributes data to EVENT_BEGIN event. (Moved here, because I don't use starling dispatcher/event and don't want create TMLEvent class). */
+		public function get cursor():Object
+		{
+			return _cursor;
+		}
+
+		/** Set of terminal symbols */
 		public function get terminals():Vector.<String>
 		{
 			return _terminals;

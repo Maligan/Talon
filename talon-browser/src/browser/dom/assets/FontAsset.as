@@ -1,7 +1,5 @@
 package browser.dom.assets
 {
-	import browser.dom.files.DocumentFileReference;
-
 	import starling.events.Event;
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
@@ -13,9 +11,8 @@ package browser.dom.assets
 		private var _fontTexture:Texture;
 		private var _font:BitmapFont;
 
-		public override function initialize(file:DocumentFileReference):void
+		protected override function onInclude():void
 		{
-			super.initialize(file);
 			document.addEventListener(Event.CHANGE, onDocumentChange);
 		}
 

@@ -1,11 +1,9 @@
 package browser.commands
 {
-	import browser.utils.Console;
 	import browser.utils.Constants;
 	import browser.AppController;
 	import browser.dom.Document;
 	import browser.dom.files.DocumentFileReference;
-	import browser.utils.findFiles;
 	import browser.utils.parseProperties;
 
 	import flash.events.Event;
@@ -57,34 +55,24 @@ package browser.commands
 			controller.settings.setValue(Constants.SETTING_RECENT_ARRAY, recent);
 		}
 
-		private function readDocument(source:File):Document
+		private function readDocument(documentFile:File):Document
 		{
-			var properties:Object = parseProperties(readFile(source).toString());
-			var exportName:String = properties[Constants.PROPERTY_EXPORT_PATH];
-			if (exportName == null) properties[Constants.PROPERTY_EXPORT_PATH] = source.name.replace(Constants.DESIGNER_FILE_EXTENSION, Constants.DESIGNER_EXPORT_FILE_EXTENSION);
+			var properties:Object = parseProperties(readFile(documentFile).toString());
+			var document:Document = new Document(properties, documentFile);
 
-			var document:Document = new Document(properties);
-
-			// Define sourcePath
-			var sourcePathURL:String = properties[Constants.PROPERTY_SOURCE_PATH];
-			if (sourcePathURL == null) sourcePathURL = source.parent.url;
-			var sourcePath:File = source.parent.resolvePath(sourcePathURL);
-			if (sourcePath.exists == false) sourcePath.parent;
-
-			// Setup sourcePath
-			document.setSourcePath(source, sourcePath);
-
-			// Find all document files
-			var files:Vector.<File> = findFiles(sourcePath);
-
-			// Add batch of files to document
-			var references:Vector.<DocumentFileReference> = new Vector.<DocumentFileReference>();
-			for each (var file:File in files) references[references.length] = new DocumentFileReference(document, file);
-			document.tasks.begin();
-			for each (var reference:DocumentFileReference in references) document.files.addFile(reference);
-			document.tasks.end();
+			var sourceRoot:File = getSourceRoot(document);
+			var sourceRootReference:DocumentFileReference = new DocumentFileReference(document, sourceRoot);
+			document.files.addFile(sourceRootReference);
 
 			return document;
+		}
+
+		private function getSourceRoot(document:Document):File
+		{
+			var sourcePathProperty:String = document.properties[Constants.PROPERTY_SOURCE_PATH];
+			var sourceFile:File = document.file.parent.resolvePath(sourcePathProperty || document.file.parent.nativePath);
+			if (sourceFile.exists == false) sourceFile = document.file.parent;
+			return sourceFile;
 		}
 
 		private function readFile(file:File):ByteArray

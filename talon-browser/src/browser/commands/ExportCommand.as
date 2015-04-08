@@ -1,12 +1,13 @@
 package browser.commands
 {
+	import browser.dom.Document;
+
 	import deng.fzip.FZip;
 
 	import browser.utils.Constants;
 
 	import browser.AppController;
 	import browser.dom.files.DocumentFileReference;
-	import browser.dom.files.DocumentFileType;
 
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
@@ -39,7 +40,8 @@ package browser.commands
 			}
 			else
 			{
-				var target:File = new File(controller.document.exportPath);
+				var targetPath:String = getDocumentExportPath(controller.document);
+				var target:File = new File(targetPath);
 				target.addEventListener(Event.SELECT, onExportFileSelect);
 				target.browseForSave(Constants.T_EXPORT_TITLE);
 			}
@@ -58,10 +60,8 @@ package browser.commands
 
 			for each (var file:DocumentFileReference in controller.document.files.toArray())
 			{
-				if (file.type == DocumentFileType.DIRECTORY) continue;
-				if (file.type == DocumentFileType.UNKNOWN) continue;
-
-				var name:String = controller.document.getExportFileName(file);
+				if (file.isIgnored) continue;
+				var name:String = file.exportPath;
 				var data:ByteArray = file.read();
 				zip.addFile(name, data);
 			}
@@ -88,6 +88,16 @@ package browser.commands
 		public override function get isExecutable():Boolean
 		{
 			return controller.document != null;
+		}
+
+		//
+		// Export documents properties
+		//
+		private function getDocumentExportPath(document:Document):String
+		{
+			var exportPathProperty:String = document.properties[Constants.PROPERTY_EXPORT_PATH];
+			var exportPathResolved:String = document.file.parent.resolvePath(exportPathProperty).nativePath;
+			return exportPathResolved;
 		}
 	}
 }

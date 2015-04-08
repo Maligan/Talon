@@ -22,7 +22,7 @@ package browser.dom.files
 			_controllers = new Dictionary();
 		}
 
-		public function registerDocumentFileType(typeName:String, typeClass:Class):void
+		public function registerFileControllerByType(typeName:String, typeClass:Class):void
 		{
 			_types[typeName] = typeClass;
 		}
@@ -44,12 +44,16 @@ package browser.dom.files
 
 		public function removeFile(file:DocumentFileReference):void
 		{
-			if (_files[file.url] != null)
+			// Reference may be different
+			file = _files[file.url];
+
+			if (file)
 			{
-				// Reference may be different
-				file = _files[file.url];
 				file.removeEventListener(Event.CHANGE, onFileChange);
 				delete _files[file.url];
+
+				var controller:DocumentFileController = _controllers[file.url];
+				controller.dispose();
 				delete _controllers[file.url];
 			}
 		}
@@ -57,7 +61,7 @@ package browser.dom.files
 		private function onFileChange(e:Event):void
 		{
 			var file:DocumentFileReference = DocumentFileReference(e.target);
-			if (!file.exits) removeFile(file);
+			if (file.exits === false) removeFile(file);
 		}
 
 		public function toArray():Vector.<DocumentFileReference>

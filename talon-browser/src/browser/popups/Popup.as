@@ -6,7 +6,7 @@ package browser.popups
 
 	import starling.display.DisplayObjectContainer;
 	import talon.utils.ITalonElement;
-	import talon.utils.TalonFactory;
+	import talon.utils.TalonFactoryBase;
 	import talon.starling.SpriteElement;
 
 	public class Popup extends SpriteElement implements ITalonElement
@@ -86,7 +86,7 @@ package browser.popups
 			return _active.indexOf(this) != -1;
 		}
 
-		public final function get factory():TalonFactory
+		public final function get factory():TalonFactoryBase
 		{
 			return _ui.factory;
 		}

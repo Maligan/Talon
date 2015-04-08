@@ -5,6 +5,7 @@ package
 	import browser.utils.Console;
 	import browser.utils.DeviceProfile;
 	import browser.utils.Settings;
+	import browser.utils.parseGlob;
 
 	import flash.desktop.NativeApplication;
 	import flash.display.MovieClip;
@@ -72,6 +73,7 @@ package
 			}
 		}
 
+		[Deprecated(message="Move from here to AppController")]
 		private function adjust():void
 		{
 			var settings:Settings = new Settings("settings");

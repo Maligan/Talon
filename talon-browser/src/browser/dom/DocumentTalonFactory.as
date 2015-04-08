@@ -4,10 +4,11 @@ package browser.dom
 
 	import starling.display.DisplayObject;
 	import talon.StyleSheet;
-	import talon.utils.TalonFactory;
+	import talon.starling.TalonFactoryStarling;
+	import talon.utils.TalonFactoryBase;
 
-	/** Extended version of TalonFactory for browser purpose. */
-	public final class DocumentTalonFactory extends TalonFactory
+	/** Extended version of TalonFactoryBase for browser purpose. */
+	public final class DocumentTalonFactory extends TalonFactoryStarling
 	{
 		private var _document:Document;
 		private var _styles:Dictionary;

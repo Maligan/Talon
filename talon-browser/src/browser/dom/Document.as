@@ -3,6 +3,7 @@ package browser.dom
 	import browser.dom.assets.AtlasAsset;
 	import browser.dom.assets.DirectoryAsset;
 	import browser.dom.assets.FontAsset;
+	import browser.dom.assets.LibraryAsset;
 	import browser.dom.assets.TemplateAsset;
 	import browser.dom.assets.StyleSheetAsset;
 	import browser.dom.assets.TextureAsset;
@@ -23,28 +24,32 @@ package browser.dom
 	[Event(name="change", type="starling.events.Event")]
 	public class Document extends EventDispatcher
 	{
+		private var _file:File;
+		/** This is parsed _path file content. */
+		private var _properties:Object;
+
 		private var _files:DocumentFileReferenceCollection;
 		private var _factory:DocumentTalonFactory;
-		private var _root:File;
-		private var _document:File;
-		private var _properties:Object;
 		private var _messages:DocumentMessageCollection;
 		private var _tracker:DocumentTaskTracker;
 
-		public function Document(properties:Object):void
+		public function Document(properties:Object, file:File):void
 		{
+			_properties = properties;
+			_file = file;
+
 			_tracker = new DocumentTaskTracker(onTasksEnd);
 			_messages = new DocumentMessageCollection();
-
-			_properties = properties;
 			_factory = new DocumentTalonFactory(this);
+
 			_files = new DocumentFileReferenceCollection(this);
-			_files.registerDocumentFileType(DocumentFileType.DIRECTORY, DirectoryAsset);
-			_files.registerDocumentFileType(DocumentFileType.IMAGE, TextureAsset);
-			_files.registerDocumentFileType(DocumentFileType.TEMPLATE, TemplateAsset);
-			_files.registerDocumentFileType(DocumentFileType.ATLAS, AtlasAsset);
-			_files.registerDocumentFileType(DocumentFileType.STYLE, StyleSheetAsset);
-			_files.registerDocumentFileType(DocumentFileType.FONT, FontAsset);
+			_files.registerFileControllerByType(DocumentFileType.DIRECTORY, DirectoryAsset);
+			_files.registerFileControllerByType(DocumentFileType.IMAGE, TextureAsset);
+			_files.registerFileControllerByType(DocumentFileType.TEMPLATE, TemplateAsset);
+			_files.registerFileControllerByType(DocumentFileType.ATLAS, AtlasAsset);
+			_files.registerFileControllerByType(DocumentFileType.STYLE, StyleSheetAsset);
+			_files.registerFileControllerByType(DocumentFileType.FONT, FontAsset);
+			_files.registerFileControllerByType(DocumentFileType.LIBRARY, LibraryAsset);
 		}
 
 		/** Background task counter. */
@@ -69,34 +74,22 @@ package browser.dom
 			return _messages;
 		}
 
+		public function get properties():Object
+		{
+			return _properties;
+		}
+
+		public function get file():File
+		{
+			return _file;
+		}
+
 		//
-		// Update timer
+		// Update
 		//
 		private function onTasksEnd():void
 		{
 			dispatchEventWith(Event.CHANGE);
-		}
-
-		//
-		// Export
-		//
-		public function get exportPath():String
-		{
-			var path:String = _properties[Constants.PROPERTY_EXPORT_PATH];
-			var resolved:String = _document.parent ? _document.parent.resolvePath(path).nativePath : null;
-			return resolved;
-		}
-
-		/** Get in export document file name. */
-		public function getExportFileName(documentFile:DocumentFileReference):String
-		{
-			return _root.getRelativePath(documentFile.file);
-		}
-
-		public function setSourcePath(document:File, root:File):void
-		{
-			_document = document;
-			_root = root;
 		}
 	}
 }

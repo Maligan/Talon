@@ -10,7 +10,7 @@ package browser.dom.assets
 	{
 		private var _file:DocumentFileReference;
 
-		public function initialize(file:DocumentFileReference):void
+		public final function initialize(file:DocumentFileReference):void
 		{
 			_file = file;
 			_file.addEventListener(Event.CHANGE, onFileChange);
@@ -19,9 +19,17 @@ package browser.dom.assets
 			onRefresh();
 		}
 
+		public final function dispose():void
+		{
+			onExclude();
+
+			_file.removeEventListener(Event.CHANGE, onFileChange);
+			_file = null;
+		}
+
 		private function onFileChange(e:Event):void
 		{
-			_file.exits ? onRefresh() : onExclude();
+			if (_file.exits) onRefresh();
 		}
 
 		/** Called once on asset added to document. */

@@ -1,6 +1,7 @@
 package browser.dom.files
 {
 	import browser.dom.Document;
+	import browser.utils.parseGlob;
 
 	import com.adobe.air.filesystem.FileMonitor;
 	import com.adobe.air.filesystem.events.FileMonitorEvent;
@@ -77,6 +78,7 @@ package browser.dom.files
 				var xml:XML = new XML(read());
 				var root:String = xml.name();
 				if (root == "template") return DocumentFileType.TEMPLATE;
+				if (root == "library") return DocumentFileType.LIBRARY;
 				if (root == "TextureAtlas") return DocumentFileType.ATLAS;
 				return DocumentFileType.UNKNOWN;
 			}
@@ -119,6 +121,39 @@ package browser.dom.files
 		public function get file():File
 		{
 			return _file;
+		}
+
+		/** File is ignored for export. */
+		public function get isIgnored():Boolean
+		{
+			if (type == DocumentFileType.DIRECTORY) return true;
+			if (type == DocumentFileType.UNKNOWN) return true;
+
+			var ignored:Boolean = false;
+			var ignoresProperty:String = document.properties[Constants.PROPERTY_EXPORT_IGNORE];
+			if (ignoresProperty)
+			{
+				var spilt:Array = ignoresProperty.split(/\s*,\s*/);
+				for each (var glob:String in spilt)
+				{
+					var isNegative:Boolean = glob.charAt(0) == "!";
+					if (isNegative) glob = glob.substring(1);
+					var isMatch:Boolean = parseGlob(glob).test(exportPath);
+
+					if (isMatch &&  isNegative) return false;
+					if (isMatch && !isNegative) ignored = true;
+				}
+			}
+
+			return ignored;
+		}
+
+		public function get exportPath():String
+		{
+			var sourcePathProperty:String = document.properties[Constants.PROPERTY_SOURCE_PATH];
+			var sourcePath:File = document.file.parent.resolvePath(sourcePathProperty || document.file.parent.nativePath);
+			if (sourcePath.exists == false) sourcePath = document.file.parent;
+			return sourcePath.getRelativePath(file);
 		}
 	}
 }

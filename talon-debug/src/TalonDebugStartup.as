@@ -20,6 +20,7 @@ package
 	import starling.events.Event;
 
 	import talon.Attribute;
+	import talon.starling.TalonFactoryStarling;
 	import talon.types.Gauge;
 
 	import talon.types.GaugeQuad;
@@ -28,7 +29,7 @@ package
 
 	import talon.starling.SpriteElement;
 	import talon.utils.TMLParser;
-	import talon.utils.TalonFactory;
+	import talon.utils.TalonFactoryBase;
 	import talon.utils.StringUtil;
 	import starling.textures.Texture;
 
@@ -168,7 +169,7 @@ package
 			}
 		}
 
-		private var _factory:TalonFactory;
+		private var _factory:TalonFactoryBase;
 
 		private function onRootCreated(e:Event):void
 		{
@@ -239,8 +240,9 @@ package
 			//<input multiline="true" width="auto" height="auto" halign="left" fontColor="#C9C9C9" fontName="Tahoma" fontSize="11px" text="Native Text Field" backgroundColor="#222222" />
 
 
-			_factory = new TalonFactory();
-			_factory.addTerminal("input", TalonInput);
+			_factory = new TalonFactoryStarling();
+			_factory.addTerminal("input");
+			_factory.setLinkage("input", TalonInput);
 			_factory.addTemplate(config);
 
 			_factory.addStyleSheet(css);

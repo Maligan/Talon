@@ -9,7 +9,6 @@ package browser.dom.log
 		//
 		// Types
 		//
-		// Errors
 		public static const FILE_READ_ERROR:String =                "E1:    Can't access to file {0}";
 		public static const FILE_XML_PARSE_ERROR:String =           "E2:    File {0} is not valid XML";
 		public static const FILE_CSS_PARSE_ERROR:String =           "E3:    File {0} is not valid CSS";
@@ -17,6 +16,7 @@ package browser.dom.log
 		public static const GPU_TEXTURE_LIMIT_REACHED:String =      "E5:    Texture limit overhead (used {0}mb GPU memory)";
 		public static const TALON_RESOURCE_ALREADY_EXISTS:String =  "E6:    Resource with id = {0} already exists";
 		public static const TALON_RESOURCE_NOT_FOUND:String =       "W7:    Resource with id = {0} can't be found";
+		public static const BROWSER_SOURCE_PATH_NOT_EXISTS:String = "W8:    Source path '{0}' folder doesn't exists";
 
 		//
 		// Message

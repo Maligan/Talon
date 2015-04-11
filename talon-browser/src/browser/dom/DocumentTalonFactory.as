@@ -7,17 +7,25 @@ package browser.dom
 	import talon.starling.TalonFactoryStarling;
 	import talon.utils.TalonFactoryBase;
 
-	/** Extended version of TalonFactoryBase for browser purpose. */
+	/** Extended version of TalonFactory for browser purpose. */
 	public final class DocumentTalonFactory extends TalonFactoryStarling
 	{
 		private var _document:Document;
-		private var _styles:Dictionary;
-		private var _styleInvalidated:Boolean;
+		private var _styles:StyleSheetCollection;
 
 		public function DocumentTalonFactory(document:Document):void
 		{
 			_resources = new ObjectWithAccessLogger();
 			_document = document;
+			_styles = new StyleSheetCollection(_style);
+		}
+
+		public override function build(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
+		{
+			styles.validate();
+			resources.reset();
+
+			return super.build(id, includeStyleSheet, includeResources);
 		}
 
 		//
@@ -99,33 +107,25 @@ package browser.dom
 		//
 		// Styles
 		//
-		public function addStyleSheetWithId(id:String, css:String):void
+		public function addStyleSheetWithId(css:String, key:String = null):String { return styles.insert(css, key); }
+		public function removeStyleSheet(key:String):void { styles.remove(key); }
+
+		public override function addStyleSheet(css:String):void
 		{
-			_styles[id] = css;
-			_styleInvalidated = true;
+			throw new Error("Use addStyleSheetWithId");
 		}
 
-		public function removeStyleSheetWithId(id:String):void
+		private function get styles():StyleSheetCollection
 		{
-			var hasStyle:Boolean = _styles[id] != null;
-			if (hasStyle)
-			{
-				delete _styles[id];
-				_styleInvalidated = true;
-			}
-		}
-
-		private function refreshStyle():void
-		{
-			_styleInvalidated = false;
-			_style = new StyleSheet();
-			for each (var css:String in _styles) _style.parse(css);
+			return _styles;
 		}
 	}
 }
 
 import flash.utils.Proxy;
 import flash.utils.flash_proxy;
+
+import talon.StyleSheet;
 
 use namespace flash_proxy;
 
@@ -177,4 +177,27 @@ class ObjectWithAccessLogger extends Proxy
 	flash_proxy override function setProperty(name:*, value:*):void { _innerObject[name] = value; }
 	flash_proxy override function hasProperty(name:*):Boolean { _used[name] = name; return _innerObject.hasOwnProperty(name); }
 	flash_proxy override function deleteProperty(name:*):Boolean { return (delete _innerObject[name]); }
+}
+
+class StyleSheetCollection
+{
+	public function StyleSheetCollection(source:StyleSheet)
+	{
+
+	}
+
+	public function insert(css:String, key:String = null):String
+	{
+
+	}
+
+	public function remove(key:String):void
+	{
+
+	}
+
+	public function validate():void
+	{
+
+	}
 }

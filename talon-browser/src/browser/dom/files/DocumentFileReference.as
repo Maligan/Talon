@@ -44,7 +44,7 @@ package browser.dom.files
 			dispatchEventWith(Event.CHANGE);
 		}
 
-		public function read():ByteArray
+		public function readBytes():ByteArray
 		{
 			if (!exits) throw new ArgumentError("File not exists");
 
@@ -64,6 +64,22 @@ package browser.dom.files
 			return result;
 		}
 
+		public function readXML():XML
+		{
+			var bytes:ByteArray = readBytes();
+
+			try
+			{
+				return new XML(bytes);
+			}
+			catch (e:Error)
+			{
+				// XML is broken
+			}
+
+			return null;
+		}
+
 		/** @see browser.dom.files.DocumentFileType */
 		public function get type():String
 		{
@@ -75,11 +91,15 @@ package browser.dom.files
 			if (extension == "css") return DocumentFileType.STYLE;
 			if (extension == "xml")
 			{
-				var xml:XML = new XML(read());
-				var root:String = xml.name();
-				if (root == "template") return DocumentFileType.TEMPLATE;
-				if (root == "library") return DocumentFileType.LIBRARY;
-				if (root == "TextureAtlas") return DocumentFileType.ATLAS;
+				var xml:XML = readXML();
+				if (xml != null)
+				{
+					var root:String = xml.name();
+					if (root == "template") return DocumentFileType.TEMPLATE;
+					if (root == "library") return DocumentFileType.LIBRARY;
+					if (root == "TextureAtlas") return DocumentFileType.ATLAS;
+				}
+
 				return DocumentFileType.UNKNOWN;
 			}
 			if (extension == "fnt") return DocumentFileType.FONT;

@@ -16,7 +16,8 @@ package browser.dom.log
 		public static const GPU_TEXTURE_LIMIT_REACHED:String =      "E5:    Texture limit overhead (used {0}mb GPU memory)";
 		public static const TALON_RESOURCE_ALREADY_EXISTS:String =  "E6:    Resource with id = {0} already exists";
 		public static const TALON_RESOURCE_NOT_FOUND:String =       "W7:    Resource with id = {0} can't be found";
-		public static const BROWSER_SOURCE_PATH_NOT_EXISTS:String = "W8:    Source path '{0}' folder doesn't exists";
+		public static const TALON_LIBRARY_UNKNOWN_ELEMENT:String =  "W8:    Library {0} contains unknown element '{1}'";
+		public static const BROWSER_SOURCE_PATH_NOT_EXISTS:String = "W9:    Source path '{0}' folder doesn't exists";
 
 		//
 		// Message

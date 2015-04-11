@@ -18,7 +18,7 @@ package browser.dom.assets
 
 		protected override function onRefresh():void
 		{
-			validate(new XML(file.read()));
+			validate(new XML(file.readBytes()));
 		}
 
 		protected override function onExclude():void

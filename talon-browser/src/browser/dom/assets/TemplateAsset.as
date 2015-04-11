@@ -11,7 +11,7 @@ package browser.dom.assets
 		{
 			document.tasks.begin();
 
-			var xml:XML = new XML(file.read());
+			var xml:XML = new XML(file.readBytes());
 			var id:String = xml.@id;
 
 			document.factory.removeTemplate(_lastId);

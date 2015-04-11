@@ -5,7 +5,7 @@ package browser.dom.assets
 		protected override function onRefresh():void
 		{
 			document.tasks.begin();
-			document.factory.addStyleSheet(file.read().toString());
+			document.factory.addStyleSheet(file.readBytes().toString());
 			document.tasks.end();
 		}
 	}

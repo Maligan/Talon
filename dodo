@@ -1,6 +1,7 @@
 #1 [[+]] <<19-03-15 11:56>> ((maligan)) {{Write README}}
 #3 [[+]] <<19-03-15 11:57>> ((maligan)) {{Create invalidation system}}
-#2 [[#]] <<19-03-15 11:56>> ((maligan)) {{Add 'New Project' to browser}}
+#2 [[.]] <<19-03-15 11:56>> ((maligan)) {{Add 'New Project' to browser}}
 #5 [[+]] <<19-03-15 13:12>> ((maligan)) {{Add <libary>, <style>, <template> support to TML}}
 #4 [[*]] <<19-03-15 11:58>> ((maligan)) {{Finish FlowLayout}}
 #6 [[+]] <<08-04-15 09:37>> ((maligan)) {{Add export.ignore glob pattern support}}
+#6 [[+]] <<02-04-15 12:15>> ((maligan)) {{Create 'Custom Profile' dialog}}

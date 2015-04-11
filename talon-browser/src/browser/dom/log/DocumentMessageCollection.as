@@ -7,12 +7,12 @@ package browser.dom.log
 			return null;
 		}
 
-		public function addMessage():void
+		public function addMessage(message:DocumentMessage):void
 		{
 
 		}
 
-		public function removeMessage():void
+		public function removeMessage(message:DocumentMessage):void
 		{
 
 		}

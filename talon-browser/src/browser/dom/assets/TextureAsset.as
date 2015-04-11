@@ -12,7 +12,7 @@ package browser.dom.assets
 	{
 		protected override function onRefresh():void
 		{
-			var bytes:ByteArray = file.read();
+			var bytes:ByteArray = file.readBytes();
 
 			if (AtfData.isAtfData(bytes))
 			{

@@ -11,9 +11,9 @@ package talon.utils
 
 	public class TalonFactoryBase
 	{
-		protected static const TAG_LIBRARY:String = "library";
-		protected static const TAG_TEMPLATE:String = "template";
-		protected static const TAG_STYLE:String = "style";
+		public static const TAG_LIBRARY:String = "library";
+		public static const TAG_TEMPLATE:String = "template";
+		public static const TAG_STYLE:String = "style";
 
 		protected var _parser:TMLParser;
 		protected var _parserProductStack:Array;

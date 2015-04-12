@@ -46,7 +46,7 @@ package talon.utils
 		public function parseTemplate(id:String):void
 		{
 			// XXX: Clean after error? _stack.length = 0;
-			parse(getTemplateOrDie(id), null, EMPTY_XML_LIST);
+			parse(getTemplateOrDie(id), {type: id}, EMPTY_XML_LIST);
 		}
 
 		private function parse(xml:XML, attributes:Object, rewrites:XMLList):void

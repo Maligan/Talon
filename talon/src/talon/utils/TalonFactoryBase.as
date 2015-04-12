@@ -26,6 +26,7 @@ package talon.utils
 
 		public function TalonFactoryBase(linkageByDefault:Class):void
 		{
+			_linkageByDefault = linkageByDefault;
 			_parser = new TMLParser();
 			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
 			_parser.addEventListener(TMLParser.EVENT_END, onElementEnd);

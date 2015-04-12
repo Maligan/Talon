@@ -8,10 +8,8 @@ package browser.dom.assets
 
 	public class LibraryAsset extends Asset
 	{
-		private var _lastXML:XML;
 		private var _lastStyleSheets:Vector.<String> = new Vector.<String>();
 		private var _lastTemplates:Vector.<String> = new Vector.<String>();
-		private var _lastMessages:Vector.<DocumentMessage> = new Vector.<DocumentMessage>();
 
 		protected override function onRefresh():void
 		{
@@ -31,10 +29,19 @@ package browser.dom.assets
 					switch (childType)
 					{
 						case TalonFactoryBase.TAG_STYLE:
-							var styleId:String = file.url + "#" + _lastStyleSheets.length;
 							var style:String = child.text();
-							document.factory.addStyleSheetWithId(styleId, style);
-							_lastStyleSheets.push(styleId);
+							var styleId:String = file.url + "#" + _lastStyleSheets.length;
+
+							if (StyleSheetAsset.isCSS(style))
+							{
+								document.factory.addStyleSheetWithId(styleId, style);
+								_lastStyleSheets.push(styleId);
+							}
+							else
+							{
+								report(DocumentMessage.TALON_LIBRARY_WRONG_CSS, file.url);
+							}
+
 							break;
 
 						case TalonFactoryBase.TAG_TEMPLATE:
@@ -44,10 +51,15 @@ package browser.dom.assets
 							break;
 
 						default:
-							var message:DocumentMessage = new DocumentMessage(DocumentMessage.TALON_LIBRARY_UNKNOWN_ELEMENT, file.url, childType);
-							document.messages.addMessage(message);
+							report(DocumentMessage.TALON_LIBRARY_UNKNOWN_ELEMENT, file.url, childType);
 					}
 				}
+
+				System.disposeXML(xml);
+			}
+			else
+			{
+				report(DocumentMessage.FILE_XML_PARSE_ERROR, file.url);
 			}
 
 			document.tasks.end();
@@ -60,16 +72,13 @@ package browser.dom.assets
 
 		private function clean():void
 		{
-			System.disposeXML(_lastXML);
+			reportCleanup();
 
 			while (_lastStyleSheets.length)
 				document.factory.removeStyleSheetWithId(_lastStyleSheets.pop());
 
 			while (_lastTemplates.length)
 				document.factory.removeTemplate(_lastTemplates.pop());
-
-			while (_lastMessages.length)
-				document.messages.removeMessage(_lastMessages.pop());
 		}
 	}
 }

@@ -50,14 +50,14 @@ package browser
 
 		private var _documentDispatcher:EventDispatcherAdapter;
 		private var _menu:NativeMenuAdapter;
-		private var _prototype:DisplayObject;
+		private var _template:DisplayObject;
 		private var _locked:Boolean;
 
 		public function AppUI(controller:AppController)
 		{
 			_controller = controller;
 			_controller.addEventListener(AppController.EVENT_PROFILE_CHANGE, refreshWindowTitle);
-			_controller.addEventListener(AppController.EVENT_PROTOTYPE_CHANGE, refreshCurrentPrototype);
+			_controller.addEventListener(AppController.EVENT_PROTOTYPE_CHANGE, refreshCurrentTemplate);
 			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);
 
 			_documentDispatcher = new EventDispatcherAdapter();
@@ -175,7 +175,7 @@ package browser
 		private function onDocumentDispatcherChange(e:Event):void
 		{
 			refreshPrototypes();
-			refreshCurrentPrototype();
+			refreshCurrentTemplate();
 		}
 
 		//
@@ -184,18 +184,16 @@ package browser
 		private function refreshWindowTitle():void
 		{
 			var result:Array = [];
-			//			result.push("...\\plinkandplop\\interface\\interface.talon");
 
+			if (_controller.document)
+				result.push(_controller.document.file.nativePath);
 
 			var profile:DeviceProfile = _controller.profile;
-			if (profile != DeviceProfile.CUSTOM)
-			{
-				result.push(_controller.profile.id);
-			}
-			else
-			{
-				result.push("[" + profile.width + "x" + profile.height + ", CSF=" + profile.csf + ", DPI=" + profile.dpi + "]")
-			}
+			if (profile != DeviceProfile.CUSTOM) result.push(_controller.profile.id);
+			else result.push("[" + profile.width + "x" + profile.height + ", CSF=" + profile.csf + ", DPI=" + profile.dpi + "]")
+
+			if (_controller.templateId)
+				result.push(_controller.templateId);
 
 			result.push(Constants.APP_NAME + " " + Constants.APP_VERSION);
 
@@ -220,20 +218,20 @@ package browser
 			}
 		}
 
-		private function refreshCurrentPrototype():void
+		private function refreshCurrentTemplate():void
 		{
 			// Refresh current prototype
 			var canShow:Boolean = true;
-			canShow &&= _controller.prototypeId != null;
+			canShow &&= _controller.templateId != null;
 			canShow &&= _controller.document != null;
-			canShow &&= _controller.document.factory.hasTemplate(_controller.prototypeId);
+			canShow &&= _controller.document.factory.hasTemplate(_controller.templateId);
 
 			_container.removeChildren();
 
 			if (canShow)
 			{
-				_prototype = _controller.document.factory.build(_controller.prototypeId);
-				_container.addChild(_prototype);
+				_template = _controller.document.factory.build(_controller.templateId);
+				_container.addChild(_template);
 
 				stage && resizeTo(stage.stageWidth, stage.stageHeight);
 			}

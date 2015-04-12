@@ -1,35 +1,45 @@
 package browser.dom.assets
 {
+	import browser.dom.log.DocumentMessage;
+
 	import flash.system.System;
 
 	public class TemplateAsset extends Asset
 	{
 		private var _lastId:String;
-		private var _lastXML:XML;
 
 		protected override function onRefresh():void
 		{
 			document.tasks.begin();
 
-			var xml:XML = new XML(file.readBytes());
-			var id:String = xml.@id;
+			clean();
 
-			document.factory.removeTemplate(_lastId);
-			document.factory.addTemplate(xml);
-
-			System.disposeXML(_lastXML);
-			_lastId = id;
-			_lastXML = xml;
+			var xml:XML = file.readXML();
+			if (xml)
+			{
+				document.factory.addTemplate(xml);
+				_lastId = xml.@id;
+				System.disposeXML(xml);
+			}
+			else
+			{
+				report(DocumentMessage.FILE_XML_PARSE_ERROR, file.url);
+			}
 
 			document.tasks.end();
 		}
 
 		protected override function onExclude():void
 		{
+			clean();
+		}
+
+		private function clean():void
+		{
+			reportCleanup();
+
 			document.factory.removeTemplate(_lastId);
-			System.disposeXML(_lastXML);
 			_lastId = null;
-			_lastXML = null;
 		}
 	}
 }

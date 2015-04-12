@@ -3,12 +3,14 @@ package browser.dom.assets
 	import browser.dom.Document;
 	import browser.dom.files.DocumentFileController;
 	import browser.dom.files.DocumentFileReference;
+	import browser.dom.log.DocumentMessage;
 
 	import starling.events.Event;
 
 	internal class Asset implements DocumentFileController
 	{
 		private var _file:DocumentFileReference;
+		private var _messages:Vector.<DocumentMessage> = new <DocumentMessage>[];
 
 		public final function initialize(file:DocumentFileReference):void
 		{
@@ -38,6 +40,21 @@ package browser.dom.assets
 		protected function onRefresh():void { }
 		/** Called once on asset removed from document. */
 		protected function onExclude():void { }
+
+		//
+		// Utility
+		//
+		protected function report(message:String, ...params):DocumentMessage
+		{
+			var msg:DocumentMessage = new DocumentMessage(message, params);
+			document.messages.addMessage(msg);
+			return msg;
+		}
+
+		protected function reportCleanup():void
+		{
+			while (_messages.length) document.messages.removeMessage(_messages.pop());
+		}
 
 		//
 		// Properties

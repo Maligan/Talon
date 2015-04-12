@@ -22,12 +22,12 @@ package browser.commands
 
 		public override function execute():void
 		{
-			controller.prototypeId = _prototypeId;
+			controller.templateId = _prototypeId;
 		}
 
 		public override function get isActive():Boolean
 		{
-			return controller.prototypeId == _prototypeId;
+			return controller.templateId == _prototypeId;
 		}
 	}
 }

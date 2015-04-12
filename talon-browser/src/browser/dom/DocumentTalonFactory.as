@@ -1,11 +1,6 @@
 package browser.dom
 {
-	import flash.utils.Dictionary;
-
-	import starling.display.DisplayObject;
-	import talon.StyleSheet;
 	import talon.starling.TalonFactoryStarling;
-	import talon.utils.TalonFactoryBase;
 
 	/** Extended version of TalonFactory for browser purpose. */
 	public final class DocumentTalonFactory extends TalonFactoryStarling
@@ -17,14 +12,13 @@ package browser.dom
 		{
 			_resources = new ObjectWithAccessLogger();
 			_document = document;
-			_styles = new StyleSheetCollection(_style);
+			_styles = new StyleSheetCollection();
 		}
 
 		public override function build(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
 		{
-			styles.validate();
 			resources.reset();
-
+			_style = _styles.style;
 			return super.build(id, includeStyleSheet, includeResources);
 		}
 
@@ -107,8 +101,8 @@ package browser.dom
 		//
 		// Styles
 		//
-		public function addStyleSheetWithId(css:String, key:String = null):String { return styles.insert(css, key); }
-		public function removeStyleSheet(key:String):void { styles.remove(key); }
+		public function addStyleSheetWithId(key:String, css:String):void { styles.insert(key, css); }
+		public function removeStyleSheetWithId(key:String):void { styles.remove(key); }
 
 		public override function addStyleSheet(css:String):void
 		{
@@ -122,6 +116,7 @@ package browser.dom
 	}
 }
 
+import flash.utils.Dictionary;
 import flash.utils.Proxy;
 import flash.utils.flash_proxy;
 
@@ -181,23 +176,42 @@ class ObjectWithAccessLogger extends Proxy
 
 class StyleSheetCollection
 {
-	public function StyleSheetCollection(source:StyleSheet)
+	private var _style:StyleSheet;
+	private var _sources:Dictionary = new Dictionary();
+	private var _keys:Vector.<String> = new <String>[];
+	private var _invalid:Boolean;
+
+	public function insert(key:String, css:String):void
 	{
-
-	}
-
-	public function insert(css:String, key:String = null):String
-	{
-
+		if (_sources[key] == null) _keys.push(key);
+		_sources[key] = css;
+		_invalid = true;
 	}
 
 	public function remove(key:String):void
 	{
-
+		if (key in _sources)
+		{
+			_keys.splice(_keys.indexOf(key), 1);
+			delete _sources[key];
+			_invalid = true;
+		}
 	}
 
-	public function validate():void
+	public function get style():StyleSheet
 	{
+		if (_style == null || _invalid)
+		{
+			_invalid = false;
+			_style = new StyleSheet();
 
+			for each (var key:String in _keys)
+			{
+				var source:String = _sources[key];
+				_style.parse(source);
+			}
+		}
+
+		return _style;
 	}
 }

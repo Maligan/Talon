@@ -17,7 +17,8 @@ package browser.dom.log
 		public static const TALON_RESOURCE_ALREADY_EXISTS:String =  "E6:    Resource with id = {0} already exists";
 		public static const TALON_RESOURCE_NOT_FOUND:String =       "W7:    Resource with id = {0} can't be found";
 		public static const TALON_LIBRARY_UNKNOWN_ELEMENT:String =  "W8:    Library {0} contains unknown element '{1}'";
-		public static const BROWSER_SOURCE_PATH_NOT_EXISTS:String = "W9:    Source path '{0}' folder doesn't exists";
+		public static const TALON_LIBRARY_WRONG_CSS:String =        "E9:    Library {0} contains wrong <style> element";
+		public static const BROWSER_SOURCE_PATH_NOT_EXISTS:String = "W10:   Source path '{0}' folder doesn't exists";
 
 		//
 		// Message
@@ -26,7 +27,7 @@ package browser.dom.log
 		private var _level:int;
 		private var _text:String;
 
-		public function DocumentMessage(type:String, ...args)
+		public function DocumentMessage(type:String, args:Array)
 		{
 			var pattern:RegExp = /(E|W|I)(\d+):\s*(.+)/;
 			var split:Array = pattern.exec(type);

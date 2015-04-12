@@ -33,7 +33,7 @@ package browser
 		private var _host:DisplayObjectContainer;
 		private var _console:Console;
 		private var _document:Document;
-		private var _prototypeId:String;
+		private var _templateId:String;
 		private var _ui:AppUI;
 		private var _settings:Settings;
 		private var _monitor:OrientationMonitor;
@@ -138,16 +138,16 @@ package browser
 			{
 				_document = value;
 				dispatchEventWith(EVENT_DOCUMENT_CHANGE);
-				prototypeId = _document ? _document.factory.templateIds.shift() : null;
+				templateId = _document ? _document.factory.templateIds.shift() : null;
 			}
 		}
 
-		public function get prototypeId():String { return _prototypeId; }
-		public function set prototypeId(value:String):void
+		public function get templateId():String { return _templateId; }
+		public function set templateId(value:String):void
 		{
-			if (_prototypeId != value)
+			if (_templateId != value)
 			{
-				_prototypeId = value;
+				_templateId = value;
 				dispatchEventWith(EVENT_PROTOTYPE_CHANGE);
 			}
 		}
@@ -184,7 +184,7 @@ package browser
 		private function cmdResourceMiss(query:String):void
 		{
 			if (_document == null) throw new Error("Document not opened");
-			if (_prototypeId == null) throw new Error("Prototype not selected");
+			if (_templateId == null) throw new Error("Prototype not selected");
 
 			for each (var resourceId:String in document.factory.missedResourceIds)
 			{

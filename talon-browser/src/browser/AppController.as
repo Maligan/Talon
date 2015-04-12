@@ -13,6 +13,7 @@ package browser
 	import flash.display.DisplayObject;
 	import flash.display.NativeWindow;
 	import flash.display.NativeWindow;
+	import flash.display.NativeWindowInitOptions;
 	import flash.events.NativeWindowBoundsEvent;
 
 	import flash.filesystem.File;

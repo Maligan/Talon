@@ -29,16 +29,15 @@ package browser.dom.files
 
 		public function addFile(file:DocumentFileReference):void
 		{
-			if (_files[file.url] == null)
+			if (_files[file.url] != null) return;
+
+			var type:Class = _types[file.type];
+			if (type)
 			{
-				var type:Class = _types[file.type];
-				if (type != null)
-				{
-					var controller:DocumentFileController = new type();
-					controller.initialize(file);
-					_controllers[file.url] = controller;
-					_files[file.url] = file;
-				}
+				var controller:DocumentFileController = new type();
+				controller.initialize(file);
+				_controllers[file.url] = controller;
+				_files[file.url] = file;
 			}
 		}
 

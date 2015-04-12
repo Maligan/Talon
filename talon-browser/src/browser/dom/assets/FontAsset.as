@@ -1,5 +1,8 @@
 package browser.dom.assets
 {
+	import browser.dom.DocumentEvent;
+	import browser.dom.log.DocumentMessage;
+
 	import starling.events.Event;
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
@@ -7,85 +10,64 @@ package browser.dom.assets
 
 	public class FontAsset extends Asset
 	{
-		private var _fontXML:XML;
-		private var _fontTexture:Texture;
-		private var _font:BitmapFont;
+		private var _lastXML:XML;
+		private var _lastTexture:Texture;
+		private var _lastFont:BitmapFont;
 
-		protected override function onInclude():void
+		protected override function onInclude():void { document.addEventListener(DocumentEvent.CHANGING, onDocumentChanging); }
+		protected override function onExclude():void
 		{
-			document.addEventListener(Event.CHANGE, onDocumentChange);
+			document.removeEventListener(DocumentEvent.CHANGING, onDocumentChanging);
+			clean();
 		}
 
 		protected override function onRefresh():void
 		{
-			validate(new XML(file.readBytes()));
+			document.tasks.begin();
+
+			clean();
+
+			_lastXML = file.readXML();
+			if (_lastXML == null) report(DocumentMessage.FILE_XML_PARSE_ERROR, file.url);
+
+			document.tasks.end();
 		}
 
-		protected override function onExclude():void
+		private function onDocumentChanging(e:Event):void
 		{
-			if (_font)
-			{
-				document.tasks.begin();
-				TextField.unregisterBitmapFont(fontName, true);
-				document.tasks.end();
-			}
-		}
+			if (_lastXML == null) return;
+			if (document.tasks.isBusy) return;
 
-		private function onDocumentChange(e:Event):void
-		{
-			validate(_fontXML);
-		}
-
-		private function validate(xml:XML):void
-		{
-			var changed:Boolean = false;
-
-			// XMl
-			if (_fontXML != xml)
-			{
-				_fontXML = xml;
-				changed = true;
-			}
-
-			// Texture
-			var textureId:String = fontTextureId(xml);
+			var textureId:String = document.factory.getResourceId(_lastXML.pages.page.@file);
 			var texture:Texture = document.factory.getResource(textureId);
 
-			if (_fontTexture != texture)
+			if (texture == null)
 			{
-				_fontTexture = texture;
-				changed = true;
+				report(DocumentMessage.FONT_IMAGE_NOT_FOUND, file.url, textureId);
+				return;
 			}
 
-			// Update font
-			if (changed)
+			if (_lastFont == null || _lastTexture != texture)
 			{
 				document.tasks.begin();
 
-				if (_font != null)
-				{
-					TextField.unregisterBitmapFont(fontName, true);
-					_font = null;
-				}
-
-				if (_fontTexture != null)
-				{
-					_font = new BitmapFont(_fontTexture, _fontXML);
-					TextField.registerBitmapFont(_font, fontName);
-				}
+				_lastTexture = texture;
+				_lastFont = new BitmapFont(_lastTexture, _lastXML);
+				TextField.registerBitmapFont(_lastFont, textureId);
 
 				document.tasks.end();
 			}
 		}
 
-		private function get fontName():String
+		private function clean():void
 		{
-			return document.factory.getResourceId(file.url);
-		}
+			reportCleanup();
 
-		private function fontTextureId(xml:XML):String
-		{
-			return document.factory.getResourceId(xml.pages.page.@file.toString());
+			if (_lastFont)
+			{
+				TextField.unregisterBitmapFont(_lastFont.name, false);
+				_lastFont = null;
+			}
 		}
 	}
 }

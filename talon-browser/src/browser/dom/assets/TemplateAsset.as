@@ -7,6 +7,7 @@ package browser.dom.assets
 	public class TemplateAsset extends Asset
 	{
 		private var _lastId:String;
+		private var _lastXML:XML;
 
 		protected override function onRefresh():void
 		{
@@ -19,7 +20,7 @@ package browser.dom.assets
 			{
 				document.factory.addTemplate(xml);
 				_lastId = xml.@id;
-				System.disposeXML(xml);
+				_lastXML = xml;
 			}
 			else
 			{
@@ -37,6 +38,9 @@ package browser.dom.assets
 		private function clean():void
 		{
 			reportCleanup();
+
+			System.disposeXML(_lastXML);
+			_lastXML = null;
 
 			document.factory.removeTemplate(_lastId);
 			_lastId = null;

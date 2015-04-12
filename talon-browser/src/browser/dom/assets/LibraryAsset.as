@@ -8,6 +8,7 @@ package browser.dom.assets
 
 	public class LibraryAsset extends Asset
 	{
+		private var _lastXML:XML;
 		private var _lastStyleSheets:Vector.<String> = new Vector.<String>();
 		private var _lastTemplates:Vector.<String> = new Vector.<String>();
 
@@ -55,7 +56,7 @@ package browser.dom.assets
 					}
 				}
 
-				System.disposeXML(xml);
+				_lastXML = xml;
 			}
 			else
 			{
@@ -73,6 +74,9 @@ package browser.dom.assets
 		private function clean():void
 		{
 			reportCleanup();
+
+			System.disposeXML(_lastXML);
+			_lastXML = null;
 
 			while (_lastStyleSheets.length)
 				document.factory.removeStyleSheetWithId(_lastStyleSheets.pop());

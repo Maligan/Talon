@@ -79,7 +79,7 @@ package browser.dom
 		public function get resourceIds():Vector.<String>
 		{
 			var result:Vector.<String> = new Vector.<String>();
-			for (var resourceId:String in _resources) result[result.length] = resourceId;
+			for (var resourceId:String in _resources.inner) result[result.length] = resourceId;
 			return result.sort(byName);
 		}
 
@@ -166,6 +166,11 @@ class ObjectWithAccessLogger extends Proxy
 	private function notExists(property:String, index:int, vector:Vector.<String>):Boolean
 	{
 		return _innerObject.hasOwnProperty(property) == false;
+	}
+
+	public function get inner():Object
+	{
+		return _innerObject;
 	}
 
 	flash_proxy override function getProperty(name:*):* { return hasProperty(name) ? _innerObject[name] : null; }

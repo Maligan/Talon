@@ -9,6 +9,7 @@ package browser
 	import browser.commands.SelectCommand;
 	import browser.commands.SettingCommand;
 	import browser.commands.ZoomCommand;
+	import browser.dom.DocumentEvent;
 	import browser.popups.Popup;
 	import browser.utils.Constants;
 	import browser.utils.DeviceProfile;
@@ -61,7 +62,7 @@ package browser
 			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);
 
 			_documentDispatcher = new EventDispatcherAdapter();
-			_documentDispatcher.addEventListener(Event.CHANGE, onDocumentDispatcherChange);
+			_documentDispatcher.addEventListener(DocumentEvent.CHANGED, onDocumentChanged);
 
 			_factory = new TalonFactoryStarling();
 			_factory.addArchiveContentAsync(new INTERFACE() as ByteArray, onFactoryComplete);
@@ -172,9 +173,9 @@ package browser
 			}
 		}
 
-		private function onDocumentDispatcherChange(e:Event):void
+		private function onDocumentChanged(e:Event):void
 		{
-			refreshPrototypes();
+			refreshTemplates();
 			refreshCurrentTemplate();
 		}
 
@@ -200,7 +201,7 @@ package browser
 			_controller.root.stage.nativeWindow.title = result.join(" - ");
 		}
 
-		private function refreshPrototypes():void
+		private function refreshTemplates():void
 		{
 			// Refresh Menu
 			_menu.removeItem("navigate");

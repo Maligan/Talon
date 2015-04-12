@@ -215,8 +215,7 @@ package talon
 			// Notify resource change
 			for each (var attribute:Attribute in _attributes)
 			{
-				// FIXME: Bug (based on _expandedCache property)
-				if (attribute.isResource) dispatchEventWith(Event.CHANGE, false, attribute.name);
+				if (attribute.isResource) attribute.dispatchChange();
 			}
 
 			// Recursive children notify resource change

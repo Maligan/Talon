@@ -89,7 +89,9 @@ package browser.dom
 		//
 		private function onTasksEnd():void
 		{
-			dispatchEventWith(Event.CHANGE);
+			dispatchEventWith(DocumentEvent.CHANGING);
+
+			if (!tasks.isBusy) dispatchEventWith(DocumentEvent.CHANGED);
 		}
 	}
 }

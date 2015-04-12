@@ -21,7 +21,7 @@ package browser.dom.log
 			_taskCount == 0 && _complete();
 		}
 
-		internal function get isBusy():Boolean
+		public function get isBusy():Boolean
 		{
 			return _taskCount != 0;
 		}

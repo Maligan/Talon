@@ -30,8 +30,6 @@ package
 
 		public function Launcher()
 		{
-			stage.scaleMode = StageScaleMode.NO_SCALE;
-			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
 			stage.quality = StageQuality.BEST;
 			adjust();
@@ -61,6 +59,7 @@ package
 		private function onRootCreated(e:*):void
 		{
 			_controller = new AppController(this, Starling.current.root as starling.display.Sprite, _console);
+			_invoke = _controller.settings.getValueOrDefault(Constants.SETTING_RECENT_ARRAY, [null])[0];
 			_invoke && _controller.invoke(_invoke);
 		}
 

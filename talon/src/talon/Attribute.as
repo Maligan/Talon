@@ -423,7 +423,7 @@ package talon
 			return inheritable && value==INHERIT;
 		}
 
-		private function dispatchChange():void
+		internal function dispatchChange():void
 		{
 			_expanded = null;
 			_expandedCached = false;

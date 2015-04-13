@@ -64,10 +64,10 @@ package talon.starling
 
 		private function onNodeResize(e:Event):void
 		{
-			x = Math.round(_node.bounds.x) - 2;
-			y = Math.round(_node.bounds.y) - 2;
-			width = Math.round(_node.bounds.width) - 2;
-			height = Math.round(_node.bounds.height) - 2;
+			x = Math.round(_node.bounds.x)// - 2;
+			y = Math.round(_node.bounds.y)// - 2;
+			width = Math.round(_node.bounds.width)// - 2;
+			height = Math.round(_node.bounds.height)// - 2;
 
 			autoSize = TextFieldAutoSize.NONE;
 		}

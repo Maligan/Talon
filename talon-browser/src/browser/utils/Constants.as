@@ -40,7 +40,6 @@ package browser.utils
 		public static const T_MENU_FILE_NEW_PROJECT:String = "New Project...";
 		public static const T_MENU_FILE_RECENT:String = "Open Recent";
 		public static const T_MENU_FILE_RECENT_CLEAR:String = "Clear";
-		public static const T_MENU_FILE_EXPORT:String = "Export";
 		public static const T_MENU_FILE_EXPORT_AS:String = "Export As...";
 		public static const T_MENU_FILE_CLOSE:String = "Close";
 		public static const T_MENU_NAVIGATE:String = "Navigate";

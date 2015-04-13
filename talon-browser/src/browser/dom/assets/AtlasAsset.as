@@ -54,9 +54,9 @@ package browser.dom.assets
 				_lastTexture = texture;
 				_lastAtlas = new TextureAtlas(_lastTexture, _lastXML);
 
-				for each (var textureId:String in _lastAtlas.getNames())
+				for each (textureId in _lastAtlas.getNames())
 				{
-					var texture:Texture = _lastAtlas.getTexture(textureId);
+					texture = _lastAtlas.getTexture(textureId);
 					document.factory.addResource(textureId, texture);
 				}
 
@@ -76,7 +76,6 @@ package browser.dom.assets
 				for each (var textureId:String in _lastAtlas.getNames())
 					document.factory.removeResource(textureId)
 
-//				_lastAtlas.dispose();
 				_lastAtlas = null;
 			}
 		}

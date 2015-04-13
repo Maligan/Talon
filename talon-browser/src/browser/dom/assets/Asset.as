@@ -50,13 +50,14 @@ package browser.dom.assets
 		protected function report(message:String, ...params):DocumentMessage
 		{
 			var msg:DocumentMessage = new DocumentMessage(message, params);
+			_messages.push(msg);
 			document.messages.addMessage(msg);
 			return msg;
 		}
 
 		protected function reportCleanup():void
 		{
-			while (_messages.length) document.messages.removeMessage(_messages.pop());
+			while (_messages.length)document.messages.removeMessage(_messages.pop());
 		}
 
 		//

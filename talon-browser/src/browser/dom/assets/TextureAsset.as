@@ -3,7 +3,10 @@ package browser.dom.assets
 	import browser.dom.log.DocumentMessage;
 
 	import flash.display.Loader;
+	import flash.errors.IOError;
 	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.utils.ByteArray;
 
 	import starling.textures.AtfData;
@@ -28,11 +31,18 @@ package browser.dom.assets
 				document.tasks.begin();
 				var loader:Loader = new Loader();
 				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
+				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
 				loader.loadBytes(bytes);
 
 				function onComplete(e:*):void
 				{
 					addTexture(loader.content);
+					document.tasks.end();
+				}
+
+				function onIOError(e:*):void
+				{
+					report(DocumentMessage.FILE_CONTAINS_WRONG_IMAGE_FORMAT, file.url);
 					document.tasks.end();
 				}
 			}
@@ -48,7 +58,7 @@ package browser.dom.assets
 			}
 			catch (e:Error)
 			{
-				report(DocumentMessage.FILE_CONTAINS_WRONG_IMAGE_FORMAT, file.url);
+				report(DocumentMessage.TEXTURE_ERROR, file.url);
 			}
 		}
 

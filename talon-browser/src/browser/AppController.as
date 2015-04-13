@@ -2,6 +2,7 @@ package browser
 {
 	import browser.commands.OpenCommand;
 	import browser.dom.Document;
+	import browser.dom.log.DocumentMessage;
 	import browser.utils.Console;
 	import browser.utils.Constants;
 	import browser.utils.DeviceProfile;
@@ -52,7 +53,8 @@ package browser
 			_host = host;
 
 			_console = console;
-			_console.addCommand("tree", cmdTree, "Draw current template tree", "-a");
+			_console.addCommand("error", cmdError, "Print current error list");
+			_console.addCommand("tree", cmdTree, "Print current template tree", "-a");
 			_console.addCommand("resources", cmdResourceSearch, "RegExp based search project resources", "regexp");
 			_console.addCommand("resources_miss", cmdResourceMiss, "Missing used resources");
 
@@ -224,6 +226,24 @@ package browser
 			else _console.println(name);
 
 			for (var i:int = 0; i < node.numChildren; i++) traceNode(node.getChildAt(i), depth + 1, attrs);
+		}
+
+		private function cmdError(query:String):void
+		{
+			if (document.messages.numMessages > 0)
+			{
+				_console.println("Document error list:");
+
+				for (var i:int = 0; i < document.messages.numMessages; i++)
+				{
+					var message:DocumentMessage = document.messages.getMessageAt(i);
+					_console.println((i+1) + ")", message.level==2?"Error":message.level==1?"Warning":"Info", "|", message.text);
+				}
+			}
+			else
+			{
+				_console.println("Document error list is empty");
+			}
 		}
 	}
 }

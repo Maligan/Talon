@@ -45,7 +45,7 @@ package browser.dom.assets
 
 			if (texture == null)
 			{
-				report(DocumentMessage.FILE_FONT_IMAGE_MISSED, file.url, textureId);
+				report(DocumentMessage.FONT_IMAGE_MISSED, file.url, textureId);
 				return;
 			}
 

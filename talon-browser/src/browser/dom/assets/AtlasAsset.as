@@ -45,7 +45,7 @@ package browser.dom.assets
 			var texture:Texture = document.factory.getResource(textureId);
 			if (texture == null)
 			{
-				report(DocumentMessage.FILE_ATLAS_IMAGE_MISSED, file.url, textureId);
+				report(DocumentMessage.ATLAS_IMAGE_MISSED, file.url, textureId);
 				return;
 			}
 

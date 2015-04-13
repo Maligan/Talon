@@ -24,8 +24,8 @@ package browser.dom
 	[Event(name="change", type="starling.events.Event")]
 	public class Document extends EventDispatcher
 	{
-		private var _file:File;
-		/** This is parsed _path file content. */
+		private var _project:File;
+		/** This is parsed _project file content. */
 		private var _properties:Object;
 
 		private var _files:DocumentFileReferenceCollection;
@@ -36,20 +36,20 @@ package browser.dom
 		public function Document(properties:Object, file:File):void
 		{
 			_properties = properties;
-			_file = file;
+			_project = file;
 
 			_tracker = new DocumentTaskTracker(onTasksEnd);
 			_messages = new DocumentMessageCollection();
 			_factory = new DocumentTalonFactory(this);
 
 			_files = new DocumentFileReferenceCollection(this);
-			_files.registerFileControllerByType(DocumentFileType.DIRECTORY, DirectoryAsset);
-			_files.registerFileControllerByType(DocumentFileType.IMAGE, TextureAsset);
-			_files.registerFileControllerByType(DocumentFileType.TEMPLATE, TemplateAsset);
-			_files.registerFileControllerByType(DocumentFileType.ATLAS, AtlasAsset);
-			_files.registerFileControllerByType(DocumentFileType.STYLE, StyleSheetAsset);
-			_files.registerFileControllerByType(DocumentFileType.FONT, FontAsset);
-			_files.registerFileControllerByType(DocumentFileType.LIBRARY, LibraryAsset);
+			_files.registerControllerForType(DocumentFileType.DIRECTORY, DirectoryAsset);
+			_files.registerControllerForType(DocumentFileType.IMAGE, TextureAsset);
+			_files.registerControllerForType(DocumentFileType.TEMPLATE, TemplateAsset);
+			_files.registerControllerForType(DocumentFileType.ATLAS, AtlasAsset);
+			_files.registerControllerForType(DocumentFileType.STYLE, StyleSheetAsset);
+			_files.registerControllerForType(DocumentFileType.BITMAP_FONT, FontAsset);
+			_files.registerControllerForType(DocumentFileType.LIBRARY, LibraryAsset);
 		}
 
 		/** Background task counter. */
@@ -79,9 +79,9 @@ package browser.dom
 			return _properties;
 		}
 
-		public function get file():File
+		public function get project():File
 		{
-			return _file;
+			return _project;
 		}
 
 		//
@@ -91,6 +91,7 @@ package browser.dom
 		{
 			dispatchEventWith(DocumentEvent.CHANGING);
 
+			// After CHANGING, some file controllers may start new tasks
 			if (!tasks.isBusy) dispatchEventWith(DocumentEvent.CHANGED);
 		}
 	}

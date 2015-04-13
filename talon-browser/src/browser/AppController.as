@@ -24,6 +24,12 @@ package browser
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
+	import talon.Attribute;
+
+	import talon.Node;
+
+	import talon.utils.ITalonElement;
+
 	public class AppController extends EventDispatcher
 	{
 		public static const EVENT_DOCUMENT_CHANGE:String = "documentChange";
@@ -46,6 +52,7 @@ package browser
 			_host = host;
 
 			_console = console;
+			_console.addCommand("tree", cmdTree, "Draw current template tree", "-a");
 			_console.addCommand("resources", cmdResourceSearch, "RegExp based search project resources", "regexp");
 			_console.addCommand("resources_miss", cmdResourceMiss, "Missing used resources");
 
@@ -191,6 +198,32 @@ package browser
 			{
 				_console.println("*", resourceId);
 			}
+		}
+
+		private function cmdTree(query:String):void
+		{
+			var split:Array = query.split(" ");
+			var attrs:Boolean = split.length > 1 && split[1] == "-a";
+
+			var template:ITalonElement = ITalonElement(_ui.template);
+			var node:Node = template.node;
+			traceNode(node, 0, attrs);
+		}
+
+		private function traceNode(node:Node, depth:int, attrs:Boolean):void
+		{
+			var shiftDepth:int = depth;
+			var shift:String = "";
+			while (shiftDepth--) shift += "-";
+
+			var type:String = node.getAttribute(Attribute.TYPE);
+			var id:String = node.getAttribute(Attribute.ID);
+			var name:String = id ? type + "#" + id : type;
+
+			if (depth) _console.println(shift, name);
+			else _console.println(name);
+
+			for (var i:int = 0; i < node.numChildren; i++) traceNode(node.getChildAt(i), depth + 1, attrs);
 		}
 	}
 }

@@ -45,7 +45,7 @@ package talon.starling
 			addEventListener(TouchEvent.TOUCH, onTouch);
 		}
 
-		private function onTouch(e:TouchEvent):void
+		public function onTouch(e:TouchEvent):void
 		{
 			var touch:Touch = e.getTouch(this);
 

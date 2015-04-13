@@ -25,8 +25,11 @@ package browser
 	import starling.display.DisplayObject;
 	import starling.display.Sprite;
 	import starling.events.Event;
+	import starling.events.TouchEvent;
+
 	import talon.Attribute;
 	import talon.starling.TalonFactoryStarling;
+	import talon.utils.ITalonElement;
 	import talon.utils.TalonFactoryBase;
 	import talon.starling.SpriteElement;
 	import talon.layout.Layout;
@@ -71,6 +74,7 @@ package browser
 			_container.node.setAttribute(Attribute.LAYOUT, Layout.FLOW);
 			_container.node.setAttribute(Attribute.VALIGN, VAlign.CENTER);
 			_container.node.setAttribute(Attribute.HALIGN, HAlign.CENTER);
+			_container.removeEventListener(TouchEvent.TOUCH, _container.onTouch);
 
 			_isolator = new Sprite();
 			_isolator.addChild(_container);
@@ -187,7 +191,7 @@ package browser
 			var result:Array = [];
 
 			if (_controller.document)
-				result.push(_controller.document.file.nativePath);
+				result.push(_controller.document.project.nativePath);
 
 			var profile:DeviceProfile = _controller.profile;
 			if (profile != DeviceProfile.CUSTOM) result.push(_controller.profile.id);
@@ -286,6 +290,11 @@ package browser
 				_isolator.scaleX = _isolator.scaleY = value;
 				resizeTo(stage.stageWidth, stage.stageHeight);
 			}
+		}
+
+		public function get template():DisplayObject
+		{
+			return _template;
 		}
 	}
 }

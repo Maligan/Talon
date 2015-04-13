@@ -1,72 +1,82 @@
 package browser.dom.files
 {
 	import browser.dom.Document;
-
+	import browser.dom.assets.Asset;
 	import flash.utils.Dictionary;
-
 	import starling.events.Event;
 
 	public class DocumentFileReferenceCollection
 	{
 		private var _document:Document;
+		private var _mappings:Dictionary;
 
-		private var _files:Dictionary;
-		private var _types:Dictionary;
+		private var _references:Dictionary;
 		private var _controllers:Dictionary;
 
 		public function DocumentFileReferenceCollection(document:Document)
 		{
 			_document = document;
-			_files = new Dictionary();
-			_types = new Dictionary();
+			_mappings = new Dictionary();
+
+			_references = new Dictionary();
 			_controllers = new Dictionary();
 		}
 
-		public function registerFileControllerByType(typeName:String, typeClass:Class):void
+		public function registerControllerForType(typeName:String, typeClass:Class):void
 		{
-			_types[typeName] = typeClass;
+			_mappings[typeName] = typeClass;
 		}
 
-		public function addFile(file:DocumentFileReference):void
+		public function addReference(reference:DocumentFileReference):void
 		{
-			if (_files[file.url] != null) return;
+			if (reference.exists === false) return;
+			if (hasURL(reference.url) === true) return;
 
-			var type:Class = _types[file.type];
-			if (type)
-			{
-				var controller:DocumentFileController = new type();
-				controller.initialize(file);
-				_controllers[file.url] = controller;
-				_files[file.url] = file;
-			}
+			// Initialize reference
+			reference.addEventListener(Event.CHANGE, onFileChange);
+
+			// Create controller
+			var controllerClass:Class = _mappings[reference.type] || Asset;
+			var controller:DocumentFileController = new controllerClass();
+			controller.initialize(reference);
+
+			// Register
+			_references[reference.url] = reference;
+			_controllers[reference.url] = controller;
 		}
 
-		public function removeFile(file:DocumentFileReference):void
+		public function removeReference(reference:DocumentFileReference):void
 		{
-			// Reference may be different
-			file = _files[file.url];
+			if (hasURL(reference.url) == false) return;
 
-			if (file)
-			{
-				file.removeEventListener(Event.CHANGE, onFileChange);
-				delete _files[file.url];
+			// Dispose reference
+			var reference:DocumentFileReference = _references[reference.url];
+			reference.removeEventListener(Event.CHANGE, onFileChange);
 
-				var controller:DocumentFileController = _controllers[file.url];
-				controller.dispose();
-				delete _controllers[file.url];
-			}
+			// Dispose controller
+			var controller:DocumentFileController = _controllers[reference.url];
+			controller.dispose();
+
+			// Unregister
+			delete _references[reference.url];
+			delete _controllers[reference.url];
+		}
+
+		public function hasURL(url:String):Boolean
+		{
+			return _references[url] != null;
 		}
 
 		private function onFileChange(e:Event):void
 		{
-			var file:DocumentFileReference = DocumentFileReference(e.target);
-			if (file.exits === false) removeFile(file);
+			var reference:DocumentFileReference = DocumentFileReference(e.target);
+			if (reference.exists === false) removeReference(reference);
 		}
 
 		public function toArray():Vector.<DocumentFileReference>
 		{
 			var result:Vector.<DocumentFileReference> = new Vector.<DocumentFileReference>();
-			for each (var file:DocumentFileReference in _files) result[result.length] = file;
+			for each (var reference:DocumentFileReference in _references) result[result.length] = reference;
 			return result;
 		}
 	}

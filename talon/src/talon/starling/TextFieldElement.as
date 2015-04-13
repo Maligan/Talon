@@ -48,7 +48,8 @@ package talon.starling
 			else if (e.data == Attribute.HALIGN)       hAlign = _node.getAttribute(Attribute.HALIGN);
 			else if (e.data == Attribute.VALIGN)       vAlign = _node.getAttribute(Attribute.VALIGN);
 			else if (e.data == Attribute.FONT_NAME)    fontName = _node.getAttribute(Attribute.FONT_NAME) || BitmapFont.MINI;
-			else if (e.data == Attribute.FONT_COLOR)   color = StringUtil.parseColor(_node.getAttribute(Attribute.FONT_COLOR));
+			else if (e.data == Attribute.FONT_COLOR)
+							color = StringUtil.parseColor(_node.getAttribute(Attribute.FONT_COLOR));
 			else if (e.data == Attribute.FONT_SIZE)    fontSize = node.ppem;
 			else if (e.data == Attribute.WIDTH || e.data == Attribute.HEIGHT)
 			{

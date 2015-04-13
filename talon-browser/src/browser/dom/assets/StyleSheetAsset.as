@@ -36,7 +36,9 @@ package browser.dom.assets
 
 		protected override function onExclude():void
 		{
+			document.tasks.begin();
 			clean();
+			document.tasks.end();
 		}
 
 		private function clean():void

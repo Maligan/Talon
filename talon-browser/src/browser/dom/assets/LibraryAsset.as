@@ -40,7 +40,7 @@ package browser.dom.assets
 							}
 							else
 							{
-								report(DocumentMessage.TALON_LIBRARY_WRONG_CSS, file.url);
+								report(DocumentMessage.FILE_LIBRARY_WRONG_CSS, file.url);
 							}
 
 							break;
@@ -52,7 +52,7 @@ package browser.dom.assets
 							break;
 
 						default:
-							report(DocumentMessage.TALON_LIBRARY_UNKNOWN_ELEMENT, file.url, childType);
+							report(DocumentMessage.FILE_LIBRARY_UNKNOWN_ELEMENT, file.url, childType);
 					}
 				}
 
@@ -68,7 +68,9 @@ package browser.dom.assets
 
 		protected override function onExclude():void
 		{
+			document.tasks.begin();
 			clean();
+			document.tasks.end();
 		}
 
 		private function clean():void

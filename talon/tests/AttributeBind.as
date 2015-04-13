@@ -51,6 +51,7 @@ package
 			Assert.assertEquals(null, node.getOrCreateAttribute("width").assigned);
 		}
 
+		[Ignore]
 		[Test]
 		public function testName5():void
 		{

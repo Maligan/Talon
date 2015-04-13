@@ -1,9 +1,9 @@
 package browser.commands
 {
+	import browser.dom.files.DocumentFileReference;
 	import browser.utils.Constants;
 	import browser.AppController;
 	import browser.dom.Document;
-	import browser.dom.files.DocumentFileReference;
 	import browser.utils.parseProperties;
 
 	import flash.events.Event;
@@ -62,7 +62,7 @@ package browser.commands
 
 			var sourceRoot:File = getSourceRoot(document);
 			var sourceRootReference:DocumentFileReference = new DocumentFileReference(document, sourceRoot);
-			document.files.addFile(sourceRootReference);
+			document.files.addReference(sourceRootReference);
 
 			return document;
 		}
@@ -70,8 +70,8 @@ package browser.commands
 		private function getSourceRoot(document:Document):File
 		{
 			var sourcePathProperty:String = document.properties[Constants.PROPERTY_SOURCE_PATH];
-			var sourceFile:File = document.file.parent.resolvePath(sourcePathProperty || document.file.parent.nativePath);
-			if (sourceFile.exists == false) sourceFile = document.file.parent;
+			var sourceFile:File = document.project.parent.resolvePath(sourcePathProperty || document.project.parent.nativePath);
+			if (sourceFile.exists == false) sourceFile = document.project.parent;
 			return sourceFile;
 		}
 

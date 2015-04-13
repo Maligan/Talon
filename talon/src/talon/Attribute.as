@@ -182,7 +182,8 @@ package talon
 			{
 				_initial = _defaults[name].initial;
 				_styleable = _defaults[name].styleable;
-				_inheritable = _defaults[name].inheritable;
+				// Getter for add listeners
+				inheritable = _defaults[name].inheritable;
 			}
 		}
 
@@ -246,7 +247,6 @@ package talon
 				{
 					_node.addEventListener(Event.ADDED, onAddedToParent);
 					_node.addEventListener(Event.REMOVED, onRemovedFromParent);
-					_node.parent && node.parent.addEventListener(Event.CHANGE, onParentNodeAttributeChange);
 				}
 				else
 				{
@@ -263,19 +263,16 @@ package talon
 
 		private function onAddedToParent(e:Event):void
 		{
-			node.parent.addEventListener(Event.CHANGE, onParentNodeAttributeChange);
+			var target:Attribute = node.parent.getOrCreateAttribute(name);
+			target.addEventListener(Event.CHANGE, validateInherit);
 			validateInherit();
 		}
 
 		private function onRemovedFromParent(e:Event):void
 		{
-			node.parent.removeEventListener(Event.CHANGE, onParentNodeAttributeChange);
+			var target:Attribute = node.parent.getOrCreateAttribute(name);
+			target.removeEventListener(Event.CHANGE, validateInherit);
 			validateInherit();
-		}
-
-		private function onParentNodeAttributeChange(e:Event):void
-		{
-			if (e.data == name) validateInherit();
 		}
 
 		private function validateInherit():void

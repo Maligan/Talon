@@ -66,6 +66,9 @@ package browser.commands
 				zip.addFile(name, data);
 			}
 
+			// Create
+			if (zip.getFileCount() == 0) throw new Error("No files for export");
+
 			writeFile(target, zip);
 		}
 
@@ -95,8 +98,11 @@ package browser.commands
 		//
 		private function getDocumentExportPath(document:Document):String
 		{
-			var exportPathProperty:String = document.properties[Constants.PROPERTY_EXPORT_PATH];
-			var exportPathResolved:String = document.file.parent.resolvePath(exportPathProperty).nativePath;
+			var exportPath:String = document.properties[Constants.PROPERTY_EXPORT_PATH];
+			if (exportPath == null)
+				exportPath = document.project.name.replace(Constants.DESIGNER_FILE_EXTENSION, Constants.DESIGNER_EXPORT_FILE_EXTENSION);
+
+			var exportPathResolved:String = document.project.parent.resolvePath(exportPath).nativePath;
 			return exportPathResolved;
 		}
 	}

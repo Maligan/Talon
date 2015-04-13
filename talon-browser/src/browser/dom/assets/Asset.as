@@ -7,7 +7,7 @@ package browser.dom.assets
 
 	import starling.events.Event;
 
-	internal class Asset implements DocumentFileController
+	public class Asset implements DocumentFileController
 	{
 		private var _file:DocumentFileReference;
 		private var _messages:Vector.<DocumentMessage> = new <DocumentMessage>[];
@@ -27,11 +27,14 @@ package browser.dom.assets
 
 			_file.removeEventListener(Event.CHANGE, onFileChange);
 			_file = null;
+
+			// No file - no problems
+			reportCleanup();
 		}
 
 		private function onFileChange(e:Event):void
 		{
-			if (_file.exits) onRefresh();
+			if (_file && _file.exists) onRefresh();
 		}
 
 		/** Called once on asset added to document. */

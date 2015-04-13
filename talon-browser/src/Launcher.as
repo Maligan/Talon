@@ -1,19 +1,15 @@
 package
 {
-	import browser.utils.Constants;
 	import browser.AppController;
 	import browser.utils.Console;
+	import browser.utils.Constants;
 	import browser.utils.DeviceProfile;
 	import browser.utils.Settings;
-	import browser.utils.parseGlob;
 
 	import flash.desktop.NativeApplication;
 	import flash.display.MovieClip;
 	import flash.display.NativeWindow;
-	import flash.display.Sprite;
-	import flash.display.StageAlign;
 	import flash.display.StageQuality;
-	import flash.display.StageScaleMode;
 	import flash.events.InvokeEvent;
 	import flash.geom.Rectangle;
 
@@ -30,6 +26,13 @@ package
 
 		public function Launcher()
 		{
+			stage ? initialize() : addEventListener(Event.ADDED_TO_STAGE, initialize);
+		}
+
+		private function initialize(e:* = null):void
+		{
+			removeEventListener(Event.ADDED_TO_STAGE, initialize);
+
 			stage.addEventListener(Event.RESIZE, onResize);
 			stage.quality = StageQuality.BEST;
 			adjust();
@@ -40,7 +43,7 @@ package
 			NativeApplication.nativeApplication.setAsDefaultApplication(Constants.DESIGNER_FILE_EXTENSION);
 			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
 
-			new Starling(starling.display.Sprite, stage);
+			new Starling(Sprite, stage);
 			Starling.current.addEventListener(Event.ROOT_CREATED, onRootCreated);
 			Starling.current.start();
 
@@ -58,7 +61,7 @@ package
 
 		private function onRootCreated(e:*):void
 		{
-			_controller = new AppController(this, Starling.current.root as starling.display.Sprite, _console);
+			_controller = new AppController(this, Starling.current.root as Sprite, _console);
 //			_invoke = _controller.settings.getValueOrDefault(Constants.SETTING_RECENT_ARRAY, [null])[0];
 			_invoke && _controller.invoke(_invoke);
 		}

@@ -70,6 +70,11 @@ package talon
 			bindPair(origin, Attribute.ORIGIN, Attribute.ORIGIN_X, Attribute.ORIGIN_Y);
 			bindPair(pivot, Attribute.PIVOT, Attribute.PIVOT_X, Attribute.PIVOT_Y);
 
+			// Need initialize all inheritable attributes (for inherit listeners)
+			getOrCreateAttribute(Attribute.FONT_COLOR);
+			getOrCreateAttribute(Attribute.FONT_NAME);
+			getOrCreateAttribute(Attribute.FONT_SIZE);
+
 			// Listen attribute change
 			addEventListener(Event.CHANGE, onSelfAttributeChange);
 		}
@@ -154,6 +159,7 @@ package talon
 			// Fill all the existing attributes
 			for each (var attribute:Attribute in _attributes)
 			{
+//				if (attribute.name == "fontColor" && style[attribute.name] == "#0000FF")
 				attribute.styled = style[attribute.name];
 				delete style[attribute.name];
 			}
@@ -173,7 +179,7 @@ package talon
 			}
 		}
 
-		private function getStyle(node:Node):Object
+		public function getStyle(node:Node):Object
 		{
 			if (_style == null && _parent != null) return _parent.getStyle(node);
 			if (_style != null && _parent == null) return _style.getStyle(node);

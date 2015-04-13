@@ -18,8 +18,10 @@ package browser.dom.assets
 		protected override function onInclude():void { document.addEventListener(DocumentEvent.CHANGING, onDocumentChanging); }
 		protected override function onExclude():void
 		{
+			document.tasks.begin();
 			document.removeEventListener(DocumentEvent.CHANGING, onDocumentChanging);
 			clean();
+			document.tasks.end();
 		}
 
 		protected override function onRefresh():void
@@ -43,7 +45,7 @@ package browser.dom.assets
 			var texture:Texture = document.factory.getResource(textureId);
 			if (texture == null)
 			{
-				report(DocumentMessage.ATLAS_IMAGE_NOT_FOUND, file.url, textureId);
+				report(DocumentMessage.FILE_ATLAS_IMAGE_NOT_FOUND, file.url, textureId);
 				return;
 			}
 

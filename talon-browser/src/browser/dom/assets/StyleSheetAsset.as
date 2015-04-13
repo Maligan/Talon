@@ -29,7 +29,7 @@ package browser.dom.assets
 			var source:String = file.readBytes().toString();
 
 			if (isCSS(source) == true) document.factory.addStyleSheetWithId(file.url, source);
-			else report(DocumentMessage.FILE_CSS_PARSE_ERROR, file.url);
+			else report(DocumentMessage.FILE_CONTAINS_WRONG_CSS, file.url);
 
 			document.tasks.end();
 		}

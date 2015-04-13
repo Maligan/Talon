@@ -18,13 +18,19 @@ package browser.dom.assets
 			var xml:XML = file.readXML();
 			if (xml)
 			{
-				document.factory.addTemplate(xml);
-				_lastId = xml.@id;
-				_lastXML = xml;
+				try
+				{
+					document.factory.addTemplate(xml);
+					_lastId = xml.@id;
+				}
+				catch (e:ArgumentError)
+				{
+					report(DocumentMessage.TEMPLATE_ERROR, file.url, e.message);
+				}
 			}
 			else
 			{
-				report(DocumentMessage.FILE_XML_PARSE_ERROR, file.url);
+				report(DocumentMessage.FILE_CONTAINS_WRONG_XML, file.url);
 			}
 
 			document.tasks.end();

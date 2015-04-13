@@ -48,7 +48,7 @@ package browser.dom.assets
 			}
 			catch (e:Error)
 			{
-				report(DocumentMessage.FILE_TEXTURE_FORMAT_UNKNOWN, file.url);
+				report(DocumentMessage.FILE_CONTAINS_WRONG_IMAGE_FORMAT, file.url);
 			}
 		}
 

@@ -28,7 +28,7 @@ package browser.dom.assets
 			}
 			catch (e:Error)
 			{
-				report(DocumentMessage.FILE_FOLDER_LISTING_ERROR, dir.url);
+				report(DocumentMessage.FILE_LISTING_ERROR, dir.url);
 			}
 			finally
 			{

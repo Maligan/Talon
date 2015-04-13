@@ -31,7 +31,7 @@ package browser.dom.assets
 			clean();
 
 			_lastXML = file.readXML();
-			if (_lastXML == null) report(DocumentMessage.FILE_XML_PARSE_ERROR, file.url);
+			if (_lastXML == null) report(DocumentMessage.FILE_CONTAINS_WRONG_XML, file.url);
 
 			document.tasks.end();
 		}
@@ -45,7 +45,7 @@ package browser.dom.assets
 			var texture:Texture = document.factory.getResource(textureId);
 			if (texture == null)
 			{
-				report(DocumentMessage.FILE_ATLAS_IMAGE_NOT_FOUND, file.url, textureId);
+				report(DocumentMessage.FILE_ATLAS_IMAGE_MISSED, file.url, textureId);
 				return;
 			}
 

@@ -40,19 +40,17 @@ package browser.dom.assets
 							}
 							else
 							{
-								report(DocumentMessage.FILE_LIBRARY_WRONG_CSS, file.url);
+								report(DocumentMessage.FILE_CONTAINS_WRONG_CSS, file.url);
 							}
 
 							break;
 
 						case TalonFactoryBase.TAG_TEMPLATE:
-							var templateId:String = child.@id;
-							document.factory.addTemplate(child);
-							_lastTemplates.push(templateId);
+							addTemplate(child);
 							break;
 
 						default:
-							report(DocumentMessage.FILE_LIBRARY_UNKNOWN_ELEMENT, file.url, childType);
+							report(DocumentMessage.FILE_CONTAINS_WRONG_ELEMENT, file.url, childType);
 					}
 				}
 
@@ -60,10 +58,24 @@ package browser.dom.assets
 			}
 			else
 			{
-				report(DocumentMessage.FILE_XML_PARSE_ERROR, file.url);
+				report(DocumentMessage.FILE_CONTAINS_WRONG_XML, file.url);
 			}
 
 			document.tasks.end();
+		}
+
+		private function addTemplate(xml:XML):void
+		{
+			try
+			{
+				var templateId:String = xml.@id;
+				document.factory.addTemplate(xml);
+				_lastTemplates.push(templateId);
+			}
+			catch (e:ArgumentError)
+			{
+				report(DocumentMessage.TEMPLATE_ERROR, file.url, e.message);
+			}
 		}
 
 		protected override function onExclude():void

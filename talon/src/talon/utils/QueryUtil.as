@@ -6,6 +6,7 @@ package talon.utils
 
 	import talon.Attribute;
 
+	[ExcludeClass]
 	public class QueryUtil
 	{
 		public static function queryResource(attribute:Attribute, key:String):*

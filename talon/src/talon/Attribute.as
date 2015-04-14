@@ -129,16 +129,22 @@ package talon
 			if (_queries == null)
 			{
 				_queries = new Dictionary();
-				registerQueryAlias("res", QueryUtil.queryResource);
-				registerQueryAlias("brightness", QueryUtil.queryBrightnessFilter);
-				registerQueryAlias("blur", QueryUtil.queryBlurFilter);
-				registerQueryAlias("glow", QueryUtil.queryGlowFilter);
-				registerQueryAlias("drop-shadow", QueryUtil.queryDropShadow);
+				registerQueryAlias_internal("res", QueryUtil.queryResource);
+				registerQueryAlias_internal("brightness", QueryUtil.queryBrightnessFilter);
+				registerQueryAlias_internal("blur", QueryUtil.queryBlurFilter);
+				registerQueryAlias_internal("glow", QueryUtil.queryGlowFilter);
+				registerQueryAlias_internal("drop-shadow", QueryUtil.queryDropShadow);
 			}
 		}
 
-		/** Add new attribute query. TODO: Move to other place... */
+		[Deprecated(message="Inflexible API, removal candidate")]
+		/** Add new attribute query. */
 		public static function registerQueryAlias(aliasName:String, callback:Function):void
+		{
+			registerQueryAlias_internal(aliasName, callback);
+		}
+
+		private static function registerQueryAlias_internal(aliasName:String, callback:Function):void
 		{
 			if (_queries == null) initialize();
 			_queries[aliasName] = callback;

@@ -1,5 +1,6 @@
 package browser
 {
+	import browser.commands.CloseCommand;
 	import browser.commands.OpenCommand;
 	import browser.dom.Document;
 	import browser.dom.log.DocumentMessage;
@@ -95,9 +96,14 @@ package browser
 		public function invoke(path:String):void
 		{
 			var file:File = new File(path);
-			if (file.exists == false) return;
-			var open:OpenCommand = new OpenCommand(this, file);
-			open.execute();
+			if (file.exists)
+			{
+				var close:CloseCommand = new CloseCommand(this);
+				close.execute();
+
+				var open:OpenCommand = new OpenCommand(this, file);
+				open.execute();
+			}
 		}
 
 		public function get ui():AppUI { return _ui; }

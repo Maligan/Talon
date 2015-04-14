@@ -10,7 +10,6 @@ package browser.dom.assets
 	public class Asset implements DocumentFileController
 	{
 		private var _file:DocumentFileReference;
-		private var _messages:Vector.<DocumentMessage> = new <DocumentMessage>[];
 
 		public final function initialize(file:DocumentFileReference):void
 		{
@@ -25,11 +24,9 @@ package browser.dom.assets
 		{
 			onExclude();
 
+			_file.reportCleanup();
 			_file.removeEventListener(Event.CHANGE, onFileChange);
 			_file = null;
-
-			// No file - no problems
-			reportCleanup();
 		}
 
 		private function onFileChange(e:Event):void
@@ -43,22 +40,6 @@ package browser.dom.assets
 		protected function onRefresh():void { }
 		/** Called once on asset removed from document. */
 		protected function onExclude():void { }
-
-		//
-		// Utility
-		//
-		protected function report(message:String, ...params):DocumentMessage
-		{
-			var msg:DocumentMessage = new DocumentMessage(message, params);
-			_messages.push(msg);
-			document.messages.addMessage(msg);
-			return msg;
-		}
-
-		protected function reportCleanup():void
-		{
-			while (_messages.length)document.messages.removeMessage(_messages.pop());
-		}
 
 		//
 		// Properties

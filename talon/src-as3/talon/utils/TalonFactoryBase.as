@@ -1,8 +1,9 @@
 package talon.utils
 {
-	import flash.events.Event;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
+
+	import starling.events.Event;
 
 	import talon.Attribute;
 	import talon.Node;
@@ -28,8 +29,7 @@ package talon.utils
 		{
 			_linkageByDefault = linkageByDefault;
 			_parser = new TMLParser();
-			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
-			_parser.addEventListener(TMLParser.EVENT_END, onElementEnd);
+			_parser.setListeners(onElementBegin, onElementEnd);
 			_parserProductStack = new Array();
 		}
 
@@ -42,7 +42,7 @@ package talon.utils
 		//
 		// Factory
 		//
-		public function build(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
+		public function produce(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
 		{
 			// Parse template, while parsing events dispatched (onElementBegin, onElementEnd)
 			_parser.parseTemplate(id);
@@ -60,10 +60,9 @@ package talon.utils
 			return result;
 		}
 
-		protected function onElementBegin(e:Event):void
+		protected function onElementBegin(attributes:Object):void
 		{
 			// Define element type
-			var attributes:Object = _parser.cursor;
 			var type:String = attributes["type"];
 			var typeClass:Class = _linkage[type] || _linkageByDefault;
 
@@ -87,14 +86,14 @@ package talon.utils
 			_parserProductStack.push(element);
 		}
 
-		protected function setNodeAttribute(node:Node, attributes:String, value:String):void
+		protected function setNodeAttribute(node:Node, attributeName:String, value:String):void
 		{
 			var func:Array = StringUtil.parseFunction(value);
 			if (func && func[0] == "bind")
 			{
 				var parent:ITalonElement = _parserProductStack[_parserProductStack.length - 1] as ITalonElement;
 				var source:Attribute = parent.node.getOrCreateAttribute(func[1]);
-				var target:Attribute = node.getOrCreateAttribute(attributes);
+				var target:Attribute = node.getOrCreateAttribute(attributeName);
 
 				var mode:String = func.length > 2 ? func[2] : BindMode.ONCE;
 				if (BindMode.isValid(mode) == false) new Error("Unknown bind mode: '" + mode + "'");
@@ -114,7 +113,7 @@ package talon.utils
 			}
 			else
 			{
-				node.setAttribute(attributes, value);
+				node.setAttribute(attributeName, value);
 			}
 		}
 
@@ -122,7 +121,7 @@ package talon.utils
 		private function bindGetter(attr:Attribute):Function { return function ():String { return attr.value } }
 		private function bindSetter(attr:Attribute):Function { return function (value:String):void { /*attr.assigned = value;*/ } }
 
-		private function onElementEnd(e:Event):void
+		private function onElementEnd():void
 		{
 			_parserProduct = _parserProductStack.pop();
 		}

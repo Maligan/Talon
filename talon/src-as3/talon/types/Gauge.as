@@ -64,7 +64,7 @@ package talon.types
 			else
 			{
 				var match:Array = PATTERN.exec(string);
-				if (match == null) throw new ArgumentError("Input string is not valid: " + string);
+				if (match == null) throw ArgumentError("Input string is not valid gauge: " + string);
 				_amount = parseFloat(match[1]);
 				_unit = match[2] || PX;
 			}

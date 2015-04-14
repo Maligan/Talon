@@ -22,6 +22,7 @@ package browser.dom.log
 
 		public static const TEXTURE_ERROR:String =                      "E9:    Texture creation from file {0} produce error: {1}";
 		public static const TEMPLATE_ERROR:String =                     "E10:   Template in file {0} produce error: {1}";
+		public static const PRODUCE_ERROR:String =                      "E11:   Error while produce template '{0}': {1}";
 
 		//
 		// Message

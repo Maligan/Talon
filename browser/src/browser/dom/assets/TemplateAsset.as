@@ -25,12 +25,8 @@ package browser.dom.assets
 				}
 				catch (e:ArgumentError)
 				{
-					report(DocumentMessage.TEMPLATE_ERROR, file.url, e.message);
+					file.report(DocumentMessage.TEMPLATE_ERROR, file.url, e.message);
 				}
-			}
-			else
-			{
-				report(DocumentMessage.FILE_CONTAINS_WRONG_XML, file.url);
 			}
 
 			document.tasks.end();
@@ -43,7 +39,7 @@ package browser.dom.assets
 
 		private function clean():void
 		{
-			reportCleanup();
+			file.reportCleanup();
 
 			System.disposeXML(_lastXML);
 			_lastXML = null;

@@ -8,7 +8,7 @@ package browser.dom.assets
 	{
 		protected override function onRefresh():void
 		{
-			reportCleanup();
+			file.reportCleanup();
 
 			var children:Vector.<File> = getListing(file.target);
 			for each (var child:File in children)
@@ -23,12 +23,12 @@ package browser.dom.assets
 			try
 			{
 				var children:Array = dir.getDirectoryListing();
-				for each (var file:File in children)
-					if (file.exists) result.push(file);
+				for each (var child:File in children)
+					if (child.exists) result.push(child);
 			}
 			catch (e:Error)
 			{
-				report(DocumentMessage.FILE_LISTING_ERROR, dir.url);
+				file.report(DocumentMessage.FILE_LISTING_ERROR, dir.url);
 			}
 			finally
 			{

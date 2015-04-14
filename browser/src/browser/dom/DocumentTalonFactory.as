@@ -15,11 +15,11 @@ package browser.dom
 			_styles = new StyleSheetCollection();
 		}
 
-		public override function build(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
+		public override function produce(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
 		{
 			resources.reset();
 			_style = _styles.style;
-			return super.build(id, includeStyleSheet, includeResources);
+			return super.produce(id, includeStyleSheet, includeResources);
 		}
 
 		//

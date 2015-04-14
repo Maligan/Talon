@@ -6,7 +6,7 @@ package browser.popups
 	{
 		public function ProfilePopup()
 		{
-			var view:DisplayObject = factory.build("popup");
+			var view:DisplayObject = factory.produce("popup");
 			addChild(view);
 			addEventListener("hide", close);
 		}

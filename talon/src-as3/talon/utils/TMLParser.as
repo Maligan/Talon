@@ -1,14 +1,7 @@
 package talon.utils
 {
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-
-	public final class TMLParser extends EventDispatcher
+	public final class TMLParser
 	{
-		// Events
-		public static const EVENT_BEGIN:String = "begin";
-		public static const EVENT_END:String = "end";
-
 		// Special keyword-tags
 		private static const TAG_REWRITE:String = "rewrite";
 
@@ -33,7 +26,9 @@ package talon.utils
 		private var _templates:Object;
 		private var _terminals:Vector.<String>;
 		private var _stack:Vector.<String>;
-		private var _cursor:Object;
+
+		private var _onBegin:Function;
+		private var _onEnd:Function;
 
 		/** @private */
 		public function TMLParser(terminals:Vector.<String> = null, templates:Object = null)
@@ -41,6 +36,12 @@ package talon.utils
 			_terminals = terminals || new Vector.<String>();
 			_templates = templates || new Object();
 			_stack = new Vector.<String>();
+		}
+
+		public function setListeners(onBegin:Function, onEnd:Function):void
+		{
+			_onBegin = onBegin;
+			_onEnd = onEnd;
 		}
 
 		public function parseTemplate(id:String):void
@@ -191,16 +192,12 @@ package talon.utils
 		//
 		private function dispatchBegin(attributes:Object):void
 		{
-			_cursor = attributes;
-			var event:Event = new Event(EVENT_BEGIN);
-			dispatchEvent(event);
-			_cursor = null;
+			_onBegin(attributes);
 		}
 
 		private function dispatchEnd():void
 		{
-			var event:Event = new Event(EVENT_END);
-			dispatchEvent(event);
+			_onEnd();
 		}
 
 		//
@@ -210,12 +207,6 @@ package talon.utils
 		public function get templates():Object
 		{
 			return _templates;
-		}
-
-		/** This is attached attributes data to EVENT_BEGIN event. (Moved here, because I don't use starling dispatcher/event and don't want create TMLEvent class). */
-		public function get cursor():Object
-		{
-			return _cursor;
 		}
 
 		/** Set of terminal symbols */

@@ -50,10 +50,9 @@ package
 			NativeApplication.nativeApplication.setAsDefaultApplication(Constants.DESIGNER_FILE_EXTENSION);
 			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
 
+			// For native drag purpose
 			_overlay = new MovieClip();
 			addChild(_overlay);
-			addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragIn);
-			addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
 
 			new Starling(Sprite, stage);
 			Starling.current.addEventListener(Event.ROOT_CREATED, onRootCreated);
@@ -117,27 +116,6 @@ package
 					window.height = min;
 				}
 			}
-		}
-
-		//
-		// Drag And Drop
-		//
-		private function onDragIn(e:NativeDragEvent):void
-		{
-			var hasFiles:Boolean = e.clipboard.hasFormat(ClipboardFormats.FILE_PROMISE_LIST_FORMAT);
-			if (hasFiles)
-			{
-				var files:Array = e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
-				if (files.length == 1)
-					NativeDragManager.acceptDragDrop(this);
-			}
-		}
-
-		private function onDragDrop(e:NativeDragEvent):void
-		{
-			var files:Array = e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
-			var file:File = File(files[0]);
-			_controller && _controller.invoke(file.nativePath);
 		}
 	}
 }

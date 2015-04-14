@@ -1,6 +1,7 @@
 package browser.dom.files
 {
 	import browser.dom.Document;
+	import browser.dom.log.DocumentMessage;
 	import browser.utils.Glob;
 
 	import com.adobe.air.filesystem.FileMonitor;
@@ -47,20 +48,25 @@ package browser.dom.files
 		{
 			if (!exists) throw new ArgumentError("File not exists");
 
-			var result:ByteArray = new ByteArray();
+			var result:ByteArray = null;
 			var stream:FileStream = new FileStream();
 
 			try
 			{
+				result = new ByteArray();
 				stream.open(_target, FileMode.READ);
 				stream.readBytes(result, 0, stream.bytesAvailable);
+			}
+			catch (e:Error)
+			{
+				result = null;
+				report(DocumentMessage.FILE_READ_ERROR, url);
 			}
 			finally
 			{
 				stream.close();
+				return result;
 			}
-
-			return result;
 		}
 
 		public function readXML():XML
@@ -73,7 +79,7 @@ package browser.dom.files
 			}
 			catch (e:Error)
 			{
-				// XML is broken
+				report(DocumentMessage.FILE_CONTAINS_WRONG_XML, url);
 			}
 
 			return null;
@@ -156,6 +162,24 @@ package browser.dom.files
 			var sourcePath:File = document.project.parent.resolvePath(sourcePathProperty || document.project.parent.nativePath);
 			if (sourcePath.exists == false) sourcePath = document.project.parent;
 			return sourcePath.getRelativePath(target);
+		}
+
+		//
+		// Document report
+		//
+		private var _messages:Vector.<DocumentMessage> = new <DocumentMessage>[];
+
+		public function report(message:String, ...params):DocumentMessage
+		{
+			var msg:DocumentMessage = new DocumentMessage(message, params);
+			_messages.push(msg);
+			document.messages.addMessage(msg);
+			return msg;
+		}
+
+		public function reportCleanup():void
+		{
+			while (_messages.length)document.messages.removeMessage(_messages.pop());
 		}
 	}
 }

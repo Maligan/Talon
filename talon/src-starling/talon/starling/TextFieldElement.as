@@ -28,7 +28,7 @@ package talon.starling
 			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = getTextHeight;
 			autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
 
-			border = true;
+//			border = true;
 			touchable = false;
 		}
 

@@ -16,9 +16,10 @@ package browser.dom.assets
 	{
 		protected override function onRefresh():void
 		{
-			reportCleanup();
+			file.reportCleanup();
 
 			var bytes:ByteArray = file.readBytes();
+			if (bytes == null) return;
 
 			if (AtfData.isAtfData(bytes))
 			{
@@ -28,11 +29,18 @@ package browser.dom.assets
 			}
 			else
 			{
-				document.tasks.begin();
-				var loader:Loader = new Loader();
-				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
-				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
-				loader.loadBytes(bytes);
+				if (bytes.length > 0)
+				{
+					document.tasks.begin();
+					var loader:Loader = new Loader();
+					loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
+					loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
+					loader.loadBytes(bytes);
+				}
+				else
+				{
+					file.report(DocumentMessage.FILE_CONTAINS_WRONG_IMAGE_FORMAT, file.url);
+				}
 
 				function onComplete(e:*):void
 				{
@@ -42,7 +50,7 @@ package browser.dom.assets
 
 				function onIOError(e:*):void
 				{
-					report(DocumentMessage.FILE_CONTAINS_WRONG_IMAGE_FORMAT, file.url);
+					file.report(DocumentMessage.FILE_CONTAINS_WRONG_IMAGE_FORMAT, file.url);
 					document.tasks.end();
 				}
 			}
@@ -58,7 +66,7 @@ package browser.dom.assets
 			}
 			catch (e:Error)
 			{
-				report(DocumentMessage.TEXTURE_ERROR, file.url);
+				file.report(DocumentMessage.TEXTURE_ERROR, file.url);
 			}
 		}
 

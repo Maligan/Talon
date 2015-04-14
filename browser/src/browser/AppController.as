@@ -10,26 +10,21 @@ package browser
 	import browser.utils.OrientationMonitor;
 	import browser.utils.Settings;
 
-	import flash.desktop.NotificationType;
-
+	import flash.desktop.ClipboardFormats;
+	import flash.desktop.NativeDragActions;
+	import flash.desktop.NativeDragManager;
 	import flash.display.DisplayObject;
+	import flash.display.InteractiveObject;
 	import flash.display.NativeWindow;
-	import flash.display.NativeWindow;
-	import flash.display.NativeWindowInitOptions;
+	import flash.events.NativeDragEvent;
 	import flash.events.NativeWindowBoundsEvent;
-
 	import flash.filesystem.File;
-	import flash.ui.Mouse;
-	import flash.ui.MouseCursor;
 
 	import starling.display.DisplayObjectContainer;
-	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
 	import talon.Attribute;
-
 	import talon.Node;
-
 	import talon.utils.ITalonElement;
 
 	public class AppController extends EventDispatcher
@@ -53,12 +48,14 @@ package browser
 			_root = root;
 			_host = host;
 
+			_root.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragIn);
+			_root.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
+
 			_console = console;
-			_console.addCommand("error", cmdError, "Print current error list");
+			_console.addCommand("errors", cmdErrors, "Print current error list");
 			_console.addCommand("tree", cmdTree, "Print current template tree", "-a");
 			_console.addCommand("resources", cmdResourceSearch, "RegExp based search project resources", "regexp");
 			_console.addCommand("resources_miss", cmdResourceMiss, "Missing used resources");
-
 
 			_monitor = new OrientationMonitor(root.stage);
 			_settings = new Settings("settings");
@@ -169,6 +166,34 @@ package browser
 		}
 
 		//
+		// Drag And Drop
+		//
+		private function onDragIn(e:NativeDragEvent):void
+		{
+			var hasFiles:Boolean = e.clipboard.hasFormat(ClipboardFormats.FILE_PROMISE_LIST_FORMAT);
+			if (hasFiles)
+			{
+				var files:Array = e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
+				if (files.length == 1)
+				{
+					var file:File = File(files[0]);
+					if (file.extension == Constants.DESIGNER_FILE_EXTENSION)
+					{
+						NativeDragManager.acceptDragDrop(_root as InteractiveObject);
+						NativeDragManager.dropAction = NativeDragActions.LINK;
+					}
+				}
+			}
+		}
+
+		private function onDragDrop(e:NativeDragEvent):void
+		{
+			var files:Array = e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
+			var file:File = File(files[0]);
+			invoke(file.nativePath);
+		}
+
+		//
 		// Console command
 		//
 		private function cmdResourceSearch(query:String):void
@@ -234,7 +259,7 @@ package browser
 			for (var i:int = 0; i < node.numChildren; i++) traceNode(node.getChildAt(i), depth + 1, attrs);
 		}
 
-		private function cmdError(query:String):void
+		private function cmdErrors(query:String):void
 		{
 			if (document.messages.numMessages > 0)
 			{

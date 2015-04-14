@@ -29,7 +29,7 @@ package browser.dom.assets
 			var source:String = file.readBytes().toString();
 
 			if (isCSS(source) == true) document.factory.addStyleSheetWithId(file.url, source);
-			else report(DocumentMessage.FILE_CONTAINS_WRONG_CSS, file.url);
+			else file.report(DocumentMessage.FILE_CONTAINS_WRONG_CSS, file.url);
 
 			document.tasks.end();
 		}
@@ -43,7 +43,7 @@ package browser.dom.assets
 
 		private function clean():void
 		{
-			reportCleanup();
+			file.reportCleanup();
 			document.factory.removeStyleSheetWithId(file.url);
 		}
 	}

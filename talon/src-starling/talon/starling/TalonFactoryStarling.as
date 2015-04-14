@@ -20,7 +20,7 @@ package talon.starling
 
 		public function create(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):DisplayObject
 		{
-			return build(id, includeStyleSheet, includeResources);
+			return produce(id, includeStyleSheet, includeResources);
 		}
 
 		protected override function addChild(parent:*, child:*):void
@@ -71,6 +71,7 @@ package talon.starling
 			{
 				var xml:XML = manager.getXml(xmlId);
 				if (xml.name() == "template") addTemplate(xml);
+				if (xml.name() == "library") addLibrary(xml);
 			}
 		}
 	}

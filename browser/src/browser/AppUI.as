@@ -10,6 +10,7 @@ package browser
 	import browser.commands.SettingCommand;
 	import browser.commands.ZoomCommand;
 	import browser.dom.DocumentEvent;
+	import browser.dom.log.DocumentMessage;
 	import browser.popups.Popup;
 	import browser.utils.Constants;
 	import browser.utils.DeviceProfile;
@@ -17,6 +18,7 @@ package browser
 	import browser.utils.NativeMenuAdapter;
 
 	import flash.desktop.NativeApplication;
+	import flash.events.UncaughtErrorEvent;
 	import flash.filesystem.File;
 	import flash.utils.ByteArray;
 	import flash.utils.setTimeout;
@@ -47,6 +49,7 @@ package browser
 
 		private var _factory:TalonFactoryBase;
 		private var _interface:SpriteElement;
+		private var _errorPage:SpriteElement;
 		private var _popupContainer:SpriteElement;
 		private var _isolatorContainer:SpriteElement;
 		private var _isolator:Sprite;
@@ -55,6 +58,7 @@ package browser
 		private var _documentDispatcher:EventDispatcherAdapter;
 		private var _menu:NativeMenuAdapter;
 		private var _template:DisplayObject;
+		private var _templateProduceMessage:DocumentMessage;
 		private var _locked:Boolean;
 
 		public function AppUI(controller:AppController)
@@ -71,7 +75,7 @@ package browser
 			_factory.addArchiveContentAsync(new INTERFACE() as ByteArray, onFactoryComplete);
 
 			_container = new SpriteElement();
-			_container.node.setAttribute(Attribute.LAYOUT, Layout.FLOW);
+			_container.node.setAttribute(Attribute.LAYOUT, Layout.ABSOLUTE);
 			_container.node.setAttribute(Attribute.VALIGN, VAlign.CENTER);
 			_container.node.setAttribute(Attribute.HALIGN, HAlign.CENTER);
 			_container.removeEventListener(TouchEvent.TOUCH, _container.onTouch);
@@ -125,10 +129,13 @@ package browser
 		//
 		private function onFactoryComplete():void
 		{
-			_interface = _factory.build("interface") as SpriteElement;
+			_interface = _factory.produce("interface") as SpriteElement;
 			addChild(_interface);
 
 			_interface.getChildByName("shade").visible = false;
+
+			_errorPage = _interface.getChildByName("bsod") as SpriteElement;
+			_errorPage.visible = false;
 
 			_popupContainer = _interface.getChildByName("popups") as SpriteElement;
 			_isolatorContainer = _interface.getChildByName("container") as SpriteElement;
@@ -231,15 +238,40 @@ package browser
 			canShow &&= _controller.document != null;
 			canShow &&= _controller.document.factory.hasTemplate(_controller.templateId);
 
+			_errorPage.visible = false;
 			_container.removeChildren();
+			_controller.document && _controller.document.messages.removeMessage(_templateProduceMessage);
+			_templateProduceMessage = null;
 
-			if (canShow)
+			_template = canShow ? produce(_controller.templateId) : null;
+
+			// Show state
+			if (_controller.document.messages.numMessages != 0)
 			{
-				_template = _controller.document.factory.build(_controller.templateId);
+				_errorPage.visible = true;
+			}
+			else if (_template != null)
+			{
 				_container.addChild(_template);
-
 				stage && resizeTo(stage.stageWidth, stage.stageHeight);
 			}
+		}
+
+		private function produce(templateId:String):DisplayObject
+		{
+			var result:DisplayObject = null;
+
+			try
+			{
+				result = _controller.document.factory.produce(templateId);
+			}
+			catch (e:Error)
+			{
+				_templateProduceMessage = new DocumentMessage(DocumentMessage.PRODUCE_ERROR, [templateId, e.message]);
+				_controller.document.messages.addMessage(_templateProduceMessage);
+			}
+
+			return result;
 		}
 
 		private function refreshRecent():void

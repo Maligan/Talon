@@ -50,7 +50,7 @@ package browser.dom.files
 			if (hasURL(reference.url) == false) return;
 
 			// Dispose reference
-			var reference:DocumentFileReference = _references[reference.url];
+			reference = _references[reference.url];
 			reference.removeEventListener(Event.CHANGE, onFileChange);
 
 			// Dispose controller

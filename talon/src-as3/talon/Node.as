@@ -159,7 +159,6 @@ package talon
 			// Fill all the existing attributes
 			for each (var attribute:Attribute in _attributes)
 			{
-//				if (attribute.name == "fontColor" && style[attribute.name] == "#0000FF")
 				attribute.styled = style[attribute.name];
 				delete style[attribute.name];
 			}

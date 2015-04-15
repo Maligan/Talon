@@ -66,7 +66,7 @@ package browser.dom.assets
 			}
 			catch (e:Error)
 			{
-				file.report(DocumentMessage.TEXTURE_ERROR, file.url);
+				file.report(DocumentMessage.TEXTURE_ERROR, file.url, e.message);
 			}
 		}
 

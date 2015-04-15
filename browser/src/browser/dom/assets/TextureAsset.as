@@ -29,9 +29,10 @@ package browser.dom.assets
 			}
 			else
 			{
+				document.tasks.begin();
+
 				if (bytes.length > 0)
 				{
-					document.tasks.begin();
 					var loader:Loader = new Loader();
 					loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
 					loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
@@ -39,7 +40,7 @@ package browser.dom.assets
 				}
 				else
 				{
-					file.report(DocumentMessage.FILE_CONTAINS_WRONG_IMAGE_FORMAT, file.url);
+					onIOError();
 				}
 
 				function onComplete(e:*):void
@@ -48,7 +49,7 @@ package browser.dom.assets
 					document.tasks.end();
 				}
 
-				function onIOError(e:*):void
+				function onIOError(e:* = null):void
 				{
 					file.report(DocumentMessage.FILE_CONTAINS_WRONG_IMAGE_FORMAT, file.url);
 					document.tasks.end();

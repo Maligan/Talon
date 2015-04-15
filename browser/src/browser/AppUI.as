@@ -246,7 +246,7 @@ package browser
 			_template = canShow ? produce(_controller.templateId) : null;
 
 			// Show state
-			if (_controller.document.messages.numMessages != 0)
+			if (_controller.document && _controller.document.messages.numMessages != 0)
 			{
 				_errorPage.visible = true;
 			}

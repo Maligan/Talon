@@ -7,10 +7,10 @@ package talon.starling
 	import starling.textures.Texture;
 	import starling.textures.TextureSmoothing;
 
-	internal class ImageFiller
+	public class Filler
 	{
-		private static const POOL:Vector.<QuadData> = new <QuadData>[];
-		private static const HELPER:QuadBetrayer = new QuadBetrayer();
+		private static var POOL:Vector.<QuadData>;
+		private static var HELPER:QuadBetrayer;
 		private static const QUAD:int = 0x1;
 		private static const QUAD_AND_MESH:int = 0x3;
 
@@ -28,8 +28,11 @@ package talon.starling
 
 		private var _invalid:int;
 
-		public function ImageFiller():void
+		public function Filler():void
 		{
+			POOL = new <QuadData>[];
+			HELPER = new QuadBetrayer();
+
 			_invalid = QUAD_AND_MESH;
 			_grid = new Rectangle();
 			_quads = new <QuadData>[];
@@ -70,47 +73,52 @@ package talon.starling
 		/** Recalculate _quads list. */
 		private function remesh9Scale():void
 		{
-			if (_grid.width == _width && _grid.height == _height)
+			var tw:Number = _texture.width;
+			var th:Number = _texture.height;
+
+			if (_grid.width == tw && _grid.height == th)
 			{
 				// No 9-scale
-				_quads[_quads.length] = getQuadData(0, 0, _width, _height);
+				_quads[_quads.length] = getQuadData(0, 0, tw, th);
 			}
-			else if (_grid.width != _width && _grid.height == _height)
+			else if (_grid.width != tw && _grid.height == th)
 			{
 				// Row (3-scale)
-				_quads[_quads.length] = getQuadData(0, 0, _grid.left, _height); // left
-				_quads[_quads.length] = getQuadData(_grid.left, 0, _grid.right, _height); // center
-				_quads[_quads.length] = getQuadData(_grid.right, 0, _width, _height); // right
+				_quads[_quads.length] = getQuadData(0, 0, _grid.left, th); // left
+				_quads[_quads.length] = getQuadData(_grid.left, 0, _grid.right, th); // center
+				_quads[_quads.length] = getQuadData(_grid.right, 0, tw, th); // right
 
 			}
-			else if (_grid.width == _width && _grid.height != _height)
+			else if (_grid.width == tw && _grid.height != th)
 			{
 				// Column (3-scale)
-				_quads[_quads.length] = getQuadData(0, 0, _width, _grid.top); // top
-				_quads[_quads.length] = getQuadData(0, _grid.top, _width, _grid.bottom); // center
-				_quads[_quads.length] = getQuadData(0, _grid.bottom, _width, _height); // bottom
+				_quads[_quads.length] = getQuadData(0, 0, tw, _grid.top); // top
+				_quads[_quads.length] = getQuadData(0, _grid.top, tw, _grid.bottom); // center
+				_quads[_quads.length] = getQuadData(0, _grid.bottom, tw, th); // bottom
 			}
 			else
 			{
 				// 9-scale
 				_quads[_quads.length] = getQuadData(0, 0, _grid.left, _grid.top); // top-left
 				_quads[_quads.length] = getQuadData(_grid.left, 0, _grid.right, _grid.top); // top-center
-				_quads[_quads.length] = getQuadData(_grid.right, 0, _width, _grid.top); // top-right
+				_quads[_quads.length] = getQuadData(_grid.right, 0, tw, _grid.top); // top-right
 
 				_quads[_quads.length] = getQuadData(0, _grid.top, _grid.left, grid.bottom); // center-left
 				_quads[_quads.length] = getQuadData(_grid.left, _grid.top, _grid.right, grid.bottom); // center-center
-				_quads[_quads.length] = getQuadData(_grid.right, _grid.top, _width, grid.bottom); // center-right
+				_quads[_quads.length] = getQuadData(_grid.right, _grid.top, tw, grid.bottom); // center-right
 
-				_quads[_quads.length] = getQuadData(0, _grid.bottom, _grid.left, _height); // bottom-left
-				_quads[_quads.length] = getQuadData(_grid.left, _grid.bottom, _grid.right, _height); // bottom-center
-				_quads[_quads.length] = getQuadData(_grid.right, _grid.bottom, _width, _height); // bottom-right
+				_quads[_quads.length] = getQuadData(0, _grid.bottom, _grid.left, th); // bottom-left
+				_quads[_quads.length] = getQuadData(_grid.left, _grid.bottom, _grid.right, th); // bottom-center
+				_quads[_quads.length] = getQuadData(_grid.right, _grid.bottom, tw, th); // bottom-right
 			}
 		}
 
 		private function getQuadData(x1:Number, y1:Number, x2:Number, y2:Number):QuadData
 		{
+			var scaleX:Number = _width/_texture.width;
+			var scaleY:Number = _height/_texture.height;
 			var data:QuadData = POOL.pop() || new QuadData();
-			data.adjust(x1, y1, x2, y2, _width, _height);
+			data.adjust(x1*scaleX, y1*scaleY, x2*scaleX, y2*scaleY, _width, _height);
 			return data;
 		}
 
@@ -124,6 +132,8 @@ package talon.starling
 
 			for (var i:int = 0; i < quadAmount; i++)
 			{
+				if (i == 4) continue;
+
 				quadData = _quads[i];
 
 				// Position
@@ -243,7 +253,7 @@ class QuadBetrayer extends Quad
 
 	public function QuadBetrayer():void
 	{
-		super(0, 0);
+		super(1, 1);
 		mVertexDataCache = new VertexData(4);
 	}
 

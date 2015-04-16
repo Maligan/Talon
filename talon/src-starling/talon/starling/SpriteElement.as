@@ -8,6 +8,8 @@ package talon.starling
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
 
+	import starling.core.RenderSupport;
+
 	import starling.display.DisplayObject;
 	import starling.display.Quad;
 	import starling.display.Sprite;
@@ -32,12 +34,15 @@ package talon.starling
 		private var _background9ScaleImage:Scale9Image;
 		private var _backgroundTiledImage:TiledImage;
 
+		private var _background:ImageFiller;
+
 		public function SpriteElement()
 		{
 			_node = new Node();
 			_node.addEventListener(Event.CHANGE, onNodeChange);
 			_node.addEventListener(Event.RESIZE, onNodeResize);
 
+			_background = new ImageFiller();
 			_backgroundColor = new Quad(1, 1, 0);
 			_backgroundColor.visible = false;
 			addChild(_backgroundColor);
@@ -199,6 +204,15 @@ package talon.starling
 
 
 			clipRect = clipping ? new Rectangle(0, 0, node.bounds.width, node.bounds.height) : null;
+		}
+
+		public override function render(support:RenderSupport, parentAlpha:Number):void
+		{
+			// Background render
+			_background.render(support, parentAlpha);
+
+			// Children render
+			super.render(support, parentAlpha);
 		}
 
 		private function get clipping():Boolean

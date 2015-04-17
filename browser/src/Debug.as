@@ -17,6 +17,7 @@ package {
 import flash.geom.Rectangle;
 
 import starling.core.RenderSupport;
+import starling.display.DisplayObject;
 import starling.display.Sprite;
 import starling.textures.Texture;
 
@@ -29,7 +30,8 @@ class Main extends Sprite
 	function Main()
 	{
 		var texture:Texture = Texture.fromEmbeddedAsset(BITMAP);
-		addChild(new Scale9(texture));
+		var scale:DisplayObject = addChild(new Scale9(texture));
+//		scale.x = scale.y = 32;
 	}
 }
 
@@ -41,8 +43,8 @@ class Scale9 extends Sprite
 	{
 		_filler = new Filler();
 		_filler.texture = texture;
-		_filler.width = _filler.height = 500;
-		_filler.grid = new Rectangle(32, 32, 128, 128);
+		_filler.width = _filler.height = 64*6;
+		_filler.grid = new Rectangle(64, 64, 64, 64);
 //		_filler.grid = new Rectangle(0, 0, texture.width, texture.height);
 	}
 

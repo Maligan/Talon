@@ -73,6 +73,25 @@ package talon.starling
 		/** Recalculate _quads list. */
 		private function remesh9Scale():void
 		{
+			var hr:Array = slice(_width, _grid.left, _texture.width - _grid.right, []);
+			var vr:Array = slice(_height, _grid.top, _texture.height - _grid.bottom, []);
+
+			for (var i:int = 0; i < vr.length - 1; i++)
+			{
+				for (var j:int = 0; j < hr.length - 1; j++)
+				{
+					var quad:QuadData = getQuadData(hr[j], vr[i], hr[j+1], vr[i+1]);
+//					quad.ux1 = quad.vy1 = 0;
+//					quad.ux2 = quad.vy2 = 1/3;
+					_quads[_quads.length] = quad;
+				}
+			}
+
+			trace('f')
+
+
+
+			return;
 			var tw:Number = _texture.width;
 			var th:Number = _texture.height;
 
@@ -113,6 +132,19 @@ package talon.starling
 			}
 		}
 
+		private function slice(size:Number, offsetBegin:Number, offsetEnd:Number, result:Array):Array
+		{
+			var offset:Number = offsetBegin + offsetEnd;
+			result.length = 0;
+
+			if (offset == 0) result.push(0, size);
+			else if (offset == size) result.push(0, offsetBegin, size);
+			else if (offset >  size) result.push(0, offsetBegin * size/offset, size);
+			else result.push(0, offsetBegin, size - offsetEnd, size);
+
+			return result;
+		}
+
 		private function getQuadData(x1:Number, y1:Number, x2:Number, y2:Number):QuadData
 		{
 			var scaleX:Number = _width/_texture.width;
@@ -132,7 +164,7 @@ package talon.starling
 
 			for (var i:int = 0; i < quadAmount; i++)
 			{
-				if (i == 4) continue;
+				if (i == 1) continue;
 
 				quadData = _quads[i];
 

@@ -8,10 +8,11 @@ package talon.starling
 
 	import talon.enums.FillMode;
 
-	public class TextureFiller
+	[ExcludeClass]
+	internal class TextureFiller
 	{
 		private static var POOL:Vector.<QuadData>;
-		private static var HELPER:UncoveredQuad;
+		private static var HELPER:QuadWithUnsafeAccess;
 		private static const QUAD:int = 0x1;
 		private static const MESH:int = 0x3;
 
@@ -20,6 +21,7 @@ package talon.starling
 		private var _width:Number;
 		private var _height:Number;
 		private var _color:uint;
+		private var _tint:uint;
 		private var _transparent:Boolean;
 		private var _alpha:Number;
 		private var _fillMode:String;
@@ -34,7 +36,7 @@ package talon.starling
 		public function TextureFiller():void
 		{
 			POOL = new <QuadData>[];
-			HELPER = new UncoveredQuad();
+			HELPER = new QuadWithUnsafeAccess();
 
 			_invalid = MESH;
 			_quads = new <QuadData>[];
@@ -42,10 +44,12 @@ package talon.starling
 			_width = 0;
 			_height = 0;
 			_color = 0xFFFFFF;
+			_tint = 0xFFFFFF;
 			_alpha = 1;
 			_smoothing = TextureSmoothing.BILINEAR;
 			_offsets = new Scale9Offsets();
 			_fillMode = FillMode.SCALE;
+			_transparent = true;
 		}
 
 		public function render(support:RenderSupport, parentAlpha:Number):void
@@ -94,7 +98,6 @@ package talon.starling
 		{
 			var quad:QuadData = getQuadData();
 			quad.setPositions(0, 0, _width, _height);
-			quad.color = _color;
 			_quads[_quads.length] = quad;
 		}
 
@@ -132,7 +135,28 @@ package talon.starling
 
 		private function remeshRepeat():void
 		{
+			var textureWidth:int = _texture.width;
+			var textureHeight:int = _texture.height;
 
+			var numColumns:int = Math.ceil(_width / textureWidth);
+			var numRows:int = Math.ceil(_height / textureHeight);
+
+			for (var x:int = 0; x < numColumns; x++)
+			{
+				for (var y:int = 0; y < numRows; y++)
+				{
+					var quad:QuadData = getQuadData();
+
+					var quadX:int = x*textureWidth;
+					var quadY:int = y*textureHeight;
+					var quadWidth:int = (x == numColumns-1) ? (_width - quadX) : textureWidth;
+					var quadHeight:int = (y == numRows-1) ? (_height - quadY) : textureHeight;
+
+					quad.setPositions(quadX, quadY, quadX + quadWidth, quadY + quadHeight);
+					quad.setTexCoords(0, 0, quadWidth/textureWidth, quadHeight/textureHeight);
+					_quads[_quads.length] = quad;
+				}
+			}
 		}
 
 		private function remeshClip():void
@@ -169,10 +193,10 @@ package talon.starling
 					HELPER.setVertexTexCoords(2, data.ux1, data.vy2);
 					HELPER.setVertexTexCoords(3, data.ux2, data.vy2);
 
-					HELPER.setVertexColor(0, data.tint);
-					HELPER.setVertexColor(1, data.tint);
-					HELPER.setVertexColor(2, data.tint);
-					HELPER.setVertexColor(3, data.tint);
+					HELPER.setVertexColor(0, _tint);
+					HELPER.setVertexColor(1, _tint);
+					HELPER.setVertexColor(2, _tint);
+					HELPER.setVertexColor(3, _tint);
 
 					HELPER.adjustByTexture(texture);
 
@@ -181,10 +205,10 @@ package talon.starling
 				else
 				{
 					// Uniform color
-					HELPER.setVertexColor(0, data.color);
-					HELPER.setVertexColor(1, data.color);
-					HELPER.setVertexColor(2, data.color);
-					HELPER.setVertexColor(3, data.color);
+					HELPER.setVertexColor(0, _color);
+					HELPER.setVertexColor(1, _color);
+					HELPER.setVertexColor(2, _color);
+					HELPER.setVertexColor(3, _color);
 
 					_batch.addQuad(HELPER, _alpha);
 				}
@@ -264,6 +288,16 @@ package talon.starling
 			}
 		}
 
+		public function get tint():uint { return _tint; }
+		public function set tint(value:uint):void
+		{
+			if (_tint != value)
+			{
+				_tint = value;
+				invalidate(QUAD);
+			}
+		}
+
 		public function get transparent():Boolean { return _transparent; }
 		public function set transparent(value:Boolean):void
 		{
@@ -283,6 +317,16 @@ package talon.starling
 				invalidate(QUAD);
 			}
 		}
+
+		public function get fillMode():String { return _fillMode; }
+		public function set fillMode(value:String):void
+		{
+			if (_fillMode != value)
+			{
+				_fillMode = value;
+				invalidate(MESH);
+			}
+		}
 	}
 }
 
@@ -293,9 +337,9 @@ import starling.display.Quad;
 import starling.textures.Texture;
 import starling.utils.VertexData;
 
-class UncoveredQuad extends Quad
+class QuadWithUnsafeAccess extends Quad
 {
-	public function UncoveredQuad():void
+	public function QuadWithUnsafeAccess():void
 	{
 		super(1, 1);
 	}
@@ -340,8 +384,6 @@ class QuadData
 	public var ux2:Number;
 	public var vy2:Number;
 
-	public var color:uint;
-	public var tint:uint;
 	public var isTextured:Boolean;
 
 	public function reset():void
@@ -349,7 +391,6 @@ class QuadData
 		x1 = y1 = x2 = y2 = 0;
 		ux1 = vy1 = 0;
 		ux2 = vy2 = 1;
-		color = tint = 0xFFFFFF;
 		isTextured = false;
 	}
 

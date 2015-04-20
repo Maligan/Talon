@@ -64,7 +64,7 @@ package talon.utils
 		{
 			// Define element type
 			var type:String = attributes["type"];
-			var typeClass:Class = _linkage[type] || _linkageByDefault;
+			var typeClass:Class = getLinkageClass(type);
 
 			// Create new element
 			var element:* = new typeClass();
@@ -84,6 +84,16 @@ package talon.utils
 			}
 
 			_parserProductStack.push(element);
+		}
+
+		protected function getLinkageClass(type:String):Class
+		{
+			var result:Class = _linkage[type];
+			if (result) return result;
+
+			var superType:String = _parser.templates[type].name();
+			var superClass:Class = getLinkageClass(superType);
+			return superClass || _linkageByDefault;
 		}
 
 		protected function setNodeAttribute(node:Node, attributeName:String, value:String):void

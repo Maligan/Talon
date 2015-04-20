@@ -1,6 +1,7 @@
 package talon.starling
 {
 
+	import starling.core.RenderSupport;
 	import starling.events.Event;
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
@@ -14,6 +15,7 @@ package talon.starling
 	public class TextFieldElement extends TextField implements ITalonElement
 	{
 		private var _node:Node;
+		private var _background:TalonElementBackground;
 
 		public function TextFieldElement()
 		{
@@ -23,12 +25,13 @@ package talon.starling
 			_node.addEventListener(Event.CHANGE, onNodeChange);
 			_node.addEventListener(Event.RESIZE, onNodeResize);
 
+			_background = new TalonElementBackground(node);
+
 			// TextField autoSize
 			_node.width.auto = _node.minWidth.auto = _node.maxWidth.auto = getTextWidth;
 			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = getTextHeight;
 			autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
 
-//			border = true;
 			touchable = false;
 		}
 
@@ -55,6 +58,7 @@ package talon.starling
 			{
 				var isHorizontal:Boolean = _node.width.isAuto;
 				var isVertical:Boolean = _node.height.isAuto;
+				autoSize = TextFieldAutoSize.NONE;
 
 //				/**/ if ( isHorizontal &&  isVertical) (autoSize = TextFieldAutoSize.BOTH_DIRECTIONS);
 //				else if ( isHorizontal && !isVertical) (autoSize = TextFieldAutoSize.HORIZONTAL);
@@ -70,12 +74,23 @@ package talon.starling
 			width = Math.round(_node.bounds.width)// - 2;
 			height = Math.round(_node.bounds.height)// - 2;
 
+			_background.resize(width, height);
+
 			autoSize = TextFieldAutoSize.NONE;
 		}
 
 		public function get node():Node
 		{
 			return _node;
+		}
+
+		public override function render(support:RenderSupport, parentAlpha:Number):void
+		{
+			// Render background
+			_background.render(support, parentAlpha);
+
+			// Render glyphs
+			super.render(support, parentAlpha);
 		}
 	}
 }

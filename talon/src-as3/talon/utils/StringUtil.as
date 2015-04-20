@@ -13,18 +13,18 @@ package talon.utils
 		 * #FFFFFF
 		 * rbg(255, 255, 255)
 		 */
-		public static function parseColor(string:String):Number
+		public static function parseColor(string:String, rollback:Number = NaN):Number
 		{
 			var rgb:Array;
 
-			if (string == null) return NaN;
+			if (string == null) return rollback;
 			if (string.indexOf("#") == 0) return parseInt(string.substr(1), 16);
 			if (Color[string.toUpperCase()] is uint) return Color[string.toUpperCase()];
 
 			var method:Array = parseFunction(string);
 			if (method && method[0]=="rgb") return Color.rgb(parseInt(method[1]), parseInt(method[2]), parseInt(method[3]));
 
-			return NaN;
+			return rollback;
 		}
 
 		/**

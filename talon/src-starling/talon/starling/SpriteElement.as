@@ -34,7 +34,7 @@ package talon.starling
 		private var _background9ScaleImage:Scale9Image;
 		private var _backgroundTiledImage:TiledImage;
 
-		private var _background:Filler;
+		private var _background:TextureFiller;
 
 		public function SpriteElement()
 		{
@@ -42,7 +42,7 @@ package talon.starling
 			_node.addEventListener(Event.CHANGE, onNodeChange);
 			_node.addEventListener(Event.RESIZE, onNodeResize);
 
-			_background = new Filler();
+			_background = new TextureFiller();
 			_backgroundColor = new Quad(1, 1, 0);
 			_backgroundColor.visible = false;
 			addChild(_backgroundColor);

@@ -1,8 +1,6 @@
 package talon.enums
 {
-	import starling.errors.AbstractClassError;
-
-	public class FillMode
+	public final class FillMode
 	{
 		public static const SCALE:String = "scale";
 		public static const CLIP:String = "clip";
@@ -14,12 +12,6 @@ package talon.enums
 			return mode == SCALE
 				|| mode == CLIP
 				|| mode == REPEAT;
-		}
-
-		/** @private */
-		public function FillMode()
-		{
-			throw new AbstractClassError();
 		}
 	}
 }

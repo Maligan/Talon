@@ -5,7 +5,7 @@ package browser
 	import browser.dom.Document;
 	import browser.dom.log.DocumentMessage;
 	import browser.utils.Console;
-	import browser.utils.Constants;
+	import browser.AppConstants;
 	import browser.utils.DeviceProfile;
 	import browser.utils.OrientationMonitor;
 	import browser.utils.Settings;
@@ -59,7 +59,7 @@ package browser
 
 			_monitor = new OrientationMonitor(root.stage);
 			_settings = new Settings("settings");
-			_profile = DeviceProfile.getById(settings.getValueOrDefault(Constants.SETTING_PROFILE, null)) || DeviceProfile.CUSTOM;
+			_profile = DeviceProfile.getById(settings.getValueOrDefault(AppConstants.SETTING_PROFILE, null)) || DeviceProfile.CUSTOM;
 			_root.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.RESIZING, onResizing);
 			_ui = new AppUI(this);
 			_host.addChild(_ui);
@@ -69,7 +69,7 @@ package browser
 
 		private function onResizing(e:NativeWindowBoundsEvent):void
 		{
-			var prevent:Boolean = settings.getValueOrDefault(Constants.SETTING_LOCK_RESIZE, false);
+			var prevent:Boolean = settings.getValueOrDefault(AppConstants.SETTING_LOCK_RESIZE, false);
 			if (prevent)
 			{
 				e.preventDefault();
@@ -86,7 +86,7 @@ package browser
 
 		public function resizeTo(width:int, height:int):void
 		{
-			settings.setValue(Constants.SETTING_IS_PORTRAIT, _monitor.isPortrait);
+			settings.setValue(AppConstants.SETTING_IS_PORTRAIT, _monitor.isPortrait);
 			_ui.resizeTo(width, height);
 		}
 
@@ -121,7 +121,7 @@ package browser
 					adjust(profile.width, profile.height, _monitor.isPortrait);
 				}
 
-				settings.setValue(Constants.SETTING_PROFILE, _profile.id);
+				settings.setValue(AppConstants.SETTING_PROFILE, _profile.id);
 				dispatchEventWith(EVENT_PROFILE_CHANGE);
 			}
 		}
@@ -177,7 +177,7 @@ package browser
 				if (files.length == 1)
 				{
 					var file:File = File(files[0]);
-					if (file.extension == Constants.DESIGNER_FILE_EXTENSION)
+					if (file.extension == AppConstants.DESIGNER_FILE_EXTENSION)
 					{
 						NativeDragManager.acceptDragDrop(_root as InteractiveObject);
 						NativeDragManager.dropAction = NativeDragActions.LINK;

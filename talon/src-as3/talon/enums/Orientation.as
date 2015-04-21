@@ -1,7 +1,5 @@
 package talon.enums
 {
-	import starling.errors.AbstractClassError;
-
 	public final class Orientation
 	{
 		public static const HORIZONTAL:String = "horizontal";
@@ -10,13 +8,8 @@ package talon.enums
 		/** Indicates whether the given orientation string is valid. */
 		public static function isValid(orientation:String):Boolean
 		{
-			return orientation == HORIZONTAL || orientation == VERTICAL;
-		}
-
-		/** @private */
-		public function Orientation()
-		{
-			throw new AbstractClassError()
+			return orientation == HORIZONTAL
+				|| orientation == VERTICAL;
 		}
 	}
 }

@@ -12,7 +12,7 @@ package browser
 	import browser.dom.DocumentEvent;
 	import browser.dom.log.DocumentMessage;
 	import browser.popups.Popup;
-	import browser.utils.Constants;
+	import browser.AppConstants;
 	import browser.utils.DeviceProfile;
 	import browser.utils.EventDispatcherAdapter;
 	import browser.utils.NativeMenuAdapter;
@@ -90,35 +90,35 @@ package browser
 		{
 			_menu = new NativeMenuAdapter();
 
-			_menu.addItem("file",         Constants.T_MENU_FILE);
-			_menu.addItem("file/new",     Constants.T_MENU_FILE_NEW_PROJECT,    new NewProjectCommand(_controller), "n", 3);
-			_menu.addItem("file/open",    Constants.T_MENU_FILE_OPEN,           new OpenCommand(_controller),   "o", 2);
-			_menu.addItem("file/close",   Constants.T_MENU_FILE_CLOSE,          new CloseCommand(_controller),  "w");
+			_menu.addItem("file",         AppConstants.T_MENU_FILE);
+			_menu.addItem("file/new",     AppConstants.T_MENU_FILE_NEW_PROJECT,    new NewProjectCommand(_controller), "n", 3);
+			_menu.addItem("file/open",    AppConstants.T_MENU_FILE_OPEN,           new OpenCommand(_controller),   "o", 2);
+			_menu.addItem("file/close",   AppConstants.T_MENU_FILE_CLOSE,          new CloseCommand(_controller),  "w");
 			_menu.addItem("file/-1");
-			_menu.addItem("file/export",  Constants.T_MENU_FILE_EXPORT_AS,      new ExportCommand(_controller), "s");
+			_menu.addItem("file/export",  AppConstants.T_MENU_FILE_EXPORT_AS,      new ExportCommand(_controller), "s");
 
-			_menu.addItem("view",                       Constants.T_MENU_VIEW);
-			_menu.addItem("view/theme",                 Constants.T_MENU_VIEW_BACKGROUND);
-			_menu.addItem("view/theme/transparent",     Constants.T_MENU_VIEW_BACKGROUND_CHESS, new SettingCommand(_controller, Constants.SETTING_BACKGROUND, Constants.SETTING_BACKGROUND_CHESS));
-			_menu.addItem("view/theme/dark",            Constants.T_MENU_VIEW_BACKGROUND_DARK,  new SettingCommand(_controller, Constants.SETTING_BACKGROUND, Constants.SETTING_BACKGROUND_DARK));
-			_menu.addItem("view/theme/light",           Constants.T_MENU_VIEW_BACKGROUND_LIGHT, new SettingCommand(_controller, Constants.SETTING_BACKGROUND, Constants.SETTING_BACKGROUND_LIGHT));
-			_menu.addItem("view/stats",                 Constants.T_MENU_VIEW_STATS,            new SettingCommand(_controller, Constants.SETTING_STATS, true, false));
-			_menu.addItem("view/resize",                Constants.T_MENU_VIEW_LOCK_RESIZE,      new SettingCommand(_controller, Constants.SETTING_LOCK_RESIZE, true, false));
+			_menu.addItem("view",                       AppConstants.T_MENU_VIEW);
+			_menu.addItem("view/theme",                 AppConstants.T_MENU_VIEW_BACKGROUND);
+			_menu.addItem("view/theme/transparent",     AppConstants.T_MENU_VIEW_BACKGROUND_CHESS, new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_CHESS));
+			_menu.addItem("view/theme/dark",            AppConstants.T_MENU_VIEW_BACKGROUND_DARK,  new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
+			_menu.addItem("view/theme/light",           AppConstants.T_MENU_VIEW_BACKGROUND_LIGHT, new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
+			_menu.addItem("view/stats",                 AppConstants.T_MENU_VIEW_STATS,            new SettingCommand(_controller, AppConstants.SETTING_STATS, true, false));
+			_menu.addItem("view/resize",                AppConstants.T_MENU_VIEW_LOCK_RESIZE,      new SettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
 			_menu.addItem("view/-1");
-			_menu.addItem("view/zoomIn",                Constants.T_MENU_VIEW_ZOOM_IN,          new ZoomCommand(_controller, +25),   "+");
-			_menu.addItem("view/zoomOut",               Constants.T_MENU_VIEW_ZOOM_OUT,         new ZoomCommand(_controller, -25),   "-");
+			_menu.addItem("view/zoomIn",                AppConstants.T_MENU_VIEW_ZOOM_IN,          new ZoomCommand(_controller, +25),   "+");
+			_menu.addItem("view/zoomOut",               AppConstants.T_MENU_VIEW_ZOOM_OUT,         new ZoomCommand(_controller, -25),   "-");
 			_menu.addItem("view/-2");
-			_menu.addItem("view/orientation",           Constants.T_MENU_VIEW_ORIENTATION);
-			_menu.addItem("view/orientation/Portrait",  Constants.T_MENU_VIEW_ORIENTATION_PORTRAIT,     new OrientationCommand(_controller, Orientation.VERTICAL));
-			_menu.addItem("view/orientation/Landscape", Constants.T_MENU_VIEW_ORIENTATION_LANDSCAPE,    new OrientationCommand(_controller, Orientation.HORIZONTAL));
+			_menu.addItem("view/orientation",           AppConstants.T_MENU_VIEW_ORIENTATION);
+			_menu.addItem("view/orientation/Portrait",  AppConstants.T_MENU_VIEW_ORIENTATION_PORTRAIT,     new OrientationCommand(_controller, Orientation.VERTICAL));
+			_menu.addItem("view/orientation/Landscape", AppConstants.T_MENU_VIEW_ORIENTATION_LANDSCAPE,    new OrientationCommand(_controller, Orientation.HORIZONTAL));
 
-			_menu.addItem("view/profile",               Constants.T_MENU_VIEW_PROFILE);
-			_menu.addItem("view/profile/custom",        Constants.T_MENU_VIEW_PROFILE_CUSTOM, new ProfileCommand(_controller, DeviceProfile.CUSTOM));
+			_menu.addItem("view/profile",               AppConstants.T_MENU_VIEW_PROFILE);
+			_menu.addItem("view/profile/custom",        AppConstants.T_MENU_VIEW_PROFILE_CUSTOM, new ProfileCommand(_controller, DeviceProfile.CUSTOM));
 			_menu.addItem("view/profile/-1");
 			for each (var profile:DeviceProfile in DeviceProfile.getProfiles())
 				_menu.addItem("view/profile/" + profile.id, null, new ProfileCommand(_controller, profile));
 
-			_controller.settings.addSettingListener(Constants.SETTING_RECENT_ARRAY, refreshRecent);
+			_controller.settings.addSettingListener(AppConstants.SETTING_RECENT_ARRAY, refreshRecent);
 			refreshRecent();
 
 			NativeApplication.nativeApplication.activeWindow.menu = _menu.menu;
@@ -142,26 +142,26 @@ package browser
 			_isolatorContainer.addChild(_isolator);
 			Popup.initialize(this, _popupContainer);
 
-			_controller.settings.addSettingListener(Constants.SETTING_BACKGROUND, onBackgroundChange); onBackgroundChange(null);
-			_controller.settings.addSettingListener(Constants.SETTING_STATS, onStatsChange); onStatsChange(null);
-			_controller.settings.addSettingListener(Constants.SETTING_ZOOM, onZoomChange); onZoomChange(null);
+			_controller.settings.addSettingListener(AppConstants.SETTING_BACKGROUND, onBackgroundChange); onBackgroundChange(null);
+			_controller.settings.addSettingListener(AppConstants.SETTING_STATS, onStatsChange); onStatsChange(null);
+			_controller.settings.addSettingListener(AppConstants.SETTING_ZOOM, onZoomChange); onZoomChange(null);
 
 			stage && resizeTo(stage.stageWidth, stage.stageHeight);
 		}
 
 		private function onBackgroundChange(e:Event):void
 		{
-			_isolatorContainer.node.classes = new <String>[_controller.settings.getValueOrDefault(Constants.SETTING_BACKGROUND, Constants.SETTING_BACKGROUND_DEFAULT)];
+			_isolatorContainer.node.classes = new <String>[_controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DEFAULT)];
 		}
 
 		private function onStatsChange(e:Event):void
 		{
-			Starling.current.showStats = _controller.settings.getValueOrDefault(Constants.SETTING_STATS, false);
+			Starling.current.showStats = _controller.settings.getValueOrDefault(AppConstants.SETTING_STATS, false);
 		}
 
 		private function onZoomChange(e:Event):void
 		{
-			zoom = _controller.settings.getValueOrDefault(Constants.SETTING_ZOOM, 100) / 100;
+			zoom = _controller.settings.getValueOrDefault(AppConstants.SETTING_ZOOM, 100) / 100;
 		}
 
 		private function onDocumentChange(e:Event):void
@@ -207,7 +207,7 @@ package browser
 			if (_controller.templateId)
 				result.push(_controller.templateId);
 
-			result.push(Constants.APP_NAME + " " + Constants.APP_VERSION);
+			result.push(AppConstants.APP_NAME + " " + AppConstants.APP_VERSION);
 
 			_controller.root.stage.nativeWindow.title = result.join(" - ");
 		}
@@ -219,8 +219,8 @@ package browser
 
 			if (_controller.document && _controller.document.factory.templateIds.length > 0)
 			{
-				_menu.addItem("navigate", Constants.T_MENU_NAVIGATE);
-				_menu.addItem("navigate/search", Constants.T_MENU_NAVIGATE_SEARCH);
+				_menu.addItem("navigate", AppConstants.T_MENU_NAVIGATE);
+				_menu.addItem("navigate/search", AppConstants.T_MENU_NAVIGATE_SEARCH);
 				_menu.addItem("navigate/-");
 
 				for each (var prototypeId:String in _controller.document.factory.templateIds)
@@ -278,10 +278,10 @@ package browser
 		{
 			// Refresh recent files
 			_menu.removeItem("file/recent");
-			var recent:Array = _controller.settings.getValueOrDefault(Constants.SETTING_RECENT_ARRAY, []);
+			var recent:Array = _controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_ARRAY, []);
 			if (recent.length > 0)
 			{
-				_menu.addItem("file/recent",  Constants.T_MENU_FILE_RECENT, null, null, 1);
+				_menu.addItem("file/recent",  AppConstants.T_MENU_FILE_RECENT, null, null, 1);
 
 				for each (var path:String in recent)
 				{
@@ -293,7 +293,7 @@ package browser
 				}
 
 				_menu.addItem("file/recent/-1");
-				_menu.addItem("file/recent/clear", Constants.T_MENU_FILE_RECENT_CLEAR, new SettingCommand(_controller, Constants.SETTING_RECENT_ARRAY, []));
+				_menu.addItem("file/recent/clear", AppConstants.T_MENU_FILE_RECENT_CLEAR, new SettingCommand(_controller, AppConstants.SETTING_RECENT_ARRAY, []));
 			}
 		}
 

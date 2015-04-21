@@ -7,7 +7,7 @@ package browser.dom.files
 	import com.adobe.air.filesystem.FileMonitor;
 	import com.adobe.air.filesystem.events.FileMonitorEvent;
 
-	import browser.utils.Constants;
+	import browser.AppConstants;
 
 	import flash.events.Event;
 	import flash.filesystem.File;
@@ -108,7 +108,7 @@ package browser.dom.files
 				return DocumentFileType.UNKNOWN;
 			}
 			if (extension == "fnt") return DocumentFileType.BITMAP_FONT;
-			if (Constants.SUPPORTED_IMAGE_EXTENSIONS.indexOf(extension) != -1) return DocumentFileType.IMAGE;
+			if (AppConstants.SUPPORTED_IMAGE_EXTENSIONS.indexOf(extension) != -1) return DocumentFileType.IMAGE;
 			if (_target.isDirectory) return DocumentFileType.DIRECTORY;
 
 			return DocumentFileType.UNKNOWN;
@@ -139,7 +139,7 @@ package browser.dom.files
 			if (type == DocumentFileType.UNKNOWN) return true;
 
 			var result:Boolean = false;
-			var property:String = document.properties[Constants.PROPERTY_EXPORT_IGNORE];
+			var property:String = document.properties[AppConstants.PROPERTY_EXPORT_IGNORE];
 			if (property == null) return false;
 			var spilt:Array = property.split(/\s*,\s*/);
 
@@ -158,7 +158,7 @@ package browser.dom.files
 
 		public function get exportPath():String
 		{
-			var sourcePathProperty:String = document.properties[Constants.PROPERTY_SOURCE_PATH];
+			var sourcePathProperty:String = document.properties[AppConstants.PROPERTY_SOURCE_PATH];
 			var sourcePath:File = document.project.parent.resolvePath(sourcePathProperty || document.project.parent.nativePath);
 			if (sourcePath.exists == false) sourcePath = document.project.parent;
 			return sourcePath.getRelativePath(target);

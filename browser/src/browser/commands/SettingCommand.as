@@ -1,6 +1,6 @@
 package browser.commands
 {
-	import browser.utils.Constants;
+	import browser.AppConstants;
 	import browser.AppController;
 
 	public class SettingCommand extends Command

@@ -4,7 +4,7 @@ package browser.commands
 
 	import deng.fzip.FZip;
 
-	import browser.utils.Constants;
+	import browser.AppConstants;
 
 	import browser.AppController;
 	import browser.dom.files.DocumentFileReference;
@@ -43,7 +43,7 @@ package browser.commands
 				var targetPath:String = getDocumentExportPath(controller.document);
 				var target:File = new File(targetPath);
 				target.addEventListener(Event.SELECT, onExportFileSelect);
-				target.browseForSave(Constants.T_EXPORT_TITLE);
+				target.browseForSave(AppConstants.T_EXPORT_TITLE);
 			}
 		}
 
@@ -98,9 +98,9 @@ package browser.commands
 		//
 		private function getDocumentExportPath(document:Document):String
 		{
-			var exportPath:String = document.properties[Constants.PROPERTY_EXPORT_PATH];
+			var exportPath:String = document.properties[AppConstants.PROPERTY_EXPORT_PATH];
 			if (exportPath == null)
-				exportPath = document.project.name.replace(Constants.DESIGNER_FILE_EXTENSION, Constants.DESIGNER_EXPORT_FILE_EXTENSION);
+				exportPath = document.project.name.replace(AppConstants.DESIGNER_FILE_EXTENSION, AppConstants.DESIGNER_EXPORT_FILE_EXTENSION);
 
 			var exportPathResolved:String = document.project.parent.resolvePath(exportPath).nativePath;
 			return exportPathResolved;

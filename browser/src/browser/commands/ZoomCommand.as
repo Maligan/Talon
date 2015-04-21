@@ -1,6 +1,6 @@
 package browser.commands
 {
-	import browser.utils.Constants;
+	import browser.AppConstants;
 	import browser.AppController;
 
 	public class ZoomCommand extends Command
@@ -10,26 +10,26 @@ package browser.commands
 		public function ZoomCommand(controller:AppController, delta:int)
 		{
 			super(controller);
-			controller.settings.addSettingListener(Constants.SETTING_ZOOM, dispatchEvent);
+			controller.settings.addSettingListener(AppConstants.SETTING_ZOOM, dispatchEvent);
 			_delta = delta;
 		}
 
 		public override function execute():void
 		{
 			var temp:int = zoom + _delta;
-			temp = Math.min(temp, Constants.ZOOM_MAX);
-			temp = Math.max(temp, Constants.ZOOM_MIN);
+			temp = Math.min(temp, AppConstants.ZOOM_MAX);
+			temp = Math.max(temp, AppConstants.ZOOM_MIN);
 			zoom = temp;
 		}
 
 		public override function get isExecutable():Boolean
 		{
-			if (_delta > 0) return zoom < Constants.ZOOM_MAX;
-			if (_delta < 0) return zoom > Constants.ZOOM_MIN;
+			if (_delta > 0) return zoom < AppConstants.ZOOM_MAX;
+			if (_delta < 0) return zoom > AppConstants.ZOOM_MIN;
 			return true;
 		}
 
-		private function get zoom():int { return controller.settings.getValueOrDefault(Constants.SETTING_ZOOM, 100) }
-		private function set zoom(value:int):void { controller.settings.setValue(Constants.SETTING_ZOOM, value) }
+		private function get zoom():int { return controller.settings.getValueOrDefault(AppConstants.SETTING_ZOOM, 100) }
+		private function set zoom(value:int):void { controller.settings.setValue(AppConstants.SETTING_ZOOM, value) }
 	}
 }

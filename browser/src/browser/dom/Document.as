@@ -12,7 +12,7 @@ package browser.dom
 	import browser.dom.files.DocumentFileType;
 	import browser.dom.log.DocumentMessageCollection;
 	import browser.dom.log.DocumentTaskTracker;
-	import browser.utils.Constants;
+	import browser.AppConstants;
 
 	import flash.filesystem.File;
 

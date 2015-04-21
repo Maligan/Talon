@@ -1,6 +1,6 @@
-package browser.utils
+package browser
 {
-	public class Constants
+	public class AppConstants
 	{
 		public static const APP_NAME:String = "Talon Browser";
 		public static const APP_VERSION:String = "0.0.1";

@@ -1,8 +1,6 @@
 package talon.enums
 {
-	import starling.errors.AbstractClassError;
-
-	public class Break
+	public final class Break
 	{
 		public static const AUTO:String = "auto";
 		public static const BEFORE:String = "before";
@@ -16,12 +14,6 @@ package talon.enums
 				|| mode == AFTER
 				|| mode == BOTH
 				|| mode == AUTO
-		}
-
-		/** @private */
-		public function Break()
-		{
-			throw new AbstractClassError();
 		}
 	}
 }

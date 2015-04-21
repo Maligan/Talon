@@ -2,7 +2,7 @@ package
 {
 	import browser.AppController;
 	import browser.utils.Console;
-	import browser.utils.Constants;
+	import browser.AppConstants;
 	import browser.utils.DeviceProfile;
 	import browser.utils.Settings;
 
@@ -47,7 +47,7 @@ package
 			// Add console
 			addChild(_console = new Console());
 
-			NativeApplication.nativeApplication.setAsDefaultApplication(Constants.DESIGNER_FILE_EXTENSION);
+			NativeApplication.nativeApplication.setAsDefaultApplication(AppConstants.DESIGNER_FILE_EXTENSION);
 			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
 
 			// For native drag purpose
@@ -78,7 +78,6 @@ package
 		private function onRootCreated(e:*):void
 		{
 			_controller = new AppController(this, Starling.current.root as Sprite, _console);
-//			_invoke = _controller.settings.getValueOrDefault(Constants.SETTING_RECENT_ARRAY, [null])[0];
 			_invoke && _controller.invoke(_invoke);
 		}
 
@@ -95,12 +94,12 @@ package
 		private function adjust():void
 		{
 			var settings:Settings = new Settings("settings");
-			var profileId:String = settings.getValueOrDefault(Constants.SETTING_PROFILE, null);
+			var profileId:String = settings.getValueOrDefault(AppConstants.SETTING_PROFILE, null);
 			var profile:DeviceProfile = DeviceProfile.getById(profileId) || DeviceProfile.CUSTOM;
 
 			if (profile != DeviceProfile.CUSTOM)
 			{
-				var isPortrait:Boolean = settings.getValueOrDefault(Constants.SETTING_IS_PORTRAIT, false);
+				var isPortrait:Boolean = settings.getValueOrDefault(AppConstants.SETTING_IS_PORTRAIT, false);
 				var window:NativeWindow = root.stage.nativeWindow;
 				var min:Number = Math.min(profile.width, profile.height);
 				var max:Number = Math.max(profile.width, profile.height);

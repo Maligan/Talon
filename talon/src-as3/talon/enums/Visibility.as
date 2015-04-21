@@ -1,7 +1,5 @@
 package talon.enums
 {
-	import starling.errors.AbstractClassError;
-
 	public final class Visibility
 	{
 		public static const VISIBLE:String = "visible";
@@ -11,13 +9,9 @@ package talon.enums
 		/** Indicates whether the given orientation string is valid. */
 		public static function isValid(visibility:String):Boolean
 		{
-			return visibility == VISIBLE || visibility == HIDDEN || visibility == COLLAPSED;
-		}
-
-		/** @private */
-		public function Visibility()
-		{
-			throw new AbstractClassError()
+			return visibility == VISIBLE
+				|| visibility == HIDDEN
+				|| visibility == COLLAPSED;
 		}
 	}
 }

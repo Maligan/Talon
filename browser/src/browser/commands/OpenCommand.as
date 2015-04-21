@@ -1,7 +1,7 @@
 package browser.commands
 {
 	import browser.dom.files.DocumentFileReference;
-	import browser.utils.Constants;
+	import browser.AppConstants;
 	import browser.AppController;
 	import browser.dom.Document;
 	import browser.utils.parseProperties;
@@ -31,10 +31,10 @@ package browser.commands
 			}
 			else
 			{
-				var filter:FileFilter = new FileFilter(Constants.T_DESIGNER_FILE_EXTENSION_NAME, "*." + Constants.DESIGNER_FILE_EXTENSION);
+				var filter:FileFilter = new FileFilter(AppConstants.T_DESIGNER_FILE_EXTENSION_NAME, "*." + AppConstants.DESIGNER_FILE_EXTENSION);
 				var source:File = new File();
 				source .addEventListener(Event.SELECT, onOpenFileSelect);
-				source.browseForOpen(Constants.T_MENU_FILE_OPEN, [filter]);
+				source.browseForOpen(AppConstants.T_MENU_FILE_OPEN, [filter]);
 			}
 		}
 
@@ -47,12 +47,12 @@ package browser.commands
 		{
 			controller.document = readDocument(source);
 
-			var recent:Array = controller.settings.getValueOrDefault(Constants.SETTING_RECENT_ARRAY, []);
+			var recent:Array = controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_ARRAY, []);
 			var indexOf:int = recent.indexOf(source.nativePath);
 			if (indexOf != -1) recent.splice(indexOf, 1);
 			recent.unshift(source.nativePath);
-			recent = recent.slice(0, Constants.HISTORY_RECENT_MAX);
-			controller.settings.setValue(Constants.SETTING_RECENT_ARRAY, recent);
+			recent = recent.slice(0, AppConstants.HISTORY_RECENT_MAX);
+			controller.settings.setValue(AppConstants.SETTING_RECENT_ARRAY, recent);
 		}
 
 		private function readDocument(documentFile:File):Document
@@ -69,7 +69,7 @@ package browser.commands
 
 		private function getSourceRoot(document:Document):File
 		{
-			var sourcePathProperty:String = document.properties[Constants.PROPERTY_SOURCE_PATH];
+			var sourcePathProperty:String = document.properties[AppConstants.PROPERTY_SOURCE_PATH];
 			var sourceFile:File = document.project.parent.resolvePath(sourcePathProperty || document.project.parent.nativePath);
 			if (sourceFile.exists == false) sourceFile = document.project.parent;
 			return sourceFile;

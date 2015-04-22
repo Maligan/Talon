@@ -31,9 +31,9 @@ package browser
 
 	import talon.Attribute;
 	import talon.starling.TalonFactoryStarling;
-	import talon.utils.ITalonElement;
+	import talon.utils.ITalonNode;
 	import talon.utils.TalonFactoryBase;
-	import talon.starling.SpriteElement;
+	import talon.starling.SpriteNode;
 	import talon.layout.Layout;
 	import talon.enums.Orientation;
 	import starling.filters.BlurFilter;
@@ -48,12 +48,12 @@ package browser
 		private var _controller:AppController;
 
 		private var _factory:TalonFactoryBase;
-		private var _interface:SpriteElement;
-		private var _errorPage:SpriteElement;
-		private var _popupContainer:SpriteElement;
-		private var _isolatorContainer:SpriteElement;
+		private var _interface:SpriteNode;
+		private var _errorPage:SpriteNode;
+		private var _popupContainer:SpriteNode;
+		private var _isolatorContainer:SpriteNode;
 		private var _isolator:Sprite;
-		private var _container:SpriteElement;
+		private var _container:SpriteNode;
 
 		private var _documentDispatcher:EventDispatcherAdapter;
 		private var _menu:NativeMenuAdapter;
@@ -74,7 +74,7 @@ package browser
 			_factory = new TalonFactoryStarling();
 			_factory.addArchiveContentAsync(new INTERFACE() as ByteArray, onFactoryComplete);
 
-			_container = new SpriteElement();
+			_container = new SpriteNode();
 			_container.node.setAttribute(Attribute.LAYOUT, Layout.ABSOLUTE);
 			_container.node.setAttribute(Attribute.VALIGN, VAlign.CENTER);
 			_container.node.setAttribute(Attribute.HALIGN, HAlign.CENTER);
@@ -129,16 +129,16 @@ package browser
 		//
 		private function onFactoryComplete():void
 		{
-			_interface = _factory.produce("interface") as SpriteElement;
+			_interface = _factory.produce("interface") as SpriteNode;
 			addChild(_interface);
 
 			_interface.getChildByName("shade").visible = false;
 
-			_errorPage = _interface.getChildByName("bsod") as SpriteElement;
+			_errorPage = _interface.getChildByName("bsod") as SpriteNode;
 			_errorPage.visible = false;
 
-			_popupContainer = _interface.getChildByName("popups") as SpriteElement;
-			_isolatorContainer = _interface.getChildByName("container") as SpriteElement;
+			_popupContainer = _interface.getChildByName("popups") as SpriteNode;
+			_isolatorContainer = _interface.getChildByName("container") as SpriteNode;
 			_isolatorContainer.addChild(_isolator);
 			Popup.initialize(this, _popupContainer);
 

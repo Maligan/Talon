@@ -6,15 +6,15 @@ package talon.starling
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.utils.ITalonElement;
+	import talon.utils.ITalonNode;
 
-	public class ImageElement extends Image implements ITalonElement
+	public class ImageNode extends Image implements ITalonNode
 	{
 		private static var _empty:Texture;
 
 		private var _node:Node;
 
-		public function ImageElement()
+		public function ImageNode()
 		{
 			super(_empty || (_empty = Texture.empty(1, 1)));
 

@@ -11,13 +11,13 @@ package talon.starling
 	import talon.types.GaugeQuad;
 	import talon.utils.StringUtil;
 
-	internal class TalonElementBackground
+	internal class Background
 	{
 		private var _node:Node;
-		private var _filler:TextureFiller;
+		private var _filler:BackgroundFiller;
 		private var _grid:GaugeQuad;
 
-		public function TalonElementBackground(node:Node):void
+		public function Background(node:Node):void
 		{
 			_node = node;
 			addAttributeChangeListener(Attribute.BACKGROUND_9SCALE, onBackground9ScaleChange);
@@ -26,7 +26,7 @@ package talon.starling
 			addAttributeChangeListener(Attribute.BACKGROUND_IMAGE, onBackgroundImageChange);
 			addAttributeChangeListener(Attribute.BACKGROUND_TINT, onBackgroundTintChange);
 
-			_filler = new TextureFiller();
+			_filler = new BackgroundFiller();
 			_grid = new GaugeQuad();
 		}
 

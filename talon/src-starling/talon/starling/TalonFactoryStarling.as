@@ -12,10 +12,10 @@ package talon.starling
 	{
 		public function TalonFactoryStarling()
 		{
-			super(SpriteElement);
-			setup("node", SpriteElement);
-			setup("image", ImageElement);
-			setup("label", TextFieldElement);
+			super(SpriteNode);
+			setup("node", SpriteNode);
+			setup("image", ImageNode);
+			setup("label", TextFieldNode);
 		}
 
 		public function create(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):DisplayObject

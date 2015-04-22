@@ -28,8 +28,7 @@ package talon.utils
 		public function TalonFactoryBase(linkageByDefault:Class):void
 		{
 			_linkageByDefault = linkageByDefault;
-			_parser = new TMLParser();
-			_parser.setListeners(onElementBegin, onElementEnd);
+			_parser = new TMLParser(null, null, onElementBegin, onElementEnd);
 			_parserProductStack = new Array();
 		}
 
@@ -47,7 +46,7 @@ package talon.utils
 			// Parse template, while parsing events dispatched (onElementBegin, onElementEnd)
 			_parser.parseTemplate(id);
 			var result:* = _parserProduct;
-			var resultAsTalonElement:ITalonElement = result as ITalonElement;
+			var resultAsTalonElement:ITalonNode = result as ITalonNode;
 			_parserProduct = null;
 
 			// Add style and resources
@@ -68,7 +67,7 @@ package talon.utils
 
 			// Create new element
 			var element:* = new typeClass();
-			var elementNode:Node = element is ITalonElement ? ITalonElement(element).node : null;
+			var elementNode:Node = element is ITalonNode ? ITalonNode(element).node : null;
 
 			// Copy attributes to node
 			if (elementNode)
@@ -101,7 +100,7 @@ package talon.utils
 			var func:Array = StringUtil.parseFunction(value);
 			if (func && func[0] == "bind")
 			{
-				var parent:ITalonElement = _parserProductStack[_parserProductStack.length - 1] as ITalonElement;
+				var parent:ITalonNode = _parserProductStack[_parserProductStack.length - 1] as ITalonNode;
 				var source:Attribute = parent.node.getOrCreateAttribute(func[1]);
 				var target:Attribute = node.getOrCreateAttribute(attributeName);
 

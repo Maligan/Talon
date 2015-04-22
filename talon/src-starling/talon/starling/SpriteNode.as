@@ -15,20 +15,20 @@ package talon.starling
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.utils.ITalonElement;
+	import talon.utils.ITalonNode;
 
-	public class SpriteElement extends Sprite implements ITalonElement
+	public class SpriteNode extends Sprite implements ITalonNode
 	{
 		private var _node:Node;
-		private var _background:TalonElementBackground;
+		private var _background:Background;
 
-		public function SpriteElement()
+		public function SpriteNode()
 		{
 			_node = new Node();
 			_node.addEventListener(Event.CHANGE, onNodeChange);
 			_node.addEventListener(Event.RESIZE, onNodeResize);
 
-			_background = new TalonElementBackground(node);
+			_background = new Background(node);
 
 			addEventListener(TouchEvent.TOUCH, onTouch);
 		}
@@ -59,14 +59,14 @@ package talon.starling
 
 		public override function addChild(child:DisplayObject):DisplayObject
 		{
-			(child is ITalonElement) && node.addChild(ITalonElement(child).node);
+			(child is ITalonNode) && node.addChild(ITalonNode(child).node);
 			return super.addChild(child);
 		}
 
 		override public function removeChildAt(index:int, dispose:Boolean = false):DisplayObject
 		{
 			var child:DisplayObject = getChildAt(index);
-			(child is ITalonElement) && node.removeChild(ITalonElement(child).node);
+			(child is ITalonNode) && node.removeChild(ITalonNode(child).node);
 			return super.removeChildAt(index, dispose);
 		}
 

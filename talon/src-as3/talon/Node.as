@@ -8,8 +8,6 @@ package talon
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
-	import talon.Attribute;
-
 	import talon.layout.Layout;
 	import talon.types.Gauge;
 	import talon.types.GaugePair;
@@ -70,7 +68,7 @@ package talon
 			bindPair(origin, Attribute.ORIGIN, Attribute.ORIGIN_X, Attribute.ORIGIN_Y);
 			bindPair(pivot, Attribute.PIVOT, Attribute.PIVOT_X, Attribute.PIVOT_Y);
 
-			// Need initialize all inheritable attributes (for inherit listeners)
+			// TODO: Need initialize all inheritable attributes (for inherit listeners)
 			getOrCreateAttribute(Attribute.FONT_COLOR);
 			getOrCreateAttribute(Attribute.FONT_NAME);
 			getOrCreateAttribute(Attribute.FONT_SIZE);

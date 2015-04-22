@@ -150,7 +150,7 @@ package talon.types
 			if (_auto != value)
 			{
 				_auto = value;
-				// Bug in Attribute & ImageElement
+				// Bug in Attribute & ImageNode
 				// dispatchEventWith(Event.CHANGE);
 			}
 		}

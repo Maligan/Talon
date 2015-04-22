@@ -9,15 +9,15 @@ package talon.starling
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.utils.ITalonElement;
+	import talon.utils.ITalonNode;
 	import talon.utils.StringUtil;
 
-	public class TextFieldElement extends TextField implements ITalonElement
+	public class TextFieldNode extends TextField implements ITalonNode
 	{
 		private var _node:Node;
-		private var _background:TalonElementBackground;
+		private var _background:Background;
 
-		public function TextFieldElement()
+		public function TextFieldNode()
 		{
 			super(0, 0, null);
 
@@ -25,7 +25,7 @@ package talon.starling
 			_node.addEventListener(Event.CHANGE, onNodeChange);
 			_node.addEventListener(Event.RESIZE, onNodeResize);
 
-			_background = new TalonElementBackground(node);
+			_background = new Background(node);
 
 			// TextField autoSize
 			_node.width.auto = _node.minWidth.auto = _node.maxWidth.auto = getTextWidth;

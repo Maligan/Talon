@@ -31,17 +31,15 @@ package talon.utils
 		private var _onEnd:Function;
 
 		/** @private */
-		public function TMLParser(terminals:Vector.<String> = null, templates:Object = null)
+		public function TMLParser(terminals:Vector.<String> = null, templates:Object = null, onElementBegin:Function = null, onElementEnd:Function = null)
 		{
 			_terminals = terminals || new Vector.<String>();
 			_templates = templates || new Object();
 			_stack = new Vector.<String>();
-		}
 
-		public function setListeners(onBegin:Function, onEnd:Function):void
-		{
-			_onBegin = onBegin;
-			_onEnd = onEnd;
+			// Do not use EventDispatcher: can't success 'try { } catch { }' if error occurs in listener
+			_onBegin = onElementBegin;
+			_onEnd = onElementEnd;
 		}
 
 		public function parseTemplate(id:String):void

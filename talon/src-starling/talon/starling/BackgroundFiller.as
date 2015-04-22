@@ -9,7 +9,7 @@ package talon.starling
 	import talon.enums.FillMode;
 
 	[ExcludeClass]
-	internal class TextureFiller
+	internal class BackgroundFiller
 	{
 		private static var POOL:Vector.<QuadData>;
 		private static var HELPER:QuadWithUnsafeAccess;
@@ -33,7 +33,7 @@ package talon.starling
 
 		private var _invalid:int;
 
-		public function TextureFiller():void
+		public function BackgroundFiller():void
 		{
 			POOL = new <QuadData>[];
 			HELPER = new QuadWithUnsafeAccess();

@@ -1,5 +1,6 @@
 package talon.starling
 {
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
@@ -28,7 +29,7 @@ package talon.starling
 			_node.addEventListener(Event.CHANGE, onNodeChange);
 			_node.addEventListener(Event.RESIZE, onNodeResize);
 
-			_background = new Background(node);
+			_background = new Background(this, node);
 
 			addEventListener(TouchEvent.TOUCH, onTouch);
 		}
@@ -114,9 +115,14 @@ package talon.starling
 			super.render(support, parentAlpha);
 		}
 
-		override public function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
+		public override function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
 		{
-			return super.getBounds(targetSpace, resultRect);
+			return _background.getBounds(targetSpace, resultRect, super.getBounds);
+		}
+
+		public override function hitTest(localPoint:Point, forTouch:Boolean = false):DisplayObject
+		{
+			return _background.hitTest(localPoint, forTouch, super.hitTest);
 		}
 
 		private function get clipping():Boolean

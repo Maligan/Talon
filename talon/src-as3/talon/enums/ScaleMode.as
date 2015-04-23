@@ -1,5 +1,6 @@
 package talon.enums
 {
+	[Deprecated(message="Merge with starling.utils.ScaleMode")]
 	public final class ScaleMode
 	{
 		public static const NONE:String = "none";

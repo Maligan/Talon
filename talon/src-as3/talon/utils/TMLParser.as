@@ -37,7 +37,7 @@ package talon.utils
 			_templates = templates || new Object();
 			_stack = new Vector.<String>();
 
-			// Do not use EventDispatcher: can't success 'try { } catch { }' if error occurs in listener
+			// Do not use EventDispatcher: can't success 'try { } catch { }' if error occurs in listeners
 			_onBegin = onElementBegin;
 			_onEnd = onElementEnd;
 		}

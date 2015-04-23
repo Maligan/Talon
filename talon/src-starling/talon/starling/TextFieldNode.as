@@ -25,7 +25,7 @@ package talon.starling
 			_node.addEventListener(Event.CHANGE, onNodeChange);
 			_node.addEventListener(Event.RESIZE, onNodeResize);
 
-			_background = new Background(node);
+			_background = new Background(this, node);
 
 			// TextField autoSize
 			_node.width.auto = _node.minWidth.auto = _node.maxWidth.auto = getTextWidth;

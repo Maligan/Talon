@@ -9,15 +9,15 @@ package talon.starling
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.utils.ITalonNode;
+	import talon.utils.ITalonAdaptee;
 	import talon.utils.StringUtil;
 
-	public class TextFieldNode extends TextField implements ITalonNode
+	public class TalonTextField extends TextField implements ITalonAdaptee
 	{
 		private var _node:Node;
-		private var _background:Background;
+		private var _bridge:DisplayObjectBridge;
 
-		public function TextFieldNode()
+		public function TalonTextField()
 		{
 			super(0, 0, null);
 
@@ -25,7 +25,7 @@ package talon.starling
 			_node.addEventListener(Event.CHANGE, onNodeChange);
 			_node.addEventListener(Event.RESIZE, onNodeResize);
 
-			_background = new Background(this, node);
+			_bridge = new DisplayObjectBridge(this, node);
 
 			// TextField autoSize
 			_node.width.auto = _node.minWidth.auto = _node.maxWidth.auto = getTextWidth;
@@ -74,7 +74,7 @@ package talon.starling
 			width = Math.round(_node.bounds.width)// - 2;
 			height = Math.round(_node.bounds.height)// - 2;
 
-			_background.resize(width, height);
+			_bridge.resize(width, height);
 
 			autoSize = TextFieldAutoSize.NONE;
 		}
@@ -87,7 +87,7 @@ package talon.starling
 		public override function render(support:RenderSupport, parentAlpha:Number):void
 		{
 			// Render background
-			_background.render(support, parentAlpha);
+			_bridge.renderBackground(support, parentAlpha);
 
 			// Render glyphs
 			super.render(support, parentAlpha);

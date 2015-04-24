@@ -16,20 +16,20 @@ package talon.starling
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.utils.ITalonNode;
+	import talon.utils.ITalonAdaptee;
 
-	public class SpriteNode extends Sprite implements ITalonNode
+	public class TalonSprite extends Sprite implements ITalonAdaptee
 	{
 		private var _node:Node;
-		private var _background:Background;
+		private var _background:DisplayObjectBridge;
 
-		public function SpriteNode()
+		public function TalonSprite()
 		{
 			_node = new Node();
 			_node.addEventListener(Event.CHANGE, onNodeChange);
 			_node.addEventListener(Event.RESIZE, onNodeResize);
 
-			_background = new Background(this, node);
+			_background = new DisplayObjectBridge(this, node);
 
 			addEventListener(TouchEvent.TOUCH, onTouch);
 		}
@@ -60,14 +60,14 @@ package talon.starling
 
 		public override function addChild(child:DisplayObject):DisplayObject
 		{
-			(child is ITalonNode) && node.addChild(ITalonNode(child).node);
+			(child is ITalonAdaptee) && node.addChild(ITalonAdaptee(child).node);
 			return super.addChild(child);
 		}
 
 		override public function removeChildAt(index:int, dispose:Boolean = false):DisplayObject
 		{
 			var child:DisplayObject = getChildAt(index);
-			(child is ITalonNode) && node.removeChild(ITalonNode(child).node);
+			(child is ITalonAdaptee) && node.removeChild(ITalonAdaptee(child).node);
 			return super.removeChildAt(index, dispose);
 		}
 
@@ -106,10 +106,13 @@ package talon.starling
 			clipRect = clipping ? new Rectangle(0, 0, node.bounds.width, node.bounds.height) : null;
 		}
 
+		//
+		// Background custom changes
+		//
 		public override function render(support:RenderSupport, parentAlpha:Number):void
 		{
 			// Background render
-			_background.render(support, parentAlpha);
+			_background.renderBackground(support, parentAlpha);
 
 			// Children render
 			super.render(support, parentAlpha);
@@ -117,14 +120,17 @@ package talon.starling
 
 		public override function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
 		{
-			return _background.getBounds(targetSpace, resultRect, super.getBounds);
+			return _background.getBoundsCustom(super.getBounds, targetSpace, resultRect);
 		}
 
 		public override function hitTest(localPoint:Point, forTouch:Boolean = false):DisplayObject
 		{
-			return _background.hitTest(localPoint, forTouch, super.hitTest);
+			return _background.hitTestCustom(super.hitTest, localPoint, forTouch);
 		}
 
+		//
+		// Property delegating
+		//
 		private function get clipping():Boolean
 		{
 			return node.getAttribute(Attribute.CLIPPING) == "true";

@@ -94,14 +94,14 @@ package talon.types
 		 *
 		 * @param ppmm pixels per millimeter
 		 * @param ppem pixels per em
-		 * @param ppdt pixels per point
+		 * @param ppdp pixels per density-independent point
 		 * @param pp100p pixels per 100%
 		 * @param aw available width (for auto measure)
 		 * @param ah available height (for auto measure)
 		 * @param ppts pixels per total stars
-		 * @param ts total stars
+		 * @param s stars amount
 		 */
-		public function toPixels(ppmm:Number, ppem:Number, ppdt:Number, pp100p:Number, aw:Number = Infinity, ah:Number = Infinity, ppts:Number = 0, ts:int = 0):Number
+		public function toPixels(ppmm:Number, ppem:Number, ppdp:Number, pp100p:Number, aw:Number = Infinity, ah:Number = Infinity, ppts:Number = 0, s:int = 0):Number
 		{
 			switch (unit)
 			{
@@ -110,9 +110,9 @@ package talon.types
 				case PX:		return amount;
 				case MM:		return amount * ppmm;
 				case EM:        return amount * ppem;
-				case DP:        return amount * ppdt;
+				case DP:        return amount * ppdp;
 				case PERCENT:   return amount * pp100p/100;
-				case STAR:		return amount * (ts?(ppts/ts):0);
+				case STAR:		return amount * (s?(ppts/s):0);
 				default:		throw new Error("Unknown gauge unit: " + unit);
 			}
 		}
@@ -150,8 +150,8 @@ package talon.types
 			if (_auto != value)
 			{
 				_auto = value;
-				// Bug in Attribute & ImageNode
-				// dispatchEventWith(Event.CHANGE);
+				// Do not dispatch Event.CHANGE
+				// Event change cause change in binded Attribute. (@see TalonImage)
 			}
 		}
 

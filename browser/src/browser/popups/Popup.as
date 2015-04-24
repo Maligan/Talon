@@ -5,11 +5,11 @@ package browser.popups
 	import flash.utils.Dictionary;
 
 	import starling.display.DisplayObjectContainer;
-	import talon.utils.ITalonNode;
+	import talon.utils.ITalonAdaptee;
 	import talon.utils.TalonFactoryBase;
-	import talon.starling.SpriteNode;
+	import talon.starling.TalonSprite;
 
-	public class Popup extends SpriteNode implements ITalonNode
+	public class Popup extends TalonSprite implements ITalonAdaptee
 	{
 		private static var _ui:AppUI;
 		private static var _layer:DisplayObjectContainer;

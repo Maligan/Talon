@@ -2,19 +2,20 @@ package talon.starling
 {
 	import starling.display.Image;
 	import starling.events.Event;
+	import starling.filters.FragmentFilter;
 	import starling.textures.Texture;
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.utils.ITalonNode;
+	import talon.utils.ITalonAdaptee;
 
-	public class ImageNode extends Image implements ITalonNode
+	public class TalonImage extends Image implements ITalonAdaptee
 	{
 		private static var _empty:Texture;
 
 		private var _node:Node;
 
-		public function ImageNode()
+		public function TalonImage()
 		{
 			super(_empty || (_empty = Texture.empty(1, 1)));
 
@@ -40,6 +41,10 @@ package talon.starling
 					node.width.isAuto   && node.dispatchEventWith(Event.CHANGE, false, Attribute.WIDTH);
 					node.height.isAuto  && node.dispatchEventWith(Event.CHANGE, false, Attribute.HEIGHT);
 				}
+			}
+			else (e.data == "filter")
+			{
+				filter = node.getAttribute(Attribute.FILTER) as FragmentFilter;
 			}
 		}
 

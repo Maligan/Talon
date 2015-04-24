@@ -8,7 +8,6 @@ package talon.starling
 
 	import talon.enums.FillMode;
 
-	[ExcludeClass]
 	internal class BackgroundFiller
 	{
 		private static var POOL:Vector.<QuadData>;

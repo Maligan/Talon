@@ -31,9 +31,9 @@ package browser
 
 	import talon.Attribute;
 	import talon.starling.TalonFactoryStarling;
-	import talon.utils.ITalonNode;
+	import talon.utils.ITalonAdaptee;
 	import talon.utils.TalonFactoryBase;
-	import talon.starling.SpriteNode;
+	import talon.starling.TalonSprite;
 	import talon.layout.Layout;
 	import talon.enums.Orientation;
 	import starling.filters.BlurFilter;
@@ -48,12 +48,12 @@ package browser
 		private var _controller:AppController;
 
 		private var _factory:TalonFactoryBase;
-		private var _interface:SpriteNode;
-		private var _errorPage:SpriteNode;
-		private var _popupContainer:SpriteNode;
-		private var _isolatorContainer:SpriteNode;
+		private var _interface:TalonSprite;
+		private var _errorPage:TalonSprite;
+		private var _popupContainer:TalonSprite;
+		private var _isolatorContainer:TalonSprite;
 		private var _isolator:Sprite;
-		private var _container:SpriteNode;
+		private var _container:TalonSprite;
 
 		private var _documentDispatcher:EventDispatcherAdapter;
 		private var _menu:NativeMenuAdapter;
@@ -74,7 +74,7 @@ package browser
 			_factory = new TalonFactoryStarling();
 			_factory.addArchiveContentAsync(new INTERFACE() as ByteArray, onFactoryComplete);
 
-			_container = new SpriteNode();
+			_container = new TalonSprite();
 			_container.node.setAttribute(Attribute.LAYOUT, Layout.ABSOLUTE);
 			_container.node.setAttribute(Attribute.VALIGN, VAlign.CENTER);
 			_container.node.setAttribute(Attribute.HALIGN, HAlign.CENTER);
@@ -96,6 +96,7 @@ package browser
 			_menu.addItem("file/close",   AppConstants.T_MENU_FILE_CLOSE,          new CloseCommand(_controller),  "w");
 			_menu.addItem("file/-1");
 			_menu.addItem("file/export",  AppConstants.T_MENU_FILE_EXPORT_AS,      new ExportCommand(_controller), "s");
+			_menu.addItem("file/-2");
 
 			_menu.addItem("view",                       AppConstants.T_MENU_VIEW);
 			_menu.addItem("view/theme",                 AppConstants.T_MENU_VIEW_BACKGROUND);
@@ -129,16 +130,16 @@ package browser
 		//
 		private function onFactoryComplete():void
 		{
-			_interface = _factory.produce("interface") as SpriteNode;
+			_interface = _factory.produce("interface") as TalonSprite;
 			addChild(_interface);
 
 			_interface.getChildByName("shade").visible = false;
 
-			_errorPage = _interface.getChildByName("bsod") as SpriteNode;
+			_errorPage = _interface.getChildByName("bsod") as TalonSprite;
 			_errorPage.visible = false;
 
-			_popupContainer = _interface.getChildByName("popups") as SpriteNode;
-			_isolatorContainer = _interface.getChildByName("container") as SpriteNode;
+			_popupContainer = _interface.getChildByName("popups") as TalonSprite;
+			_isolatorContainer = _interface.getChildByName("container") as TalonSprite;
 			_isolatorContainer.addChild(_isolator);
 			Popup.initialize(this, _popupContainer);
 

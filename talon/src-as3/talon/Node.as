@@ -245,7 +245,7 @@ package talon
 		/** Actual node bounds in pixels. */
 		public function get bounds():Rectangle { return _bounds; }
 
-		/** Pixel per point. (Also known as (csf) content scale factor) */
+		/** Pixel per density-independent point (in Starling also known as content scale factor [csf]). */
 		public function get ppdp():Number { return Starling.current.contentScaleFactor; }
 
 		/** Pixels per millimeter (in current node). */

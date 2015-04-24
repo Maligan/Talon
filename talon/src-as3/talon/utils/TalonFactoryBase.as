@@ -46,7 +46,7 @@ package talon.utils
 			// Parse template, while parsing events dispatched (onElementBegin, onElementEnd)
 			_parser.parseTemplate(id);
 			var result:* = _parserProduct;
-			var resultAsTalonElement:ITalonNode = result as ITalonNode;
+			var resultAsTalonElement:ITalonAdaptee = result as ITalonAdaptee;
 			_parserProduct = null;
 
 			// Add style and resources
@@ -67,7 +67,7 @@ package talon.utils
 
 			// Create new element
 			var element:* = new typeClass();
-			var elementNode:Node = element is ITalonNode ? ITalonNode(element).node : null;
+			var elementNode:Node = element is ITalonAdaptee ? ITalonAdaptee(element).node : null;
 
 			// Copy attributes to node
 			if (elementNode)
@@ -100,7 +100,7 @@ package talon.utils
 			var func:Array = StringUtil.parseFunction(value);
 			if (func && func[0] == "bind")
 			{
-				var parent:ITalonNode = _parserProductStack[_parserProductStack.length - 1] as ITalonNode;
+				var parent:ITalonAdaptee = _parserProductStack[_parserProductStack.length - 1] as ITalonAdaptee;
 				var source:Attribute = parent.node.getOrCreateAttribute(func[1]);
 				var target:Attribute = node.getOrCreateAttribute(attributeName);
 

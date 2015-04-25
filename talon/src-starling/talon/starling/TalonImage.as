@@ -7,9 +7,9 @@ package talon.starling
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.utils.ITalonAdaptee;
+	import talon.utils.ITalonElement;
 
-	public class TalonImage extends Image implements ITalonAdaptee
+	public class TalonImage extends Image implements ITalonElement
 	{
 		private static var _empty:Texture;
 

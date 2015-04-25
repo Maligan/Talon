@@ -9,10 +9,10 @@ package talon.starling
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.utils.ITalonAdaptee;
+	import talon.utils.ITalonElement;
 	import talon.utils.StringUtil;
 
-	public class TalonTextField extends TextField implements ITalonAdaptee
+	public class TalonTextField extends TextField implements ITalonElement
 	{
 		private var _node:Node;
 		private var _bridge:DisplayObjectBridge;
@@ -31,8 +31,6 @@ package talon.starling
 			_node.width.auto = _node.minWidth.auto = _node.maxWidth.auto = getTextWidth;
 			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = getTextHeight;
 			autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
-
-			touchable = false;
 		}
 
 		private function getTextWidth(width:Number, height:Number):Number
@@ -51,8 +49,7 @@ package talon.starling
 			else if (e.data == Attribute.HALIGN)       hAlign = _node.getAttribute(Attribute.HALIGN);
 			else if (e.data == Attribute.VALIGN)       vAlign = _node.getAttribute(Attribute.VALIGN);
 			else if (e.data == Attribute.FONT_NAME)    fontName = _node.getAttribute(Attribute.FONT_NAME) || BitmapFont.MINI;
-			else if (e.data == Attribute.FONT_COLOR)
-							color = StringUtil.parseColor(_node.getAttribute(Attribute.FONT_COLOR));
+			else if (e.data == Attribute.FONT_COLOR)   color = StringUtil.parseColor(_node.getAttribute(Attribute.FONT_COLOR));
 			else if (e.data == Attribute.FONT_SIZE)    fontSize = node.ppem;
 			else if (e.data == Attribute.WIDTH || e.data == Attribute.HEIGHT)
 			{

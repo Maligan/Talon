@@ -3,16 +3,23 @@ package talon.starling
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.ui.Mouse;
+	import flash.ui.MouseCursor;
 
 	import starling.core.RenderSupport;
 	import starling.display.DisplayObject;
 	import starling.events.Event;
+	import starling.events.Touch;
+	import starling.events.TouchEvent;
+	import starling.events.TouchPhase;
+	import starling.filters.FragmentFilter;
 	import starling.textures.Texture;
 	import starling.utils.Color;
 	import starling.utils.MatrixUtil;
 
 	import talon.Attribute;
 	import talon.Node;
+	import talon.enums.Visibility;
 	import talon.types.GaugeQuad;
 	import talon.utils.StringUtil;
 
@@ -31,7 +38,10 @@ package talon.starling
 		public function DisplayObjectBridge(target:DisplayObject, node:Node):void
 		{
 			_target = target;
+			_target.addEventListener(TouchEvent.TOUCH, onTouchForInteractionPurpose);
+
 			_node = node;
+			_filler = new BackgroundFiller();
 
 			// Background
 			addAttributeChangeListener(Attribute.BACKGROUND_9SCALE,     onBackground9ScaleChange);
@@ -41,13 +51,12 @@ package talon.starling
 			addAttributeChangeListener(Attribute.BACKGROUND_TINT,       onBackgroundTintChange);
 
 			// Common options
-			addAttributeChangeListener(Attribute.VISIBILITY,            trace);
-			addAttributeChangeListener(Attribute.FILTER,                trace);
+			addAttributeChangeListener(Attribute.ID,                    onIDChange);
+			addAttributeChangeListener(Attribute.VISIBILITY,            onVisibilityChange);
+			addAttributeChangeListener(Attribute.FILTER,                onFilterChange);
 			addAttributeChangeListener(Attribute.CLIPPING,              trace);
-			addAttributeChangeListener(Attribute.ALPHA,                 trace);
-			addAttributeChangeListener(Attribute.CURSOR,                trace);
-
-			_filler = new BackgroundFiller();
+			addAttributeChangeListener(Attribute.ALPHA,                 onAlphaChange);
+			addAttributeChangeListener(Attribute.CURSOR,                onCursorChange);
 		}
 
 		public function addAttributeChangeListener(attribute:String, listener:Function):void
@@ -82,6 +91,45 @@ package talon.starling
 				GRID.bottom.toPixels(_node.ppmm, _node.ppem, _node.ppdp, textureHeight),
 				GRID.left.toPixels(_node.ppmm, _node.ppem, _node.ppdp, textureWidth)
 			);
+		}
+
+		//
+		// Listeners: Common
+		//
+		private function onIDChange(e:Event):void { _target.name = _node.getAttribute(Attribute.ID); }
+		private function onFilterChange(e:Event):void { _target.filter = _node.getAttribute(Attribute.FILTER) as FragmentFilter; }
+		private function onVisibilityChange(e:Event):void { _target.visible = _node.getAttribute(Attribute.VISIBILITY) == Visibility.VISIBLE; }
+		private function onAlphaChange(e:Event):void { _target.alpha = parseFloat(_node.getAttribute(Attribute.ALPHA)); }
+
+		private function onCursorChange(e:Event):void
+		{
+			var cursor:String = _node.getAttribute(Attribute.CURSOR);
+			if (cursor == MouseCursor.AUTO) _target.removeEventListener(TouchEvent.TOUCH, onTouchForCursorPurpose);
+			else _target.addEventListener(TouchEvent.TOUCH, onTouchForCursorPurpose);
+		}
+
+		private function onTouchForCursorPurpose(e:TouchEvent):void
+		{
+			Mouse.cursor = e.interactsWith(_target)
+				? _node.getAttribute(Attribute.CURSOR)
+				: MouseCursor.AUTO;
+		}
+
+		//
+		// Interaction
+		//
+		private function onTouchForInteractionPurpose(e:TouchEvent):void
+		{
+			var touch:Touch = e.getTouch(_target);
+
+			if (touch == null)
+				_node.states = new <String>[];
+			else if (touch.phase == TouchPhase.HOVER)
+				_node.states = new <String>["hover"];
+			else if (touch.phase == TouchPhase.BEGAN)
+				_node.states = new <String>["active"];
+			else if (touch.phase == TouchPhase.ENDED)
+				_node.states = new <String>[];
 		}
 
 		//

@@ -31,7 +31,7 @@ package browser
 
 	import talon.Attribute;
 	import talon.starling.TalonFactoryStarling;
-	import talon.utils.ITalonAdaptee;
+	import talon.utils.ITalonElement;
 	import talon.utils.TalonFactoryBase;
 	import talon.starling.TalonSprite;
 	import talon.layout.Layout;
@@ -78,7 +78,6 @@ package browser
 			_container.node.setAttribute(Attribute.LAYOUT, Layout.ABSOLUTE);
 			_container.node.setAttribute(Attribute.VALIGN, VAlign.CENTER);
 			_container.node.setAttribute(Attribute.HALIGN, HAlign.CENTER);
-			_container.removeEventListener(TouchEvent.TOUCH, _container.onTouch);
 
 			_isolator = new Sprite();
 			_isolator.addChild(_container);

@@ -19,11 +19,6 @@ package talon.starling
 			setup("label",  TalonTextField);
 		}
 
-		public function create(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):DisplayObject
-		{
-			return produce(id, includeStyleSheet, includeResources);
-		}
-
 		protected override function addChild(parent:*, child:*):void
 		{
 			var parentAsDisplayObject:DisplayObjectContainer = DisplayObjectContainer(parent);

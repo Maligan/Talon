@@ -25,7 +25,7 @@ package browser
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.utils.ITalonAdaptee;
+	import talon.utils.ITalonElement;
 
 	public class AppController extends EventDispatcher
 	{
@@ -238,7 +238,7 @@ package browser
 			var split:Array = query.split(" ");
 			var attrs:Boolean = split.length > 1 && split[1] == "-a";
 
-			var template:ITalonAdaptee = ITalonAdaptee(_ui.template);
+			var template:ITalonElement = ITalonElement(_ui.template);
 			var node:Node = template.node;
 			traceNode(node, 0, attrs);
 		}

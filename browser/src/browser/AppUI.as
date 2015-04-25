@@ -95,7 +95,6 @@ package browser
 			_menu.addItem("file/close",   AppConstants.T_MENU_FILE_CLOSE,          new CloseCommand(_controller),  "w");
 			_menu.addItem("file/-1");
 			_menu.addItem("file/export",  AppConstants.T_MENU_FILE_EXPORT_AS,      new ExportCommand(_controller), "s");
-			_menu.addItem("file/-2");
 
 			_menu.addItem("view",                       AppConstants.T_MENU_VIEW);
 			_menu.addItem("view/theme",                 AppConstants.T_MENU_VIEW_BACKGROUND);
@@ -104,6 +103,7 @@ package browser
 			_menu.addItem("view/theme/light",           AppConstants.T_MENU_VIEW_BACKGROUND_LIGHT, new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
 			_menu.addItem("view/stats",                 AppConstants.T_MENU_VIEW_STATS,            new SettingCommand(_controller, AppConstants.SETTING_STATS, true, false));
 			_menu.addItem("view/resize",                AppConstants.T_MENU_VIEW_LOCK_RESIZE,      new SettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
+			_menu.addItem("view/alwaysOnTop",           AppConstants.T_MENU_VIEW_ALWAYS_ON_TOP,    new SettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
 			_menu.addItem("view/-1");
 			_menu.addItem("view/zoomIn",                AppConstants.T_MENU_VIEW_ZOOM_IN,          new ZoomCommand(_controller, +25),   "+");
 			_menu.addItem("view/zoomOut",               AppConstants.T_MENU_VIEW_ZOOM_OUT,         new ZoomCommand(_controller, -25),   "-");
@@ -145,6 +145,7 @@ package browser
 			_controller.settings.addSettingListener(AppConstants.SETTING_BACKGROUND, onBackgroundChange); onBackgroundChange(null);
 			_controller.settings.addSettingListener(AppConstants.SETTING_STATS, onStatsChange); onStatsChange(null);
 			_controller.settings.addSettingListener(AppConstants.SETTING_ZOOM, onZoomChange); onZoomChange(null);
+			_controller.settings.addSettingListener(AppConstants.SETTING_ALWAYS_ON_TOP, onAlwaysOnTopChange); onAlwaysOnTopChange(null);
 
 			stage && resizeTo(stage.stageWidth, stage.stageHeight);
 		}
@@ -162,6 +163,11 @@ package browser
 		private function onZoomChange(e:Event):void
 		{
 			zoom = _controller.settings.getValueOrDefault(AppConstants.SETTING_ZOOM, 100) / 100;
+		}
+
+		private function onAlwaysOnTopChange(e:Event):void
+		{
+			_controller.root.stage.nativeWindow.alwaysInFront = _controller.settings.getValueOrDefault(AppConstants.SETTING_ALWAYS_ON_TOP, false);
 		}
 
 		private function onDocumentChange(e:Event):void

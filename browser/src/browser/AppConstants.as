@@ -24,6 +24,7 @@ package browser
 		public static const SETTING_RECENT_ARRAY:String = "recent";
 		public static const SETTING_PROFILE:String = "profile";
 		public static const SETTING_IS_PORTRAIT:String = "isPortrait";
+		public static const SETTING_ALWAYS_ON_TOP:String = "alwaysOnTop";
 
 		public static const ZOOM_MIN:int = 25;
 		public static const ZOOM_MAX:int = 300;
@@ -51,6 +52,7 @@ package browser
 		public static const T_MENU_VIEW_BACKGROUND_CHESS:String = "Transparent";
 		public static const T_MENU_VIEW_STATS:String = "Show Stats";
 		public static const T_MENU_VIEW_LOCK_RESIZE:String = "Lock Window Size";
+		public static const T_MENU_VIEW_ALWAYS_ON_TOP:String = "Always On Top";
 		public static const T_MENU_VIEW_ZOOM_IN:String = "Zoom In";
 		public static const T_MENU_VIEW_ZOOM_OUT:String = "Zoom Out";
 		public static const T_MENU_VIEW_ORIENTATION:String = "Orientation";

@@ -26,10 +26,10 @@ package talon.starling
 	/** Provide method for synchronize starling.display.DisplayObject and talon.Node. */
 	internal class DisplayObjectBridge
 	{
-		private static const MATRIX:Matrix = new Matrix();
-		private static const POINT:Point = new Point();
-		private static const RECTANGLE:Rectangle = new Rectangle();
-		private static const GRID:GaugeQuad = new GaugeQuad();
+		private const MATRIX:Matrix = new Matrix();
+		private const POINT:Point = new Point();
+		private const GRID:GaugeQuad = new GaugeQuad();
+		private const RECTANGLE:Rectangle = new Rectangle();
 
 		private var _target:DisplayObject;
 		private var _node:Node;
@@ -178,7 +178,7 @@ package talon.starling
 
 				// otherwise, check bounding box
 				var bounds:Rectangle = _target.getBounds(_target, RECTANGLE);
-				if (bounds.containsPoint(localPoint))
+				if (bounds.contains(localX, localY))
 					result = _target;
 			}
 			// --------------------------------------------

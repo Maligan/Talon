@@ -33,14 +33,27 @@ package talon.starling
 			autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
 		}
 
-		private function getTextWidth(width:Number, height:Number):Number
+		private function getTextWidth(availableWidth:Number, availableHeight:Number):Number
 		{
+			adjust(availableWidth, availableHeight);
 			return textBounds.width;
 		}
 
-		private function getTextHeight(width:Number, height:Number):Number
+		private function getTextHeight(availableWidth:Number, availableHeight:Number):Number
 		{
+			adjust(availableWidth, availableHeight);
 			return textBounds.height;
+		}
+
+		private function adjust(aw:Number, ah:Number):void
+		{
+			/**/ if (aw == Infinity && ah == Infinity) autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
+			else if (aw == Infinity && ah != Infinity) autoSize = TextFieldAutoSize.VERTICAL;
+			else if (aw != Infinity && ah == Infinity) autoSize = TextFieldAutoSize.HORIZONTAL;
+			else if (aw != Infinity && ah != Infinity) autoSize = TextFieldAutoSize.NONE;
+
+			if (aw != Infinity) width = aw;
+			if (ah != Infinity) height = ah;
 		}
 
 		private function onNodeChange(e:Event):void
@@ -51,17 +64,6 @@ package talon.starling
 			else if (e.data == Attribute.FONT_NAME)    fontName = _node.getAttribute(Attribute.FONT_NAME) || BitmapFont.MINI;
 			else if (e.data == Attribute.FONT_COLOR)   color = StringUtil.parseColor(_node.getAttribute(Attribute.FONT_COLOR));
 			else if (e.data == Attribute.FONT_SIZE)    fontSize = node.ppem;
-			else if (e.data == Attribute.WIDTH || e.data == Attribute.HEIGHT)
-			{
-				var isHorizontal:Boolean = _node.width.isAuto;
-				var isVertical:Boolean = _node.height.isAuto;
-				autoSize = TextFieldAutoSize.NONE;
-
-//				/**/ if ( isHorizontal &&  isVertical) (autoSize = TextFieldAutoSize.BOTH_DIRECTIONS);
-//				else if ( isHorizontal && !isVertical) (autoSize = TextFieldAutoSize.HORIZONTAL);
-//				else if (!isHorizontal &&  isVertical) (autoSize = TextFieldAutoSize.VERTICAL);
-//				else if (!isHorizontal && !isVertical) (autoSize = TextFieldAutoSize.NONE);
-			}
 		}
 
 		private function onNodeResize(e:Event):void

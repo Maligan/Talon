@@ -75,7 +75,7 @@ package browser
 			_factory.addArchiveContentAsync(new INTERFACE() as ByteArray, onFactoryComplete);
 
 			_container = new TalonSprite();
-			_container.node.setAttribute(Attribute.LAYOUT, Layout.ABSOLUTE);
+			_container.node.setAttribute(Attribute.LAYOUT, Layout.FLOW);
 			_container.node.setAttribute(Attribute.VALIGN, VAlign.CENTER);
 			_container.node.setAttribute(Attribute.HALIGN, HAlign.CENTER);
 

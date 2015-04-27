@@ -186,11 +186,27 @@ package talon
 
 		/** CCS classes which determine node style. TODO: Optimize. */
 		public function get classes():Vector.<String> { return Vector.<String>(getAttribute(Attribute.CLASS) ? getAttribute(Attribute.CLASS).split(" ") : []) }
-		public function set classes(value:Vector.<String>):void { setAttribute(Attribute.CLASS, value.join(" ")); restyle(); }
+		public function set classes(value:Vector.<String>):void
+		{
+			var string:String = value.join(" ");
+			if (string != getAttribute(Attribute.CLASS))
+			{
+				setAttribute(Attribute.CLASS, string);
+				restyle();
+			}
+		}
 
 		/** Current active states (aka CSS pseudoClasses: hover, active, checked etc.). TODO: Optimize. */
-		public function get states():Vector.<String> { return Vector.<String>(getAttribute(Attribute.STATE) ? getAttribute(Attribute.STATE).split(" ") : []) }
-		public function set states(value:Vector.<String>):void { setAttribute(Attribute.STATE, value.join(" ")); restyle(); }
+		public function get states():Vector.<String>{ return Vector.<String>(getAttribute(Attribute.STATE) ? getAttribute(Attribute.STATE).split(" ") : []) }
+		public function set states(value:Vector.<String>):void
+		{
+			var string:String = value.join(" ");
+			if (string != getAttribute(Attribute.STATE))
+			{
+				setAttribute(Attribute.STATE, string);
+				restyle();
+			}
+		}
 
 		//
 		// Resource

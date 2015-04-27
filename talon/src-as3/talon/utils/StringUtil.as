@@ -82,5 +82,10 @@ package talon.utils
 					return 0.0;
 			}
 		}
+
+		public static function parseBoolean(string:String):Boolean
+		{
+			return string == "true";
+		}
 	}
 }

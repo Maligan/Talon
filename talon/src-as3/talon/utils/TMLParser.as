@@ -44,7 +44,7 @@ package talon.utils
 
 		public function parseTemplate(id:String):void
 		{
-			// XXX: Clean after error? _stack.length = 0;
+			// TODO: Clean after error? _stack.length = 0;
 			parse(getTemplateOrDie(id), {type: id}, EMPTY_XML_LIST);
 		}
 
@@ -181,7 +181,7 @@ package talon.utils
 		private function getRewrites(target:XML, rewrites:XMLList, mode:String):XMLList
 		{
 			var id:String = target.attribute(ATT_ID);
-			// XXX: @ref && @mode (ATT_REF, ATT_MODE)
+			// TODO: @ref && @mode (ATT_REF, ATT_MODE)
 			return rewrites.(@ref==id).(@mode==mode);
 		}
 

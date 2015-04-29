@@ -76,6 +76,7 @@ package talon
 		public static const CLIPPING:String = registerAttributeDefaults("clipping", FALSE);
 		public static const CURSOR:String = registerAttributeDefaults("cursor", MouseCursor.AUTO);
 		public static const FILTER:String = registerAttributeDefaults("filter", NONE);
+		public static const Z_INDEX:String = registerAttributeDefaults("zIndex", ZERO);
 
 		public static const LAYOUT:String = registerAttributeDefaults("layout", Layout.FLOW);
 		public static const VISIBILITY:String = registerAttributeDefaults("visibility", Visibility.VISIBLE);

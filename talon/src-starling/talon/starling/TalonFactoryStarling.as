@@ -97,7 +97,7 @@ class AssetManagerExtended extends AssetManager
 
 	private var mGetNameCallback:Function;
 	private var mCss:Dictionary;
-	private var mCssGuess:Dictionary; // TODO: Remove guesses, define css from content
+	private var mCssGuess:Dictionary;
 
 	public function AssetManagerExtended(getNameCallback:Function)
 	{

@@ -55,12 +55,12 @@ package talon.starling
 		{
 			if (_texture == null && _transparent) return;
 
-			if (_invalid != 0)
-			{
-				invalid(MESH) && remesh();
-				invalid(QUAD) && compose();
+//			if (_invalid != 0)
+//			{
+				remesh();
+				compose();
 				_invalid = 0;
-			}
+//			}
 
 			support.batchQuadBatch(_batch, parentAlpha);
 		}
@@ -134,6 +134,7 @@ package talon.starling
 
 		private function remeshRepeat():void
 		{
+			// TODO: Based on texture.repeat property - create only one quad
 			var textureWidth:int = _texture.width;
 			var textureHeight:int = _texture.height;
 
@@ -233,7 +234,7 @@ package talon.starling
 			if (texture != value)
 			{
 				_texture = value;
-				invalidate(QUAD);
+				invalidate(MESH);
 			}
 		}
 
@@ -293,7 +294,7 @@ package talon.starling
 			if (_tint != value)
 			{
 				_tint = value;
-				invalidate(QUAD);
+				invalidate(MESH);
 			}
 		}
 
@@ -313,7 +314,7 @@ package talon.starling
 			if (_alpha != value)
 			{
 				_alpha = value;
-				invalidate(QUAD);
+				invalidate(MESH);
 			}
 		}
 

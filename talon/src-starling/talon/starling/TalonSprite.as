@@ -26,19 +26,49 @@ package talon.starling
 			_bridge.addAttributeChangeListener(Attribute.CLIPPING, refreshClipping);
 		}
 
+		//
+		// Children
+		//
+		/** @inherit */
 		public override function addChild(child:DisplayObject):DisplayObject
 		{
-			(child is ITalonElement) && node.addChild(ITalonElement(child).node);
+			if (child is ITalonElement) attachChildElement(child as ITalonElement);
 			return super.addChild(child);
 		}
 
-		override public function removeChildAt(index:int, dispose:Boolean = false):DisplayObject
+		/** @inherit */
+		public override function removeChildAt(index:int, dispose:Boolean = false):DisplayObject
 		{
 			var child:DisplayObject = getChildAt(index);
-			(child is ITalonElement) && node.removeChild(ITalonElement(child).node);
+			if (child is ITalonElement) detachChildElement(child as ITalonElement);
 			return super.removeChildAt(index, dispose);
 		}
 
+		private function attachChildElement(child:ITalonElement):void
+		{
+			node.addChild(child.node);
+		}
+
+		private function detachChildElement(child:ITalonElement):void
+		{
+			node.removeChild(child.node);
+		}
+
+		private function sortByZIndex(child1:DisplayObject, child2:DisplayObject):int
+		{
+			var child1ZIndex:int = (child1 is ITalonElement) ? 0 : ITalonElement(child1).node.getAttribute(Attribute.Z_INDEX);
+			var child2ZIndex:int = (child2 is ITalonElement) ? 0 : ITalonElement(child2).node.getAttribute(Attribute.Z_INDEX);
+
+			var delta:int = child2ZIndex - child1ZIndex;
+			if (delta != 0) return delta;
+
+			// TODO: Poor logic, need hold base indexes
+			return getChildIndex(child2) - getChildIndex(child1);
+		}
+
+		//
+		// Bridge
+		//
 		private function onNodeResize(e:Event):void
 		{
 			node.bounds.left = Math.round(node.bounds.left);

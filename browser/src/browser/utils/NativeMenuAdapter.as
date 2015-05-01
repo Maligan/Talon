@@ -4,157 +4,171 @@ package browser.utils
 
 	import flash.display.NativeMenu;
 	import flash.display.NativeMenuItem;
-	import flash.events.Event;
-	import flash.utils.Dictionary;
+	import flash.ui.Keyboard;
+
+	import starling.events.Event;
 
 	public class NativeMenuAdapter
 	{
-		private var _menu:NativeMenu;
-		private var _locale:Dictionary;
-		private var _itemsByCommand:Dictionary;
-		private var _itemsPriority:Dictionary;
+		private var _nativeMenu:NativeMenu;
+		private var _nativeItem:NativeMenuItem;
+		private var _parent:NativeMenuAdapter;
+		private var _name:String;
+		private var _children:Vector.<NativeMenuAdapter>;
 
-		public function NativeMenuAdapter(menu:NativeMenu = null)
+		private var _command:Command;
+		private var _isEnabled:Boolean;
+
+		public function NativeMenuAdapter(name:String = null, isSeparator:Boolean = false)
 		{
-			_menu = menu || new NativeMenu();
-			_locale = new Dictionary();
-			_itemsByCommand = new Dictionary();
-			_itemsPriority = new Dictionary();
+			_name = name;
+			_nativeMenu = new NativeMenu();
+			_nativeItem = new NativeMenuItem(name, isSeparator);
+			_nativeItem.data = this;
+			_nativeItem.addEventListener(Event.SELECT, onItemSelect);
+			_children = new <NativeMenuAdapter>[];
+			_isEnabled = true;
 		}
 
-		public function removeItem(path:String):void
+		public function push(path:String, label:String = null, command:Command = null, keyEquivalent:String = null, keyEquivalentModifiers:Array = null):NativeMenuAdapter
 		{
-			var item:NativeMenuItem = getOrCreateMenuItem(path);
-			removeNativeMenuItem(item);
+			var isSeparator:Boolean = path.charAt(path.lastIndexOf("/") + 1) == "-";
+			var node:NativeMenuAdapter = addChildByPath(path, isSeparator);
+			if (label) node.label = label;
+			node.command = command;
+			node.keyEquivalent = keyEquivalent;
+			node.keyEquivalentModifiers = keyEquivalentModifiers || [Keyboard.CONTROL];
+			return node;
 		}
 
-		public function removeItemChildren(path:String):void
+		//
+		// Methods
+		//
+		private function refreshSubmenu():void
 		{
-			var item:NativeMenuItem = getOrCreateMenuItem(path);
-			if (item.submenu)
-			{
-				while (item.submenu.numItems > 0)
-				{
-					var subitem:NativeMenuItem = item.submenu.getItemAt(0);
-					removeNativeMenuItem(subitem);
-				}
-			}
+			if (_children.length > 0 && !isSeparator)
+				_nativeItem.submenu = _nativeMenu;
 		}
 
-		private function removeNativeMenuItem(item:NativeMenuItem):void
+		private function refreshStatus():void
 		{
-			if (item.submenu != null)
-			{
-				for (var i:int = 0; i < item.submenu.numItems; i++)
-				{
-					var subitem:NativeMenuItem = item.submenu.getItemAt(i);
-					removeNativeMenuItem(subitem);
-				}
-			}
-
-			if (item.menu != null)
-			{
-				item.menu.removeItem(item);
-				item.removeEventListener(Event.SELECT, onItemSelect);
-
-				var command:Command = Command(item.data);
-				if (command) command.removeEventListener(Event.CHANGE, onCommandChange);
-				delete _itemsByCommand[item];
-			}
-		}
-
-		public function addItem(path:String, label:String = null, command:Command = null, keyEquivalent:String = null, priority:int = 0):void
-		{
-			_itemsPriority[path] = priority;
-			var item:NativeMenuItem = getOrCreateMenuItem(path);
-			item.data = command;
-			if (label) item.label = label;
-			if (keyEquivalent) item.keyEquivalent = keyEquivalent;
-			item.addEventListener(Event.SELECT, onItemSelect);
-
-			if (command)
-			{
-				item.enabled = command.isExecutable;
-				item.checked = command.isActive;
-				command.addEventListener(Event.CHANGE, onCommandChange);
-				_itemsByCommand[command] = item;
-			}
-		}
-
-		private function onCommandChange(e:*):void
-		{
-			var command:Command = Command(e.target);
-			var item:NativeMenuItem = _itemsByCommand[command];
-			item.enabled = command.isExecutable;
-			item.checked = command.isActive;
+			_nativeItem.enabled = _command ? _command.isExecutable : _isEnabled;
+			_nativeItem.checked = _command && _command.isActive;
 		}
 
 		private function onItemSelect(e:*):void
 		{
-			var item:NativeMenuItem = NativeMenuItem(e.target);
-			var command:Command =  Command(item.data);
-			command && command.execute();
+			if (_command) _command.execute();
 		}
 
-		private function getOrCreateMenuItem(path:String):NativeMenuItem
+		//
+		// Children
+		//
+		public function getChildByPath(path:String):NativeMenuAdapter
 		{
 			var split:Array = path.split("/");
-
-			var name:String = null;
-			var item:NativeMenuItem = null;
-			var menu:NativeMenu = _menu;
-
-			for (var i:int = 0; i < split.length; i++)
+			if (split.length > 1)
 			{
-				name = split[i];
-
-				if (menu == null)
-				{
-					menu = new NativeMenu();
-					item.submenu = menu;
-				}
-
-				item = menu.getItemByName(name);
-
-				if (item == null)
-				{
-					item = new NativeMenuItem(name, name.charAt(0) == "-");
-					item.name = name;
-					var index:int = searchIndexOf(path, menu);
-					menu.addItemAt(item, index);
-				}
-
-				menu = item.submenu;
+				var childName:String = split.shift();
+				var childPath:String = split.join("/");
+				var child:NativeMenuAdapter = getChildByName(childName);
+				return child ? child.getChildByPath(childPath) : null;
 			}
 
-			return item;
+			return getChildByName(path);
 		}
 
-		private function searchIndexOf(path:String, parent:NativeMenu):int
+		private function getChildByName(name:String):NativeMenuAdapter
 		{
-			var priority:int = _itemsPriority[path];
+			for each (var child:NativeMenuAdapter in _children)
+				if (child.name == name)
+					return child;
+
+			return null;
+		}
+
+		public function removeChildByPath(path:String):void
+		{
+			var child:NativeMenuAdapter = getChildByPath(path);
+			if (child && child.parent)
+				child.parent.removeChild(child);
+		}
+
+		public function removeChild(child:NativeMenuAdapter):void
+		{
+			var indexOf:int = _children.indexOf(child);
+			if (indexOf != -1)
+			{
+				_children.splice(indexOf, 1);
+				_nativeMenu.removeItem(child._nativeItem);
+				refreshSubmenu();
+			}
+		}
+
+		public function removeChildren():void
+		{
+			while (_children.length)
+				removeChild(_children[0]);
+		}
+
+		public function addChildByPath(path:String, isSeparator:Boolean):NativeMenuAdapter
+		{
 			var split:Array = path.split("/");
-
-			var i:int = parent.numItems;
-			while (i > 0)
+			if (split.length > 1)
 			{
-				var item:NativeMenuItem = parent.getItemAt(i-1);
-
-				split.pop();
-				split.push(item.name);
-				var name:String = split.join("/");
-				var p:int = _itemsPriority[name];
-
-				if (priority <= p) break;
-				i--;
+				var childName:String = split.shift();
+				var childPath:String = split.join("/");
+				var child:NativeMenuAdapter = getChildByName(childName) || addChildByPath(childName, false);
+				return child.addChildByPath(childPath, isSeparator);
 			}
 
-			return i;
+			return addChild(new NativeMenuAdapter(path, isSeparator))
 		}
 
-		public function get menu():NativeMenu
+		public function addChild(child:NativeMenuAdapter):NativeMenuAdapter
 		{
-			return _menu;
+			if (_children.indexOf(child) == -1)
+			{
+				if (child.parent) child.parent.removeChild(child);
+				_children[_children.length] = child;
+				child._parent = this;
+				_nativeMenu.addItem(child._nativeItem);
+				refreshSubmenu();
+			}
+
+			return child;
 		}
+
+		//
+		// Properties
+		//
+		public function get parent():NativeMenuAdapter { return _parent }
+		public function get name():String { return _name }
+		public function get nativeMenu():NativeMenu { return _nativeMenu }
+		public function get isSeparator():Boolean { return _nativeItem.isSeparator }
+
+		public function get keyEquivalent():String { return _nativeItem.keyEquivalent }
+		public function set keyEquivalent(value:String) { _nativeItem.keyEquivalent = value }
+
+		public function get keyEquivalentModifiers():Array { return _nativeItem.keyEquivalentModifiers }
+		public function set keyEquivalentModifiers(value:Array):void { _nativeItem.keyEquivalentModifiers = value }
+
+		public function get label():String { return _nativeItem.label }
+		public function set label(value:String):void { _nativeItem.label = value }
+
+		public function get command():Command { return _command; }
+		public function set command(value:Command):void
+		{
+			_command && _command.removeEventListener(Event.CHANGE, refreshStatus);
+			_command = value;
+			_command && _command.addEventListener(Event.CHANGE, refreshStatus);
+			refreshStatus();
+		}
+
+		public function get isEnabled():Boolean { return _isEnabled }
+		public function set isEnabled(value:Boolean):void { _isEnabled = value; refreshStatus() }
+
+		public function get isSubmenu():Boolean { return _nativeItem.submenu != null }
+		public function set isSubmenu(value:Boolean) { if (value) _nativeItem.submenu = _nativeMenu }
 	}
 }

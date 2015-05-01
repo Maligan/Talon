@@ -41,8 +41,9 @@ package browser
 		public static const T_MENU_FILE_NEW_PROJECT:String = "New Project...";
 		public static const T_MENU_FILE_RECENT:String = "Open Recent";
 		public static const T_MENU_FILE_RECENT_CLEAR:String = "Clear";
-		public static const T_MENU_FILE_EXPORT_AS:String = "Export As...";
-		public static const T_MENU_FILE_CLOSE:String = "Close";
+		public static const T_MENU_FILE_PUBLISH_AS:String = "Publish As...";
+		public static const T_MENU_FILE_CLOSE_DOCUMENT:String = "Close Document";
+		public static const T_MENU_FILE_CLOSE_BROWSER:String = "Close Browser";
 		public static const T_MENU_NAVIGATE:String = "Navigate";
 		public static const T_MENU_NAVIGATE_SEARCH:String = "Search...";
 		public static const T_MENU_VIEW:String = "View";

@@ -4,9 +4,9 @@ package browser.commands
 
 	import starling.events.Event;
 
-	public class CloseCommand extends Command
+	public class CloseDocumentCommand extends Command
 	{
-		public function CloseCommand(controller:AppController):void
+		public function CloseDocumentCommand(controller:AppController):void
 		{
 			super(controller);
 			controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);

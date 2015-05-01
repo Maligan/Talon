@@ -1,6 +1,6 @@
 package browser
 {
-	import browser.commands.CloseCommand;
+	import browser.commands.CloseDocumentCommand;
 	import browser.commands.OpenCommand;
 	import browser.dom.Document;
 	import browser.dom.log.DocumentMessage;
@@ -95,7 +95,7 @@ package browser
 			var file:File = new File(path);
 			if (file.exists)
 			{
-				var close:CloseCommand = new CloseCommand(this);
+				var close:CloseDocumentCommand = new CloseDocumentCommand(this);
 				close.execute();
 
 				var open:OpenCommand = new OpenCommand(this, file);

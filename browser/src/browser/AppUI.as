@@ -1,6 +1,7 @@
 package browser
 {
-	import browser.commands.CloseCommand;
+	import browser.commands.CloseBrowserCommand;
+	import browser.commands.CloseDocumentCommand;
 	import browser.commands.NewProjectCommand;
 	import browser.commands.ExportCommand;
 	import browser.commands.OpenCommand;
@@ -16,10 +17,12 @@ package browser
 	import browser.utils.DeviceProfile;
 	import browser.utils.EventDispatcherAdapter;
 	import browser.utils.NativeMenuAdapter;
+	import browser.utils.NativeMenuAdapter;
 
 	import flash.desktop.NativeApplication;
 	import flash.events.UncaughtErrorEvent;
 	import flash.filesystem.File;
+	import flash.ui.Keyboard;
 	import flash.utils.ByteArray;
 	import flash.utils.setTimeout;
 
@@ -89,39 +92,43 @@ package browser
 		{
 			_menu = new NativeMenuAdapter();
 
-			_menu.addItem("file",         AppConstants.T_MENU_FILE);
-			_menu.addItem("file/new",     AppConstants.T_MENU_FILE_NEW_PROJECT,    new NewProjectCommand(_controller), "n", 3);
-			_menu.addItem("file/open",    AppConstants.T_MENU_FILE_OPEN,           new OpenCommand(_controller),   "o", 2);
-			_menu.addItem("file/close",   AppConstants.T_MENU_FILE_CLOSE,          new CloseCommand(_controller),  "w");
-			_menu.addItem("file/-1");
-			_menu.addItem("file/export",  AppConstants.T_MENU_FILE_EXPORT_AS,      new ExportCommand(_controller), "s");
+			_menu.push("file",                       AppConstants.T_MENU_FILE);
+			_menu.push("file/new",                   AppConstants.T_MENU_FILE_NEW_PROJECT,      new NewProjectCommand(_controller), "n");
+			_menu.push("file/-");
+			_menu.push("file/open",                  AppConstants.T_MENU_FILE_OPEN,             new OpenCommand(_controller),   "o");
+			_menu.push("file/recent",                AppConstants.T_MENU_FILE_RECENT);
+			_menu.push("file/-");
+			_menu.push("file/closeDocument",         AppConstants.T_MENU_FILE_CLOSE_DOCUMENT,   new CloseDocumentCommand(_controller),  "w");
+			_menu.push("file/closeBrowser",          AppConstants.T_MENU_FILE_CLOSE_BROWSER,    new CloseBrowserCommand(_controller),  "w", [Keyboard.CONTROL, Keyboard.SHIFT]);
+			_menu.push("file/-");
+			_menu.push("file/publish",               AppConstants.T_MENU_FILE_PUBLISH_AS,        new ExportCommand(_controller), "s", [Keyboard.CONTROL, Keyboard.SHIFT]);
 
-			_menu.addItem("view",                       AppConstants.T_MENU_VIEW);
-			_menu.addItem("view/theme",                 AppConstants.T_MENU_VIEW_BACKGROUND);
-			_menu.addItem("view/theme/transparent",     AppConstants.T_MENU_VIEW_BACKGROUND_CHESS, new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_CHESS));
-			_menu.addItem("view/theme/dark",            AppConstants.T_MENU_VIEW_BACKGROUND_DARK,  new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
-			_menu.addItem("view/theme/light",           AppConstants.T_MENU_VIEW_BACKGROUND_LIGHT, new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
-			_menu.addItem("view/stats",                 AppConstants.T_MENU_VIEW_STATS,            new SettingCommand(_controller, AppConstants.SETTING_STATS, true, false));
-			_menu.addItem("view/resize",                AppConstants.T_MENU_VIEW_LOCK_RESIZE,      new SettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
-			_menu.addItem("view/alwaysOnTop",           AppConstants.T_MENU_VIEW_ALWAYS_ON_TOP,    new SettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
-			_menu.addItem("view/-1");
-			_menu.addItem("view/zoomIn",                AppConstants.T_MENU_VIEW_ZOOM_IN,          new ZoomCommand(_controller, +25),   "+");
-			_menu.addItem("view/zoomOut",               AppConstants.T_MENU_VIEW_ZOOM_OUT,         new ZoomCommand(_controller, -25),   "-");
-			_menu.addItem("view/-2");
-			_menu.addItem("view/orientation",           AppConstants.T_MENU_VIEW_ORIENTATION);
-			_menu.addItem("view/orientation/Portrait",  AppConstants.T_MENU_VIEW_ORIENTATION_PORTRAIT,     new OrientationCommand(_controller, Orientation.VERTICAL));
-			_menu.addItem("view/orientation/Landscape", AppConstants.T_MENU_VIEW_ORIENTATION_LANDSCAPE,    new OrientationCommand(_controller, Orientation.HORIZONTAL));
+			_menu.push("view",                       AppConstants.T_MENU_VIEW);
+			_menu.push("view/theme",                 AppConstants.T_MENU_VIEW_BACKGROUND);
+			_menu.push("view/theme/transparent",     AppConstants.T_MENU_VIEW_BACKGROUND_CHESS, new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_CHESS));
+			_menu.push("view/theme/dark",            AppConstants.T_MENU_VIEW_BACKGROUND_DARK,  new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
+			_menu.push("view/theme/light",           AppConstants.T_MENU_VIEW_BACKGROUND_LIGHT, new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
+			_menu.push("view/stats",                 AppConstants.T_MENU_VIEW_STATS,            new SettingCommand(_controller, AppConstants.SETTING_STATS, true, false));
+			_menu.push("view/resize",                AppConstants.T_MENU_VIEW_LOCK_RESIZE,      new SettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
+			_menu.push("view/alwaysOnTop",           AppConstants.T_MENU_VIEW_ALWAYS_ON_TOP,    new SettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
+			_menu.push("view/-");
+			_menu.push("view/zoomIn",                AppConstants.T_MENU_VIEW_ZOOM_IN,          new ZoomCommand(_controller, +25),   "=");
+			_menu.push("view/zoomOut",               AppConstants.T_MENU_VIEW_ZOOM_OUT,         new ZoomCommand(_controller, -25),   "-");
+			_menu.push("view/-");
+			_menu.push("view/orientation",           AppConstants.T_MENU_VIEW_ORIENTATION);
+			_menu.push("view/orientation/Portrait",  AppConstants.T_MENU_VIEW_ORIENTATION_PORTRAIT,     new OrientationCommand(_controller, Orientation.VERTICAL));
+			_menu.push("view/orientation/Landscape", AppConstants.T_MENU_VIEW_ORIENTATION_LANDSCAPE,    new OrientationCommand(_controller, Orientation.HORIZONTAL));
 
-			_menu.addItem("view/profile",               AppConstants.T_MENU_VIEW_PROFILE);
-			_menu.addItem("view/profile/custom",        AppConstants.T_MENU_VIEW_PROFILE_CUSTOM, new ProfileCommand(_controller, DeviceProfile.CUSTOM));
-			_menu.addItem("view/profile/-1");
+			_menu.push("view/profile",               AppConstants.T_MENU_VIEW_PROFILE);
+			_menu.push("view/profile/custom",        AppConstants.T_MENU_VIEW_PROFILE_CUSTOM, new ProfileCommand(_controller, DeviceProfile.CUSTOM));
+			_menu.push("view/profile/-");
 			for each (var profile:DeviceProfile in DeviceProfile.getProfiles())
-				_menu.addItem("view/profile/" + profile.id, null, new ProfileCommand(_controller, profile));
+				_menu.push("view/profile/" + profile.id, null, new ProfileCommand(_controller, profile));
 
 			_controller.settings.addSettingListener(AppConstants.SETTING_RECENT_ARRAY, refreshRecent);
 			refreshRecent();
 
-			NativeApplication.nativeApplication.activeWindow.menu = _menu.menu;
+			NativeApplication.nativeApplication.activeWindow.menu = _menu.nativeMenu;
 		}
 
 		//
@@ -221,17 +228,17 @@ package browser
 		private function refreshTemplates():void
 		{
 			// Refresh Menu
-			_menu.removeItem("navigate");
+			_menu.removeChildByPath("navigate");
 
 			if (_controller.document && _controller.document.factory.templateIds.length > 0)
 			{
-				_menu.addItem("navigate", AppConstants.T_MENU_NAVIGATE);
-				_menu.addItem("navigate/search", AppConstants.T_MENU_NAVIGATE_SEARCH);
-				_menu.addItem("navigate/-");
+				_menu.push("navigate", AppConstants.T_MENU_NAVIGATE);
+				_menu.push("navigate/search", AppConstants.T_MENU_NAVIGATE_SEARCH);
+				_menu.push("navigate/-");
 
 				for each (var prototypeId:String in _controller.document.factory.templateIds)
 				{
-					_menu.addItem("navigate/" + prototypeId, null, new SelectCommand(_controller, prototypeId));
+					_menu.push("navigate/" + prototypeId, null, new SelectCommand(_controller, prototypeId));
 				}
 			}
 		}
@@ -282,24 +289,23 @@ package browser
 
 		private function refreshRecent():void
 		{
-			// Refresh recent files
-			_menu.removeItem("file/recent");
 			var recent:Array = _controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_ARRAY, []);
+			var recentMenu:NativeMenuAdapter = _menu.getChildByPath("file/recent");
+			recentMenu.isSubmenu = true;
+			recentMenu.removeChildren();
+			recentMenu.isEnabled = recent.length > 0;
+
 			if (recent.length > 0)
 			{
-				_menu.addItem("file/recent",  AppConstants.T_MENU_FILE_RECENT, null, null, 1);
-
 				for each (var path:String in recent)
 				{
 					var file:File = new File(path);
 					if (file.exists)
-					{
-						_menu.addItem("file/recent/" + path, null, new OpenCommand(_controller, file));
-					}
+						recentMenu.push(path, null, new OpenCommand(_controller, file));
 				}
 
-				_menu.addItem("file/recent/-1");
-				_menu.addItem("file/recent/clear", AppConstants.T_MENU_FILE_RECENT_CLEAR, new SettingCommand(_controller, AppConstants.SETTING_RECENT_ARRAY, []));
+				recentMenu.push("-");
+				recentMenu.push("clear", AppConstants.T_MENU_FILE_RECENT_CLEAR, new SettingCommand(_controller, AppConstants.SETTING_RECENT_ARRAY, []));
 			}
 		}
 

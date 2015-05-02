@@ -2,7 +2,7 @@ package browser
 {
 	import browser.commands.CloseBrowserCommand;
 	import browser.commands.CloseDocumentCommand;
-	import browser.commands.NewProjectCommand;
+	import browser.commands.NewDocumentCommand;
 	import browser.commands.ExportCommand;
 	import browser.commands.OpenCommand;
 	import browser.commands.OrientationCommand;
@@ -22,6 +22,7 @@ package browser
 	import flash.desktop.NativeApplication;
 	import flash.events.UncaughtErrorEvent;
 	import flash.filesystem.File;
+	import flash.ui.Keyboard;
 	import flash.ui.Keyboard;
 	import flash.utils.ByteArray;
 	import flash.utils.setTimeout;
@@ -93,7 +94,7 @@ package browser
 			_menu = new NativeMenuAdapter();
 
 			_menu.push("file",                       AppConstants.T_MENU_FILE);
-			_menu.push("file/new",                   AppConstants.T_MENU_FILE_NEW_PROJECT,      new NewProjectCommand(_controller), "n");
+			_menu.push("file/new",                   AppConstants.T_MENU_FILE_NEW_DOCUMENT,      new NewDocumentCommand(_controller), "n");
 			_menu.push("file/-");
 			_menu.push("file/open",                  AppConstants.T_MENU_FILE_OPEN,             new OpenCommand(_controller),   "o");
 			_menu.push("file/recent",                AppConstants.T_MENU_FILE_RECENT);
@@ -116,14 +117,19 @@ package browser
 			_menu.push("view/zoomOut",               AppConstants.T_MENU_VIEW_ZOOM_OUT,         new ZoomCommand(_controller, -25),   "-");
 			_menu.push("view/-");
 			_menu.push("view/orientation",           AppConstants.T_MENU_VIEW_ORIENTATION);
-			_menu.push("view/orientation/Portrait",  AppConstants.T_MENU_VIEW_ORIENTATION_PORTRAIT,     new OrientationCommand(_controller, Orientation.VERTICAL));
-			_menu.push("view/orientation/Landscape", AppConstants.T_MENU_VIEW_ORIENTATION_LANDSCAPE,    new OrientationCommand(_controller, Orientation.HORIZONTAL));
+			_menu.push("view/orientation/portrait",  AppConstants.T_MENU_VIEW_ORIENTATION_PORTRAIT,     new OrientationCommand(_controller, Orientation.VERTICAL), "p", [Keyboard.CONTROL, Keyboard.SHIFT]);
+			_menu.push("view/orientation/landscape", AppConstants.T_MENU_VIEW_ORIENTATION_LANDSCAPE,    new OrientationCommand(_controller, Orientation.HORIZONTAL), "l", [Keyboard.CONTROL, Keyboard.SHIFT]);
 
 			_menu.push("view/profile",               AppConstants.T_MENU_VIEW_PROFILE);
 			_menu.push("view/profile/custom",        AppConstants.T_MENU_VIEW_PROFILE_CUSTOM, new ProfileCommand(_controller, DeviceProfile.CUSTOM));
 			_menu.push("view/profile/-");
-			for each (var profile:DeviceProfile in DeviceProfile.getProfiles())
-				_menu.push("view/profile/" + profile.id, null, new ProfileCommand(_controller, profile));
+
+			var profiles:Vector.<DeviceProfile> = DeviceProfile.getProfiles();
+			for (var i:int = 0; i < profiles.length; i++)
+			{
+				var profile:DeviceProfile = profiles[i];
+				_menu.push("view/profile/" + profile.id, null, new ProfileCommand(_controller, profile), (i+1).toString(), [Keyboard.ALTERNATE]);
+			}
 
 			_controller.settings.addSettingListener(AppConstants.SETTING_RECENT_ARRAY, refreshRecent);
 			refreshRecent();

@@ -7,12 +7,12 @@ package browser.commands
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 
-	public class NewProjectCommand extends Command
+	public class NewDocumentCommand extends Command
 	{
 		private var _project:File;
 		private var _projectRoot:File;
 
-		public function NewProjectCommand(controller:AppController)
+		public function NewDocumentCommand(controller:AppController)
 		{
 			super(controller);
 		}

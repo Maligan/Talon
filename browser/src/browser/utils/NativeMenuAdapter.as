@@ -150,7 +150,7 @@ package browser.utils
 		public function get isSeparator():Boolean { return _nativeItem.isSeparator }
 
 		public function get keyEquivalent():String { return _nativeItem.keyEquivalent }
-		public function set keyEquivalent(value:String) { _nativeItem.keyEquivalent = value }
+		public function set keyEquivalent(value:String):void { _nativeItem.keyEquivalent = value }
 
 		public function get keyEquivalentModifiers():Array { return _nativeItem.keyEquivalentModifiers }
 		public function set keyEquivalentModifiers(value:Array):void { _nativeItem.keyEquivalentModifiers = value }
@@ -171,6 +171,6 @@ package browser.utils
 		public function set isEnabled(value:Boolean):void { _isEnabled = value; refreshStatus() }
 
 		public function get isSubmenu():Boolean { return _nativeItem.submenu != null }
-		public function set isSubmenu(value:Boolean) { if (value) _nativeItem.submenu = _nativeMenu }
+		public function set isSubmenu(value:Boolean):void { if (value) _nativeItem.submenu = _nativeMenu }
 	}
 }

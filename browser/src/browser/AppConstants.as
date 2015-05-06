@@ -4,6 +4,7 @@ package browser
 	{
 		public static const APP_NAME:String = "Talon Browser";
 		public static const APP_VERSION:String = "0.0.1";
+		public static const APP_UPDATE_URL:String = "https://github.com/Maligan/Talon/tree/master/browser/update-descriptor.xml?raw=true";
 
 		public static const DESIGNER_FILE_EXTENSION:String = "talon";
 		public static const DESIGNER_EXPORT_FILE_EXTENSION:String = "zip";

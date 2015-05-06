@@ -26,6 +26,11 @@ package browser.commands
 			throw new AbstractMethodError();
 		}
 
+		public function cancel():void
+		{
+			throw new AbstractMethodError();
+		}
+
 		public function get isExecutable():Boolean
 		{
 			return true;

@@ -48,6 +48,8 @@ package browser.utils
 		{
 			if (_children.length > 0 && !isSeparator)
 				_nativeItem.submenu = _nativeMenu;
+
+			// TODO: Cleanup submenu if there is no children
 		}
 
 		private function refreshStatus():void

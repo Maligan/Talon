@@ -96,8 +96,8 @@ package talon.types
 		 * @param ppem pixels per em
 		 * @param ppdp pixels per density-independent point
 		 * @param pp100p pixels per 100%
-		 * @param aw available width (for auto measure)
-		 * @param ah available height (for auto measure)
+		 * @param aw available width (for 'auto' measure)
+		 * @param ah available height (for 'auto' measure)
 		 * @param ppts pixels per total stars
 		 * @param s stars amount
 		 */

@@ -24,6 +24,7 @@ package browser.dom.files
 		private var _target:File;
 		private var _monitor:FileMonitor;
 		private var _type:String;
+		private var _messages:Vector.<DocumentMessage> = new <DocumentMessage>[];
 
 		public function DocumentFileReference(document:Document, target:File)
 		{
@@ -167,8 +168,6 @@ package browser.dom.files
 		//
 		// Document report
 		//
-		private var _messages:Vector.<DocumentMessage> = new <DocumentMessage>[];
-
 		public function report(message:String, ...params):DocumentMessage
 		{
 			var msg:DocumentMessage = new DocumentMessage(message, params);
@@ -179,7 +178,7 @@ package browser.dom.files
 
 		public function reportCleanup():void
 		{
-			while (_messages.length)document.messages.removeMessage(_messages.pop());
+			while (_messages.length) document.messages.removeMessage(_messages.pop());
 		}
 	}
 }

@@ -23,7 +23,7 @@ package talon.starling
 	import talon.types.GaugeQuad;
 	import talon.utils.StringUtil;
 
-	/** Provide method for synchronize starling.display.DisplayObject and talon.Node. */
+	/** Provide method for synchronize starling display tree and talon tree. */
 	internal class DisplayObjectBridge
 	{
 		private const MATRIX:Matrix = new Matrix();
@@ -33,7 +33,7 @@ package talon.starling
 
 		private var _target:DisplayObject;
 		private var _node:Node;
-		private var _filler:BackgroundFiller;
+		private var _filler:BackgroundRenderer;
 
 		public function DisplayObjectBridge(target:DisplayObject, node:Node):void
 		{
@@ -41,7 +41,7 @@ package talon.starling
 			_target.addEventListener(TouchEvent.TOUCH, onTouchForInteractionPurpose);
 
 			_node = node;
-			_filler = new BackgroundFiller();
+			_filler = new BackgroundRenderer();
 
 			// Background
 			addAttributeChangeListener(Attribute.BACKGROUND_9SCALE,     onBackground9ScaleChange);
@@ -54,7 +54,6 @@ package talon.starling
 			addAttributeChangeListener(Attribute.ID,                    onIDChange);
 			addAttributeChangeListener(Attribute.VISIBILITY,            onVisibilityChange);
 			addAttributeChangeListener(Attribute.FILTER,                onFilterChange);
-			addAttributeChangeListener(Attribute.CLIPPING,              trace);
 			addAttributeChangeListener(Attribute.ALPHA,                 onAlphaChange);
 			addAttributeChangeListener(Attribute.CURSOR,                onCursorChange);
 		}

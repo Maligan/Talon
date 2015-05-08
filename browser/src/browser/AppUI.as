@@ -9,6 +9,7 @@ package browser
 	import browser.commands.ProfileCommand;
 	import browser.commands.SelectCommand;
 	import browser.commands.SettingCommand;
+	import browser.commands.UpdateCommand;
 	import browser.commands.ZoomCommand;
 	import browser.dom.DocumentEvent;
 	import browser.dom.log.DocumentMessage;
@@ -104,14 +105,15 @@ package browser
 			_menu.push("file/-");
 			_menu.push("file/publish",               AppConstants.T_MENU_FILE_PUBLISH_AS,        new ExportCommand(_controller), "s", [Keyboard.CONTROL, Keyboard.SHIFT]);
 
-			_menu.push("view",                       AppConstants.T_MENU_VIEW);
-			_menu.push("view/theme",                 AppConstants.T_MENU_VIEW_BACKGROUND);
-			_menu.push("view/theme/transparent",     AppConstants.T_MENU_VIEW_BACKGROUND_CHESS, new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_CHESS));
-			_menu.push("view/theme/dark",            AppConstants.T_MENU_VIEW_BACKGROUND_DARK,  new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
-			_menu.push("view/theme/light",           AppConstants.T_MENU_VIEW_BACKGROUND_LIGHT, new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
-			_menu.push("view/stats",                 AppConstants.T_MENU_VIEW_STATS,            new SettingCommand(_controller, AppConstants.SETTING_STATS, true, false));
-			_menu.push("view/resize",                AppConstants.T_MENU_VIEW_LOCK_RESIZE,      new SettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
-			_menu.push("view/alwaysOnTop",           AppConstants.T_MENU_VIEW_ALWAYS_ON_TOP,    new SettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
+			_menu.push("view",                                  AppConstants.T_MENU_VIEW);
+			_menu.push("view/preference",                       AppConstants.T_MENU_VIEW_PREFERENCE);
+			_menu.push("view/preference/theme",                 AppConstants.T_MENU_VIEW_BACKGROUND);
+			_menu.push("view/preference/theme/transparent",     AppConstants.T_MENU_VIEW_BACKGROUND_CHESS, new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_CHESS));
+			_menu.push("view/preference/theme/dark",            AppConstants.T_MENU_VIEW_BACKGROUND_DARK,  new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
+			_menu.push("view/preference/theme/light",           AppConstants.T_MENU_VIEW_BACKGROUND_LIGHT, new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
+			_menu.push("view/preference/stats",                 AppConstants.T_MENU_VIEW_STATS,            new SettingCommand(_controller, AppConstants.SETTING_STATS, true, false));
+			_menu.push("view/preference/resize",                AppConstants.T_MENU_VIEW_LOCK_RESIZE,      new SettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
+			_menu.push("view/preference/alwaysOnTop",           AppConstants.T_MENU_VIEW_ALWAYS_ON_TOP,    new SettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
 			_menu.push("view/-");
 			_menu.push("view/zoomIn",                AppConstants.T_MENU_VIEW_ZOOM_IN,          new ZoomCommand(_controller, +25),   "=");
 			_menu.push("view/zoomOut",               AppConstants.T_MENU_VIEW_ZOOM_OUT,         new ZoomCommand(_controller, -25),   "-");
@@ -130,6 +132,11 @@ package browser
 				var profile:DeviceProfile = profiles[i];
 				_menu.push("view/profile/" + profile.id, null, new ProfileCommand(_controller, profile), (i+1).toString(), [Keyboard.ALTERNATE]);
 			}
+
+//			_menu.push("help",          AppConstants.T_MENU_HELP);
+//			_menu.push("help/online",   AppConstants.T_MENU_HELP_ONLINE);
+//			_menu.push("help/update",   AppConstants.T_MENU_HELP_UPDATE, new UpdateCommand(_controller));
+//			_menu.push("help/about",    AppConstants.T_MENU_HELP_ABOUT);
 
 			_controller.settings.addSettingListener(AppConstants.SETTING_RECENT_ARRAY, refreshRecent);
 			refreshRecent();
@@ -221,7 +228,7 @@ package browser
 
 			var profile:DeviceProfile = _controller.profile;
 			if (profile != DeviceProfile.CUSTOM) result.push(_controller.profile.id);
-			else result.push("[" + profile.width + "x" + profile.height + ", CSF=" + profile.csf + ", DPI=" + profile.dpi + "]")
+			else result.push("[" + profile.width + "x" + profile.height + ", CSF=" + profile.csf + ", DPI=" + profile.dpi + "]");
 
 			if (_controller.templateId)
 				result.push(_controller.templateId);
@@ -297,7 +304,7 @@ package browser
 		{
 			var recent:Array = _controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_ARRAY, []);
 			var recentMenu:NativeMenuAdapter = _menu.getChildByPath("file/recent");
-			recentMenu.isSubmenu = true;
+			recentMenu.isMenu = true;
 			recentMenu.removeChildren();
 			recentMenu.isEnabled = recent.length > 0;
 

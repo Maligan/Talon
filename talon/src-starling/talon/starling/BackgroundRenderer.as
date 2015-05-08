@@ -3,12 +3,13 @@ package talon.starling
 	import starling.core.RenderSupport;
 	import starling.display.BlendMode;
 	import starling.display.QuadBatch;
+	import starling.errors.AbstractMethodError;
 	import starling.textures.Texture;
 	import starling.textures.TextureSmoothing;
 
 	import talon.enums.FillMode;
 
-	internal class BackgroundFiller
+	internal class BackgroundRenderer
 	{
 		private static var POOL:Vector.<QuadData>;
 		private static var HELPER:QuadWithUnsafeAccess;
@@ -32,7 +33,7 @@ package talon.starling
 
 		private var _invalid:int;
 
-		public function BackgroundFiller():void
+		public function BackgroundRenderer():void
 		{
 			POOL = new <QuadData>[];
 			HELPER = new QuadWithUnsafeAccess();
@@ -55,12 +56,12 @@ package talon.starling
 		{
 			if (_texture == null && _transparent) return;
 
-//			if (_invalid != 0)
-//			{
+			if (_invalid != 0)
+			{
 				remesh();
 				compose();
 				_invalid = 0;
-//			}
+			}
 
 			support.batchQuadBatch(_batch, parentAlpha);
 		}
@@ -102,13 +103,13 @@ package talon.starling
 
 		private function remeshScale():void
 		{
-			var hp:Array = [];
-			var hu:Array = [];
-			rulers(_width, _texture.width, _offsets.left, _offsets.right, hp, hu);
+			var hp:Array = []; // Horizontal positions
+			var ht:Array = []; // Horizontal texture positions (aka U)
+			rulers(_width, _texture.width, _offsets.left, _offsets.right, hp, ht);
 
-			var vp:Array = [];
-			var vv:Array = [];
-			rulers(_height, _texture.height, _offsets.top, _offsets.bottom, vp, vv);
+			var vp:Array = []; // Vertical positions
+			var vt:Array = []; // Vertical texture positions (aka V)
+			rulers(_height, _texture.height, _offsets.top, _offsets.bottom, vp, vt);
 
 			for (var y:int = 0; y < vp.length - 1; y++)
 			{
@@ -116,7 +117,7 @@ package talon.starling
 				{
 					var quad:QuadData = getQuadData();
 					quad.setPositions(hp[x], vp[y], hp[x+1], vp[y+1]);
-					quad.setTexCoords(hu[x], vv[y], hu[x+1], vv[y+1]);
+					quad.setTexCoords(ht[x], vt[y], ht[x+1], vt[y+1]);
 					_quads[_quads.length] = quad;
 				}
 			}
@@ -134,28 +135,37 @@ package talon.starling
 
 		private function remeshRepeat():void
 		{
-			// TODO: Based on texture.repeat property - create only one quad
 			var textureWidth:int = _texture.width;
 			var textureHeight:int = _texture.height;
 
-			var numColumns:int = Math.ceil(_width / textureWidth);
-			var numRows:int = Math.ceil(_height / textureHeight);
-
-			for (var x:int = 0; x < numColumns; x++)
+			if (_texture.repeat === false)
 			{
-				for (var y:int = 0; y < numRows; y++)
+				var numColumns:int = Math.ceil(_width / textureWidth);
+				var numRows:int = Math.ceil(_height / textureHeight);
+
+				for (var x:int = 0; x < numColumns; x++)
 				{
-					var quad:QuadData = getQuadData();
+					for (var y:int = 0; y < numRows; y++)
+					{
+						var quad:QuadData = getQuadData();
 
-					var quadX:int = x*textureWidth;
-					var quadY:int = y*textureHeight;
-					var quadWidth:int = (x == numColumns-1) ? (_width - quadX) : textureWidth;
-					var quadHeight:int = (y == numRows-1) ? (_height - quadY) : textureHeight;
+						var quadX:int = x*textureWidth;
+						var quadY:int = y*textureHeight;
+						var quadWidth:int = (x == numColumns-1) ? (_width - quadX) : textureWidth;
+						var quadHeight:int = (y == numRows-1) ? (_height - quadY) : textureHeight;
 
-					quad.setPositions(quadX, quadY, quadX + quadWidth, quadY + quadHeight);
-					quad.setTexCoords(0, 0, quadWidth/textureWidth, quadHeight/textureHeight);
-					_quads[_quads.length] = quad;
+						quad.setPositions(quadX, quadY, quadX + quadWidth, quadY + quadHeight);
+						quad.setTexCoords(0, 0, quadWidth/textureWidth, quadHeight/textureHeight);
+						_quads[_quads.length] = quad;
+					}
 				}
+			}
+			else
+			{
+				var quad:QuadData = getQuadData();
+				quad.setPositions(0, 0, _width, _height);
+				quad.setTexCoords(0, 0, _width/textureWidth, _height/textureHeight);
+				_quads[_quads.length] = quad;
 			}
 		}
 
@@ -330,12 +340,8 @@ package talon.starling
 	}
 }
 
-import flash.geom.Matrix;
-import flash.geom.Point;
-
 import starling.display.Quad;
 import starling.textures.Texture;
-import starling.utils.VertexData;
 
 class QuadWithUnsafeAccess extends Quad
 {
@@ -357,16 +363,6 @@ class QuadWithUnsafeAccess extends Quad
 	public function adjustByTexture(texture:Texture):void
 	{
 		texture.adjustVertexData(mVertexData, 0, 4);
-	}
-
-	public override function copyVertexDataTo(targetData:VertexData, targetVertexID:int=0):void
-	{
-		copyVertexDataTransformedTo(targetData, targetVertexID, null);
-	}
-
-	public override function copyVertexDataTransformedTo(targetData:VertexData, targetVertexID:int=0, matrix:Matrix=null):void
-	{
-		mVertexData.copyTransformedTo(targetData, targetVertexID, matrix, 0, 4);
 	}
 }
 

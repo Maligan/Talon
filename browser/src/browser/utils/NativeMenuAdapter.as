@@ -170,7 +170,7 @@ package browser.utils
 		public function get isEnabled():Boolean { return _isEnabled }
 		public function set isEnabled(value:Boolean):void { _isEnabled = value; refreshStatus() }
 
-		public function get isSubmenu():Boolean { return _nativeItem.submenu != null }
-		public function set isSubmenu(value:Boolean):void { if (value) _nativeItem.submenu = _nativeMenu }
+		public function get isMenu():Boolean { return _nativeItem.submenu != null }
+		public function set isMenu(value:Boolean):void { if (value) _nativeItem.submenu = _nativeMenu }
 	}
 }

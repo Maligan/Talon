@@ -248,7 +248,7 @@ package talon
 		//
 		// Layout
 		//
-		/** Apply bounds changes: dispatch RESIZE event, arrange children. */
+		/** Apply 'bounds' changes: dispatch RESIZE event, arrange children. */
 		public function commit():void
 		{
 			// Update self view object attached to node

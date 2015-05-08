@@ -14,7 +14,6 @@ package browser.commands
 	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
 	import flash.utils.ByteArray;
-	import flash.utils.ByteArray;
 
 	public class UpdateCommand extends Command
 	{
@@ -165,6 +164,7 @@ package browser.commands
 		private function complete(status:String):void
 		{
 			_updateStep = UpdateStep.NOP;
+			trace("[UpdateCommand]", "Complete with status", status);
 		}
 	}
 }

@@ -6,22 +6,21 @@ package browser.utils
 
 	public class OrientationMonitor extends EventDispatcher
 	{
-		/** Display device is landscape oriented by default. */
 		private var _stage:Stage;
-		private var _prevLandscape:Boolean;
+		private var _prevIsLandscape:Boolean;
 
 		public function OrientationMonitor(stage:Stage)
 		{
 			_stage = stage;
 			_stage.addEventListener(Event.ENTER_FRAME, onEnterFrame, false, int.MAX_VALUE);
-			_prevLandscape = isLandscape;
+			_prevIsLandscape = isLandscape;
 		}
 
 		private function onEnterFrame(e:Event):void
 		{
-			if (_prevLandscape != isLandscape)
+			if (_prevIsLandscape != isLandscape)
 			{
-				_prevLandscape = isLandscape;
+				_prevIsLandscape = isLandscape;
 				dispatchEvent(new Event(Event.CHANGE));
 			}
 		}

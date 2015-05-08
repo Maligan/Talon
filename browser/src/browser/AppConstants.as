@@ -48,6 +48,7 @@ package browser
 		public static const T_MENU_NAVIGATE:String = "Navigate";
 		public static const T_MENU_NAVIGATE_SEARCH:String = "Search...";
 		public static const T_MENU_VIEW:String = "View";
+		public static const T_MENU_VIEW_PREFERENCE:String = "Preference";
 		public static const T_MENU_VIEW_BACKGROUND:String = "Background";
 		public static const T_MENU_VIEW_BACKGROUND_LIGHT:String = "Light";
 		public static const T_MENU_VIEW_BACKGROUND_DARK:String = "Dark";
@@ -66,5 +67,6 @@ package browser
 		public static const T_MENU_HELP:String = "Help";
 		public static const T_MENU_HELP_ONLINE:String = "Online Documentation";
 		public static const T_MENU_HELP_ABOUT:String = "About";
+		public static const T_MENU_HELP_UPDATE:String = "Check for Update...";
 	}
 }

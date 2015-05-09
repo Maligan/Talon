@@ -8,6 +8,7 @@ package talon.starling
 
 	import starling.core.RenderSupport;
 	import starling.display.DisplayObject;
+	import starling.events.EnterFrameEvent;
 	import starling.events.Event;
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
@@ -39,6 +40,7 @@ package talon.starling
 		{
 			_target = target;
 			_target.addEventListener(TouchEvent.TOUCH, onTouchForInteractionPurpose);
+			_target.addEventListener(EnterFrameEvent.ENTER_FRAME, onEnterFrame);
 
 			_node = node;
 			_filler = new BackgroundRenderer();
@@ -82,9 +84,11 @@ package talon.starling
 			var textureWidth:int = _filler.texture ? _filler.texture.width : 0;
 			var textureHeight:int = _filler.texture ? _filler.texture.height : 0;
 
-			GRID.parse(_node.getAttribute(Attribute.BACKGROUND_9SCALE));
+			var backgroundScale9Grid:String = _node.getAttribute(Attribute.BACKGROUND_9SCALE);
+			GRID.parse(backgroundScale9Grid);
 
-			_filler.setScaleOffsets(
+			_filler.setScaleOffsets
+			(
 				GRID.top.toPixels(_node.ppmm, _node.ppem, _node.ppdp, textureHeight),
 				GRID.right.toPixels(_node.ppmm, _node.ppem, _node.ppdp, textureWidth),
 				GRID.bottom.toPixels(_node.ppmm, _node.ppem, _node.ppdp, textureHeight),
@@ -129,6 +133,20 @@ package talon.starling
 				_node.states = new <String>["active"];
 			else if (touch.phase == TouchPhase.ENDED)
 				_node.states = new <String>[];
+		}
+
+		//
+		// Invalidation
+		//
+		// Validation subsystem based on render methods/rules/context etc.
+		// thus why I do not include invalidation/validation in Talon core
+		//
+		public function onEnterFrame(e:EnterFrameEvent):void
+		{
+			if (_node.isInvalidated && (_node.parent == null || !_node.parent.isInvalidated))
+			{
+				_node.validate();
+			}
 		}
 
 		//

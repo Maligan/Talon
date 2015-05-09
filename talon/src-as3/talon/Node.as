@@ -43,6 +43,7 @@ package talon
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
 		private var _bounds:Rectangle = new Rectangle();
+		private var _invalidated:Boolean;
 
 		/** @private */
 		public function Node():void
@@ -248,14 +249,36 @@ package talon
 		//
 		// Layout
 		//
-		/** Apply 'bounds' changes: dispatch RESIZE event, arrange children. */
-		public function commit():void
+		public function get isInvalidated():Boolean
+		{
+			return _invalidated;
+		}
+
+		/** Raise isInvalidated flag. */
+		public function invalidate():void
+		{
+			if (_invalidated === false)
+			{
+				_invalidated = true;
+				dispatchEventWith(Event.CHANGE);
+			}
+		}
+
+		/** Validate node layout:
+		 *  - Apply 'bounds' via dispatch RESIZE event
+		 *  - Arrange children
+		 *  Call this method after manually change 'bounds' property to validate layout.
+		 *  NB! Node layout will be validated independently isInvalidated flag is true or false. */
+		public function validate():void
 		{
 			// Update self view object attached to node
 			dispatchEventWith(Event.RESIZE);
 
 			// Update children nodes
 			layout.arrange(this, bounds.width, bounds.height);
+
+			// Check validation complete
+			_invalidated = false;
 		}
 
 		/** Actual node bounds in pixels. */
@@ -300,15 +323,15 @@ package talon
 		private function onSelfAttributeChange(e:Event):void
 		{
 			var layoutName:String = getAttribute(Attribute.LAYOUT);
-			var invalidate:Boolean = Layout.isObservableSelfAttribute(layoutName, e.data as String);
-			if (invalidate) commit();
+			var layoutInvalidated:Boolean = Layout.isObservableSelfAttribute(layoutName, e.data as String);
+			if (layoutInvalidated) invalidate();
 		}
 
 		private function onChildAttributeChange(e:Event):void
 		{
 			var layoutName:String = getAttribute(Attribute.LAYOUT);
-			var invalidate:Boolean = Layout.isObservableChildAttribute(layoutName, e.data as String);
-			if (invalidate) commit();
+			var layoutInvalidated:Boolean = Layout.isObservableChildAttribute(layoutName, e.data as String);
+			if (layoutInvalidated) invalidate();
 		}
 
 		//
@@ -329,9 +352,10 @@ package talon
 			child.resource();
 			child.addEventListener(Event.CHANGE, onChildAttributeChange);
 			child.dispatchEventWith(Event.ADDED);
+			invalidate();
 		}
 
-		/** Removes a child from the container. If the object is not a child throws ArgumentError */
+		/** Removes a child from the container. If the object is not a child throws ArgumentError. */
 		public function removeChild(child:Node):void
 		{
 			var indexOf:int = _children.indexOf(child);
@@ -342,6 +366,7 @@ package talon
 			child._parent = null;
 			child.restyle();
 			child.resource();
+			invalidate();
 		}
 
 		/** Returns a child object at a certain index. */

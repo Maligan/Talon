@@ -1,7 +1,7 @@
 package browser
 {
 	import browser.commands.CloseDocumentCommand;
-	import browser.commands.OpenCommand;
+	import browser.commands.OpenDocumentCommand;
 	import browser.dom.Document;
 	import browser.dom.log.DocumentMessage;
 	import browser.utils.Console;
@@ -98,7 +98,7 @@ package browser
 				var close:CloseDocumentCommand = new CloseDocumentCommand(this);
 				close.execute();
 
-				var open:OpenCommand = new OpenCommand(this, file);
+				var open:OpenDocumentCommand = new OpenDocumentCommand(this, file);
 				open.execute();
 			}
 		}

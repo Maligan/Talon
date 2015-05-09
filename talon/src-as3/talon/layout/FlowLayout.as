@@ -36,7 +36,7 @@ package talon.layout
 				var child:Node = node.getChildAt(i);
 				var childBounds:Rectangle = flow.getChildBounds(i, orientation);
 				child.bounds.copyFrom(childBounds);
-				child.commit();
+				child.validate();
 			}
 
 			flow.dispose();

@@ -42,7 +42,7 @@ package browser.commands
 
 			if (_project.exists)
 			{
-				var open:OpenCommand = new OpenCommand(controller, _project);
+				var open:OpenDocumentCommand = new OpenDocumentCommand(controller, _project);
 				open.execute();
 			}
 		}

@@ -13,11 +13,11 @@ package browser.commands
 	import flash.net.FileFilter;
 	import flash.utils.ByteArray;
 
-	public class OpenCommand extends Command
+	public class OpenDocumentCommand extends Command
 	{
 		private var _source:File;
 
-		public function OpenCommand(controller:AppController, source:File = null)
+		public function OpenDocumentCommand(controller:AppController, source:File = null)
 		{
 			super(controller);
 			_source = source;

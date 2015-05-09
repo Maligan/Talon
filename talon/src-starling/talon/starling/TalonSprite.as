@@ -79,11 +79,6 @@ package talon.starling
 			x = node.bounds.x;
 			y = node.bounds.y;
 
-			if ((node.bounds.height != 0 && node.bounds.width == 0) || (node.bounds.height == 0 && node.bounds.width != 0))
-			{
-				trace("Chatched!")
-			}
-
 			_bridge.resize(node.bounds.width, node.bounds.height);
 			refreshClipping();
 		}

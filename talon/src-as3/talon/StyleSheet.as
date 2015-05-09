@@ -56,7 +56,7 @@ package talon
 		//
 		// <css>      ::= { <rule> }
 		// <rule>     ::= <selector> {',' <selector>} '{' <style> '}'
-		// <selector> ::= * | 'ident' | .'ident' | #'ident' | <selector> <selector> | 'ident':'ident'
+		// <selector> ::= 'ident' | .'ident' | #'ident' | <selector> <selector> | 'ident':'ident'
 		// <style>    ::= { 'ident' ':' 'ident' ';' }
 		//
 		private function parseCSS(input:String):void

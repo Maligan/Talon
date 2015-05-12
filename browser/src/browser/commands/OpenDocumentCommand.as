@@ -92,5 +92,10 @@ package browser.commands
 
 			return result;
 		}
+
+		public override function get isExecutable():Boolean
+		{
+			return _source == null || _source.exists;
+		}
 	}
 }

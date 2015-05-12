@@ -21,6 +21,7 @@ package browser
 	import browser.utils.EventDispatcherAdapter;
 	import browser.utils.NativeMenuAdapter;
 	import browser.utils.NativeMenuAdapter;
+	import browser.utils.NativeMenuAdapter;
 
 	import flash.desktop.NativeApplication;
 	import flash.events.UncaughtErrorEvent;
@@ -317,8 +318,7 @@ package browser
 				for each (var path:String in recent)
 				{
 					var file:File = new File(path);
-					if (file.exists)
-						recentMenu.push(path, null, new OpenDocumentCommand(_controller, file));
+					recentMenu.push(path, null, new OpenDocumentCommand(_controller, file));
 				}
 
 				recentMenu.push("-");

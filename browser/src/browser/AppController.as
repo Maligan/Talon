@@ -87,6 +87,8 @@ package browser
 		public function resizeTo(width:int, height:int):void
 		{
 			settings.setValue(AppConstants.SETTING_IS_PORTRAIT, _monitor.isPortrait);
+			settings.setValue(AppConstants.SETTING_WINDOW_WIDTH, width);
+			settings.setValue(AppConstants.SETTING_WINDOW_HEIGHT, height);
 			_ui.resizeTo(width, height);
 		}
 

@@ -22,10 +22,12 @@ package browser
 		public static const SETTING_STATS:String = "stats";
 		public static const SETTING_ZOOM:String = "zoom";
 		public static const SETTING_LOCK_RESIZE:String = "lockWindowResize";
+		public static const SETTING_ALWAYS_ON_TOP:String = "alwaysOnTop";
 		public static const SETTING_RECENT_ARRAY:String = "recent";
 		public static const SETTING_PROFILE:String = "profile";
 		public static const SETTING_IS_PORTRAIT:String = "isPortrait";
-		public static const SETTING_ALWAYS_ON_TOP:String = "alwaysOnTop";
+		public static const SETTING_WINDOW_WIDTH:String = "windowWidth";
+		public static const SETTING_WINDOW_HEIGHT:String = "windowHeight";
 
 		public static const ZOOM_MIN:int = 25;
 		public static const ZOOM_MAX:int = 300;

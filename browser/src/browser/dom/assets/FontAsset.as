@@ -50,9 +50,11 @@ package browser.dom.assets
 			{
 				document.tasks.begin();
 
+				file.reportCleanup();
 				_lastTexture = texture;
 				_lastFont = new BitmapFont(_lastTexture, _lastXML);
 				TextField.registerBitmapFont(_lastFont, textureId);
+				trace("[FontAsset]", "registerBitmapFont", _lastFont.name);
 
 				document.tasks.end();
 			}

@@ -50,6 +50,7 @@ package browser.dom.assets
 			{
 				document.tasks.begin();
 
+				file.reportCleanup();
 				_lastTexture = texture;
 				_lastAtlas = new TextureAtlas(_lastTexture, _lastXML);
 

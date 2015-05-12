@@ -76,6 +76,8 @@ package talon
 
 			// Listen attribute change
 			addEventListener(Event.CHANGE, onSelfAttributeChange);
+
+			_invalidated = true;
 		}
 
 		//

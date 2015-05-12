@@ -96,6 +96,7 @@ package
 		[Deprecated(message="Move from here to AppController")]
 		private function adjust():void
 		{
+			var window:NativeWindow = root.stage.nativeWindow;
 			var settings:Settings = new Settings("settings");
 			var profileId:String = settings.getValueOrDefault(AppConstants.SETTING_PROFILE, null);
 			var profile:DeviceProfile = DeviceProfile.getById(profileId) || DeviceProfile.CUSTOM;
@@ -103,7 +104,6 @@ package
 			if (profile != DeviceProfile.CUSTOM)
 			{
 				var isPortrait:Boolean = settings.getValueOrDefault(AppConstants.SETTING_IS_PORTRAIT, false);
-				var window:NativeWindow = root.stage.nativeWindow;
 				var min:Number = Math.min(profile.width, profile.height);
 				var max:Number = Math.max(profile.width, profile.height);
 
@@ -117,6 +117,13 @@ package
 					window.width = max;
 					window.height = min;
 				}
+			}
+			else
+			{
+				var lastWidth:Number = settings.getValueOrDefault(AppConstants.SETTING_WINDOW_WIDTH, stage.stageWidth);
+				var lastHeight:Number = settings.getValueOrDefault(AppConstants.SETTING_WINDOW_HEIGHT, stage.stageHeight);
+				window.width = lastWidth;
+				window.height = lastHeight;
 			}
 		}
 	}

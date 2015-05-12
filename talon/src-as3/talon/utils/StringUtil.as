@@ -27,6 +27,13 @@ package talon.utils
 			return rollback;
 		}
 
+		public static function toHexRBG(color:uint):String
+		{
+			var string:String = color.toString(16);
+			while (string.length < 6) string = "0" + string;
+			return "#" + string;
+		}
+
 		/**
 		 * Parse strings like:
 		 * url(http://example.com/) to ['url', 'http://example.com/']

@@ -35,8 +35,8 @@ package browser
 		public static const HISTORY_RECENT_MAX:int = 10;
 
 		public static const T_EXPORT_TITLE:String = "Export";
-		public static const T_PROJECT_ROOT_TITLE:String = "Select project root directory";
-		public static const T_PROJECT_FILE_TITLE:String = "Select project file";
+		public static const T_PROJECT_ROOT_TITLE:String = "Select Document root directory";
+		public static const T_PROJECT_FILE_TITLE:String = "Select Document file";
 		public static const T_PROJECT_FILE_DEFAULT_NAME:String = "Untitled";
 		public static const T_DESIGNER_FILE_EXTENSION_NAME:String = "Talon Designer Document";
 		public static const T_DESIGNER_EXPORT_FILE_EXTENSION_NAME:String = "Zip Archive";
@@ -60,7 +60,7 @@ package browser
 		public static const T_MENU_VIEW_PREFERENCES_STATS:String = "Show Stats";
 		public static const T_MENU_VIEW_PREFERENCES_LOCK_RESIZE:String = "Lock Window Size";
 		public static const T_MENU_VIEW_PREFERENCES_ALWAYS_ON_TOP:String = "Always On Top";
-		public static const T_MENU_VIEW_PREFERENCES_AUTO_REOPEN:String = "Open last document on start";
+		public static const T_MENU_VIEW_PREFERENCES_AUTO_REOPEN:String = "Open Last Document on Startup";
 		public static const T_MENU_VIEW_ZOOM_IN:String = "Zoom In";
 		public static const T_MENU_VIEW_ZOOM_OUT:String = "Zoom Out";
 		public static const T_MENU_VIEW_ORIENTATION:String = "Orientation";

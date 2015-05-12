@@ -70,8 +70,6 @@ package browser
 
 		public function resizeTo(width:int, height:int):void
 		{
-			settings.setValue(AppConstants.SETTING_IS_PORTRAIT, _monitor.isPortrait);
-			settings.setValue(AppConstants.SETTING_WINDOW_BOUNDS, _root.stage.nativeWindow.bounds);
 			_ui.resizeTo(width, height);
 		}
 
@@ -145,6 +143,7 @@ package browser
 			{
 				_document = value;
 				_documentDispatcher.target = _document;
+				_document.factory.ppdp = profile.csf;
 				dispatchEventWith(EVENT_DOCUMENT_CHANGE);
 				templateId = _document ? _document.factory.templateIds.shift() : null;
 			}
@@ -203,6 +202,7 @@ package browser
 			_root.stage.addEventListener(Event.RESIZE, onStageResize);
 			_root.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.MOVE, onMove);
 			_root.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.RESIZING, onResizing);
+			_root.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.RESIZE, onResize);
 			restoreWindowBounds();
 		}
 
@@ -210,7 +210,17 @@ package browser
 		{
 			var window:NativeWindow = root.stage.nativeWindow;
 			var bounds:Rectangle = settings.getValueOrDefault(AppConstants.SETTING_WINDOW_BOUNDS);
-			if (bounds) window.bounds = bounds;
+			if (bounds)
+			{
+				window.x = bounds.x;
+				window.y = bounds.y;
+
+				if (profile != DeviceProfile.CUSTOM)
+				{
+					window.width = bounds.width;
+					window.height = bounds.height;
+				}
+			}
 		}
 
 		private function onStageResize(e:*):void
@@ -224,7 +234,7 @@ package browser
 
 		private function onMove(e:NativeWindowBoundsEvent):void
 		{
-			settings.setValue(AppConstants.SETTING_WINDOW_BOUNDS, _root.stage.nativeWindow.bounds);
+			settings.setValue(AppConstants.SETTING_WINDOW_BOUNDS, e.afterBounds);
 		}
 
 		private function onResizing(e:NativeWindowBoundsEvent):void
@@ -242,6 +252,12 @@ package browser
 				profile.height = window.height;
 				dispatchEventWith(EVENT_PROFILE_CHANGE);
 			}
+		}
+
+		private function onResize(e:NativeWindowBoundsEvent):void
+		{
+			settings.setValue(AppConstants.SETTING_IS_PORTRAIT, _monitor.isPortrait);
+			settings.setValue(AppConstants.SETTING_WINDOW_BOUNDS, e.afterBounds);
 		}
 
 		//

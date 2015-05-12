@@ -68,15 +68,8 @@ package talon.starling
 		}
 
 		//
-		// Properties
+		// Resize
 		//
-		private function onTextChange(e:Event):void { text = _node.getAttribute(Attribute.TEXT); }
-		private function onHAlignChange(e:Event):void { hAlign = _node.getAttribute(Attribute.HALIGN); }
-		private function onVAlignChange(e:Event):void { vAlign = _node.getAttribute(Attribute.VALIGN); }
-		private function onFontNameChange(e:Event):void { fontName = _node.getAttribute(Attribute.FONT_NAME) || BitmapFont.MINI; }
-		private function onFontColorChange(e:Event):void { color = StringUtil.parseColor(_node.getAttribute(Attribute.FONT_COLOR)); }
-		private function onFontSizeChange(e:Event):void { fontSize = node.ppem; }
-
 		private function onNodeResize(e:Event):void
 		{
 			_node.bounds.inflate(-2, -2);
@@ -111,6 +104,27 @@ package talon.starling
 		{
 			return _bridge.hitTestCustom(super.hitTest, localPoint, forTouch);
 		}
+
+		//
+		// Properties Overrides
+		//
+		public override function set color(value:uint):void { node.setAttribute(Attribute.FONT_COLOR, StringUtil.toHexRBG(value)) }
+		private function onFontColorChange(e:Event):void { super.color = StringUtil.parseColor(node.getAttribute(Attribute.FONT_COLOR)); }
+
+		public override function set fontSize(value:Number):void { node.setAttribute(Attribute.FONT_SIZE, value.toString()) }
+		private function onFontSizeChange(e:Event):void { super.fontSize = node.ppem }
+
+		public override function set fontName(value:String):void { node && node.setAttribute(Attribute.FONT_NAME, value) || (super.fontName = value) }
+		private function onFontNameChange(e:Event):void { super.fontName = node.getAttribute(Attribute.FONT_NAME) || BitmapFont.MINI }
+
+		public override function set hAlign(value:String):void { if (super.hAlign != value) node.setAttribute(Attribute.HALIGN, value) }
+		private function onHAlignChange(e:Event):void { super.hAlign = _node.getAttribute(Attribute.HALIGN); }
+
+		public override function set vAlign(value:String):void { if (super.vAlign != value) node.setAttribute(Attribute.VALIGN, value) }
+		private function onVAlignChange(e:Event):void { super.vAlign = _node.getAttribute(Attribute.VALIGN); }
+
+		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
+		private function onTextChange(e:Event):void { super.text = _node.getAttribute(Attribute.TEXT); }
 
 		//
 		// Properties

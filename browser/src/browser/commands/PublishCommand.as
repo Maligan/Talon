@@ -16,11 +16,11 @@ package browser.commands
 
 	import starling.events.Event;
 
-	public class ExportCommand extends Command
+	public class PublishCommand extends Command
 	{
 		private var _target:File;
 
-		public function ExportCommand(controller:AppController, target:File = null)
+		public function PublishCommand(controller:AppController, target:File = null)
 		{
 			super(controller);
 			controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);

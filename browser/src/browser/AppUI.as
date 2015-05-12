@@ -4,7 +4,7 @@ package browser
 	import browser.commands.CloseDocumentCommand;
 	import browser.commands.Command;
 	import browser.commands.NewDocumentCommand;
-	import browser.commands.ExportCommand;
+	import browser.commands.PublishCommand;
 	import browser.commands.OpenDocumentCommand;
 	import browser.commands.OpenDocumentFolderCommand;
 	import browser.commands.OrientationCommand;
@@ -33,6 +33,7 @@ package browser
 
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
+	import starling.display.DisplayObjectContainer;
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.events.TouchEvent;
@@ -48,7 +49,7 @@ package browser
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
 
-	public class AppUI extends Sprite
+	public class AppUI
 	{
 		[Embed(source="/../assets/interface.zip", mimeType="application/octet-stream")]
 		private static const INTERFACE:Class;
@@ -63,8 +64,6 @@ package browser
 		private var _isolator:Sprite;
 		private var _container:TalonSprite;
 
-		private var _documentDispatcher:EventDispatcherAdapter;
-		private var _menu:NativeMenuAdapter;
 		private var _template:DisplayObject;
 		private var _templateProduceMessage:DocumentMessage;
 		private var _locked:Boolean;
@@ -74,13 +73,25 @@ package browser
 			_controller = controller;
 			_controller.addEventListener(AppController.EVENT_PROFILE_CHANGE, refreshWindowTitle);
 			_controller.addEventListener(AppController.EVENT_PROTOTYPE_CHANGE, refreshCurrentTemplate);
-			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChanged);
 
-			_documentDispatcher = new EventDispatcherAdapter();
-			_documentDispatcher.addEventListener(DocumentEvent.CHANGED, onDocumentChanged);
+			_controller.documentDispatcher.addEventListener(DocumentEvent.CHANGED, onDocumentChanged);
+		}
 
+		/** Call after starling initialize completed. */
+		public function initialize():void
+		{
 			_factory = new TalonFactoryStarling();
 			_factory.addArchiveContentAsync(new INTERFACE() as ByteArray, onFactoryComplete);
+		}
+
+		//
+		// Logic
+		//
+		private function onFactoryComplete():void
+		{
+			_interface = _factory.produce("interface") as TalonSprite;
+			_controller.host.addChild(_interface);
 
 			_container = new TalonSprite();
 			_container.node.setAttribute(Attribute.LAYOUT, Layout.FLOW);
@@ -90,76 +101,6 @@ package browser
 			_isolator = new Sprite();
 			_isolator.name = "Isolator";
 			_isolator.addChild(_container);
-
-			setTimeout(initializeNativeMenu, 1);
-		}
-
-		private function initializeNativeMenu():void
-		{
-			_menu = new NativeMenuAdapter();
-
-			_menu.push("file",                       AppConstants.T_MENU_FILE);
-			_menu.push("file/new",                   AppConstants.T_MENU_FILE_NEW_DOCUMENT,      new NewDocumentCommand(_controller), "n");
-			_menu.push("file/-");
-			_menu.push("file/open",                  AppConstants.T_MENU_FILE_OPEN,             new OpenDocumentCommand(_controller),   "o");
-			_menu.push("file/recent",                AppConstants.T_MENU_FILE_RECENT);
-			_menu.push("file/-");
-			_menu.push("file/closeDocument",         AppConstants.T_MENU_FILE_CLOSE_DOCUMENT,   new CloseDocumentCommand(_controller),  "w");
-			_menu.push("file/closeBrowser",          AppConstants.T_MENU_FILE_CLOSE_BROWSER,    new CloseBrowserCommand(_controller),  "w", [Keyboard.CONTROL, Keyboard.SHIFT]);
-			_menu.push("file/-");
-			_menu.push("file/publish",               AppConstants.T_MENU_FILE_PUBLISH_AS,        new ExportCommand(_controller), "s", [Keyboard.CONTROL, Keyboard.SHIFT]);
-
-			_menu.push("view",                                  AppConstants.T_MENU_VIEW);
-			_menu.push("view/preference",                       AppConstants.T_MENU_VIEW_PREFERENCES);
-			_menu.push("view/preference/theme",                 AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND);
-			_menu.push("view/preference/theme/transparent",     AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND_CHESS, new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_CHESS));
-			_menu.push("view/preference/theme/dark",            AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND_DARK,  new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
-			_menu.push("view/preference/theme/light",           AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND_LIGHT, new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
-			_menu.push("view/preference/stats",                 AppConstants.T_MENU_VIEW_PREFERENCES_STATS,            new SettingCommand(_controller, AppConstants.SETTING_STATS, true, false));
-			_menu.push("view/preference/resize",                AppConstants.T_MENU_VIEW_PREFERENCES_LOCK_RESIZE,      new SettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
-			_menu.push("view/preference/alwaysOnTop",           AppConstants.T_MENU_VIEW_PREFERENCES_ALWAYS_ON_TOP,    new SettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
-			_menu.push("view/-");
-			_menu.push("view/zoomIn",                AppConstants.T_MENU_VIEW_ZOOM_IN,          new ZoomCommand(_controller, +25),   "=");
-			_menu.push("view/zoomOut",               AppConstants.T_MENU_VIEW_ZOOM_OUT,         new ZoomCommand(_controller, -25),   "-");
-			_menu.push("view/-");
-			_menu.push("view/orientation",           AppConstants.T_MENU_VIEW_ORIENTATION);
-			_menu.push("view/orientation/portrait",  AppConstants.T_MENU_VIEW_ORIENTATION_PORTRAIT,     new OrientationCommand(_controller, Orientation.VERTICAL), "p", [Keyboard.CONTROL, Keyboard.SHIFT]);
-			_menu.push("view/orientation/landscape", AppConstants.T_MENU_VIEW_ORIENTATION_LANDSCAPE,    new OrientationCommand(_controller, Orientation.HORIZONTAL), "l", [Keyboard.CONTROL, Keyboard.SHIFT]);
-
-			_menu.push("view/profile",               AppConstants.T_MENU_VIEW_PROFILE);
-			_menu.push("view/profile/custom",        AppConstants.T_MENU_VIEW_PROFILE_CUSTOM, new ProfileCommand(_controller, DeviceProfile.CUSTOM));
-			_menu.push("view/profile/-");
-
-			var profiles:Vector.<DeviceProfile> = DeviceProfile.getProfiles();
-			for (var i:int = 0; i < profiles.length; i++)
-			{
-				var profile:DeviceProfile = profiles[i];
-				_menu.push("view/profile/" + profile.id, null, new ProfileCommand(_controller, profile), (i+1).toString(), [Keyboard.ALTERNATE]);
-			}
-
-			_menu.push("navigate",                      AppConstants.T_MENU_NAVIGATE);
-			_menu.push("navigate/openProjectFolder",    AppConstants.T_MENU_NAVIGATE_OPEN_DOCUMENT_FOLDER, new OpenDocumentFolderCommand(_controller));
-			_menu.push("navigate/search",               AppConstants.T_MENU_NAVIGATE_SEARCH);
-			refreshTemplates();
-
-//			_menu.push("help",          AppConstants.T_MENU_HELP);
-//			_menu.push("help/online",   AppConstants.T_MENU_HELP_ONLINE);
-//			_menu.push("help/update",   AppConstants.T_MENU_HELP_UPDATE, new UpdateCommand(_controller));
-//			_menu.push("help/about",    AppConstants.T_MENU_HELP_ABOUT);
-
-			_controller.settings.addSettingListener(AppConstants.SETTING_RECENT_ARRAY, refreshRecent);
-			refreshRecent();
-
-			NativeApplication.nativeApplication.activeWindow.menu = _menu.nativeMenu;
-		}
-
-		//
-		// Logic
-		//
-		private function onFactoryComplete():void
-		{
-			_interface = _factory.produce("interface") as TalonSprite;
-			addChild(_interface);
 
 			_interface.getChildByName("shade").visible = false;
 
@@ -171,12 +112,12 @@ package browser
 			_isolatorContainer.addChild(_isolator);
 			Popup.initialize(this, _popupContainer);
 
-			_controller.settings.addSettingListener(AppConstants.SETTING_BACKGROUND, onBackgroundChange); onBackgroundChange(null);
-			_controller.settings.addSettingListener(AppConstants.SETTING_STATS, onStatsChange); onStatsChange(null);
-			_controller.settings.addSettingListener(AppConstants.SETTING_ZOOM, onZoomChange); onZoomChange(null);
-			_controller.settings.addSettingListener(AppConstants.SETTING_ALWAYS_ON_TOP, onAlwaysOnTopChange); onAlwaysOnTopChange(null);
+			_controller.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, onBackgroundChange); onBackgroundChange(null);
+			_controller.settings.addPropertyListener(AppConstants.SETTING_STATS, onStatsChange); onStatsChange(null);
+			_controller.settings.addPropertyListener(AppConstants.SETTING_ZOOM, onZoomChange); onZoomChange(null);
+			_controller.settings.addPropertyListener(AppConstants.SETTING_ALWAYS_ON_TOP, onAlwaysOnTopChange); onAlwaysOnTopChange(null);
 
-			stage && resizeTo(stage.stageWidth, stage.stageHeight);
+			resizeTo(_controller.root.stage.stageWidth, _controller.root.stage.stageHeight);
 		}
 
 		private function onBackgroundChange(e:Event):void
@@ -199,12 +140,6 @@ package browser
 			_controller.root.stage.nativeWindow.alwaysInFront = _controller.settings.getValueOrDefault(AppConstants.SETTING_ALWAYS_ON_TOP, false);
 		}
 
-		private function onDocumentChange(e:Event):void
-		{
-			_documentDispatcher.target = _controller.document;
-			onDocumentChanged(null);
-		}
-
 		public function resizeTo(width:int, height:int):void
 		{
 			if (_interface)
@@ -222,7 +157,6 @@ package browser
 
 		private function onDocumentChanged(e:Event):void
 		{
-			refreshTemplates();
 			refreshCurrentTemplate();
 		}
 
@@ -248,19 +182,6 @@ package browser
 			_controller.root.stage.nativeWindow.title = result.join(" - ");
 		}
 
-		private function refreshTemplates():void
-		{
-			var templates:Vector.<String> = _controller.document ? _controller.document.factory.templateIds: new <String>[];
-
-			var submenu:NativeMenuAdapter = _menu.getChildByPath("navigate/search");
-			submenu.removeChildren();
-			submenu.isEnabled = templates.length != 0;
-			submenu.isMenu = true;
-
-			for each (var prototypeId:String in templates)
-				submenu.push(prototypeId, null, new SelectCommand(_controller, prototypeId));
-		}
-
 		private function refreshCurrentTemplate():void
 		{
 			// Refresh current prototype
@@ -284,7 +205,7 @@ package browser
 			else if (_template != null)
 			{
 				_container.addChild(_template);
-				stage && resizeTo(stage.stageWidth, stage.stageHeight);
+				_controller.root.stage && resizeTo(_controller.root.stage.stageWidth, _controller.root.stage.stageHeight);
 			}
 		}
 
@@ -303,27 +224,6 @@ package browser
 			}
 
 			return result;
-		}
-
-		private function refreshRecent():void
-		{
-			var recent:Array = _controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_ARRAY, []);
-			var recentMenu:NativeMenuAdapter = _menu.getChildByPath("file/recent");
-			recentMenu.isMenu = true;
-			recentMenu.removeChildren();
-			recentMenu.isEnabled = recent.length > 0;
-
-			if (recent.length > 0)
-			{
-				for each (var path:String in recent)
-				{
-					var file:File = new File(path);
-					recentMenu.push(path, null, new OpenDocumentCommand(_controller, file));
-				}
-
-				recentMenu.push("-");
-				recentMenu.push("clear", AppConstants.T_MENU_FILE_RECENT_CLEAR, new SettingCommand(_controller, AppConstants.SETTING_RECENT_ARRAY, []));
-			}
 		}
 
 		//
@@ -349,7 +249,7 @@ package browser
 			if (zoom != value)
 			{
 				_isolator.scaleX = _isolator.scaleY = value;
-				resizeTo(stage.stageWidth, stage.stageHeight);
+				resizeTo(_controller.root.stage.stageWidth, _controller.root.stage.stageHeight);
 			}
 		}
 

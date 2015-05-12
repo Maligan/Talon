@@ -26,8 +26,7 @@ package browser
 		public static const SETTING_RECENT_ARRAY:String = "recent";
 		public static const SETTING_PROFILE:String = "profile";
 		public static const SETTING_IS_PORTRAIT:String = "isPortrait";
-		public static const SETTING_WINDOW_WIDTH:String = "windowWidth";
-		public static const SETTING_WINDOW_HEIGHT:String = "windowHeight";
+		public static const SETTING_WINDOW_BOUNDS:String = "windowBounds";
 
 		public static const ZOOM_MIN:int = 25;
 		public static const ZOOM_MAX:int = 300;

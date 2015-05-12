@@ -10,7 +10,7 @@ package browser.commands
 		public function ZoomCommand(controller:AppController, delta:int)
 		{
 			super(controller);
-			controller.settings.addSettingListener(AppConstants.SETTING_ZOOM, dispatchEvent);
+			controller.settings.addPropertyListener(AppConstants.SETTING_ZOOM, dispatchEvent);
 			_delta = delta;
 		}
 

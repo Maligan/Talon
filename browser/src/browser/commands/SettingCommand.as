@@ -12,7 +12,7 @@ package browser.commands
 		public function SettingCommand(controller:AppController, name:String, value:*, alternate:* = null)
 		{
 			super(controller);
-			controller.settings.addSettingListener(name, dispatchEvent);
+			controller.settings.addPropertyListener(name, dispatchEvent);
 			_name = name;
 			_value = value;
 			_alternate = alternate;

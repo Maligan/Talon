@@ -5,10 +5,10 @@ package browser
 	import browser.dom.Document;
 	import browser.dom.log.DocumentMessage;
 	import browser.utils.Console;
-	import browser.AppConstants;
 	import browser.utils.DeviceProfile;
+	import browser.utils.EventDispatcherAdapter;
 	import browser.utils.OrientationMonitor;
-	import browser.utils.Settings;
+	import browser.utils.Storage;
 
 	import flash.desktop.ClipboardFormats;
 	import flash.desktop.NativeDragActions;
@@ -19,8 +19,14 @@ package browser
 	import flash.events.NativeDragEvent;
 	import flash.events.NativeWindowBoundsEvent;
 	import flash.filesystem.File;
+	import flash.geom.Rectangle;
 
+	import starling.core.Starling;
 	import starling.display.DisplayObjectContainer;
+
+	import starling.display.Sprite;
+	import starling.events.Event;
+
 	import starling.events.EventDispatcher;
 
 	import talon.Attribute;
@@ -34,61 +40,37 @@ package browser
 		public static const EVENT_PROFILE_CHANGE:String = "profileChange";
 
 		private var _root:DisplayObject;
-		private var _host:DisplayObjectContainer;
 		private var _console:Console;
 		private var _document:Document;
 		private var _templateId:String;
 		private var _ui:AppUI;
-		private var _settings:Settings;
+		private var _menu:AppNativeMenu;
+		private var _settings:Storage;
 		private var _monitor:OrientationMonitor;
 		private var _profile:DeviceProfile;
+		private var _documentDispatcher:EventDispatcherAdapter;
+		private var _starling:Starling;
 
-		public function AppController(root:DisplayObject, host:DisplayObjectContainer, console:Console)
+		public function AppController(root:DisplayObject)
 		{
 			_root = root;
-			_host = host;
-
-			_root.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragIn);
-			_root.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
-
-			_console = console;
-			_console.addCommand("errors", cmdErrors, "Print current error list");
-			_console.addCommand("tree", cmdTree, "Print current template tree", "-a");
-			_console.addCommand("resources", cmdResourceSearch, "RegExp based search project resources", "regexp");
-			_console.addCommand("resources_miss", cmdResourceMiss, "Missing used resources");
-
-			_monitor = new OrientationMonitor(root.stage);
-			_settings = new Settings("settings");
+			_settings = new Storage("settings");
 			_profile = DeviceProfile.getById(settings.getValueOrDefault(AppConstants.SETTING_PROFILE, null)) || DeviceProfile.CUSTOM;
-			_root.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.RESIZING, onResizing);
+			_monitor = new OrientationMonitor(_root.stage);
+			_documentDispatcher = new EventDispatcherAdapter();
+			_menu = new AppNativeMenu(this);
 			_ui = new AppUI(this);
-			_host.addChild(_ui);
 
-			resizeTo(_host.stage.stageWidth, _host.stage.stageHeight);
-		}
-
-		private function onResizing(e:NativeWindowBoundsEvent):void
-		{
-			var prevent:Boolean = settings.getValueOrDefault(AppConstants.SETTING_LOCK_RESIZE, false);
-			if (prevent)
-			{
-				e.preventDefault();
-			}
-			else
-			{
-				var window:NativeWindow = root.stage.nativeWindow;
-				profile = DeviceProfile.CUSTOM;
-				profile.width = window.width;
-				profile.height = window.height;
-				dispatchEventWith(EVENT_PROFILE_CHANGE);
-			}
+			initializeConsole();
+			initializeDragAndDrop();
+			initializeStarling();
+			initializeWindowBoundsMonitor();
 		}
 
 		public function resizeTo(width:int, height:int):void
 		{
 			settings.setValue(AppConstants.SETTING_IS_PORTRAIT, _monitor.isPortrait);
-			settings.setValue(AppConstants.SETTING_WINDOW_WIDTH, width);
-			settings.setValue(AppConstants.SETTING_WINDOW_HEIGHT, height);
+			settings.setValue(AppConstants.SETTING_WINDOW_BOUNDS, _root.stage.nativeWindow.bounds);
 			_ui.resizeTo(width, height);
 		}
 
@@ -102,29 +84,6 @@ package browser
 
 				var open:OpenDocumentCommand = new OpenDocumentCommand(this, file);
 				open.execute();
-			}
-		}
-
-		public function get ui():AppUI { return _ui; }
-		public function get settings():Settings { return _settings; }
-		public function get monitor():OrientationMonitor { return _monitor; }
-		public function get root():DisplayObject { return _root; }
-		public function get profile():DeviceProfile { return _profile; }
-		public function set profile(value:DeviceProfile):void
-		{
-			if (value == null) throw new ArgumentError("Device Profile can't be null, use DeviceProfile.CUSTOM instead");
-
-			if (_profile != value)
-			{
-				_profile = value;
-
-				if (profile != DeviceProfile.CUSTOM)
-				{
-					adjust(profile.width, profile.height, _monitor.isPortrait);
-				}
-
-				settings.setValue(AppConstants.SETTING_PROFILE, _profile.id);
-				dispatchEventWith(EVENT_PROFILE_CHANGE);
 			}
 		}
 
@@ -146,12 +105,41 @@ package browser
 			}
 		}
 
+		//
+		// Properties
+		//
+		public function get host():DisplayObjectContainer { return _starling.root as DisplayObjectContainer }
+		public function get ui():AppUI { return _ui; }
+		public function get settings():Storage { return _settings; }
+		public function get monitor():OrientationMonitor { return _monitor; }
+		public function get root():DisplayObject { return _root; }
+		public function get profile():DeviceProfile { return _profile; }
+		public function set profile(value:DeviceProfile):void
+		{
+			if (value == null) throw new ArgumentError("Device Profile can't be null, use DeviceProfile.CUSTOM instead");
+
+			if (_profile != value)
+			{
+				_profile = value;
+
+				if (profile != DeviceProfile.CUSTOM)
+				{
+					adjust(profile.width, profile.height, _monitor.isPortrait);
+				}
+
+				settings.setValue(AppConstants.SETTING_PROFILE, _profile.id);
+				dispatchEventWith(EVENT_PROFILE_CHANGE);
+			}
+		}
+
+		public function get documentDispatcher():EventDispatcherAdapter { return _documentDispatcher }
 		public function get document():Document { return _document; }
 		public function set document(value:Document):void
 		{
 			if (_document != value)
 			{
 				_document = value;
+				_documentDispatcher.target = _document;
 				dispatchEventWith(EVENT_DOCUMENT_CHANGE);
 				templateId = _document ? _document.factory.templateIds.shift() : null;
 			}
@@ -168,8 +156,14 @@ package browser
 		}
 
 		//
-		// Drag And Drop
+		// [Events] Drag And Drop
 		//
+		private function initializeDragAndDrop():void
+		{
+			_root.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragIn);
+			_root.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
+		}
+
 		private function onDragIn(e:NativeDragEvent):void
 		{
 			var hasFiles:Boolean = e.clipboard.hasFormat(ClipboardFormats.FILE_PROMISE_LIST_FORMAT);
@@ -196,8 +190,84 @@ package browser
 		}
 
 		//
+		// [Events] Move And Resize
+		//
+		private function initializeWindowBoundsMonitor():void
+		{
+			_root.stage.addEventListener(Event.RESIZE, onStageResize);
+			_root.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.MOVE, onMove);
+			_root.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.RESIZING, onResizing);
+			restoreWindowBounds();
+		}
+
+		private function restoreWindowBounds():void
+		{
+			var window:NativeWindow = root.stage.nativeWindow;
+			var bounds:Rectangle = settings.getValueOrDefault(AppConstants.SETTING_WINDOW_BOUNDS);
+			if (bounds) window.bounds = bounds;
+		}
+
+		private function onStageResize(e:*):void
+		{
+			_starling.stage.stageWidth = _root.stage.stageWidth;
+			_starling.stage.stageHeight = _root.stage.stageHeight;
+			_starling.viewPort = new Rectangle(0, 0, _root.stage.stageWidth, _root.stage.stageHeight);
+
+			resizeTo(_root.stage.stageWidth, _root.stage.stageHeight);
+		}
+
+		private function onMove(e:NativeWindowBoundsEvent):void
+		{
+			settings.setValue(AppConstants.SETTING_WINDOW_BOUNDS, _root.stage.nativeWindow.bounds);
+		}
+
+		private function onResizing(e:NativeWindowBoundsEvent):void
+		{
+			var prevent:Boolean = settings.getValueOrDefault(AppConstants.SETTING_LOCK_RESIZE, false);
+			if (prevent)
+			{
+				e.preventDefault();
+			}
+			else
+			{
+				var window:NativeWindow = root.stage.nativeWindow;
+				profile = DeviceProfile.CUSTOM;
+				profile.width = window.width;
+				profile.height = window.height;
+				dispatchEventWith(EVENT_PROFILE_CHANGE);
+			}
+		}
+
+		//
+		// Starling
+		//
+		private function initializeStarling():void
+		{
+			_starling = new Starling(Sprite, root.stage);
+			_starling.addEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
+			_starling.start();
+		}
+
+		private function onStarlingRootCreated(e:Event):void
+		{
+			_starling.removeEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
+			_ui.initialize();
+		}
+
+		//
 		// Console command
 		//
+		private function initializeConsole():void
+		{
+			_console = new Console();
+			_root.stage.addChild(_console);
+
+			_console.addCommand("errors", cmdErrors, "Print current error list");
+			_console.addCommand("tree", cmdTree, "Print current template tree", "-a");
+			_console.addCommand("resources", cmdResourceSearch, "RegExp based search project resources", "regexp");
+			_console.addCommand("resources_miss", cmdResourceMiss, "Missing used resources");
+		}
+
 		private function cmdResourceSearch(query:String):void
 		{
 			if (_document == null) throw new Error("Document not opened");

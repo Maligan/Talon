@@ -6,19 +6,17 @@ package browser.utils
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
-	public class Settings extends EventDispatcher
+	public class Storage extends EventDispatcher
 	{
-		private var _data:Object;
 		private var _listeners:Dictionary = new Dictionary();
-		private var _storage:SharedObject;
+		private var _sharedObject:SharedObject;
 
-		public function Settings(name:String):void
+		public function Storage(name:String):void
 		{
-			_storage = SharedObject.getLocal(name);
-			_data = _storage.data;
+			_sharedObject = SharedObject.getLocal(name);
 		}
 
-		public function addSettingListener(name:String, listener:Function):void
+		public function addPropertyListener(name:String, listener:Function):void
 		{
 			_listeners[listener] = function (e:Event):void
 			{
@@ -33,20 +31,20 @@ package browser.utils
 			addEventListener(Event.CHANGE, _listeners[listener]);
 		}
 
-		public function removeSettingListener(name:String, listener:Function):void
+		public function removePropertyListener(name:String, listener:Function):void
 		{
 			removeEventListener(Event.CHANGE, _listeners[listener]);
 		}
 
 		public function getValueOrDefault(name:String, initial:* = null):*
 		{
-			return _data.hasOwnProperty(name) ? _data[name] : initial;
+			return _sharedObject.data.hasOwnProperty(name) ? _sharedObject.data[name] : initial;
 		}
 
 		public function setValue(name:String, value:*):void
 		{
-			_data[name] = value;
-			_storage.flush();
+			_sharedObject.data[name] = value;
+			_sharedObject.flush();
 			dispatchEventWith(Event.CHANGE, false, name);
 		}
 	}

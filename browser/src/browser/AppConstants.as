@@ -23,7 +23,9 @@ package browser
 		public static const SETTING_ZOOM:String = "zoom";
 		public static const SETTING_LOCK_RESIZE:String = "lockWindowResize";
 		public static const SETTING_ALWAYS_ON_TOP:String = "alwaysOnTop";
-		public static const SETTING_RECENT_ARRAY:String = "recent";
+		public static const SETTING_AUTO_REOPEN:String = "autoReopen";
+		public static const SETTING_RECENT_ARRAY:String = "recentDocuments";
+		public static const SETTING_RECENT_TEMPLATE:String = "recentTemplate";
 		public static const SETTING_PROFILE:String = "profile";
 		public static const SETTING_IS_PORTRAIT:String = "isPortrait";
 		public static const SETTING_WINDOW_BOUNDS:String = "windowBounds";
@@ -58,6 +60,7 @@ package browser
 		public static const T_MENU_VIEW_PREFERENCES_STATS:String = "Show Stats";
 		public static const T_MENU_VIEW_PREFERENCES_LOCK_RESIZE:String = "Lock Window Size";
 		public static const T_MENU_VIEW_PREFERENCES_ALWAYS_ON_TOP:String = "Always On Top";
+		public static const T_MENU_VIEW_PREFERENCES_AUTO_REOPEN:String = "Open last document on start";
 		public static const T_MENU_VIEW_ZOOM_IN:String = "Zoom In";
 		public static const T_MENU_VIEW_ZOOM_OUT:String = "Zoom Out";
 		public static const T_MENU_VIEW_ORIENTATION:String = "Orientation";

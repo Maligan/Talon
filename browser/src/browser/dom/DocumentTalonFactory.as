@@ -1,12 +1,18 @@
 package browser.dom
 {
+	import starling.display.DisplayObject;
+
+	import talon.Node;
+
 	import talon.starling.TalonFactoryStarling;
+	import talon.utils.ITalonElement;
 
 	/** Extended version of TalonFactory for browser purpose. */
 	public final class DocumentTalonFactory extends TalonFactoryStarling
 	{
 		private var _document:Document;
 		private var _styles:StyleSheetCollection;
+		private var _ppdp:Number;
 
 		public function DocumentTalonFactory(document:Document):void
 		{
@@ -20,6 +26,17 @@ package browser.dom
 			resources.reset();
 			_style = _styles.style;
 			return super.produce(id, includeStyleSheet, includeResources);
+		}
+
+		protected override function getElementNode(element:*):Node
+		{
+			var node:Node = super.getElementNode(element);
+			if (node)
+			{
+				if (isNaN(ppdp) == false) node.ppdp = ppdp;
+			}
+
+			return node;
 		}
 
 		//
@@ -113,6 +130,12 @@ package browser.dom
 		{
 			return _styles;
 		}
+
+		//
+		// Misc
+		//
+		public function get ppdp():Number { return _ppdp; }
+		public function set ppdp(value:Number):void { _ppdp = value; }
 	}
 }
 

@@ -146,6 +146,7 @@ package talon.starling
 			if (_node.isInvalidated && (_node.parent == null || !_node.parent.isInvalidated))
 			{
 				_node.validate();
+//				trace("[DisplayObjectBridge]", "Validated:", _node.getAttribute(Attribute.TYPE) || _node.getAttribute(Attribute.ID))
 			}
 		}
 

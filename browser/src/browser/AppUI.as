@@ -36,6 +36,7 @@ package browser
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Sprite;
 	import starling.events.Event;
+	import starling.events.EventDispatcher;
 	import starling.events.TouchEvent;
 
 	import talon.Attribute;
@@ -49,7 +50,7 @@ package browser
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
 
-	public class AppUI
+	public class AppUI extends EventDispatcher
 	{
 		[Embed(source="/../assets/interface.zip", mimeType="application/octet-stream")]
 		private static const INTERFACE:Class;
@@ -94,9 +95,10 @@ package browser
 			_controller.host.addChild(_interface);
 
 			_container = new TalonSprite();
-			_container.node.setAttribute(Attribute.LAYOUT, Layout.FLOW);
+			_container.node.setAttribute(Attribute.LAYOUT, Layout.ABSOLUTE);
 			_container.node.setAttribute(Attribute.VALIGN, VAlign.CENTER);
 			_container.node.setAttribute(Attribute.HALIGN, HAlign.CENTER);
+			_container.node.setAttribute(Attribute.ID, "IsolatedContainer");
 
 			_isolator = new Sprite();
 			_isolator.name = "Isolator";
@@ -118,6 +120,8 @@ package browser
 			_controller.settings.addPropertyListener(AppConstants.SETTING_ALWAYS_ON_TOP, onAlwaysOnTopChange); onAlwaysOnTopChange(null);
 
 			resizeTo(_controller.root.stage.stageWidth, _controller.root.stage.stageHeight);
+
+			dispatchEventWith(Event.COMPLETE);
 		}
 
 		private function onBackgroundChange(e:Event):void
@@ -142,7 +146,7 @@ package browser
 
 		public function resizeTo(width:int, height:int):void
 		{
-			if (_interface)
+			if (_interface && (_interface.node.bounds.width != width || _interface.node.bounds.height != height))
 			{
 				_interface.node.bounds.setTo(0, 0, width, height);
 				_interface.node.invalidate();

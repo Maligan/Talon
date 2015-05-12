@@ -44,6 +44,7 @@ package talon
 		private var _children:Vector.<Node> = new Vector.<Node>();
 		private var _bounds:Rectangle = new Rectangle();
 		private var _invalidated:Boolean;
+		private var _ppdp:Number;
 
 		/** @private */
 		public function Node():void
@@ -78,6 +79,7 @@ package talon
 			addEventListener(Event.CHANGE, onSelfAttributeChange);
 
 			_invalidated = true;
+			_ppdp = NaN;
 		}
 
 		//
@@ -287,7 +289,10 @@ package talon
 		public function get bounds():Rectangle { return _bounds; }
 
 		/** Pixel per density-independent point (in Starling also known as content scale factor [csf]). */
-		public function get ppdp():Number { return Starling.current.contentScaleFactor; }
+		public function get ppdp():Number { return (_ppdp == _ppdp) ? _ppdp : (_ppdp = Starling.current.contentScaleFactor); }
+
+		/** @private */
+		public function set ppdp(value:Number) { _ppdp = value; }
 
 		/** Pixels per millimeter (in current node). */
 		public function get ppmm():Number { return Capabilities.screenDPI / 25.4; }

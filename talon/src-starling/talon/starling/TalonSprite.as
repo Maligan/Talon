@@ -97,7 +97,7 @@ package talon.starling
 		}
 
 		//
-		// Background custom changes
+		// Background customization
 		//
 		public override function render(support:RenderSupport, parentAlpha:Number):void
 		{

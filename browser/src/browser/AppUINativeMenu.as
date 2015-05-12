@@ -9,16 +9,14 @@ package browser
 	import flash.filesystem.File;
 	import flash.ui.Keyboard;
 
-	import starling.events.Event;
-
 	import talon.enums.Orientation;
 
-	public class AppNativeMenu
+	public class AppUINativeMenu
 	{
 		private var _controller:AppController;
 		private var _menu:NativeMenuAdapter;
 
-		public function AppNativeMenu(controller:AppController)
+		public function AppUINativeMenu(controller:AppController)
 		{
 			_controller = controller;
 			_menu = new NativeMenuAdapter();
@@ -45,6 +43,7 @@ package browser
 			_menu.push("view/preference/stats",                 AppConstants.T_MENU_VIEW_PREFERENCES_STATS,             new SettingCommand(_controller, AppConstants.SETTING_STATS, true, false));
 			_menu.push("view/preference/resize",                AppConstants.T_MENU_VIEW_PREFERENCES_LOCK_RESIZE,       new SettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
 			_menu.push("view/preference/alwaysOnTop",           AppConstants.T_MENU_VIEW_PREFERENCES_ALWAYS_ON_TOP,     new SettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
+			_menu.push("view/preference/autoReopen",            AppConstants.T_MENU_VIEW_PREFERENCES_AUTO_REOPEN,       new SettingCommand(_controller, AppConstants.SETTING_AUTO_REOPEN, true, false));
 			_menu.push("view/-");
 			_menu.push("view/zoomIn",                           AppConstants.T_MENU_VIEW_ZOOM_IN,                       new ZoomCommand(_controller, +25),   "=");
 			_menu.push("view/zoomOut",                          AppConstants.T_MENU_VIEW_ZOOM_OUT,                      new ZoomCommand(_controller, -25),   "-");
@@ -70,6 +69,7 @@ package browser
 			_menu.push("navigate/search",               AppConstants.T_MENU_NAVIGATE_SEARCH);
 
 			_controller.documentDispatcher.addEventListener(DocumentEvent.CHANGED, refreshDocumentTemplatesList);
+			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, refreshDocumentTemplatesList);
 			refreshDocumentTemplatesList();
 
 			_controller.settings.addPropertyListener(AppConstants.SETTING_RECENT_ARRAY, refreshRecentOpenedDocumentsList);

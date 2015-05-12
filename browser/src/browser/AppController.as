@@ -20,6 +20,7 @@ package browser
 	import flash.events.NativeWindowBoundsEvent;
 	import flash.filesystem.File;
 	import flash.geom.Rectangle;
+	import flash.profiler.profile;
 
 	import starling.core.Starling;
 	import starling.display.DisplayObjectContainer;
@@ -44,7 +45,7 @@ package browser
 		private var _document:Document;
 		private var _templateId:String;
 		private var _ui:AppUI;
-		private var _menu:AppNativeMenu;
+		private var _menu:AppUINativeMenu;
 		private var _settings:Storage;
 		private var _monitor:OrientationMonitor;
 		private var _profile:DeviceProfile;
@@ -58,7 +59,7 @@ package browser
 			_profile = DeviceProfile.getById(settings.getValueOrDefault(AppConstants.SETTING_PROFILE, null)) || DeviceProfile.CUSTOM;
 			_monitor = new OrientationMonitor(_root.stage);
 			_documentDispatcher = new EventDispatcherAdapter();
-			_menu = new AppNativeMenu(this);
+			_menu = new AppUINativeMenu(this);
 			_ui = new AppUI(this);
 
 			initializeConsole();
@@ -123,8 +124,12 @@ package browser
 				_profile = value;
 
 				if (profile != DeviceProfile.CUSTOM)
-				{
 					adjust(profile.width, profile.height, _monitor.isPortrait);
+
+				if (document)
+				{
+					document.factory.ppdp = profile.csf;
+					dispatchEventWith(EVENT_PROTOTYPE_CHANGE);
 				}
 
 				settings.setValue(AppConstants.SETTING_PROFILE, _profile.id);
@@ -151,6 +156,7 @@ package browser
 			if (_templateId != value)
 			{
 				_templateId = value;
+				_settings.setValue(AppConstants.SETTING_RECENT_TEMPLATE, _templateId);
 				dispatchEventWith(EVENT_PROTOTYPE_CHANGE);
 			}
 		}
@@ -251,7 +257,25 @@ package browser
 		private function onStarlingRootCreated(e:Event):void
 		{
 			_starling.removeEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
+			_ui.addEventListener(Event.COMPLETE, onUIComplete);
 			_ui.initialize();
+		}
+
+		private function onUIComplete(e:Event):void
+		{
+			// Auto reopen TODO: Invoke coflict
+			var isEnableReopen:Boolean = settings.getValueOrDefault(AppConstants.SETTING_AUTO_REOPEN, false);
+			if (isEnableReopen)
+			{
+				var recentArray:Array = settings.getValueOrDefault(AppConstants.SETTING_RECENT_ARRAY);
+				var recentPath:String = recentArray && recentArray.length ? recentArray[0] : null;
+				if (recentPath)
+				{
+					var template:String = settings.getValueOrDefault(AppConstants.SETTING_RECENT_TEMPLATE);
+					invoke(recentPath);
+					if (template != null) templateId = template;
+				}
+			}
 		}
 
 		//

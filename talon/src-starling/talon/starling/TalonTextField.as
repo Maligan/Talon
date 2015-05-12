@@ -1,7 +1,10 @@
 package talon.starling
 {
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
 
 	import starling.core.RenderSupport;
+	import starling.display.DisplayObject;
 	import starling.events.Event;
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
@@ -22,67 +25,74 @@ package talon.starling
 			super(0, 0, null);
 
 			_node = new Node();
-			_node.addEventListener(Event.CHANGE, onNodeChange);
 			_node.addEventListener(Event.RESIZE, onNodeResize);
 
-			_bridge = new DisplayObjectBridge(this, node);
-
 			// TextField autoSize
-			_node.width.auto = _node.minWidth.auto = _node.maxWidth.auto = getTextWidth;
-			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = getTextHeight;
-			autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
+			_node.width.auto = _node.minWidth.auto = _node.maxWidth.auto = measureWidth;
+			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = measureHeight;
+			autoSize = TextFieldAutoSize.NONE;
+
+			// Bridge
+			_bridge = new DisplayObjectBridge(this, node);
+			_bridge.addAttributeChangeListener(Attribute.TEXT, onTextChange);
+			_bridge.addAttributeChangeListener(Attribute.HALIGN, onHAlignChange);
+			_bridge.addAttributeChangeListener(Attribute.VALIGN, onVAlignChange);
+			_bridge.addAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange);
+			_bridge.addAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
+			_bridge.addAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
 		}
 
-		private function getTextWidth(availableWidth:Number, availableHeight:Number):Number
-		{
-			adjust(availableWidth, availableHeight);
-			return textBounds.width;
-		}
+		//
+		// Measure size
+		//
+		private function measureWidth(availableWidth:Number, availableHeight:Number):Number { return measure(availableWidth, availableHeight).width; }
+		private function measureHeight(availableWidth:Number, availableHeight:Number):Number { return measure(availableWidth, availableHeight).height; }
 
-		private function getTextHeight(availableWidth:Number, availableHeight:Number):Number
+		/** TODO: Optimize. */
+		private function measure(aw:Number, ah:Number):Rectangle
 		{
-			adjust(availableWidth, availableHeight);
-			return textBounds.height;
-		}
-
-		private function adjust(aw:Number, ah:Number):void
-		{
-			/**/ if (aw == Infinity && ah == Infinity) autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
-			else if (aw == Infinity && ah != Infinity) autoSize = TextFieldAutoSize.VERTICAL;
-			else if (aw != Infinity && ah == Infinity) autoSize = TextFieldAutoSize.HORIZONTAL;
-			else if (aw != Infinity && ah != Infinity) autoSize = TextFieldAutoSize.NONE;
-
+			autoSize = getAutoSize(aw == Infinity, ah == Infinity);
 			if (aw != Infinity) width = aw;
 			if (ah != Infinity) height = ah;
+			var result:Rectangle = textBounds;
+			autoSize = TextFieldAutoSize.NONE;
+			return result;
 		}
 
-		private function onNodeChange(e:Event):void
+		private function getAutoSize(width:Boolean, height:Boolean):String
 		{
-			/**/ if (e.data == Attribute.TEXT)         text = _node.getAttribute(Attribute.TEXT);
-			else if (e.data == Attribute.HALIGN)       hAlign = _node.getAttribute(Attribute.HALIGN);
-			else if (e.data == Attribute.VALIGN)       vAlign = _node.getAttribute(Attribute.VALIGN);
-			else if (e.data == Attribute.FONT_NAME)    fontName = _node.getAttribute(Attribute.FONT_NAME) || BitmapFont.MINI;
-			else if (e.data == Attribute.FONT_COLOR)   color = StringUtil.parseColor(_node.getAttribute(Attribute.FONT_COLOR));
-			else if (e.data == Attribute.FONT_SIZE)    fontSize = node.ppem;
+			/**/ if ( width &&  height) autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
+			else if ( width && !height) autoSize = TextFieldAutoSize.VERTICAL;
+			else if (!width &&  height) autoSize = TextFieldAutoSize.HORIZONTAL;
+			return TextFieldAutoSize.NONE;
 		}
+
+		//
+		// Properties
+		//
+		private function onTextChange(e:Event):void { text = _node.getAttribute(Attribute.TEXT); }
+		private function onHAlignChange(e:Event):void { hAlign = _node.getAttribute(Attribute.HALIGN); }
+		private function onVAlignChange(e:Event):void { vAlign = _node.getAttribute(Attribute.VALIGN); }
+		private function onFontNameChange(e:Event):void { fontName = _node.getAttribute(Attribute.FONT_NAME) || BitmapFont.MINI; }
+		private function onFontColorChange(e:Event):void { color = StringUtil.parseColor(_node.getAttribute(Attribute.FONT_COLOR)); }
+		private function onFontSizeChange(e:Event):void { fontSize = node.ppem; }
 
 		private function onNodeResize(e:Event):void
 		{
-			x = Math.round(_node.bounds.x)// - 2;
-			y = Math.round(_node.bounds.y)// - 2;
-			width = Math.round(_node.bounds.width)// - 2;
-			height = Math.round(_node.bounds.height)// - 2;
+			_node.bounds.inflate(-2, -2);
+			x = Math.round(_node.bounds.x);
+			y = Math.round(_node.bounds.y);
+			width = Math.round(_node.bounds.width);
+			height = Math.round(_node.bounds.height);
 
 			_bridge.resize(width, height);
 
-			autoSize = TextFieldAutoSize.NONE;
+			text = text;
 		}
 
-		public function get node():Node
-		{
-			return _node;
-		}
-
+		//
+		// Background customization
+		//
 		public override function render(support:RenderSupport, parentAlpha:Number):void
 		{
 			// Render background
@@ -90,6 +100,24 @@ package talon.starling
 
 			// Render glyphs
 			super.render(support, parentAlpha);
+		}
+
+		public override function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
+		{
+			return _bridge.getBoundsCustom(super.getBounds, targetSpace, resultRect);
+		}
+
+		public override function hitTest(localPoint:Point, forTouch:Boolean = false):DisplayObject
+		{
+			return _bridge.hitTestCustom(super.hitTest, localPoint, forTouch);
+		}
+
+		//
+		// Properties
+		//
+		public function get node():Node
+		{
+			return _node;
 		}
 	}
 }

@@ -67,7 +67,7 @@ package talon.utils
 
 			// Create new element
 			var element:* = new typeClass();
-			var elementNode:Node = element is ITalonElement ? ITalonElement(element).node : null;
+			var elementNode:Node = getElementNode(element);
 
 			// Copy attributes to node
 			if (elementNode)
@@ -83,6 +83,11 @@ package talon.utils
 			}
 
 			_parserProductStack.push(element);
+		}
+
+		protected function getElementNode(element:*):Node
+		{
+			return element is ITalonElement ? ITalonElement(element).node : null;
 		}
 
 		protected function getLinkageClass(type:String):Class

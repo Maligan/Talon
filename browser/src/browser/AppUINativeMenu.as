@@ -75,10 +75,10 @@ package browser
 			_controller.settings.addPropertyListener(AppConstants.SETTING_RECENT_ARRAY, refreshRecentOpenedDocumentsList);
 			refreshRecentOpenedDocumentsList();
 
-//			_menu.push("help",          AppConstants.T_MENU_HELP);
-//			_menu.push("help/online",   AppConstants.T_MENU_HELP_ONLINE);
-//			_menu.push("help/update",   AppConstants.T_MENU_HELP_UPDATE, new UpdateCommand(_controller));
-//			_menu.push("help/about",    AppConstants.T_MENU_HELP_ABOUT);
+			_menu.push("help",          AppConstants.T_MENU_HELP);
+			_menu.push("help/online",   AppConstants.T_MENU_HELP_ONLINE);
+			_menu.push("help/update",   AppConstants.T_MENU_HELP_UPDATE, new UpdateCommand(_controller));
+			_menu.push("help/about",    AppConstants.T_MENU_HELP_ABOUT);
 
 			if (NativeWindow.supportsMenu) controller.root.stage.nativeWindow.menu = _menu.nativeMenu;
 		}

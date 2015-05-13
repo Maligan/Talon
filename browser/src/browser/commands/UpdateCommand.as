@@ -164,7 +164,7 @@ package browser.commands
 		private function complete(status:String):void
 		{
 			_updateStep = UpdateStep.NOP;
-			trace("[UpdateCommand]", "Complete with status", status);
+			controller.console.println("[UpdateCommand] Complete with status " + status)
 		}
 	}
 }

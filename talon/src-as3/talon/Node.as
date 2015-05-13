@@ -44,6 +44,7 @@ package talon
 		private var _bounds:Rectangle = new Rectangle();
 		private var _invalidated:Boolean;
 		private var _ppdp:Number;
+		private var _ppmm:Number;
 
 		/** @private */
 		public function Node():void
@@ -79,6 +80,7 @@ package talon
 
 			_invalidated = true;
 			_ppdp = 1;
+			_ppmm = Capabilities.screenDPI / 25.4;
 		}
 
 		//
@@ -294,10 +296,10 @@ package talon
 		public function set ppdp(value:Number):void { _ppdp = value; }
 
 		/** Pixels per millimeter (in current node). */
-		public function get ppmm():Number { return Capabilities.screenDPI / 25.4; }
+		public function get ppmm():Number { return _ppmm; }
 
 		/** @private */
-		public function set ppmm(value:Number):void {  }
+		public function set ppmm(value:Number):void { _ppmm = value; }
 
 		/** Current node 'fontSize' expressed in pixels.*/
 		public function get ppem():Number

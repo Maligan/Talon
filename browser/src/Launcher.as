@@ -38,8 +38,6 @@ package
 
 		public function Launcher()
 		{
-			registerClassAlias(Rectangle);
-
 			stage ? initialize() : addEventListener(Event.ADDED_TO_STAGE, initialize);
 		}
 

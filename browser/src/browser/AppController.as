@@ -9,7 +9,7 @@ package browser
 	import browser.utils.EventDispatcherAdapter;
 	import browser.utils.OrientationMonitor;
 	import browser.utils.Storage;
-	import browser.utils.Storage;
+	import browser.utils.registerClassAlias;
 
 	import flash.desktop.ClipboardFormats;
 	import flash.desktop.NativeDragActions;
@@ -55,7 +55,10 @@ package browser
 		public function AppController(root:DisplayObject)
 		{
 			_root = root;
+
+			registerClassAlias(Rectangle);
 			_settings = Storage.fromSharedObject("settings");
+
 			_profile = DeviceProfile.getById(settings.getValueOrDefault(AppConstants.SETTING_PROFILE, null)) || DeviceProfile.CUSTOM;
 			_monitor = new OrientationMonitor(_root.stage);
 			_documentDispatcher = new EventDispatcherAdapter();
@@ -107,6 +110,7 @@ package browser
 		//
 		// Properties
 		//
+		public function get console():Console { return _console; }
 		public function get host():DisplayObjectContainer { return _starling.root as DisplayObjectContainer }
 		public function get ui():AppUI { return _ui; }
 		public function get settings():Storage { return _settings; }

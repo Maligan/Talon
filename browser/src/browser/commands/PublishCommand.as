@@ -98,7 +98,7 @@ package browser.commands
 		//
 		private function getDocumentExportPath(document:Document):String
 		{
-			var exportPath:String = document.properties[AppConstants.PROPERTY_EXPORT_PATH];
+			var exportPath:String = document.properties.getValueOrDefault(AppConstants.PROPERTY_EXPORT_PATH);
 			if (exportPath == null)
 				exportPath = document.project.name.replace(AppConstants.DESIGNER_FILE_EXTENSION, AppConstants.DESIGNER_EXPORT_FILE_EXTENSION);
 

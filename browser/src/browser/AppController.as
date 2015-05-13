@@ -9,6 +9,7 @@ package browser
 	import browser.utils.EventDispatcherAdapter;
 	import browser.utils.OrientationMonitor;
 	import browser.utils.Storage;
+	import browser.utils.Storage;
 
 	import flash.desktop.ClipboardFormats;
 	import flash.desktop.NativeDragActions;
@@ -20,7 +21,6 @@ package browser
 	import flash.events.NativeWindowBoundsEvent;
 	import flash.filesystem.File;
 	import flash.geom.Rectangle;
-	import flash.profiler.profile;
 
 	import starling.core.Starling;
 	import starling.display.DisplayObjectContainer;
@@ -55,7 +55,7 @@ package browser
 		public function AppController(root:DisplayObject)
 		{
 			_root = root;
-			_settings = new Storage("settings");
+			_settings = Storage.fromSharedObject("settings");
 			_profile = DeviceProfile.getById(settings.getValueOrDefault(AppConstants.SETTING_PROFILE, null)) || DeviceProfile.CUSTOM;
 			_monitor = new OrientationMonitor(_root.stage);
 			_documentDispatcher = new EventDispatcherAdapter();
@@ -124,11 +124,8 @@ package browser
 				if (profile != DeviceProfile.CUSTOM)
 					adjust(profile.width, profile.height, _monitor.isPortrait);
 
-				if (document)
-				{
-					document.factory.ppdp = profile.csf;
-					dispatchEventWith(EVENT_PROTOTYPE_CHANGE);
-				}
+				if (document != null)
+					document.properties.setValue(AppConstants.HIDDEN_PROPERTY_CSF, profile.csf);
 
 				settings.setValue(AppConstants.SETTING_PROFILE, _profile.id);
 				dispatchEventWith(EVENT_PROFILE_CHANGE);
@@ -143,7 +140,7 @@ package browser
 			{
 				_document = value;
 				_documentDispatcher.target = _document;
-				_document.factory.ppdp = profile.csf;
+				_document && _document.properties.setValue(AppConstants.HIDDEN_PROPERTY_CSF, profile.csf);
 				dispatchEventWith(EVENT_DOCUMENT_CHANGE);
 				templateId = _document ? _document.factory.templateIds.shift() : null;
 			}

@@ -1,6 +1,9 @@
 package browser.dom
 {
+	import browser.AppConstants;
+
 	import starling.display.DisplayObject;
+	import starling.events.Event;
 
 	import talon.Node;
 
@@ -12,13 +15,21 @@ package browser.dom
 	{
 		private var _document:Document;
 		private var _styles:StyleSheetCollection;
-		private var _ppdp:Number;
 
 		public function DocumentTalonFactory(document:Document):void
 		{
 			_resources = new ObjectWithAccessLogger();
 			_document = document;
 			_styles = new StyleSheetCollection();
+
+			document.properties.addPropertyListener(AppConstants.HIDDEN_PROPERTY_CSF, onCSFChange);
+		}
+
+		private function onCSFChange(e:Event):void
+		{
+			// For redraw...
+			_document.tasks.begin();
+			_document.tasks.end();
 		}
 
 		public override function produce(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
@@ -33,10 +44,15 @@ package browser.dom
 			var node:Node = super.getElementNode(element);
 			if (node)
 			{
-				if (isNaN(ppdp) == false) node.ppdp = ppdp;
+				node.ppdp = csf;
 			}
 
 			return node;
+		}
+
+		private function get csf():Number
+		{
+			return _document.properties.getValueOrDefault(AppConstants.HIDDEN_PROPERTY_CSF, 1);
 		}
 
 		//
@@ -130,12 +146,6 @@ package browser.dom
 		{
 			return _styles;
 		}
-
-		//
-		// Misc
-		//
-		public function get ppdp():Number { return _ppdp; }
-		public function set ppdp(value:Number):void { _ppdp = value; }
 	}
 }
 

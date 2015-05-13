@@ -140,7 +140,7 @@ package browser.dom.files
 			if (type == DocumentFileType.UNKNOWN) return true;
 
 			var result:Boolean = false;
-			var property:String = document.properties[AppConstants.PROPERTY_EXPORT_IGNORE];
+			var property:String = document.properties.getValueOrDefault(AppConstants.PROPERTY_EXPORT_IGNORE);
 			if (property == null) return false;
 			var spilt:Array = property.split(/\s*,\s*/);
 
@@ -159,7 +159,7 @@ package browser.dom.files
 
 		public function get exportPath():String
 		{
-			var sourcePathProperty:String = document.properties[AppConstants.PROPERTY_SOURCE_PATH];
+			var sourcePathProperty:String = document.properties.getValueOrDefault(AppConstants.PROPERTY_SOURCE_PATH);
 			var sourcePath:File = document.project.parent.resolvePath(sourcePathProperty || document.project.parent.nativePath);
 			if (sourcePath.exists == false) sourcePath = document.project.parent;
 			return sourcePath.getRelativePath(target);

@@ -57,8 +57,7 @@ package browser.commands
 
 		private function readDocument(documentFile:File):Document
 		{
-			var properties:Object = parseProperties(readFile(documentFile).toString());
-			var document:Document = new Document(properties, documentFile);
+			var document:Document = new Document(documentFile);
 
 			var sourceRoot:File = getSourceRoot(document);
 			var sourceRootReference:DocumentFileReference = new DocumentFileReference(document, sourceRoot);
@@ -69,28 +68,10 @@ package browser.commands
 
 		private function getSourceRoot(document:Document):File
 		{
-			var sourcePathProperty:String = document.properties[AppConstants.PROPERTY_SOURCE_PATH];
+			var sourcePathProperty:String = document.properties.getValueOrDefault(AppConstants.PROPERTY_SOURCE_PATH);
 			var sourceFile:File = document.project.parent.resolvePath(sourcePathProperty || document.project.parent.nativePath);
 			if (sourceFile.exists == false) sourceFile = document.project.parent;
 			return sourceFile;
-		}
-
-		private function readFile(file:File):ByteArray
-		{
-			var result:ByteArray = new ByteArray();
-			var stream:FileStream = new FileStream();
-
-			try
-			{
-				stream.open(file, FileMode.READ);
-				stream.readBytes(result, 0, stream.bytesAvailable);
-			}
-			finally
-			{
-				stream.close();
-			}
-
-			return result;
 		}
 
 		public override function get isExecutable():Boolean

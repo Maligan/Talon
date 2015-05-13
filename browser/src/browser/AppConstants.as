@@ -13,12 +13,13 @@ package browser
 		public static const PROPERTY_SOURCE_PATH:String     = "source.path";
 		public static const PROPERTY_EXPORT_IGNORE:String   = "export.ignore";
 		public static const PROPERTY_EXPORT_PATH:String     = "export.path";
+		public static const HIDDEN_PROPERTY_CSF:String      = "hidden.csf";
 
 		public static const SETTING_BACKGROUND:String = "background";
 		public static const SETTING_BACKGROUND_CHESS:String = "transparent";
 		public static const SETTING_BACKGROUND_DARK:String = "dark";
 		public static const SETTING_BACKGROUND_LIGHT:String = "light";
-		public static const SETTING_BACKGROUND_DEFAULT:String = SETTING_BACKGROUND_DARK;
+		public static const SETTING_BACKGROUND_DEFAULT:String = SETTING_BACKGROUND_CHESS;
 		public static const SETTING_STATS:String = "stats";
 		public static const SETTING_ZOOM:String = "zoom";
 		public static const SETTING_LOCK_RESIZE:String = "lockWindowResize";

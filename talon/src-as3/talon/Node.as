@@ -4,7 +4,6 @@ package talon
 	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
 
-	import starling.core.Starling;
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
@@ -79,7 +78,7 @@ package talon
 			addEventListener(Event.CHANGE, onSelfAttributeChange);
 
 			_invalidated = true;
-			_ppdp = NaN;
+			_ppdp = 1;
 		}
 
 		//
@@ -289,13 +288,16 @@ package talon
 		public function get bounds():Rectangle { return _bounds; }
 
 		/** Pixel per density-independent point (in Starling also known as content scale factor [csf]). */
-		public function get ppdp():Number { return (_ppdp == _ppdp) ? _ppdp : (_ppdp = Starling.current.contentScaleFactor); }
+		public function get ppdp():Number { return _ppdp; }
 
 		/** @private */
-		public function set ppdp(value:Number) { _ppdp = value; }
+		public function set ppdp(value:Number):void { _ppdp = value; }
 
 		/** Pixels per millimeter (in current node). */
 		public function get ppmm():Number { return Capabilities.screenDPI / 25.4; }
+
+		/** @private */
+		public function set ppmm(value:Number):void {  }
 
 		/** Current node 'fontSize' expressed in pixels.*/
 		public function get ppem():Number

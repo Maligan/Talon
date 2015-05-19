@@ -1,10 +1,5 @@
 package talon.utils
 {
-	import starling.events.Event;
-	import starling.events.EventDispatcher;
-
-	import talon.utils.Trigger;
-
 	/** Measured size. Defined by 'units' and 'amount'. */
 	public final class Gauge
 	{
@@ -153,8 +148,8 @@ package talon.utils
 			if (_auto != value)
 			{
 				_auto = value;
-				// Do not dispatch Event.CHANGE
-				// Event change cause change in binded Attribute. (@see TalonImage)
+				// Do not dispatch change
+				// This cause change in binded Attribute. (@see TalonImage)
 			}
 		}
 

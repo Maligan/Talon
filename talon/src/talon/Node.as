@@ -308,7 +308,7 @@ package talon
 			var base:int = 12;
 			var inherit:Number = parent ? parent.ppem : base;
 			var attribute:Attribute = getOrCreateAttribute(Attribute.FONT_SIZE);
-			if (attribute.isInherit) return inherit;
+			if (attribute.isInheritable && attribute.basic == Attribute.INHERIT) return inherit;
 			return Gauge.toPixels(attribute.basic, ppmm, inherit, ppdp, inherit, 0, 0, 0, 0);
 		}
 
@@ -395,7 +395,7 @@ package talon
 		{
 			var broadcaster:Trigger = _broadcasters[type];
 			if (broadcaster == null)
-				broadcaster = _broadcasters[type] = new Trigger(this);
+				broadcaster = _broadcasters[type] = new Trigger();
 
 			broadcaster.addListener(listener);
 		}

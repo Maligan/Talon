@@ -310,6 +310,7 @@ package talon
 			change.dispatch();
 		}
 
+		/** @private Value change trigger. */
 		public function get change():Trigger { return _change; }
 	}
 }
@@ -376,7 +377,6 @@ class ComplexValue implements IValue
 
 	public function get change():Trigger { return _change; }
 	public function get string():String { return current.string; }
-
 	public function get current():IValue
 	{
 		for (var i:int = _values.length - 1; i >= 0; i--)

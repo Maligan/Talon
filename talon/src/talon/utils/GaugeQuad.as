@@ -1,10 +1,5 @@
 package talon.utils
 {
-	import starling.events.Event;
-	import starling.events.EventDispatcher;
-
-	import talon.utils.Trigger;
-
 	/** Group of 4 gauge. Used for strong typed definition of rectangle sides. */
 	public final class GaugeQuad
 	{

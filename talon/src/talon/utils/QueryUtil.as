@@ -5,6 +5,7 @@ package talon.utils
 	import starling.filters.FragmentFilter;
 
 	import talon.Attribute;
+	import talon.layout.Layout;
 
 	[ExcludeClass]
 	public class QueryUtil

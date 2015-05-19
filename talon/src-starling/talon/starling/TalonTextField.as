@@ -105,6 +105,12 @@ package talon.starling
 			return _bridge.hitTestCustom(super.hitTest, localPoint, forTouch);
 		}
 
+		public override function dispose():void
+		{
+			node.dispose();
+			super.dispose();
+		}
+
 		//
 		// Properties Overrides
 		//

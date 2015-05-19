@@ -42,7 +42,7 @@ package talon.utils
 			}
 		}
 
-		/** Dispose all binding created via fromProperties() method. */
+		/** Dispose all binding created via bind() method. */
 		public static function dispose(object:Object):void
 		{
 			var bindings:Vector.<Binding> = _bindings[object];

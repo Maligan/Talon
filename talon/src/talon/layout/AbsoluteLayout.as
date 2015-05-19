@@ -138,19 +138,21 @@ package talon.layout
 		 * @param min value bottom restrainer
 		 * @param max value top restrainer
 		 */
-		protected final function toPixelsSugar(gauge:Gauge, context:Node, pp100p:Number = 0, width:Number = 0, height:Number = 0, ppts:Number = 0, ts:int = 0, min:Gauge = null, max:Gauge = null):Number
+		protected final function toPixelsSugar(gauge:Gauge, context:Node, pp100p:Number = 0, aw:Number = 0, ah:Number = 0, ppts:Number = 0, ts:int = 0, min:Gauge = null, max:Gauge = null):Number
 		{
-			var value:Number = gauge.toPixels(context.ppmm, context.ppem, context.ppdp, pp100p, width, height, ppts, ts);
+			aw = Infinity;
+			ah = Infinity;
+			var value:Number = gauge.toPixels(context.ppmm, context.ppem, context.ppdp, pp100p, aw, ah, ppts, ts);
 
 			if (min && !min.isNone)
 			{
-				var minValue:Number = min.toPixels(context.ppmm, context.ppem, context.ppdp, pp100p, width, height, ppts, ts);
+				var minValue:Number = min.toPixels(context.ppmm, context.ppem, context.ppdp, pp100p, aw, ah, ppts, ts);
 				if (minValue > value) value = minValue;
 			}
 
 			if (max && !max.isNone)
 			{
-				var maxValue:Number = max.toPixels(context.ppmm, context.ppem, context.ppdp, pp100p, width, height, ppts, ts);
+				var maxValue:Number = max.toPixels(context.ppmm, context.ppem, context.ppdp, pp100p, aw, ah, ppts, ts);
 				if (maxValue < value) value = maxValue;
 			}
 

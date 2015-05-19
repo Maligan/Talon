@@ -216,7 +216,7 @@ package browser
 				window.x = bounds.x;
 				window.y = bounds.y;
 
-				if (profile != DeviceProfile.CUSTOM)
+				if (profile == DeviceProfile.CUSTOM)
 				{
 					window.width = bounds.width;
 					window.height = bounds.height;

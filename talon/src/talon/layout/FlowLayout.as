@@ -45,8 +45,14 @@ package talon.layout
 		//
 		// Implementation
 		//
+		// XXX: What about pp100p?
 		private function measure(node:Node, availableWidth:Number, availableHeight:Number, arrange:Boolean):Flow
 		{
+			if (node.numChildren > 1)
+			{
+				trace('Flow::Refresh')
+			}
+
 			var flow:Flow = new Flow();
 			flow.setSpacings(getGap(node), getInterline(node));
 			flow.setWrap(getWrap(node));
@@ -62,6 +68,7 @@ package talon.layout
 					var child:Node = node.getChildAt(i);
 
 					flow.beginChild();
+					// XXX: Auto
 					flow.setChildLength(child.width.amount, child.width.unit == Gauge.STAR);
 					flow.setChildLengthMargin(child.margin.left.amount, child.margin.right.amount);
 					flow.setChildThickness(child.height.amount, child.height.unit == Gauge.STAR);
@@ -73,7 +80,7 @@ package talon.layout
 			}
 			else
 			{
-				flow.setMaxSize(node.height.isAuto ? Infinity : availableHeight, node.width.isAuto ? Infinity : availableWidth)
+				// NOP
 			}
 
 			if (arrange) flow.arrange();
@@ -118,7 +125,7 @@ class Flow
 	private var _child:FlowElement;
 
 	private var _rectangle:Rectangle;
-	private var _break:Boolean;
+	private var _breakOnNextChild:Boolean;
 
 	public function Flow()
 	{
@@ -126,7 +133,7 @@ class Flow
 		_lines = new <FlowLine>[];
 		_lineByChildIndex = new Dictionary();
 		_childIndex = -1;
-		_break = true;
+		_breakOnNextChild = true;
 	}
 
 	private function getNewLine():FlowLine
@@ -169,9 +176,9 @@ class Flow
 		_child.lengthBefore = _child.lengthAfter = 0;
 
 		// New Line
-		if (_break)
+		if (_breakOnNextChild)
 		{
-			_break = false;
+			_breakOnNextChild = false;
 			getNewLine();
 		}
 	}
@@ -189,7 +196,8 @@ class Flow
 
 		if (_wrap)
 		{
-			_break = _childBreakMode == Break.AFTER || _childBreakMode == Break.BOTH;
+			_breakOnNextChild = _childBreakMode == Break.AFTER || _childBreakMode == Break.BOTH;
+
 			var hasBreakBefore:Boolean = _childBreakMode == Break.BEFORE || _childBreakMode == Break.BOTH;
 			if (hasBreakBefore && line.numChildren != 0)
 			{
@@ -275,7 +283,7 @@ class FlowLine
 
 	public function canAddChildWithoutOverflow(child:FlowElement):Boolean
 	{
-		return _length+_gap+child.lengthBefore+(child.lengthIsStar?0:child.length)+child.lengthAfter < _maxLength;
+		return _length+_gap+child.lengthBefore+(child.lengthIsStar?0:child.length)+child.lengthAfter <= _maxLength;
 	}
 
 	public function addChild(child:FlowElement):void
@@ -320,7 +328,7 @@ class FlowLine
 	}
 
 	public function get firstChildIndex():int { return _firstChildIndex }
-	public function get length():Number { return (_lengthStar!=0 && _length<_maxLength) ? _maxLength : _length }
+	public function get length():Number { return (_lengthStar!=0 && _length<_maxLength && _maxLength!=Infinity) ? _maxLength : _length }
 	public function get thickness():Number { return _thickness }
 	public function get numChildren():int { return _children.length }
 }

@@ -38,6 +38,7 @@ package browser
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 	import starling.events.TouchEvent;
+	import starling.events.TouchPhase;
 
 	import talon.Attribute;
 	import talon.starling.TalonFactoryStarling;
@@ -93,6 +94,8 @@ package browser
 		{
 			_interface = _factory.produce("interface") as TalonSprite;
 			_controller.host.addChild(_interface);
+
+			_controller.host.addEventListener(TouchEvent.TOUCH, function(e:TouchEvent):void { if (e.getTouch(_controller.host, TouchPhase.BEGAN)) refreshCurrentTemplate() })
 
 			_container = new TalonSprite();
 			_container.node.setAttribute(Attribute.LAYOUT, Layout.ABSOLUTE);
@@ -191,6 +194,7 @@ package browser
 			// Refresh current prototype
 			var canShow:Boolean = true;
 			canShow &&= _controller.templateId != null;
+			canShow &&= _controller.document.tasks.isBusy == false;
 			canShow &&= _controller.document != null;
 			canShow &&= _controller.document.factory.hasTemplate(_controller.templateId);
 

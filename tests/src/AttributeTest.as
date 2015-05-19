@@ -89,9 +89,8 @@ package
 		}
 
 		[Test]
-		public function testChanges():void
+		public function testChangesWithoutParent():void
 		{
-			// Basic
 			attribute.inited = "inited";
 			Assert.assertEquals(1, changes);
 
@@ -104,25 +103,37 @@ package
 			attribute.styled = "styled#2";
 			Assert.assertEquals(3, changes);
 
-			// With inherit
-			parent1.addChild(attribute.node);
-			Assert.assertEquals(3, changes);
-
-			attribute.isInheritable = true;
-			Assert.assertEquals(3, changes);
-
-			attribute.setted = Attribute.INHERIT;
+			attribute.setted = null;
 			Assert.assertEquals(4, changes);
 
-			parent1.removeChild(attribute.node);
+			attribute.styled = null;
 			Assert.assertEquals(5, changes);
+		}
+
+		[Test]
+		public function testChangesWithParent():void
+		{
+			attribute.inited = "inited";
+			Assert.assertEquals(1, changes);
+
+			parent1.addChild(attribute.node);
+			Assert.assertEquals(1, changes);
+
+			attribute.isInheritable = true;
+			Assert.assertEquals(1, changes);
+
+			attribute.setted = Attribute.INHERIT;
+			Assert.assertEquals(2, changes);
+
+			parent1.removeChild(attribute.node);
+			Assert.assertEquals(3, changes);
 		}
 
 		[Test]
 		public function testBindingToGauge():void
 		{
-			attribute.addBinding(attribute.change, attribute.getValue, gauge.parse);
-			attribute.addBinding(gauge.change, gauge.toString, attribute.setSetted);
+			attribute.addBinding(attribute.change, attribute.bindGetter, gauge.parse);
+			attribute.addBinding(gauge.change, gauge.toString, attribute.bindSetter);
 
 			attribute.setted = "100px";
 			Assert.assertEquals(attribute.value, gauge.toString());

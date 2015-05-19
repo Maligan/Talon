@@ -100,9 +100,14 @@ package talon.starling
 		// Listeners: Common
 		//
 		private function onIDChange():void { _target.name = _node.getAttribute(Attribute.ID); }
-		private function onFilterChange():void { _target.filter = _node.getAttribute(Attribute.FILTER) as FragmentFilter; }
 		private function onVisibilityChange():void { _target.visible = _node.getAttribute(Attribute.VISIBILITY) == Visibility.VISIBLE; }
 		private function onAlphaChange():void { _target.alpha = parseFloat(_node.getAttribute(Attribute.ALPHA)); }
+
+		private function onFilterChange():void
+		{
+			_target.filter && _target.filter.dispose();
+			_target.filter = _node.getAttribute(Attribute.FILTER) as FragmentFilter;
+		}
 
 		private function onCursorChange():void
 		{

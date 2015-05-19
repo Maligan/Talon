@@ -28,6 +28,7 @@ package browser.dom
 		private var _factory:DocumentTalonFactory;
 		private var _messages:DocumentMessageCollection;
 		private var _tracker:DocumentTaskTracker;
+		private var _trackerIgnore:Boolean;
 
 		public function Document(file:File)
 		{
@@ -66,10 +67,17 @@ package browser.dom
 		//
 		private function onTasksEnd():void
 		{
-			dispatchEventWith(DocumentEvent.CHANGING);
+			if (_trackerIgnore === false)
+			{
+				_trackerIgnore = true;
 
-			// After CHANGING, some file controllers may start new tasks
-			if (!tasks.isBusy) dispatchEventWith(DocumentEvent.CHANGED);
+				// For same assets
+				dispatchEventWith(DocumentEvent.CHANGING);
+				// After CHANGING, some file controllers may start new tasks
+				if (!tasks.isBusy) dispatchEventWith(DocumentEvent.CHANGED);
+
+				_trackerIgnore = false;
+			}
 		}
 	}
 }

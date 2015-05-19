@@ -31,6 +31,11 @@ package browser.commands
 			throw new AbstractMethodError();
 		}
 
+		public function dispose():void
+		{
+			throw new AbstractMethodError();
+		}
+
 		public function get isExecutable():Boolean
 		{
 			return true;

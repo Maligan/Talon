@@ -41,7 +41,7 @@ package talon
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
 		private var _bounds:Rectangle = new Rectangle();
-		private var _broadcasters:Dictionary = new Dictionary();
+		private var _triggers:Dictionary = new Dictionary();
 		private var _invalidated:Boolean;
 		private var _ppdp:Number;
 		private var _ppmm:Number;
@@ -53,6 +53,33 @@ package talon
 			width.auto = minWidth.auto = maxWidth.auto = measureAutoWidth;
 			height.auto = minHeight.auto = maxHeight.auto = measureAutoHeight;
 
+			bindings();
+
+			// TODO: Need initialize all inheritable attributes (for inherit listeners)
+			getOrCreateAttribute(Attribute.FONT_COLOR);
+			getOrCreateAttribute(Attribute.FONT_NAME);
+			getOrCreateAttribute(Attribute.FONT_SIZE);
+
+			// Listen attribute change
+			addListener(Event.CHANGE, onSelfAttributeChange);
+
+			_invalidated = true;
+			_ppdp = 1;
+			_ppmm = Capabilities.screenDPI / 25.4; // 25.4mm in 1 inch
+
+			if (width.isNone)
+			{
+				trace('sdf')
+			}
+		}
+
+		//
+		// Bindings
+		// XXX: May be make gauge not bindable? Send attribute for sync to gauge ctor.
+		// In this way attributes can't be lazy initialized
+		//
+		private function bindings():void
+		{
 			// Bindings to strong typed accessors
 			bindGauge(width, Attribute.WIDTH);
 			bindGauge(minWidth, Attribute.MIN_WIDTH);
@@ -69,54 +96,41 @@ package talon
 			bindPair(position, Attribute.POSITION, Attribute.X, Attribute.Y);
 			bindPair(origin, Attribute.ORIGIN, Attribute.ORIGIN_X, Attribute.ORIGIN_Y);
 			bindPair(pivot, Attribute.PIVOT, Attribute.PIVOT_X, Attribute.PIVOT_Y);
-
-			// TODO: Need initialize all inheritable attributes (for inherit listeners)
-			getOrCreateAttribute(Attribute.FONT_COLOR);
-			getOrCreateAttribute(Attribute.FONT_NAME);
-			getOrCreateAttribute(Attribute.FONT_SIZE);
-
-			// Listen attribute change
-			addListener(Event.CHANGE, onSelfAttributeChange);
-
-			_invalidated = true;
-			_ppdp = 1;
-			_ppmm = Capabilities.screenDPI / 25.4;
 		}
 
-		//
-		// Bindings
-		//
 		private function bindGauge(gauge:Gauge, name:String):void
 		{
-			bind(gauge.change, name);
+			bind(gauge, name);
 		}
 
 		private function bindPair(pair:GaugePair, name:String, x:String, y:String):void
 		{
-			bind(pair.change, name);
-			bind(pair.x.change, x);
-			bind(pair.y.change, y);
+			bind(pair, name);
+			bind(pair.x, x);
+			bind(pair.y, y);
 		}
 
 		private function bindQuad(quad:GaugeQuad, name:String, top:String, right:String, bottom:String, left:String):void
 		{
-			bind(quad.change, name);
-			bind(quad.top.change, top);
-			bind(quad.right.change, right);
-			bind(quad.bottom.change, bottom);
-			bind(quad.left.change, left);
+			bind(quad, name);
+			bind(quad.top, top);
+			bind(quad.right, right);
+			bind(quad.bottom, bottom);
+			bind(quad.left, left);
 		}
 
-		private function bind(source:Trigger, name:String):void
+		private function bind(source:*, name:String):void
 		{
-			return;
-			var setter:Function = source["parse"];
-			var getter:Function = source["toString"];
-			var trigger:Trigger = source;
+			var getter:Function = source.toString;
+			var setter:Function = source.parse;
+			var trigger:Trigger = source.change;
+
+
 
 			var attribute:Attribute = getOrCreateAttribute(name);
-			setter(attribute.basic);
-			attribute.addBinding(trigger, getter, setter);
+			setter(attribute.value);
+			attribute.addBinding(attribute.change, attribute.bindGetter, setter);
+			attribute.addBinding(trigger, getter, attribute.bindSetter);
 		}
 
 		//
@@ -239,16 +253,11 @@ package talon
 		{
 			// Notify resource change
 			for each (var attribute:Attribute in _attributes)
-			{
 				if (attribute.isResource) attribute.dispatchChange();
-			}
 
 			// Recursive children notify resource change
 			for (var i:int = 0; i < numChildren; i++)
-			{
-				var child:Node = getChildAt(i);
-				child.resource();
-			}
+				getChildAt(i).resource();
 		}
 
 		//
@@ -333,6 +342,7 @@ package talon
 
 		private function onSelfAttributeChange(attribute:Attribute):void
 		{
+			if (attribute == null) return;
 			var layoutName:String = getAttribute(Attribute.LAYOUT);
 			var layoutInvalidated:Boolean = Layout.isObservableSelfAttribute(layoutName, attribute.name);
 			if (layoutInvalidated) invalidate();
@@ -340,6 +350,7 @@ package talon
 
 		private function onChildAttributeChange(attribute:Attribute):void
 		{
+			if (attribute == null) return;
 			var layoutName:String = getAttribute(Attribute.LAYOUT);
 			var layoutInvalidated:Boolean = Layout.isObservableChildAttribute(layoutName, attribute.name);
 			if (layoutInvalidated) invalidate();
@@ -393,25 +404,43 @@ package talon
 		//
 		public function addListener(type:String, listener:Function):void
 		{
-			var broadcaster:Trigger = _broadcasters[type];
-			if (broadcaster == null)
-				broadcaster = _broadcasters[type] = new Trigger();
+			var trigger:Trigger = _triggers[type];
+			if (trigger == null)
+				trigger = _triggers[type] = new Trigger();
 
-			broadcaster.addListener(listener);
+			trigger.addListener(listener);
 		}
 
 		public function removeListener(type:String, listener:Function):void
 		{
-			var broadcaster:Trigger = _broadcasters[type];
-			if (broadcaster != null)
-				broadcaster.removeListener(listener);
+			var trigger:Trigger = _triggers[type];
+			if (trigger != null)
+				trigger.removeListener(listener);
 		}
 
 		public function dispatch(type:String, context:* = null):void
 		{
-			var broadcaster:Trigger = _broadcasters[type];
-			if (broadcaster != null)
-				broadcaster.dispatch(context);
+			var trigger:Trigger = _triggers[type];
+			if (trigger != null)
+				trigger.dispatch(context);
+		}
+
+		//
+		// Dispose
+		//
+		public function dispose():void
+		{
+			_style = null;
+			_resources = null;
+
+			for each (var child:Node in _children)
+				child.dispose();
+
+			for each (var trigger:Trigger in _triggers)
+				trigger.removeListeners();
+
+			for each (var attribute:Attribute in _attributes)
+				attribute.dispose();
 		}
 	}
 }

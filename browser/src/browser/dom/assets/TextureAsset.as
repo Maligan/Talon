@@ -29,7 +29,7 @@ package browser.dom.assets
 			}
 			else
 			{
-				document.tasks.begin();
+				document.tasks.begin(file);
 
 				if (bytes.length > 0)
 				{
@@ -46,13 +46,13 @@ package browser.dom.assets
 				function onComplete(e:*):void
 				{
 					addTexture(loader.content);
-					document.tasks.end();
+					document.tasks.end(file);
 				}
 
 				function onIOError(e:* = null):void
 				{
 					file.report(DocumentMessage.FILE_CONTAINS_WRONG_IMAGE_FORMAT, file.url);
-					document.tasks.end();
+					document.tasks.end(file);
 				}
 			}
 		}

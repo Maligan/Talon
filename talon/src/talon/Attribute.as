@@ -12,6 +12,7 @@ package talon
 		public static const TRANSPARENT:String = "transparent";
 		public static const WHITE:String = "white";
 		public static const FALSE:String = "false";
+		public static const TRUE:String = "true";
 		public static const AUTO:String = Gauge.AUTO;
 		public static const NONE:String = Gauge.NONE;
 		public static const ZERO:String = "0px";
@@ -92,7 +93,7 @@ package talon
 		public static const IVALIGN:String              = registerAttributeDefaults("ivalign",             TOP);
 		public static const GAP:String                  = registerAttributeDefaults("gap",                 ZERO);
 		public static const INTERLINE:String            = registerAttributeDefaults("interline",           ZERO);
-		public static const WRAP:String                 = registerAttributeDefaults("wrap",                FALSE);
+		public static const WRAP:String                 = registerAttributeDefaults("wrap",                TRUE);
 		public static const BREAK:String                = registerAttributeDefaults("break",               Break.AUTO);
 
 		public static const TEXT:String                 = registerAttributeDefaults("text");
@@ -300,8 +301,11 @@ package talon
 			_bindings[_bindings.length] = new Binding(trigger, getter, null, setter, null);
 		}
 
-		public function setSetted(value:String):void { setted = value; }
-		public function getValue():String { return value; }
+		/** @private */
+		public function bindSetter(value:String):void { setted = value; }
+
+		/** @private */
+		public function bindGetter():String { return value; }
 
 		internal function dispatchChange():void
 		{
@@ -310,8 +314,19 @@ package talon
 			change.dispatch();
 		}
 
+		public function dispose():void
+		{
+			_valueCache = null;
+			_valueCached = false;
+			_change.removeListeners();
+			while (_bindings.length) _bindings.pop().dispose();
+		}
+
 		/** @private Value change trigger. */
-		public function get change():Trigger { return _change; }
+		public function get change():Trigger
+		{
+			return _change;
+		}
 	}
 }
 
@@ -359,11 +374,13 @@ class ComplexValue implements IValue
 {
 	private var _change:Trigger;
 	private var _values:Vector.<IValue>;
+	private var _cursor:IValue;
 
 	public function ComplexValue(...values):void
 	{
 		_change = new Trigger(this);
 		_values = Vector.<IValue>(values);
+		_cursor = _values[0];
 
 		for each (var value:IValue in values)
 			value.change.addListener(onValueChange);
@@ -371,13 +388,19 @@ class ComplexValue implements IValue
 
 	public function onValueChange(value:IValue):void
 	{
-		if (current == value)
-			change.dispatch();
+		var cursor:IValue = getCursor();
+
+		if (_cursor != cursor || _cursor == value)
+		{
+			_cursor = cursor;
+			_change.dispatch();
+		}
 	}
 
 	public function get change():Trigger { return _change; }
-	public function get string():String { return current.string; }
-	public function get current():IValue
+	public function get string():String { return _cursor.string; }
+
+	private function getCursor():IValue
 	{
 		for (var i:int = _values.length - 1; i >= 0; i--)
 		{

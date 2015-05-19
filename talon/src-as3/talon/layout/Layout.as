@@ -47,14 +47,14 @@ package talon.layout
 		public static function isObservableSelfAttribute(layout:String, attributeName:String):Boolean
 		{
 			initialize();
-			return _observableSelfAttribute[layout][attributeName];
+			return _observableSelfAttribute[layout] && _observableSelfAttribute[layout][attributeName];
 		}
 
 		/** Layout must be invalidated if node child attribute changed. */
 		public static function isObservableChildAttribute(layout:String, attributeName:String):Boolean
 		{
 			initialize();
-			return _observableChildAttribute[layout][attributeName];
+			return _observableChildAttribute[layout] && _observableChildAttribute[layout][attributeName];
 		}
 
 		private static function initialize():void

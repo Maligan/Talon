@@ -1,23 +1,27 @@
-package talon.types
+package talon.utils
 {
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
-	/** Dispatched after anyone of sub-gauge has been changed. */
-	[Event(name="change", type="starling.events.Event")]
+	import talon.utils.Trigger;
+
 	/** Group of 2 gauge. Used for strong typed definition of coordinate/size. */
-	public class GaugePair extends EventDispatcher
+	public class GaugePair
 	{
+		/** On change broadcaster, called when value of gauge pair was changed. */
+		public const change:Trigger = new Trigger(this);
 		/** Defines horizontal component. */
 		public const x:Gauge = new Gauge();
 		/** Defines vertical component. */
 		public const y:Gauge = new Gauge();
 
+		private var _change:Trigger = new Trigger(this);
+
 		/** @private */
 		public function GaugePair()
 		{
-			x.addEventListener(Event.CHANGE, dispatchEvent);
-			y.addEventListener(Event.CHANGE, dispatchEvent);
+			x.change.addListener(change.dispatch);
+			y.change.addListener(change.dispatch);
 		}
 
 		/**
@@ -34,7 +38,7 @@ package talon.types
 		 * </ul>
 		 * </p>
 		 *
-		 * @see talon.types.Gauge#parse()
+		 * @see talon.utils.Gauge#parse()
 		 */
 		public function parse(string:String):void
 		{

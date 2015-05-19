@@ -1,7 +1,8 @@
 #1 [[+]] <<19-03-15 11:56>> ((maligan)) {{Write README}}
 #2 [[.]] <<19-03-15 11:56>> ((maligan)) {{Add 'New Project' to browser}}
-#3 [[+]] <<19-03-15 11:57>> ((maligan)) {{Create invalidation system}}
+#3 [[.]] <<19-03-15 11:57>> ((maligan)) {{Create invalidation system}}
 #4 [[*]] <<19-03-15 11:58>> ((maligan)) {{Finish FlowLayout}}
 #5 [[.]] <<19-03-15 13:12>> ((maligan)) {{Add <libary>, <style>, <template> support to TML}}
 #6 [[+]] <<02-04-15 12:15>> ((maligan)) {{Create 'Custom Profile' dialog}}
 #7 [[.]] <<22-04-15 10:19>> ((maligan)) {{Rewrite 9scale/tiles system}}
+#8 [[+]] <<19-05-15 06:17>> ((maligan)) {{Rename src-as3 into src}}

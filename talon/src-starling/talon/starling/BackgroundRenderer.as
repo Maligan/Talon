@@ -2,6 +2,7 @@ package talon.starling
 {
 	import starling.core.RenderSupport;
 	import starling.display.BlendMode;
+	import starling.display.Quad;
 	import starling.display.QuadBatch;
 	import starling.errors.AbstractMethodError;
 	import starling.textures.Texture;
@@ -135,6 +136,8 @@ package talon.starling
 
 		private function remeshRepeat():void
 		{
+			var quad:QuadData;
+
 			var textureWidth:int = _texture.width;
 			var textureHeight:int = _texture.height;
 
@@ -147,7 +150,7 @@ package talon.starling
 				{
 					for (var y:int = 0; y < numRows; y++)
 					{
-						var quad:QuadData = getQuadData();
+						quad = getQuadData();
 
 						var quadX:int = x*textureWidth;
 						var quadY:int = y*textureHeight;
@@ -162,7 +165,7 @@ package talon.starling
 			}
 			else
 			{
-				var quad:QuadData = getQuadData();
+				quad = getQuadData();
 				quad.setPositions(0, 0, _width, _height);
 				quad.setTexCoords(0, 0, _width/textureWidth, _height/textureHeight);
 				_quads[_quads.length] = quad;

@@ -1,13 +1,15 @@
-package talon.types
+package talon.utils
 {
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
-	/** Dispatched after anyone of sub-gauge has been changed. */
-	[Event(name="change", type="starling.events.Event")]
+	import talon.utils.Trigger;
+
 	/** Group of 4 gauge. Used for strong typed definition of rectangle sides. */
-	public final class GaugeQuad extends EventDispatcher
+	public final class GaugeQuad
 	{
+		/** On change broadcaster, called when value of gauge pair was changed. */
+		public const change:Trigger = new Trigger(this);
 		/** Defines top side of the rectangle. */
 		public const top:Gauge = new Gauge();
 		/** Defines right side of the rectangle. */
@@ -20,10 +22,10 @@ package talon.types
 		/** @private */
 		public function GaugeQuad()
 		{
-			top.addEventListener(Event.CHANGE, dispatchEvent);
-			right.addEventListener(Event.CHANGE, dispatchEvent);
-			bottom.addEventListener(Event.CHANGE, dispatchEvent);
-			left.addEventListener(Event.CHANGE, dispatchEvent);
+			top.change.addListener(change.dispatch);
+			right.change.addListener(change.dispatch);
+			bottom.change.addListener(change.dispatch);
+			left.change.addListener(change.dispatch);
 		}
 
 		/**
@@ -47,7 +49,7 @@ package talon.types
 		 * </ul>
 		 * </p>
 		 *
-		 * @see talon.types.Gauge#parse()
+		 * @see talon.utils.Gauge#parse()
 		 */
 		public function parse(string:String):void
 		{

@@ -115,13 +115,12 @@ package talon.utils
 				switch (mode)
 				{
 					case BindMode.ONCE:
-						target.assigned = source.value;
+						target.setted = source.setted;
 						break;
 					case BindMode.ONE_WAY:
-						target.bind(source, bindGetter(source), bindSetter(target));
-						break;
+//						target.addBinding(source.change, source.value, target.setted);
 					case BindMode.TWO_WAY:
-						source.bind(target, bindGetter(source), bindSetter(source));
+//						source.addBinding(target.change, target.value, source.setted);
 						break;
 				}
 			}
@@ -132,8 +131,6 @@ package talon.utils
 		}
 
 		protected function addChild(parent:*, child:*):void { throw new ArgumentError("Not implemented"); }
-		private function bindGetter(attr:Attribute):Function { return function ():String { return attr.value } }
-		private function bindSetter(attr:Attribute):Function { return function (value:String):void { /*attr.assigned = value;*/ } }
 
 		private function onElementEnd():void
 		{

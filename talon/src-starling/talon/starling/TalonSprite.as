@@ -21,7 +21,7 @@ package talon.starling
 		public function TalonSprite()
 		{
 			_node = new Node();
-			_node.addEventListener(Event.RESIZE, onNodeResize);
+			_node.addListener(Event.RESIZE, onNodeResize);
 			_bridge = new DisplayObjectBridge(this, node);
 			_bridge.addAttributeChangeListener(Attribute.CLIPPING, refreshClipping);
 		}
@@ -69,7 +69,7 @@ package talon.starling
 		//
 		// Bridge
 		//
-		private function onNodeResize(e:Event):void
+		private function onNodeResize():void
 		{
 			node.bounds.left = Math.round(node.bounds.left);
 			node.bounds.right = Math.round(node.bounds.right);

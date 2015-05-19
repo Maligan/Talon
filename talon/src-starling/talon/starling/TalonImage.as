@@ -22,33 +22,29 @@ package talon.starling
 			_node = new Node();
 			_node.width.auto = _node.minWidth.auto = _node.maxWidth.auto = getAutoWidth;
 			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = getAutoHeight;
-			_node.addEventListener(Event.CHANGE, onNodeChange);
-			_node.addEventListener(Event.RESIZE, onNodeResize);
+			_node.addListener(Event.CHANGE, onNodeChange);
+			_node.addListener(Event.RESIZE, onNodeResize);
 		}
 
 		// Make calculation if one is auto and one is not auto
 		private function getAutoWidth(width:Number, height:Number):Number { return (texture == _empty) ? 0 : texture.width; }
 		private function getAutoHeight(width:Number, height:Number):Number { return (texture == _empty) ? 0 : texture.height; }
 
-		private function onNodeChange(e:Event):void
+		private function onNodeChange():void
 		{
-			if (e.data == "src")
-			{
-				var texture:Texture = node.getAttribute("src") as Texture;
-				if (texture != null)
-				{
-					this.texture = texture;
-					node.width.isAuto   && node.dispatchEventWith(Event.CHANGE, false, Attribute.WIDTH);
-					node.height.isAuto  && node.dispatchEventWith(Event.CHANGE, false, Attribute.HEIGHT);
-				}
-			}
-			else (e.data == "filter")
-			{
-				filter = node.getAttribute(Attribute.FILTER) as FragmentFilter;
-			}
+//			if (e.data == "src")
+//			{
+//				var texture:Texture = node.getAttribute("src") as Texture;
+//				if (texture != null)
+//				{
+//					this.texture = texture;
+//					node.width.isAuto   && node.dispatchEventWith(Event.CHANGE, false, Attribute.WIDTH);
+//					node.height.isAuto  && node.dispatchEventWith(Event.CHANGE, false, Attribute.HEIGHT);
+//				}
+//			}
 		}
 
-		private function onNodeResize(e:Event):void
+		private function onNodeResize():void
 		{
 			x = Math.ceil(node.bounds.x);
 			y = Math.ceil(node.bounds.y);

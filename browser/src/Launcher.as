@@ -27,7 +27,7 @@ package
 	import starling.events.Event;
 
 	import talon.Node;
-	import talon.types.Gauge;
+	import talon.utils.Gauge;
 
 	[SWF(backgroundColor="#C7C7C7", frameRate="60")]
 	public class Launcher extends MovieClip

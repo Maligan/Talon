@@ -21,7 +21,7 @@ package talon.starling
 	import talon.Attribute;
 	import talon.Node;
 	import talon.enums.Visibility;
-	import talon.types.GaugeQuad;
+	import talon.utils.GaugeQuad;
 	import talon.utils.StringUtil;
 
 	/** Provide method for synchronize starling display tree and talon tree. */
@@ -62,24 +62,24 @@ package talon.starling
 
 		public function addAttributeChangeListener(attribute:String, listener:Function):void
 		{
-			_node.getOrCreateAttribute(attribute).addEventListener(Event.CHANGE, listener);
+			_node.getOrCreateAttribute(attribute).change.addListener(listener);
 		}
 
 		//
 		// Listeners: Background
 		//
-		private function onBackgroundImageChange(e:Event):void { _filler.texture = _node.getAttribute(Attribute.BACKGROUND_IMAGE) as Texture; }
-		private function onBackgroundTintChange(e:Event):void { _filler.tint = StringUtil.parseColor(_node.getAttribute(Attribute.BACKGROUND_COLOR), Color.WHITE); }
-		private function onBackgroundFillModeChange(e:Event):void { _filler.fillMode = _node.getAttribute(Attribute.BACKGROUND_FILL_MODE); }
+		private function onBackgroundImageChange():void { _filler.texture = _node.getAttribute(Attribute.BACKGROUND_IMAGE) as Texture; }
+		private function onBackgroundTintChange():void { _filler.tint = StringUtil.parseColor(_node.getAttribute(Attribute.BACKGROUND_COLOR), Color.WHITE); }
+		private function onBackgroundFillModeChange():void { _filler.fillMode = _node.getAttribute(Attribute.BACKGROUND_FILL_MODE); }
 
-		private function onBackgroundColorChange(e:Event):void
+		private function onBackgroundColorChange():void
 		{
 			var value:String = _node.getAttribute(Attribute.BACKGROUND_COLOR);
 			_filler.transparent = value == Attribute.TRANSPARENT;
 			_filler.color = StringUtil.parseColor(value, _filler.color);
 		}
 
-		private function onBackground9ScaleChange(e:Event):void
+		private function onBackground9ScaleChange():void
 		{
 			var textureWidth:int = _filler.texture ? _filler.texture.width : 0;
 			var textureHeight:int = _filler.texture ? _filler.texture.height : 0;
@@ -99,12 +99,12 @@ package talon.starling
 		//
 		// Listeners: Common
 		//
-		private function onIDChange(e:Event):void { _target.name = _node.getAttribute(Attribute.ID); }
-		private function onFilterChange(e:Event):void { _target.filter = _node.getAttribute(Attribute.FILTER) as FragmentFilter; }
-		private function onVisibilityChange(e:Event):void { _target.visible = _node.getAttribute(Attribute.VISIBILITY) == Visibility.VISIBLE; }
-		private function onAlphaChange(e:Event):void { _target.alpha = parseFloat(_node.getAttribute(Attribute.ALPHA)); }
+		private function onIDChange():void { _target.name = _node.getAttribute(Attribute.ID); }
+		private function onFilterChange():void { _target.filter = _node.getAttribute(Attribute.FILTER) as FragmentFilter; }
+		private function onVisibilityChange():void { _target.visible = _node.getAttribute(Attribute.VISIBILITY) == Visibility.VISIBLE; }
+		private function onAlphaChange():void { _target.alpha = parseFloat(_node.getAttribute(Attribute.ALPHA)); }
 
-		private function onCursorChange(e:Event):void
+		private function onCursorChange():void
 		{
 			var cursor:String = _node.getAttribute(Attribute.CURSOR);
 			if (cursor == MouseCursor.AUTO) _target.removeEventListener(TouchEvent.TOUCH, onTouchForCursorPurpose);

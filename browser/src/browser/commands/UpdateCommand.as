@@ -54,12 +54,6 @@ package browser.commands
 		{
 			if (_updateStep != UpdateStep.NOP) return;
 
-			if (Updater.isSupported == false)
-			{
-				complete(UpdateStatus.UPDATER_IS_NOT_SUPPORTED);
-				return;
-			}
-
 			var descriptor:URLRequest = new URLRequest(AppConstants.APP_UPDATE_URL);
 			_updateStep = UpdateStep.DOWNLOAD_DESCRIPTOR;
 			_updateDescriptorLoader.load(descriptor);
@@ -130,6 +124,12 @@ package browser.commands
 			_updateApplicationFile = File.createTempFile();
 			writeBytesToFile(_updateApplicationFile, bytes);
 
+			if (Updater.isSupported == false)
+			{
+				complete(UpdateStatus.UPDATER_IS_NOT_SUPPORTED);
+				return;
+			}
+
 			_updater = new Updater();
 			_updater.update(_updateApplicationFile, _updateDescriptorVersion);
 			complete(UpdateStatus.UPDATER_STARTED);
@@ -178,8 +178,6 @@ class UpdateStep
 
 class UpdateStatus
 {
-	public static const UPDATER_IS_NOT_SUPPORTED:String = "UPDATER_IS_NOT_SUPPORTED";
-
 	public static const UPDATE_DESCRIPTOR_DOWNLOAD_ERROR:String = "UPDATE_DESCRIPTOR_DOWNLOAD_ERROR";
 	public static const UPDATE_DESCRIPTOR_WRONG_XML:String = "UPDATE_DESCRIPTOR_WRONG_XML";
 	public static const UPDATE_DESCRIPTOR_VERSION_IS_LESS_OR_EQUALS:String = "UPDATE_DESCRIPTOR_VERSION_IS_LESS_OR_EQUALS";
@@ -188,5 +186,6 @@ class UpdateStatus
 	public static const UPDATE_APPLICATION_DOWNLOAD_ERROR:String = "UPDATE_APPLICATION_DOWNLOAD_ERROR";
 	public static const UPDATE_APPLICATION_DOWNLOADED_WRONG_BYTES:String = "UPDATE_APPLICATION_DOWNLOADED_WRONG_BYTES";
 
+	public static const UPDATER_IS_NOT_SUPPORTED:String = "UPDATER_IS_NOT_SUPPORTED";
 	public static const UPDATER_STARTED:String = "UPDATER_STARTED";
 }

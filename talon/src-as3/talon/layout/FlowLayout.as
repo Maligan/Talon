@@ -5,7 +5,7 @@ package talon.layout
 	import talon.Attribute;
 	import talon.Node;
 	import talon.enums.Orientation;
-	import talon.types.Gauge;
+	import talon.utils.Gauge;
 	import talon.utils.StringUtil;
 
 	public class FlowLayout extends Layout

@@ -3,16 +3,15 @@ package talon
 	import flash.geom.Rectangle;
 	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
-
-	import starling.events.Event;
-	import starling.events.EventDispatcher;
+	import flash.events.Event;
 
 	import talon.layout.Layout;
-	import talon.types.Gauge;
-	import talon.types.GaugePair;
-	import talon.types.GaugeQuad;
+	import talon.utils.Gauge;
+	import talon.utils.GaugePair;
+	import talon.utils.GaugeQuad;
+	import talon.utils.Trigger;
 
-	public final class Node extends EventDispatcher
+	public final class Node
 	{
 		//
 		// Strong typed attributes accessors
@@ -42,6 +41,7 @@ package talon
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
 		private var _bounds:Rectangle = new Rectangle();
+		private var _broadcasters:Dictionary = new Dictionary();
 		private var _invalidated:Boolean;
 		private var _ppdp:Number;
 		private var _ppmm:Number;
@@ -76,7 +76,7 @@ package talon
 			getOrCreateAttribute(Attribute.FONT_SIZE);
 
 			// Listen attribute change
-			addEventListener(Event.CHANGE, onSelfAttributeChange);
+			addListener(Event.CHANGE, onSelfAttributeChange);
 
 			_invalidated = true;
 			_ppdp = 1;
@@ -88,44 +88,45 @@ package talon
 		//
 		private function bindGauge(gauge:Gauge, name:String):void
 		{
-			bind(gauge, name);
+			bind(gauge.change, name);
 		}
 
 		private function bindPair(pair:GaugePair, name:String, x:String, y:String):void
 		{
-			bind(pair, name);
-			bind(pair.x, x);
-			bind(pair.y, y);
+			bind(pair.change, name);
+			bind(pair.x.change, x);
+			bind(pair.y.change, y);
 		}
 
 		private function bindQuad(quad:GaugeQuad, name:String, top:String, right:String, bottom:String, left:String):void
 		{
-			bind(quad, name);
-			bind(quad.top, top);
-			bind(quad.right, right);
-			bind(quad.bottom, bottom);
-			bind(quad.left, left);
+			bind(quad.change, name);
+			bind(quad.top.change, top);
+			bind(quad.right.change, right);
+			bind(quad.bottom.change, bottom);
+			bind(quad.left.change, left);
 		}
 
-		private function bind(source:*, name:String):void
+		private function bind(source:Trigger, name:String):void
 		{
+			return;
 			var setter:Function = source["parse"];
 			var getter:Function = source["toString"];
-			var dispatcher:EventDispatcher = source;
+			var trigger:Trigger = source;
 
 			var attribute:Attribute = getOrCreateAttribute(name);
-			setter(attribute.value);
-			attribute.bind(dispatcher, getter, setter);
+			setter(attribute.basic);
+			attribute.addBinding(trigger, getter, setter);
 		}
 
 		//
 		// Attributes
 		//
 		/** Get attribute <strong>expanded</strong> value. */
-		public function getAttribute(name:String):* { return getOrCreateAttribute(name).expanded; }
+		public function getAttribute(name:String):* { return getOrCreateAttribute(name).valueCache; }
 
-		/** Set attribute string <strong>assigned</strong> value. */
-		public function setAttribute(name:String, value:String):void { getOrCreateAttribute(name).assigned = value; }
+		/** Set attribute string <strong>setted</strong> value. */
+		public function setAttribute(name:String, value:String):void { getOrCreateAttribute(name).setted = value; }
 
 		/** @private Get (create if doesn't exists) attribute. */
 		public function getOrCreateAttribute(name:String):Attribute
@@ -134,16 +135,15 @@ package talon
 			if (result == null)
 			{
 				result = _attributes[name] = new Attribute(this, name);
-				result.addEventListener(Event.CHANGE, onAttributeChange);
+				result.change.addListener(onAttributeChange);
 			}
 
 			return result;
 		}
 
-		private function onAttributeChange(e:Event):void
+		private function onAttributeChange(attribute:Attribute):void
 		{
-			var attribute:Attribute = Attribute(e.target);
-			dispatchEventWith(Event.CHANGE, false, attribute.name)
+			dispatch(Event.CHANGE, attribute)
 		}
 
 		//
@@ -265,7 +265,7 @@ package talon
 			if (_invalidated === false)
 			{
 				_invalidated = true;
-				dispatchEventWith(Event.CHANGE);
+				dispatch(Event.CHANGE);
 			}
 		}
 
@@ -277,7 +277,7 @@ package talon
 		public function validate():void
 		{
 			// Update self view object attached to node
-			dispatchEventWith(Event.RESIZE);
+			dispatch(Event.RESIZE);
 
 			// Update children nodes
 			layout.arrange(this, bounds.width, bounds.height);
@@ -309,7 +309,7 @@ package talon
 			var inherit:Number = parent ? parent.ppem : base;
 			var attribute:Attribute = getOrCreateAttribute(Attribute.FONT_SIZE);
 			if (attribute.isInherit) return inherit;
-			return Gauge.toPixels(attribute.value, ppmm, inherit, ppdp, inherit, 0, 0, 0, 0);
+			return Gauge.toPixels(attribute.basic, ppmm, inherit, ppdp, inherit, 0, 0, 0, 0);
 		}
 
 		/** This is 'auto' callback for gauges: width, minWidth, maxWidth. */
@@ -331,17 +331,17 @@ package talon
 			return Layout.getLayoutByAlias(layoutAlias);
 		}
 
-		private function onSelfAttributeChange(e:Event):void
+		private function onSelfAttributeChange(attribute:Attribute):void
 		{
 			var layoutName:String = getAttribute(Attribute.LAYOUT);
-			var layoutInvalidated:Boolean = Layout.isObservableSelfAttribute(layoutName, e.data as String);
+			var layoutInvalidated:Boolean = Layout.isObservableSelfAttribute(layoutName, attribute.name);
 			if (layoutInvalidated) invalidate();
 		}
 
-		private function onChildAttributeChange(e:Event):void
+		private function onChildAttributeChange(attribute:Attribute):void
 		{
 			var layoutName:String = getAttribute(Attribute.LAYOUT);
-			var layoutInvalidated:Boolean = Layout.isObservableChildAttribute(layoutName, e.data as String);
+			var layoutInvalidated:Boolean = Layout.isObservableChildAttribute(layoutName, attribute.name);
 			if (layoutInvalidated) invalidate();
 		}
 
@@ -361,8 +361,8 @@ package talon
 			child._parent = this;
 			child.restyle();
 			child.resource();
-			child.addEventListener(Event.CHANGE, onChildAttributeChange);
-			child.dispatchEventWith(Event.ADDED);
+			child.addListener(Event.CHANGE, onChildAttributeChange);
+			child.dispatch(Event.ADDED);
 			invalidate();
 		}
 
@@ -372,8 +372,8 @@ package talon
 			var indexOf:int = _children.indexOf(child);
 			if (indexOf == -1) throw new ArgumentError("Supplied node must be a child of the caller");
 			_children.splice(indexOf, 1);
-			child.removeEventListener(Event.CHANGE, onChildAttributeChange);
-			child.dispatchEventWith(Event.REMOVED);
+			child.removeListener(Event.CHANGE, onChildAttributeChange);
+			child.dispatch(Event.REMOVED);
 			child._parent = null;
 			child.restyle();
 			child.resource();
@@ -386,6 +386,32 @@ package talon
 			if (index < 0 || index >= numChildren) new RangeError("Invalid child index");
 
 			return _children[index];
+		}
+
+		//
+		// Dispatcher
+		//
+		public function addListener(type:String, listener:Function):void
+		{
+			var broadcaster:Trigger = _broadcasters[type];
+			if (broadcaster == null)
+				broadcaster = _broadcasters[type] = new Trigger(this);
+
+			broadcaster.addListener(listener);
+		}
+
+		public function removeListener(type:String, listener:Function):void
+		{
+			var broadcaster:Trigger = _broadcasters[type];
+			if (broadcaster != null)
+				broadcaster.removeListener(listener);
+		}
+
+		public function dispatch(type:String, context:* = null):void
+		{
+			var broadcaster:Trigger = _broadcasters[type];
+			if (broadcaster != null)
+				broadcaster.dispatch(context);
 		}
 	}
 }

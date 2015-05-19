@@ -3,7 +3,7 @@ package talon.layout
 	import talon.Attribute;
 	import talon.Node;
 	import talon.enums.Visibility;
-	import talon.types.Gauge;
+	import talon.utils.Gauge;
 
 	public class AbsoluteLayout extends Layout
 	{

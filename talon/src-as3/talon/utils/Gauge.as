@@ -1,12 +1,12 @@
-package talon.types
+package talon.utils
 {
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
-	/** Dispatched when gauge change its amount/unit. */
-	[Event(name="change", type="starling.events.Event")]
+	import talon.utils.Trigger;
+
 	/** Measured size. Defined by 'units' and 'amount'. */
-	public final class Gauge extends EventDispatcher
+	public final class Gauge
 	{
 		/** Value is not set, and must be ignored. This is <code>null</code> analog. */
 		public static const NONE:String = "none";
@@ -34,6 +34,9 @@ package talon.types
 			HELPER.parse(string);
 			return HELPER.toPixels(ppmm, ppem, ppdt, pp100p, aw, ah, ppts, ts);
 		}
+
+		/** On change broadcaster, called when value of gauge was changed. */
+		public const change:Trigger = new Trigger(this);
 
 		private var _unit:String = NONE;
 		private var _amount:Number = 0;
@@ -71,7 +74,7 @@ package talon.types
 
 			if (prevUnit != _unit || prevAmount != _amount)
 			{
-				dispatchEventWith(Event.CHANGE);
+				change.dispatch();
 			}
 		}
 
@@ -83,7 +86,7 @@ package talon.types
 				_amount = amount;
 				_unit = unit;
 
-				dispatchEventWith(Event.CHANGE);
+				change.dispatch();
 			}
 		}
 
@@ -125,8 +128,8 @@ package talon.types
 			{
 				if (!auto && value == AUTO) throw new ArgumentError("Auto value is not allowed");
 
-				_unit = unit;
-				dispatchEventWith(Event.CHANGE);
+				_unit = value;
+				change.dispatch();
 			}
 		}
 
@@ -137,7 +140,7 @@ package talon.types
 			if (_amount != value)
 			{
 				_amount = value;
-				dispatchEventWith(Event.CHANGE);
+				change.dispatch();
 			}
 		}
 
@@ -164,13 +167,13 @@ package talon.types
 				&& gauge.amount == amount;
 		}
 
-		/** Gauge unit == AUTO. */
+		/** talon.utils.Gauge unit == AUTO. */
 		public function get isAuto():Boolean
 		{
 			return _unit == AUTO;
 		}
 
-		/** Gauge unit == NONE. */
+		/** talon.utils.Gauge unit == NONE. */
 		public function get isNone():Boolean
 		{
 			return _unit == NONE;

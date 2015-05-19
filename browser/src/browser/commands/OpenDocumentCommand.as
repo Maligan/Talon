@@ -4,14 +4,10 @@ package browser.commands
 	import browser.AppConstants;
 	import browser.AppController;
 	import browser.dom.Document;
-	import browser.utils.parseProperties;
 
 	import flash.events.Event;
 	import flash.filesystem.File;
-	import flash.filesystem.FileMode;
-	import flash.filesystem.FileStream;
 	import flash.net.FileFilter;
-	import flash.utils.ByteArray;
 
 	public class OpenDocumentCommand extends Command
 	{

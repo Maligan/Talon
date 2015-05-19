@@ -54,9 +54,9 @@ package browser.commands
 		{
 			if (_updateStep != UpdateStep.NOP) return;
 
-			var descriptor:URLRequest = new URLRequest(AppConstants.APP_UPDATE_URL);
+			var descriptorRequest:URLRequest = new URLRequest(AppConstants.APP_UPDATE_URL);
 			_updateStep = UpdateStep.DOWNLOAD_DESCRIPTOR;
-			_updateDescriptorLoader.load(descriptor);
+			_updateDescriptorLoader.load(descriptorRequest);
 		}
 
 		private function onUpdateDescriptorLoaded(e:Event):void

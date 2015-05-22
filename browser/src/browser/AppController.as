@@ -362,8 +362,8 @@ package browser
 			var shift:String = "";
 			while (shiftDepth--) shift += "-";
 
-			var type:String = node.getAttribute(Attribute.TYPE);
-			var id:String = node.getAttribute(Attribute.ID);
+			var type:String = node.getAttributeCache(Attribute.TYPE);
+			var id:String = node.getAttributeCache(Attribute.ID);
 			var name:String = id ? type + "#" + id : type;
 
 			if (depth) _console.println(shift, name);

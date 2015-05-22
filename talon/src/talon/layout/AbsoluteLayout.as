@@ -22,7 +22,7 @@ package talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				if (child.getAttribute(Attribute.VISIBILITY) != Visibility.VISIBLE) continue;
+				if (child.getAttributeCache(Attribute.VISIBILITY) != Visibility.VISIBLE) continue;
 
 				// Child margin
 				var marginTop:Number = toPixelsSugar(child.margin.top, node, height);
@@ -100,7 +100,7 @@ package talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				if (child.getAttribute(Attribute.VISIBILITY) == Visibility.COLLAPSED) continue;
+				if (child.getAttributeCache(Attribute.VISIBILITY) == Visibility.COLLAPSED) continue;
 
 				var childWidth:int = toPixelsSugar(child.width, child, width, width, height, 0, 0, child.minWidth, child.maxWidth);
 				childWidth += toPixelsSugar(child.margin.left, child, width);
@@ -119,7 +119,7 @@ package talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				if (child.getAttribute(Attribute.VISIBILITY) == Visibility.COLLAPSED) continue;
+				if (child.getAttributeCache(Attribute.VISIBILITY) == Visibility.COLLAPSED) continue;
 
 				var childHeight:int = toPixelsSugar(child.height, child, height, width, height, 0, 0, child.minHeight, child.maxHeight);
 				childHeight += toPixelsSugar(child.margin.top, child, width);

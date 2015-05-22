@@ -28,6 +28,7 @@ package
 
 	import talon.Node;
 	import talon.utils.Gauge;
+	import talon.utils.StringSet;
 
 	[SWF(backgroundColor="#C7C7C7", frameRate="60")]
 	public class Launcher extends MovieClip

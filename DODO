@@ -6,3 +6,5 @@
 #6 [[+]] <<02-04-15 12:15>> ((maligan)) {{Create 'Custom Profile' dialog}}
 #7 [[.]] <<22-04-15 10:19>> ((maligan)) {{Rewrite 9scale/tiles system}}
 #8 [[+]] <<19-05-15 06:17>> ((maligan)) {{Rename src-as3 into src}}
+#9 [[+]] <<21-05-15 16:26>> ((maligan)) {{Root node change <template> to <library>}}
+#10 [[+]] <<22-05-15 09:28>> ((maligan)) {{Move <template> to another file}}

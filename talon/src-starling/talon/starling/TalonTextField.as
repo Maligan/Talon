@@ -56,6 +56,7 @@ package talon.starling
 			if (ah != Infinity) height = ah;
 			var result:Rectangle = textBounds;
 			autoSize = TextFieldAutoSize.NONE;
+			result.inflate(2, 2); // starling remove flash 2px offset
 			return result;
 		}
 
@@ -72,7 +73,6 @@ package talon.starling
 		//
 		private function onNodeResize():void
 		{
-			_node.bounds.inflate(-2, -2);
 			x = Math.round(_node.bounds.x);
 			y = Math.round(_node.bounds.y);
 			width = Math.round(_node.bounds.width);
@@ -115,22 +115,22 @@ package talon.starling
 		// Properties Overrides
 		//
 		public override function set color(value:uint):void { node.setAttribute(Attribute.FONT_COLOR, StringUtil.toHexRBG(value)) }
-		private function onFontColorChange():void { super.color = StringUtil.parseColor(node.getAttribute(Attribute.FONT_COLOR)); }
+		private function onFontColorChange():void { super.color = StringUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
 
 		public override function set fontSize(value:Number):void { node.setAttribute(Attribute.FONT_SIZE, value.toString()) }
 		private function onFontSizeChange():void { super.fontSize = node.ppem }
 
 		public override function set fontName(value:String):void { node && node.setAttribute(Attribute.FONT_NAME, value) || (super.fontName = value) }
-		private function onFontNameChange():void { super.fontName = node.getAttribute(Attribute.FONT_NAME) || BitmapFont.MINI }
+		private function onFontNameChange():void { super.fontName = node.getAttributeCache(Attribute.FONT_NAME) || BitmapFont.MINI }
 
 		public override function set hAlign(value:String):void { if (super.hAlign != value) node.setAttribute(Attribute.HALIGN, value) }
-		private function onHAlignChange():void { super.hAlign = _node.getAttribute(Attribute.HALIGN); }
+		private function onHAlignChange():void { super.hAlign = _node.getAttributeCache(Attribute.HALIGN); }
 
 		public override function set vAlign(value:String):void { if (super.vAlign != value) node.setAttribute(Attribute.VALIGN, value) }
-		private function onVAlignChange():void { super.vAlign = _node.getAttribute(Attribute.VALIGN); }
+		private function onVAlignChange():void { super.vAlign = _node.getAttributeCache(Attribute.VALIGN); }
 
 		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
-		private function onTextChange():void { super.text = _node.getAttribute(Attribute.TEXT); }
+		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); }
 
 		//
 		// Properties

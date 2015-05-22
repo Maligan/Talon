@@ -45,6 +45,12 @@ package talon.starling
 			_node = node;
 			_filler = new BackgroundRenderer();
 
+			_node.states.change.addListener(function():void
+			{
+				if (_node.getAttributeCache("type") == "topcoat")
+					trace(_node.states);
+			});
+
 			// Background
 			addAttributeChangeListener(Attribute.BACKGROUND_9SCALE,     onBackground9ScaleChange);
 			addAttributeChangeListener(Attribute.BACKGROUND_COLOR,      onBackgroundColorChange);
@@ -68,13 +74,22 @@ package talon.starling
 		//
 		// Listeners: Background
 		//
-		private function onBackgroundImageChange():void { _filler.texture = _node.getAttribute(Attribute.BACKGROUND_IMAGE) as Texture; }
-		private function onBackgroundTintChange():void { _filler.tint = StringUtil.parseColor(_node.getAttribute(Attribute.BACKGROUND_COLOR), Color.WHITE); }
-		private function onBackgroundFillModeChange():void { _filler.fillMode = _node.getAttribute(Attribute.BACKGROUND_FILL_MODE); }
+		private function onBackgroundImageChange():void
+		{
+			if (_node.getAttributeCache("type") == "topcoat")
+			{
+				trace("Change to", _node.getOrCreateAttribute(Attribute.BACKGROUND_IMAGE).value);
+			}
+
+			_filler.texture = _node.getAttributeCache(Attribute.BACKGROUND_IMAGE) as Texture;
+		}
+
+		private function onBackgroundTintChange():void { _filler.tint = StringUtil.parseColor(_node.getAttributeCache(Attribute.BACKGROUND_COLOR), Color.WHITE); }
+		private function onBackgroundFillModeChange():void { _filler.fillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE); }
 
 		private function onBackgroundColorChange():void
 		{
-			var value:String = _node.getAttribute(Attribute.BACKGROUND_COLOR);
+			var value:String = _node.getAttributeCache(Attribute.BACKGROUND_COLOR);
 			_filler.transparent = value == Attribute.TRANSPARENT;
 			_filler.color = StringUtil.parseColor(value, _filler.color);
 		}
@@ -84,7 +99,7 @@ package talon.starling
 			var textureWidth:int = _filler.texture ? _filler.texture.width : 0;
 			var textureHeight:int = _filler.texture ? _filler.texture.height : 0;
 
-			var backgroundScale9Grid:String = _node.getAttribute(Attribute.BACKGROUND_9SCALE);
+			var backgroundScale9Grid:String = _node.getAttributeCache(Attribute.BACKGROUND_9SCALE);
 			GRID.parse(backgroundScale9Grid);
 
 			_filler.setScaleOffsets
@@ -99,19 +114,19 @@ package talon.starling
 		//
 		// Listeners: Common
 		//
-		private function onIDChange():void { _target.name = _node.getAttribute(Attribute.ID); }
-		private function onVisibilityChange():void { _target.visible = _node.getAttribute(Attribute.VISIBILITY) == Visibility.VISIBLE; }
-		private function onAlphaChange():void { _target.alpha = parseFloat(_node.getAttribute(Attribute.ALPHA)); }
+		private function onIDChange():void { _target.name = _node.getAttributeCache(Attribute.ID); }
+		private function onVisibilityChange():void { _target.visible = _node.getAttributeCache(Attribute.VISIBILITY) == Visibility.VISIBLE; }
+		private function onAlphaChange():void { _target.alpha = parseFloat(_node.getAttributeCache(Attribute.ALPHA)); }
 
 		private function onFilterChange():void
 		{
 			_target.filter && _target.filter.dispose();
-			_target.filter = _node.getAttribute(Attribute.FILTER) as FragmentFilter;
+			_target.filter = _node.getAttributeCache(Attribute.FILTER) as FragmentFilter;
 		}
 
 		private function onCursorChange():void
 		{
-			var cursor:String = _node.getAttribute(Attribute.CURSOR);
+			var cursor:String = _node.getAttributeCache(Attribute.CURSOR);
 			if (cursor == MouseCursor.AUTO) _target.removeEventListener(TouchEvent.TOUCH, onTouchForCursorPurpose);
 			else _target.addEventListener(TouchEvent.TOUCH, onTouchForCursorPurpose);
 		}
@@ -119,7 +134,7 @@ package talon.starling
 		private function onTouchForCursorPurpose(e:TouchEvent):void
 		{
 			Mouse.cursor = e.interactsWith(_target)
-				? _node.getAttribute(Attribute.CURSOR)
+				? _node.getAttributeCache(Attribute.CURSOR)
 				: MouseCursor.AUTO;
 		}
 
@@ -130,14 +145,16 @@ package talon.starling
 		{
 			var touch:Touch = e.getTouch(_target);
 
-			if (touch == null)
-				_node.states = new <String>[];
-			else if (touch.phase == TouchPhase.HOVER)
-				_node.states = new <String>["hover"];
-			else if (touch.phase == TouchPhase.BEGAN)
-				_node.states = new <String>["active"];
-			else if (touch.phase == TouchPhase.ENDED)
-				_node.states = new <String>[];
+			_node.states.lock();
+
+			var isHover:Boolean = touch && touch.phase == TouchPhase.HOVER;
+			isHover ? _node.states.add("hover") : _node.states.remove("hover");
+
+			var isActive:Boolean = touch && touch.phase == TouchPhase.BEGAN;
+			isActive ? _node.states.add("active") : _node.states.remove("active");
+
+
+			_node.states.unlock();
 		}
 
 		//
@@ -151,7 +168,6 @@ package talon.starling
 			if (_node.isInvalidated && (_node.parent == null || !_node.parent.isInvalidated))
 			{
 				_node.validate();
-//				trace("[DisplayObjectBridge]", "Validated:", _node.getAttribute(Attribute.TYPE) || _node.getAttribute(Attribute.ID))
 			}
 		}
 

@@ -222,7 +222,7 @@ class StyleSelector
 
 	private function byType(node:Node):Boolean
 	{
-		return !_type || (node.getAttribute(Attribute.TYPE) == _type);
+		return !_type || (node.getAttributeCache(Attribute.TYPE) == _type);
 	}
 
 	private function byAncestor(node:Node):Boolean
@@ -242,14 +242,14 @@ class StyleSelector
 
 	private function byId(node:Node):Boolean
 	{
-		return !_id || (node.getAttribute(Attribute.ID) == _id);
+		return !_id || (node.getAttributeCache(Attribute.ID) == _id);
 	}
 
 	private function byClasses(node:Node):Boolean
 	{
 		for each (var className:String in _classes)
 		{
-			if (node.classes.indexOf(className) == -1) return false;
+			if (!node.classes.contains(className)) return false;
 		}
 
 		return true;
@@ -259,7 +259,7 @@ class StyleSelector
 	{
 		for each (var stateName:String in _states)
 		{
-			if (node.states.indexOf(stateName) == -1) return false;
+			if (!node.states.contains(stateName)) return false;
 		}
 
 		return true;

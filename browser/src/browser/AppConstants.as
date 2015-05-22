@@ -19,7 +19,7 @@ package browser
 		public static const SETTING_BACKGROUND_CHESS:String = "transparent";
 		public static const SETTING_BACKGROUND_DARK:String = "dark";
 		public static const SETTING_BACKGROUND_LIGHT:String = "light";
-		public static const SETTING_BACKGROUND_DEFAULT:String = SETTING_BACKGROUND_CHESS;
+		public static const SETTING_BACKGROUND_DEFAULT:String = SETTING_BACKGROUND_DARK;
 		public static const SETTING_STATS:String = "stats";
 		public static const SETTING_ZOOM:String = "zoom";
 		public static const SETTING_LOCK_RESIZE:String = "lockWindowResize";

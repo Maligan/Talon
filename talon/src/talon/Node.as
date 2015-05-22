@@ -9,6 +9,7 @@ package talon
 	import talon.utils.Gauge;
 	import talon.utils.GaugePair;
 	import talon.utils.GaugeQuad;
+	import talon.utils.StringSet;
 	import talon.utils.Trigger;
 
 	public final class Node
@@ -32,6 +33,12 @@ package talon
 		public const origin:GaugePair = new GaugePair();
 		public const pivot:GaugePair = new GaugePair();
 
+		/** CCS classes which determine node style. */
+		public const classes:StringSet = new StringSet();
+
+		/** Current active states (aka CSS pseudoClasses: hover, active, checked etc.). */
+		public const states:StringSet = new StringSet();
+
 		//
 		// Private properties
 		//
@@ -53,6 +60,9 @@ package talon
 			width.auto = minWidth.auto = maxWidth.auto = measureAutoWidth;
 			height.auto = minHeight.auto = maxHeight.auto = measureAutoHeight;
 
+			states.change.addListener(restyle);
+			classes.change.addListener(restyle);
+
 			bindings();
 
 			// TODO: Need initialize all inheritable attributes (for inherit listeners)
@@ -66,11 +76,6 @@ package talon
 			_invalidated = true;
 			_ppdp = 1;
 			_ppmm = Capabilities.screenDPI / 25.4; // 25.4mm in 1 inch
-
-			if (width.isNone)
-			{
-				trace('sdf')
-			}
 		}
 
 		//
@@ -80,14 +85,13 @@ package talon
 		//
 		private function bindings():void
 		{
-			// Bindings to strong typed accessors
-			bindGauge(width, Attribute.WIDTH);
-			bindGauge(minWidth, Attribute.MIN_WIDTH);
-			bindGauge(maxWidth, Attribute.MAX_WIDTH);
+			bind(width, Attribute.WIDTH);
+			bind(minWidth, Attribute.MIN_WIDTH);
+			bind(maxWidth, Attribute.MAX_WIDTH);
 
-			bindGauge(height, Attribute.HEIGHT);
-			bindGauge(minHeight, Attribute.MIN_HEIGHT);
-			bindGauge(maxHeight, Attribute.MAX_HEIGHT);
+			bind(height, Attribute.HEIGHT);
+			bind(minHeight, Attribute.MIN_HEIGHT);
+			bind(maxHeight, Attribute.MAX_HEIGHT);
 
 			bindQuad(margin, Attribute.MARGIN, Attribute.MARGIN_TOP, Attribute.MARGIN_RIGHT, Attribute.MARGIN_BOTTOM, Attribute.MARGIN_LEFT);
 			bindQuad(padding, Attribute.PADDING, Attribute.PADDING_TOP, Attribute.PADDING_RIGHT, Attribute.PADDING_BOTTOM, Attribute.PADDING_LEFT);
@@ -96,11 +100,9 @@ package talon
 			bindPair(position, Attribute.POSITION, Attribute.X, Attribute.Y);
 			bindPair(origin, Attribute.ORIGIN, Attribute.ORIGIN_X, Attribute.ORIGIN_Y);
 			bindPair(pivot, Attribute.PIVOT, Attribute.PIVOT_X, Attribute.PIVOT_Y);
-		}
 
-		private function bindGauge(gauge:Gauge, name:String):void
-		{
-			bind(gauge, name);
+			bind(classes, Attribute.CLASS, false);
+			bind(states, Attribute.STATE, false);
 		}
 
 		private function bindPair(pair:GaugePair, name:String, x:String, y:String):void
@@ -119,25 +121,24 @@ package talon
 			bind(quad.left, left);
 		}
 
-		private function bind(source:*, name:String):void
+		private function bind(source:*, name:String, two:Boolean = true):void
 		{
 			var getter:Function = source.toString;
 			var setter:Function = source.parse;
 			var trigger:Trigger = source.change;
 
-
-
 			var attribute:Attribute = getOrCreateAttribute(name);
 			setter(attribute.value);
-			attribute.addBinding(attribute.change, attribute.bindGetter, setter);
+
+			two && attribute.addBinding(attribute.change, attribute.bindGetter, setter);
 			attribute.addBinding(trigger, getter, attribute.bindSetter);
 		}
 
 		//
 		// Attributes
 		//
-		/** Get attribute <strong>expanded</strong> value. */
-		public function getAttribute(name:String):* { return getOrCreateAttribute(name).valueCache; }
+		/** Get attribute <strong>cached</strong> value. */
+		public function getAttributeCache(name:String):* { return getOrCreateAttribute(name).valueCache; }
 
 		/** Set attribute string <strong>setted</strong> value. */
 		public function setAttribute(name:String, value:String):void { getOrCreateAttribute(name).setted = value; }
@@ -202,30 +203,6 @@ package talon
 			if (_style != null && _parent == null) return _style.getStyle(node);
 			if (_style != null && _parent != null) return _style.getStyle(node, _parent.getStyle(node));
 			return new Object();
-		}
-
-		/** CCS classes which determine node style. TODO: Optimize. */
-		public function get classes():Vector.<String> { return Vector.<String>(getAttribute(Attribute.CLASS) ? getAttribute(Attribute.CLASS).split(" ") : []) }
-		public function set classes(value:Vector.<String>):void
-		{
-			var string:String = value.join(" ");
-			if (string != getAttribute(Attribute.CLASS))
-			{
-				setAttribute(Attribute.CLASS, string);
-				restyle();
-			}
-		}
-
-		/** Current active states (aka CSS pseudoClasses: hover, active, checked etc.). TODO: Optimize. */
-		public function get states():Vector.<String>{ return Vector.<String>(getAttribute(Attribute.STATE) ? getAttribute(Attribute.STATE).split(" ") : []) }
-		public function set states(value:Vector.<String>):void
-		{
-			var string:String = value.join(" ");
-			if (string != getAttribute(Attribute.STATE))
-			{
-				setAttribute(Attribute.STATE, string);
-				restyle();
-			}
 		}
 
 		//
@@ -336,14 +313,14 @@ package talon
 		/** Node layout strategy class. */
 		private function get layout():Layout
 		{
-			var layoutAlias:String = getAttribute(Attribute.LAYOUT);
+			var layoutAlias:String = getAttributeCache(Attribute.LAYOUT);
 			return Layout.getLayoutByAlias(layoutAlias);
 		}
 
 		private function onSelfAttributeChange(attribute:Attribute):void
 		{
 			if (attribute == null) return;
-			var layoutName:String = getAttribute(Attribute.LAYOUT);
+			var layoutName:String = getAttributeCache(Attribute.LAYOUT);
 			var layoutInvalidated:Boolean = Layout.isObservableSelfAttribute(layoutName, attribute.name);
 			if (layoutInvalidated) invalidate();
 		}
@@ -351,7 +328,7 @@ package talon
 		private function onChildAttributeChange(attribute:Attribute):void
 		{
 			if (attribute == null) return;
-			var layoutName:String = getAttribute(Attribute.LAYOUT);
+			var layoutName:String = getAttributeCache(Attribute.LAYOUT);
 			var layoutInvalidated:Boolean = Layout.isObservableChildAttribute(layoutName, attribute.name);
 			if (layoutInvalidated) invalidate();
 		}

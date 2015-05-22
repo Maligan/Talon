@@ -1,5 +1,6 @@
 package talon.enums
 {
+	[Deprecated(message="Replace to Boolean flag")]
 	public final class Visibility
 	{
 		public static const VISIBLE:String = "visible";

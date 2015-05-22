@@ -56,6 +56,9 @@ package browser
 		[Embed(source="/../assets/interface.zip", mimeType="application/octet-stream")]
 		private static const INTERFACE:Class;
 
+		[Embed(source="/../assets/SourceSansPro.otf", embedAsCFF="false", fontName="Source Sans Pro")]
+		private static const INTERFACE_FONT:Class;
+
 		private var _controller:AppController;
 
 		private var _factory:TalonFactoryBase;
@@ -95,7 +98,7 @@ package browser
 			_interface = _factory.produce("interface") as TalonSprite;
 			_controller.host.addChild(_interface);
 
-			_controller.host.addEventListener(TouchEvent.TOUCH, function(e:TouchEvent):void { if (e.getTouch(_controller.host, TouchPhase.BEGAN)) refreshCurrentTemplate() })
+//			_controller.host.addEventListener(TouchEvent.TOUCH, function(e:TouchEvent):void { if (e.getTouch(_controller.host, TouchPhase.BEGAN)) refreshCurrentTemplate() })
 
 			_container = new TalonSprite();
 			_container.node.setAttribute(Attribute.LAYOUT, Layout.ABSOLUTE);
@@ -129,7 +132,8 @@ package browser
 
 		private function onBackgroundChange(e:Event):void
 		{
-			_isolatorContainer.node.classes = new <String>[_controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DEFAULT)];
+			var styleName:String = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DEFAULT);
+			_isolatorContainer.node.classes.add(styleName);
 		}
 
 		private function onStatsChange(e:Event):void
@@ -194,8 +198,8 @@ package browser
 			// Refresh current prototype
 			var canShow:Boolean = true;
 			canShow &&= _controller.templateId != null;
-			canShow &&= _controller.document.tasks.isBusy == false;
 			canShow &&= _controller.document != null;
+			canShow &&= _controller.document.tasks.isBusy == false;
 			canShow &&= _controller.document.factory.hasTemplate(_controller.templateId);
 
 			_errorPage.visible = false;

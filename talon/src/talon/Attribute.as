@@ -93,7 +93,7 @@ package talon
 		public static const IVALIGN:String              = registerAttributeDefaults("ivalign",             TOP);
 		public static const GAP:String                  = registerAttributeDefaults("gap",                 ZERO);
 		public static const INTERLINE:String            = registerAttributeDefaults("interline",           ZERO);
-		public static const WRAP:String                 = registerAttributeDefaults("wrap",                TRUE);
+		public static const WRAP:String                 = registerAttributeDefaults("wrap",                FALSE);
 		public static const BREAK:String                = registerAttributeDefaults("break",               Break.AUTO);
 
 		public static const TEXT:String                 = registerAttributeDefaults("text");
@@ -224,19 +224,21 @@ package talon
 		{
 			if (_valueCached == false)
 			{
+				// By default is equal to value
+				_valueCached = true;
+				_valueCache = value;
+
 				// If attribute has no query - return origin value
 				var queryInfo:Array = StringUtil.parseFunction(value);
-				if (queryInfo == null) return value;
+				if (queryInfo == null) return _valueCache;
 
 				// Obtain query method via queryInfo
 				var queryMethodName:String = queryInfo.shift();
 				var queryMethod:Function = _queries[queryMethodName];
-				if (queryMethod == null) return value;
-
+				if (queryMethod == null) return _valueCache;
 				queryInfo.unshift(this);
 
 				_valueCache = queryMethod.apply(null, queryInfo);
-				_valueCached = true;
 			}
 
 			return _valueCache;
@@ -307,13 +309,6 @@ package talon
 		/** @private */
 		public function bindGetter():String { return value; }
 
-		internal function dispatchChange():void
-		{
-			_valueCache = null;
-			_valueCached = false;
-			change.dispatch();
-		}
-
 		public function dispose():void
 		{
 			_valueCache = null;
@@ -326,6 +321,13 @@ package talon
 		public function get change():Trigger
 		{
 			return _change;
+		}
+
+		internal function dispatchChange():void
+		{
+			_valueCache = null;
+			_valueCached = false;
+			change.dispatch();
 		}
 	}
 }
@@ -390,7 +392,8 @@ class ComplexValue implements IValue
 	{
 		var cursor:IValue = getCursor();
 
-		if (_cursor != cursor || _cursor == value)
+		// Changed value is cursor or cursor was changed
+		if (_cursor == value || _cursor != cursor)
 		{
 			_cursor = cursor;
 			_change.dispatch();

@@ -32,14 +32,14 @@ package talon.starling
 		private var _quads:Vector.<QuadData>;
 		private var _batch:QuadBatch;
 
-		private var _invalid:int;
+		private var _invalid:Boolean;
 
 		public function BackgroundRenderer():void
 		{
 			POOL = new <QuadData>[];
 			HELPER = new QuadWithUnsafeAccess();
 
-			_invalid = MESH;
+			_invalid = true;
 			_quads = new <QuadData>[];
 			_batch = new QuadBatch();
 			_width = 0;
@@ -57,18 +57,18 @@ package talon.starling
 		{
 			if (_texture == null && _transparent) return;
 
-			if (_invalid != 0)
+			// TODO: Diff way for invalidate (_quads OR _batch)
+			if (_invalid)
 			{
+				_invalid = false;
 				remesh();
 				compose();
-				_invalid = 0;
 			}
 
 			support.batchQuadBatch(_batch, parentAlpha);
 		}
 
-		private function invalidate(mask:int):void { _invalid |= mask; }
-		private function invalid(mask:int):Boolean { return (_invalid & mask) != 0; }
+		private function invalidate():void { _invalid = true; }
 
 		//
 		// Defining quads for render
@@ -247,7 +247,7 @@ package talon.starling
 			if (texture != value)
 			{
 				_texture = value;
-				invalidate(MESH);
+				invalidate();
 			}
 		}
 
@@ -257,7 +257,7 @@ package talon.starling
 			_offsets.right = rightOffset;
 			_offsets.bottom = bottomOffset;
 			_offsets.left = leftOffset;
-			invalidate(MESH);
+			invalidate();
 		}
 
 		public function get smoothing():String { return _smoothing; }
@@ -267,7 +267,7 @@ package talon.starling
 			{
 				if (TextureSmoothing.isValid(value)) _smoothing = value;
 				else throw new ArgumentError("Invalid smoothing mode: " + value);
-				invalidate(QUAD);
+				invalidate();
 			}
 		}
 
@@ -277,7 +277,7 @@ package talon.starling
 			if (_width != value)
 			{
 				_width = value;
-				invalidate(MESH);
+				invalidate();
 			}
 		}
 
@@ -287,7 +287,7 @@ package talon.starling
 			if (_height != value)
 			{
 				_height = value;
-				invalidate(MESH);
+				invalidate();
 			}
 		}
 
@@ -297,7 +297,7 @@ package talon.starling
 			if (_color != value)
 			{
 				_color = value;
-				invalidate(MESH);
+				invalidate();
 			}
 		}
 
@@ -307,7 +307,7 @@ package talon.starling
 			if (_tint != value)
 			{
 				_tint = value;
-				invalidate(MESH);
+				invalidate();
 			}
 		}
 
@@ -317,7 +317,7 @@ package talon.starling
 			if (_transparent != value)
 			{
 				_transparent = value;
-				invalidate(MESH);
+				invalidate();
 			}
 		}
 
@@ -327,7 +327,7 @@ package talon.starling
 			if (_alpha != value)
 			{
 				_alpha = value;
-				invalidate(MESH);
+				invalidate();
 			}
 		}
 
@@ -337,7 +337,7 @@ package talon.starling
 			if (_fillMode != value)
 			{
 				_fillMode = value;
-				invalidate(MESH);
+				invalidate();
 			}
 		}
 	}

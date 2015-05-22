@@ -97,9 +97,9 @@ package talon.utils
 		 * @param aw available width (for 'auto' measure)
 		 * @param ah available height (for 'auto' measure)
 		 * @param ppts pixels per total stars
-		 * @param s stars amount
+		 * @param ts total stars amount
 		 */
-		public function toPixels(ppmm:Number, ppem:Number, ppdp:Number, pp100p:Number, aw:Number = Infinity, ah:Number = Infinity, ppts:Number = 0, s:int = 0):Number
+		public function toPixels(ppmm:Number, ppem:Number, ppdp:Number, pp100p:Number, aw:Number = Infinity, ah:Number = Infinity, ppts:Number = 0, ts:int = 0):Number
 		{
 			switch (unit)
 			{
@@ -110,7 +110,7 @@ package talon.utils
 				case EM:        return amount * ppem;
 				case DP:        return amount * ppdp;
 				case PERCENT:   return amount * pp100p/100;
-				case STAR:		return amount * (s?(ppts/s):0);
+				case STAR:		return amount * (ts?(ppts/ts):0);
 				default:		throw new Error("Unknown gauge unit: " + unit);
 			}
 		}

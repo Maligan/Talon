@@ -56,8 +56,8 @@ package talon.starling
 
 		private function sortByZIndex(child1:DisplayObject, child2:DisplayObject):int
 		{
-			var child1ZIndex:int = (child1 is ITalonElement) ? 0 : ITalonElement(child1).node.getAttribute(Attribute.Z_INDEX);
-			var child2ZIndex:int = (child2 is ITalonElement) ? 0 : ITalonElement(child2).node.getAttribute(Attribute.Z_INDEX);
+			var child1ZIndex:int = (child1 is ITalonElement) ? 0 : ITalonElement(child1).node.getAttributeCache(Attribute.Z_INDEX);
+			var child2ZIndex:int = (child2 is ITalonElement) ? 0 : ITalonElement(child2).node.getAttributeCache(Attribute.Z_INDEX);
 
 			var delta:int = child2ZIndex - child1ZIndex;
 			if (delta != 0) return delta;
@@ -85,7 +85,7 @@ package talon.starling
 
 		private function refreshClipping():void
 		{
-			var clippingString:String = _node.getAttribute(Attribute.CLIPPING);
+			var clippingString:String = _node.getAttributeCache(Attribute.CLIPPING);
 			var clipping:Boolean = StringUtil.parseBoolean(clippingString);
 
 			if (clipping && clipRect)

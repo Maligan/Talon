@@ -13,7 +13,7 @@ package talon.layout
 		public override function measureAutoWidth(node:Node, availableWidth:Number, availableHeight:Number):Number
 		{
 			var flow:Flow = measure(node, availableWidth, availableHeight, false);
-			var flowWidth:Number = node.getAttribute(Attribute.ORIENTATION) == Orientation.HORIZONTAL ? flow.getLength() : flow.getThickness();
+			var flowWidth:Number = node.getAttributeCache(Attribute.ORIENTATION) == Orientation.HORIZONTAL ? flow.getLength() : flow.getThickness();
 			flow.dispose();
 			return flowWidth;
 		}
@@ -21,14 +21,14 @@ package talon.layout
 		public override function measureAutoHeight(node:Node, availableWidth:Number, availableHeight:Number):Number
 		{
 			var flow:Flow = measure(node, availableWidth, availableHeight, false);
-			var flowHeight:Number = node.getAttribute(Attribute.ORIENTATION) == Orientation.VERTICAL ? flow.getLength() : flow.getThickness();
+			var flowHeight:Number = node.getAttributeCache(Attribute.ORIENTATION) == Orientation.VERTICAL ? flow.getLength() : flow.getThickness();
 			flow.dispose();
 			return flowHeight;
 		}
 
 		public override function arrange(node:Node, width:Number, height:Number):void
 		{
-			var orientation:String = node.getAttribute(Attribute.ORIENTATION);
+			var orientation:String = node.getAttributeCache(Attribute.ORIENTATION);
 			var flow:Flow = measure(node, width, height, true);
 
 			for (var i:int = 0; i < node.numChildren; i++)
@@ -50,14 +50,14 @@ package talon.layout
 		{
 			if (node.numChildren > 1)
 			{
-				trace('Flow::Refresh')
+//				trace('Flow::Refresh')
 			}
 
 			var flow:Flow = new Flow();
 			flow.setSpacings(getGap(node), getInterline(node));
 			flow.setWrap(getWrap(node));
 
-			var orientation:String = node.getAttribute(Attribute.ORIENTATION);
+			var orientation:String = node.getAttributeCache(Attribute.ORIENTATION);
 			if (orientation == Orientation.HORIZONTAL)
 			{
 				flow.setMaxSize(availableWidth, availableHeight);
@@ -69,12 +69,14 @@ package talon.layout
 
 					flow.beginChild();
 					// XXX: Auto
-					flow.setChildLength(child.width.amount, child.width.unit == Gauge.STAR);
+					var amount:Number = child.width.toPixels(child.ppmm, child.ppem, child.ppdp, availableWidth);
+					//
+					flow.setChildLength(amount, child.width.unit == Gauge.STAR);
 					flow.setChildLengthMargin(child.margin.left.amount, child.margin.right.amount);
 					flow.setChildThickness(child.height.amount, child.height.unit == Gauge.STAR);
 					flow.setChildThicknessMargin(child.margin.top.amount, child.margin.top.amount);
 					flow.setChildInlineAlign(getAlign(child, Attribute.IVALIGN));
-					flow.setChildBreakMode(child.getAttribute(Attribute.BREAK));
+					flow.setChildBreakMode(child.getAttributeCache(Attribute.BREAK));
 					flow.endChild();
 				}
 			}
@@ -87,10 +89,10 @@ package talon.layout
 			return flow;
 		}
 
-		private function getWrap(node:Node):Boolean { return node.getAttribute(Attribute.WRAP) == "true"; }
-		private function getAlign(node:Node, name:String):Number { return StringUtil.parseAlign(node.getAttribute(name)) }
-		private function getGap(node:Node):Number { return Gauge.toPixels(node.getAttribute(Attribute.GAP), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0, 0); }
-		private function getInterline(node:Node):Number { return Gauge.toPixels(node.getAttribute(Attribute.INTERLINE), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0, 0); }
+		private function getWrap(node:Node):Boolean { return node.getAttributeCache(Attribute.WRAP) == "true"; }
+		private function getAlign(node:Node, name:String):Number { return StringUtil.parseAlign(node.getAttributeCache(name)) }
+		private function getGap(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.GAP), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0, 0); }
+		private function getInterline(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.INTERLINE), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0, 0); }
 	}
 }
 

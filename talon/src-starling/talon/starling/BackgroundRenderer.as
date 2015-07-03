@@ -14,8 +14,6 @@ package talon.starling
 	{
 		private static var POOL:Vector.<QuadData>;
 		private static var HELPER:QuadWithUnsafeAccess;
-		private static const QUAD:int = 0x1;
-		private static const MESH:int = 0x3;
 
 		private var _smoothing:String;
 		private var _texture:Texture;

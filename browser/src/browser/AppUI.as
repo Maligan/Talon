@@ -1,55 +1,28 @@
 package browser
 {
-	import browser.commands.CloseBrowserCommand;
-	import browser.commands.CloseDocumentCommand;
-	import browser.commands.Command;
-	import browser.commands.NewDocumentCommand;
-	import browser.commands.PublishCommand;
-	import browser.commands.OpenDocumentCommand;
-	import browser.commands.OpenDocumentFolderCommand;
-	import browser.commands.OrientationCommand;
-	import browser.commands.ProfileCommand;
-	import browser.commands.SelectCommand;
-	import browser.commands.SettingCommand;
-	import browser.commands.UpdateCommand;
-	import browser.commands.ZoomCommand;
 	import browser.dom.DocumentEvent;
 	import browser.dom.log.DocumentMessage;
 	import browser.popups.Popup;
-	import browser.AppConstants;
 	import browser.utils.DeviceProfile;
-	import browser.utils.EventDispatcherAdapter;
-	import browser.utils.NativeMenuAdapter;
-	import browser.utils.NativeMenuAdapter;
-	import browser.utils.NativeMenuAdapter;
 
-	import flash.desktop.NativeApplication;
-	import flash.events.UncaughtErrorEvent;
-	import flash.filesystem.File;
-	import flash.ui.Keyboard;
-	import flash.ui.Keyboard;
+	import flash.display.Stage;
+
 	import flash.utils.ByteArray;
-	import flash.utils.setTimeout;
 
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
-	import starling.display.DisplayObjectContainer;
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
-	import starling.events.TouchEvent;
-	import starling.events.TouchPhase;
-
-	import talon.Attribute;
-	import talon.starling.TalonFactoryStarling;
-	import talon.utils.ITalonElement;
-	import talon.utils.TalonFactoryBase;
-	import talon.starling.TalonSprite;
-	import talon.layout.Layout;
-	import talon.enums.Orientation;
 	import starling.filters.BlurFilter;
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
+
+	import talon.Attribute;
+	import talon.layout.Layout;
+	import talon.starling.TalonFactoryStarling;
+	import talon.starling.TalonSprite;
+	import talon.utils.TalonFactoryBase;
 
 	public class AppUI extends EventDispatcher
 	{
@@ -59,12 +32,14 @@ package browser
 		[Embed(source="/../assets/SourceSansPro.otf", embedAsCFF="false", fontName="Source Sans Pro")]
 		private static const INTERFACE_FONT:Class;
 
+		[Embed(source="/../assets/MyriadPro.otf", embedAsCFF="false", fontName="Myriad Pro")]
+		private static const INTERFACE_FONT_ALTERNATE:Class;
+
 		private var _controller:AppController;
 
 		private var _factory:TalonFactoryBase;
 		private var _interface:TalonSprite;
 		private var _errorPage:TalonSprite;
-		private var _popupContainer:TalonSprite;
 		private var _isolatorContainer:TalonSprite;
 		private var _isolator:Sprite;
 		private var _container:TalonSprite;
@@ -98,7 +73,7 @@ package browser
 			_interface = _factory.produce("interface") as TalonSprite;
 			_controller.host.addChild(_interface);
 
-//			_controller.host.addEventListener(TouchEvent.TOUCH, function(e:TouchEvent):void { if (e.getTouch(_controller.host, TouchPhase.BEGAN)) refreshCurrentTemplate() })
+			Popup.initialize(this, _interface.getChildByName("popups") as TalonSprite);
 
 			_container = new TalonSprite();
 			_container.node.setAttribute(Attribute.LAYOUT, Layout.ABSOLUTE);
@@ -110,15 +85,11 @@ package browser
 			_isolator.name = "Isolator";
 			_isolator.addChild(_container);
 
-			_interface.getChildByName("shade").visible = false;
-
 			_errorPage = _interface.getChildByName("bsod") as TalonSprite;
 			_errorPage.visible = false;
 
-			_popupContainer = _interface.getChildByName("popups") as TalonSprite;
 			_isolatorContainer = _interface.getChildByName("container") as TalonSprite;
 			_isolatorContainer.addChild(_isolator);
-			Popup.initialize(this, _popupContainer);
 
 			_controller.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, onBackgroundChange); onBackgroundChange(null);
 			_controller.settings.addPropertyListener(AppConstants.SETTING_STATS, onStatsChange); onStatsChange(null);
@@ -133,7 +104,7 @@ package browser
 		private function onBackgroundChange(e:Event):void
 		{
 			var styleName:String = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DEFAULT);
-			_isolatorContainer.node.classes.add(styleName);
+			_isolatorContainer.node.classes.parse(styleName);
 		}
 
 		private function onStatsChange(e:Event):void
@@ -242,6 +213,7 @@ package browser
 		// Properties
 		//
 		public function get factory():TalonFactoryBase { return _factory; }
+		public function get template():DisplayObject { return _template; }
 
 		public function get locked():Boolean { return _locked; }
 		public function set locked(value:Boolean):void
@@ -249,7 +221,6 @@ package browser
 			if (_locked != value)
 			{
 				_locked = value;
-				_interface.getChildByName("shade").visible = locked;
 				_isolatorContainer.filter = _locked ? new BlurFilter(1, 1) : null;
 				_isolatorContainer.touchable = !_locked;
 			}
@@ -263,11 +234,6 @@ package browser
 				_isolator.scaleX = _isolator.scaleY = value;
 				resizeTo(_controller.root.stage.stageWidth, _controller.root.stage.stageHeight);
 			}
-		}
-
-		public function get template():DisplayObject
-		{
-			return _template;
 		}
 	}
 }

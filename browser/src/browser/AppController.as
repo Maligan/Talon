@@ -20,6 +20,7 @@ package browser
 	import flash.events.NativeDragEvent;
 	import flash.events.NativeWindowBoundsEvent;
 	import flash.filesystem.File;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 
 	import starling.core.Starling;
@@ -29,6 +30,7 @@ package browser
 	import starling.events.Event;
 
 	import starling.events.EventDispatcher;
+	import starling.utils.formatString;
 
 	import talon.Attribute;
 	import talon.Node;
@@ -56,7 +58,9 @@ package browser
 		{
 			_root = root;
 
+			registerClassAlias(Point);
 			registerClassAlias(Rectangle);
+
 			_settings = Storage.fromSharedObject("settings");
 
 			_profile = DeviceProfile.getById(settings.getValueOrDefault(AppConstants.SETTING_PROFILE, null)) || DeviceProfile.CUSTOM;
@@ -266,7 +270,7 @@ package browser
 		//
 		private function initializeStarling():void
 		{
-			_starling = new Starling(Sprite, root.stage);
+			_starling = new Starling(Sprite, root.stage, null, null, "auto", "baseline");
 			_starling.addEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
 			_starling.start();
 		}
@@ -304,7 +308,7 @@ package browser
 			_root.stage.addChild(_console);
 
 			_console.addCommand("errors", cmdErrors, "Print current error list");
-			_console.addCommand("tree", cmdTree, "Print current template tree", "-a");
+			_console.addCommand("tree", cmdTree, "Print current template tree", "-a attributeName");
 			_console.addCommand("resources", cmdResourceSearch, "RegExp based search project resources", "regexp");
 			_console.addCommand("resources_miss", cmdResourceMiss, "Missing used resources");
 		}
@@ -349,14 +353,15 @@ package browser
 		private function cmdTree(query:String):void
 		{
 			var split:Array = query.split(" ");
-			var attrs:Boolean = split.length > 1 && split[1] == "-a";
+			var useAttrs:Boolean = split.length > 1 && split[1] == "-a";
+			var attrs:Array = useAttrs ? split[2].split(/\s*,\s*/) : [];
 
 			var template:ITalonElement = ITalonElement(_ui.template);
 			var node:Node = template.node;
 			traceNode(node, 0, attrs);
 		}
 
-		private function traceNode(node:Node, depth:int, attrs:Boolean):void
+		private function traceNode(node:Node, depth:int, attrs:Array):void
 		{
 			var shiftDepth:int = depth;
 			var shift:String = "";
@@ -366,8 +371,15 @@ package browser
 			var id:String = node.getAttributeCache(Attribute.ID);
 			var name:String = id ? type + "#" + id : type;
 
-			if (depth) _console.println(shift, name);
-			else _console.println(name);
+			var attributes:Array = new Array();
+			for each (var attributeName:String in attrs)
+			{
+				var attribute:Attribute = node.getOrCreateAttribute(attributeName);
+				attributes.push(formatString("({0} | {1} | {2} => {3})", attribute.inited, attribute.styled, attribute.setted, attribute.value));
+			}
+
+			if (depth) _console.println(shift, name, attributes.join(", "));
+			else _console.println(name, attributes.join(", "));
 
 			for (var i:int = 0; i < node.numChildren; i++) traceNode(node.getChildAt(i), depth + 1, attrs);
 		}

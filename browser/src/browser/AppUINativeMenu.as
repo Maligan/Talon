@@ -2,12 +2,17 @@ package browser
 {
 	import browser.commands.*;
 	import browser.dom.DocumentEvent;
+	import browser.popups.Popup;
+	import browser.popups.ProfilePopup;
 	import browser.utils.DeviceProfile;
 	import browser.utils.NativeMenuAdapter;
+
+	import flash.desktop.NativeApplication;
 
 	import flash.display.NativeWindow;
 	import flash.filesystem.File;
 	import flash.ui.Keyboard;
+	import flash.utils.setTimeout;
 
 	import talon.enums.Orientation;
 
@@ -16,22 +21,25 @@ package browser
 		private var _controller:AppController;
 		private var _menu:NativeMenuAdapter;
 
+		private var _prevTemplates:Vector.<String> = new <String>[];
+		private var _prevDocuments:Array = new Array();
+
 		public function AppUINativeMenu(controller:AppController)
 		{
 			_controller = controller;
 			_menu = new NativeMenuAdapter();
 
 			// File
-			_menu.push("file",                  AppConstants.T_MENU_FILE);
-			_menu.push("file/new",              AppConstants.T_MENU_FILE_NEW_DOCUMENT,      new NewDocumentCommand(_controller),    "n");
+			_menu.push("file",                                  AppConstants.T_MENU_FILE);
+			_menu.push("file/new",                              AppConstants.T_MENU_FILE_NEW_DOCUMENT,                  new NewDocumentCommand(_controller),    "n");
 			_menu.push("file/-");
-			_menu.push("file/open",             AppConstants.T_MENU_FILE_OPEN,              new OpenDocumentCommand(_controller),   "o");
-			_menu.push("file/recent",           AppConstants.T_MENU_FILE_RECENT);
+			_menu.push("file/recent",                           AppConstants.T_MENU_FILE_RECENT);
+			_menu.push("file/open",                             AppConstants.T_MENU_FILE_OPEN,                          new OpenDocumentCommand(_controller),   "o");
 			_menu.push("file/-");
-			_menu.push("file/closeDocument",    AppConstants.T_MENU_FILE_CLOSE_DOCUMENT,    new CloseDocumentCommand(_controller),  "w");
-			_menu.push("file/closeBrowser",     AppConstants.T_MENU_FILE_CLOSE_BROWSER,     new CloseBrowserCommand(_controller),   "w", [Keyboard.CONTROL, Keyboard.SHIFT]);
+			_menu.push("file/closeDocument",                    AppConstants.T_MENU_FILE_CLOSE_DOCUMENT,                new CloseDocumentCommand(_controller),  "w");
+			_menu.push("file/closeBrowser",                     AppConstants.T_MENU_FILE_CLOSE_BROWSER,                 new CloseBrowserCommand(_controller),   "w", [Keyboard.CONTROL, Keyboard.SHIFT]);
 			_menu.push("file/-");
-			_menu.push("file/publish",          AppConstants.T_MENU_FILE_PUBLISH_AS,        new PublishCommand(_controller),        "s", [Keyboard.CONTROL, Keyboard.SHIFT]);
+			_menu.push("file/publish",                          AppConstants.T_MENU_FILE_PUBLISH_AS,                    new PublishCommand(_controller),        "s", [Keyboard.CONTROL, Keyboard.SHIFT]);
 
 			// View
 			_menu.push("view",                                  AppConstants.T_MENU_VIEW);
@@ -78,7 +86,7 @@ package browser
 			_menu.push("help",          AppConstants.T_MENU_HELP);
 			_menu.push("help/online",   AppConstants.T_MENU_HELP_ONLINE);
 			_menu.push("help/update",   AppConstants.T_MENU_HELP_UPDATE, new UpdateCommand(_controller));
-			_menu.push("help/about",    AppConstants.T_MENU_HELP_ABOUT);
+			_menu.push("help/about",    AppConstants.T_MENU_HELP_ABOUT, new PopupCommand(_controller, true, ProfilePopup));
 
 			if (NativeWindow.supportsMenu) controller.root.stage.nativeWindow.menu = _menu.nativeMenu;
 		}
@@ -86,6 +94,9 @@ package browser
 		private function refreshRecentOpenedDocumentsList():void
 		{
 			var recent:Array = _controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_ARRAY, []);
+			if (isEqual(recent, _prevDocuments)) return;
+			_prevDocuments = recent;
+
 			var recentMenu:NativeMenuAdapter = _menu.getChildByPath("file/recent");
 			recentMenu.isMenu = true;
 			recentMenu.removeChildren();
@@ -104,6 +115,8 @@ package browser
 		private function refreshDocumentTemplatesList():void
 		{
 			var templates:Vector.<String> = _controller.document ? _controller.document.factory.templateIds: new <String>[];
+			if (isEqual(templates, _prevTemplates)) return;
+			_prevTemplates = templates;
 
 			var submenu:NativeMenuAdapter = _menu.getChildByPath("navigate/search");
 			submenu.removeChildren();
@@ -112,6 +125,18 @@ package browser
 
 			for each (var prototypeId:String in templates)
 				submenu.push(prototypeId, null, new SelectCommand(_controller, prototypeId));
+		}
+
+		private static function isEqual(list1:*, list2:*):Boolean
+		{
+			var length1:int = list1.length;
+			var length2:int = list2.length;
+			if (length1 != length2) return false;
+
+			for (var i:int = 0; i < length1; i++)
+				if (list1[i] != list2[i]) return false;
+
+			return true;
 		}
 	}
 }

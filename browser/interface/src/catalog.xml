@@ -3,15 +3,16 @@
 	<template id="interface">
 	  <node width="100%" height="100%" layout="abs">
 		<node id="container" width="100%" height="100%" class="transparent" />
-		<node id="shade" width="100%" height="100%" backgroundColor="black" alpha="0.7"/>
-		<node id="popups" width="100%" height="100%" layout="flow" halign="center" valign="center"/>
+		<node id="popups" width="100%" height="100%" layout="abs" halign="center" valign="center"/>
 		<bsod id="bsod" width="100%" height="100%" />
+
 		<!--<message class="error">-->
 		  <!--<image id="icon"/>-->
 		  <!--<node backgroundColor="green" width="*" height="12px" minHeight="*"/>-->
 		  <!--<label text="Can't access to file C:\Projects\Interface\Game\src\img\background.png" width="*" height="auto" minHeight="*" halign="left"/>-->
 		<!--</message>-->
 		<!--<image src="res(crutches)" position="50%" pivot="50%"/>-->
+
 	  </node>
 	</template>
 
@@ -22,9 +23,9 @@
 	</template>
 
 	<template id="popup">
-	  <node width="256px" height="150px" backgroundColor="gray" filter="drop-shadow(0, 0, black, 1, 1)" layout="abs" padding="10px">
-		<node anchorRight="100%" anchorBottom="100%" backgroundColor="#1c1c1c" padding="1em" width="80px" height="32px"/>
-	  </node>
+		<node position="50%" pivot="50%" width="256px" height="200px" layout="abs" padding="10px">
+			<label text="Talon Browser v0.0.1" width="100%" halign="left" />
+		</node>
 	</template>
 
 </library>

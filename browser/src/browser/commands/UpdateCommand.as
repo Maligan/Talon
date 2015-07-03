@@ -17,13 +17,27 @@ package browser.commands
 
 	public class UpdateCommand extends Command
 	{
-		private static function compare(version1:String, version2:String):Boolean
+		private static function compare(version1:String, version2:String):int
 		{
-			return true;
+			var split1:Array = version1.split(".");
+			var split2:Array = version2.split(".");
+
+			while (split1.length && split2.length)
+			{
+				var index1:int = parseInt(split1.shift());
+				var index2:int = parseInt(split2.shift());
+				if (index1 != index2) return index1 - index2;
+			}
+
+			if (split1.length) return -1;
+			if (split2.length) return +1;
+
+			return 0;
 		}
 
 		private var _updater:Updater;
 		private var _updateDescriptorLoader:URLLoader;
+		private var _updateDescriptorNamespace:Namespace;
 		private var _updateDescriptorVersion:String;
 		private var _updateApplicationFileLoader:URLLoader;
 		private var _updateApplicationFile:File;
@@ -54,6 +68,13 @@ package browser.commands
 		{
 			if (_updateStep != UpdateStep.NOP) return;
 
+			// Check update support
+			if (Updater.isSupported == false)
+			{
+				complete(UpdateStatus.UPDATER_IS_NOT_SUPPORTED);
+				return;
+			}
+
 			var descriptorRequest:URLRequest = new URLRequest(AppConstants.APP_UPDATE_URL);
 			_updateStep = UpdateStep.DOWNLOAD_DESCRIPTOR;
 			_updateDescriptorLoader.load(descriptorRequest);
@@ -70,16 +91,17 @@ package browser.commands
 			}
 
 			// Check version number
-			_updateDescriptorVersion = descriptor.versionNumber.valueOf();
-			var descriptorVersionIsLess:Boolean = compare(_updateDescriptorVersion, AppConstants.APP_VERSION);
-			if (descriptorVersionIsLess)
+			_updateDescriptorNamespace = descriptor.namespace();
+			_updateDescriptorVersion = descriptor._updateDescriptorNamespace::versionNumber.valueOf();
+			var updateVersionIsLess:Boolean = compare(_updateDescriptorVersion, AppConstants.APP_VERSION) <= 0;
+			if (updateVersionIsLess)
 			{
 				complete(UpdateStatus.UPDATE_DESCRIPTOR_VERSION_IS_LESS_OR_EQUALS);
 				return;
 			}
 
 			// Check version url
-			var descriptorApplicationURL:String = descriptor.applicationURL.valueOf();
+			var descriptorApplicationURL:String = descriptor._updateDescriptorNamespace::url.valueOf();
 			if (descriptorApplicationURL == null)
 			{
 				complete(UpdateStatus.UPDATE_DESCRIPTOR_WRONG_APPLICATION_URL);
@@ -123,12 +145,6 @@ package browser.commands
 
 			_updateApplicationFile = File.createTempFile();
 			writeBytesToFile(_updateApplicationFile, bytes);
-
-			if (Updater.isSupported == false)
-			{
-				complete(UpdateStatus.UPDATER_IS_NOT_SUPPORTED);
-				return;
-			}
 
 			_updater = new Updater();
 			_updater.update(_updateApplicationFile, _updateDescriptorVersion);

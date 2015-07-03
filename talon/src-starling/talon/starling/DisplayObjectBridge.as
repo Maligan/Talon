@@ -9,7 +9,6 @@ package talon.starling
 	import starling.core.RenderSupport;
 	import starling.display.DisplayObject;
 	import starling.events.EnterFrameEvent;
-	import starling.events.Event;
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
@@ -20,7 +19,6 @@ package talon.starling
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.enums.Visibility;
 	import talon.utils.GaugeQuad;
 	import talon.utils.StringUtil;
 
@@ -115,7 +113,7 @@ package talon.starling
 		// Listeners: Common
 		//
 		private function onIDChange():void { _target.name = _node.getAttributeCache(Attribute.ID); }
-		private function onVisibilityChange():void { _target.visible = _node.getAttributeCache(Attribute.VISIBILITY) == Visibility.VISIBLE; }
+		private function onVisibilityChange():void { _target.visible = StringUtil.parseBoolean(_node.getAttributeCache(Attribute.VISIBILITY)); }
 		private function onAlphaChange():void { _target.alpha = parseFloat(_node.getAttributeCache(Attribute.ALPHA)); }
 
 		private function onFilterChange():void

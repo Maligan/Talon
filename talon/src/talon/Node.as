@@ -66,9 +66,10 @@ package talon
 			bindings();
 
 			// TODO: Need initialize all inheritable attributes (for inherit listeners)
-			getOrCreateAttribute(Attribute.FONT_COLOR);
-			getOrCreateAttribute(Attribute.FONT_NAME);
-			getOrCreateAttribute(Attribute.FONT_SIZE);
+
+			var inheritable:Vector.<String> = Attribute.getInheritableAttributeNames();
+			for each (var attributeName:String in inheritable)
+				getOrCreateAttribute(attributeName);
 
 			// Listen attribute change
 			addListener(Event.CHANGE, onSelfAttributeChange);
@@ -130,8 +131,8 @@ package talon
 			var attribute:Attribute = getOrCreateAttribute(name);
 			setter(attribute.value);
 
-			two && attribute.addBinding(attribute.change, attribute.bindGetter, setter);
-			attribute.addBinding(trigger, getter, attribute.bindSetter);
+			two && attribute.addBinding(attribute.change, attribute.valueGetter, setter);
+			attribute.addBinding(trigger, getter, attribute.settedSetter);
 		}
 
 		//

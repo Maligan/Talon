@@ -123,6 +123,7 @@ package browser.dom
 
 		public function removeResource(id:String):void
 		{
+			// TODO: Document change
 			delete _resources[id];
 		}
 

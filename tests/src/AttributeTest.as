@@ -132,8 +132,8 @@ package
 		[Test]
 		public function testBindingToGauge():void
 		{
-			attribute.addBinding(attribute.change, attribute.bindGetter, gauge.parse);
-			attribute.addBinding(gauge.change, gauge.toString, attribute.bindSetter);
+			attribute.addBinding(attribute.change, attribute.valueGetter, gauge.parse);
+			attribute.addBinding(gauge.change, gauge.toString, attribute.settedSetter);
 
 			attribute.setted = "100px";
 			Assert.assertEquals(attribute.value, gauge.toString());

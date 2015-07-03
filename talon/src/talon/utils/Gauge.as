@@ -1,5 +1,7 @@
 package talon.utils
 {
+	import talon.Node;
+
 	/** Measured size. Defined by 'units' and 'amount'. */
 	public final class Gauge
 	{

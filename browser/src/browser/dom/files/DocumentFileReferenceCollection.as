@@ -1,7 +1,7 @@
 package browser.dom.files
 {
 	import browser.dom.Document;
-	import browser.dom.assets.Asset;
+	import browser.dom.files.types.Asset;
 	import flash.utils.Dictionary;
 	import starling.events.Event;
 
@@ -34,43 +34,46 @@ package browser.dom.files
 
 			// Initialize reference
 			reference.addEventListener(Event.CHANGE, onFileChange);
+			_references[reference.url] = reference;
 
 			// Create controller
-			var controllerClass:Class = _mappings[reference.type] || Asset;
-			var controller:DocumentFileController = new controllerClass();
-			controller.initialize(reference);
-
-			// Register
-			_references[reference.url] = reference;
-			_controllers[reference.url] = controller;
+			attachController(reference);
 		}
 
 		public function removeReference(reference:DocumentFileReference):void
 		{
 			if (hasURL(reference.url) == false) return;
 
+			// Detach controller
+			detachController(reference);
+
 			// Dispose reference
 			reference = _references[reference.url];
 			reference.removeEventListener(Event.CHANGE, onFileChange);
-
-			// Dispose controller
-			var controller:DocumentFileController = _controllers[reference.url];
-			controller.dispose();
-
-			// Unregister
 			delete _references[reference.url];
-			delete _controllers[reference.url];
-		}
-
-		public function hasURL(url:String):Boolean
-		{
-			return _references[url] != null;
 		}
 
 		private function onFileChange(e:Event):void
 		{
 			var reference:DocumentFileReference = DocumentFileReference(e.target);
-			if (reference.exists === false) removeReference(reference);
+
+			if (reference.exists === false)
+			{
+				removeReference(reference);
+			}
+			else
+			{
+				detachController(reference);
+				attachController(reference);
+			}
+		}
+
+		//
+		// Misc
+		//
+		public function hasURL(url:String):Boolean
+		{
+			return _references[url] != null;
 		}
 
 		public function toArray():Vector.<DocumentFileReference>
@@ -78,6 +81,33 @@ package browser.dom.files
 			var result:Vector.<DocumentFileReference> = new Vector.<DocumentFileReference>();
 			for each (var reference:DocumentFileReference in _references) result[result.length] = reference;
 			return result;
+		}
+
+		//
+		// Attach/Detach
+		//
+		/** Add controller to reference. */
+		private function attachController(reference:DocumentFileReference):void
+		{
+			var controllerClass:Class = _mappings[reference.type] || Asset;
+
+			var controller:IDocumentFileController = new controllerClass();
+			controller.setReference(reference);
+			controller.attach();
+
+			_controllers[reference.url] = controller;
+		}
+
+		/** Remove controller from reference. */
+		private function detachController(reference:DocumentFileReference):void
+		{
+			reference = _references[reference.url];
+
+			var controller:IDocumentFileController = _controllers[reference.url];
+			controller.detach();
+			controller.setReference(null);
+
+			delete _controllers[reference.url];
 		}
 	}
 }

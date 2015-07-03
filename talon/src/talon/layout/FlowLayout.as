@@ -48,11 +48,6 @@ package talon.layout
 		// XXX: What about pp100p?
 		private function measure(node:Node, availableWidth:Number, availableHeight:Number, arrange:Boolean):Flow
 		{
-			if (node.numChildren > 1)
-			{
-//				trace('Flow::Refresh')
-			}
-
 			var flow:Flow = new Flow();
 			flow.setSpacings(getGap(node), getInterline(node));
 			flow.setWrap(getWrap(node));

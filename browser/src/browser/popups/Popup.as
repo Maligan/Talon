@@ -81,14 +81,9 @@ package browser.popups
 			}
 		}
 
-		public final function get isActive():Boolean
-		{
-			return _active.indexOf(this) != -1;
-		}
+		/** Current popup is opened. */
+		public final function get isActive():Boolean { return _active.indexOf(this) != -1; }
 
-		public final function get factory():TalonFactoryBase
-		{
-			return _ui.factory;
-		}
+		protected final function get factory():TalonFactoryBase { return _ui.factory; }
 	}
 }

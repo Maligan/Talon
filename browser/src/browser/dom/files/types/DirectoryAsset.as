@@ -1,21 +1,19 @@
-package browser.dom.assets
+package browser.dom.files.types
 {
 	import browser.dom.files.DocumentFileReference;
 	import browser.dom.log.DocumentMessage;
+
 	import flash.filesystem.File;
 
 	public class DirectoryAsset extends Asset
 	{
-		protected override function onRefresh():void
+		public override function attach():void
 		{
-			file.reportCleanup();
-
-			document.tasks.begin();
 			var children:Vector.<File> = getListing(file.target);
+
 			for each (var child:File in children)
 				if (document.files.hasURL(child.url) == false)
 					document.files.addReference(new DocumentFileReference(document, child));
-			document.tasks.end();
 		}
 
 		private function getListing(dir:File):Vector.<File>
@@ -30,12 +28,17 @@ package browser.dom.assets
 			}
 			catch (e:Error)
 			{
-				file.report(DocumentMessage.FILE_LISTING_ERROR, dir.url);
+				reportMessage(DocumentMessage.FILE_LISTING_ERROR, dir.url);
 			}
 			finally
 			{
 				return result;
 			}
+		}
+
+		public override function detach():void
+		{
+			reportCleanup();
 		}
 	}
 }

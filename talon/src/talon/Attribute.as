@@ -9,17 +9,17 @@ package talon
 
 	public final class Attribute
 	{
-		public static const TRANSPARENT:String = "transparent";
-		public static const WHITE:String = "white";
-		public static const FALSE:String = "false";
-		public static const TRUE:String = "true";
-		public static const AUTO:String = Gauge.AUTO;
-		public static const NONE:String = Gauge.NONE;
-		public static const ZERO:String = "0px";
-		public static const ONE:String = "1";
-		public static const INHERIT:String = "inherit";
-		public static const LEFT:String = "left";
-		public static const TOP:String = "top";
+		public static const TRANSPARENT:String  = "transparent";
+		public static const WHITE:String        = "white";
+		public static const FALSE:String        = "false";
+		public static const TRUE:String         = "true";
+		public static const AUTO:String         = Gauge.AUTO;
+		public static const NONE:String         = Gauge.NONE;
+		public static const ZERO:String         = "0px";
+		public static const ONE:String          = "1";
+		public static const INHERIT:String      = "inherit";
+		public static const LEFT:String         = "left";
+		public static const TOP:String          = "top";
 
 		//
 		// Standard Attribute list
@@ -72,7 +72,7 @@ package talon
 		public static const Z_INDEX:String              = registerAttributeDefaults("zIndex",              ZERO);
 
 		public static const LAYOUT:String               = registerAttributeDefaults("layout",              Layout.FLOW);
-		public static const VISIBILITY:String           = registerAttributeDefaults("visibility",          Visibility.VISIBLE);
+		public static const VISIBILITY:String           = registerAttributeDefaults("visibility",          TRUE);
 
 		public static const POSITION:String             = registerAttributeDefaults("position",            ZERO);
 		public static const X:String                    = registerAttributeDefaults("x",                   ZERO);
@@ -102,6 +102,7 @@ package talon
 		// Defaults
 		//
 		private static var _defaults:Dictionary;
+		private static var _inheritable:Vector.<String>;
 
 		public static function registerAttributeDefaults(name:String, inited:String = null, isInheritable:Boolean = false, isStyleable:Boolean = true):String
 		{
@@ -111,7 +112,16 @@ package talon
 			_defaults[name].isInheritable = isInheritable;
 			_defaults[name].isStyleable = isStyleable;
 
+			_inheritable ||= new <String>[];
+			if (isInheritable) _inheritable[_inheritable.length] = name;
+
 			return name;
+		}
+
+		/** @private */
+		public static function getInheritableAttributeNames():Vector.<String>
+		{
+			return _inheritable;
 		}
 
 		//
@@ -294,7 +304,7 @@ package talon
 		}
 
 		//
-		// Misc
+		// Bindings
 		//
 		/** @private */
 		public function addBinding(trigger:Trigger, getter:Function, setter:Function):void
@@ -304,17 +314,20 @@ package talon
 		}
 
 		/** @private */
-		public function bindSetter(value:String):void { setted = value; }
+		public function settedSetter(value:String):void { setted = value; }
 
 		/** @private */
-		public function bindGetter():String { return value; }
+		public function valueGetter():String { return value; }
 
+		//
+		// Misc
+		//
 		public function dispose():void
 		{
 			_valueCache = null;
 			_valueCached = false;
 			_change.removeListeners();
-			while (_bindings.length) _bindings.pop().dispose();
+			if (_bindings) while (_bindings.length) _bindings.pop().dispose();
 		}
 
 		/** @private Value change trigger. */

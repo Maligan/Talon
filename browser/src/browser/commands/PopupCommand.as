@@ -5,19 +5,20 @@ package browser.commands
 
 	public class PopupCommand extends Command
 	{
-		private var _popup:Popup;
+		private var _popupClass:Class;
 		private var _modal:Boolean;
 
-		public function PopupCommand(controller:AppController, popup:Popup, modal:Boolean)
+		public function PopupCommand(controller:AppController, modal:Boolean, popupClass:Class)
 		{
 			super(controller);
-			_popup = popup;
+			_popupClass = popupClass;
 			_modal = modal;
 		}
 
 		public override function execute():void
 		{
-			_popup.open(_modal);
+			var popup:Popup = new _popupClass();
+			popup.open(_modal);
 		}
 	}
 }

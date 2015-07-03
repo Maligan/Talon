@@ -13,6 +13,7 @@ package browser.dom.files
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
+	import flash.system.System;
 	import flash.utils.ByteArray;
 
 	import starling.events.EventDispatcher;
@@ -24,7 +25,6 @@ package browser.dom.files
 		private var _target:File;
 		private var _monitor:FileMonitor;
 		private var _type:String;
-		private var _messages:Vector.<DocumentMessage> = new <DocumentMessage>[];
 
 		public function DocumentFileReference(document:Document, target:File)
 		{
@@ -61,7 +61,6 @@ package browser.dom.files
 			catch (e:Error)
 			{
 				result = null;
-				report(DocumentMessage.FILE_READ_ERROR, url);
 			}
 			finally
 			{
@@ -80,10 +79,8 @@ package browser.dom.files
 			}
 			catch (e:Error)
 			{
-				report(DocumentMessage.FILE_CONTAINS_WRONG_XML, url);
+				return null;
 			}
-
-			return null;
 		}
 
 		/** @see browser.dom.files.DocumentFileType */
@@ -101,6 +98,8 @@ package browser.dom.files
 				if (xml != null)
 				{
 					var root:String = xml.name();
+					System.disposeXML(xml);
+
 					if (root == "template") return DocumentFileType.TEMPLATE;
 					if (root == "library") return DocumentFileType.LIBRARY;
 					if (root == "TextureAtlas") return DocumentFileType.ATLAS;
@@ -163,22 +162,6 @@ package browser.dom.files
 			var sourcePath:File = document.project.parent.resolvePath(sourcePathProperty || document.project.parent.nativePath);
 			if (sourcePath.exists == false) sourcePath = document.project.parent;
 			return sourcePath.getRelativePath(target);
-		}
-
-		//
-		// Document report
-		//
-		public function report(message:String, ...params):DocumentMessage
-		{
-			var msg:DocumentMessage = new DocumentMessage(message, params);
-			_messages.push(msg);
-			document.messages.addMessage(msg);
-			return msg;
-		}
-
-		public function reportCleanup():void
-		{
-			while (_messages.length) document.messages.removeMessage(_messages.pop());
 		}
 	}
 }

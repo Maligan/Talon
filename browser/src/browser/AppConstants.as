@@ -1,10 +1,19 @@
 package browser
 {
+	import flash.desktop.NativeApplication;
+
 	public class AppConstants
 	{
 		public static const APP_NAME:String = "Talon Browser";
-		public static const APP_VERSION:String = "0.0.1";
-		public static const APP_UPDATE_URL:String = "https://github.com/Maligan/Talon/tree/master/browser/update-descriptor.xml?raw=true";
+		public static const APP_UPDATE_URL:String = "https://www.dropbox.com/s/bfoptjwib70ndrf/TalonBrowserUpdater.xml?raw=true"; //"https://github.com/Maligan/Talon/tree/master/browser/update-descriptor.xml?raw=true";
+
+		public static function get APP_VERSION():String
+		{
+			var xml:XML = NativeApplication.nativeApplication.applicationDescriptor;
+			var ns:Namespace = xml.namespace();
+			var version:String = xml.ns::versionNumber;
+			return version;
+		}
 
 		public static const DESIGNER_FILE_EXTENSION:String = "talon";
 		public static const DESIGNER_EXPORT_FILE_EXTENSION:String = "zip";

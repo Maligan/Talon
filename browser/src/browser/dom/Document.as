@@ -1,12 +1,12 @@
 package browser.dom
 {
-	import browser.dom.assets.AtlasAsset;
-	import browser.dom.assets.DirectoryAsset;
-	import browser.dom.assets.FontAsset;
-	import browser.dom.assets.LibraryAsset;
-	import browser.dom.assets.StyleSheetAsset;
-	import browser.dom.assets.TemplateAsset;
-	import browser.dom.assets.TextureAsset;
+	import browser.dom.files.types.AtlasAsset;
+	import browser.dom.files.types.DirectoryAsset;
+	import browser.dom.files.types.FontAsset;
+	import browser.dom.files.types.LibraryAsset;
+	import browser.dom.files.types.StyleSheetAsset;
+	import browser.dom.files.types.TemplateAsset;
+	import browser.dom.files.types.TextureAsset;
 	import browser.dom.files.DocumentFileReferenceCollection;
 	import browser.dom.files.DocumentFileType;
 	import browser.dom.log.DocumentMessageCollection;

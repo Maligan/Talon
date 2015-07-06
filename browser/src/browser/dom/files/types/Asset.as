@@ -51,10 +51,10 @@ package browser.dom.files.types
 		public final function readFileXMLOrReport():XML
 		{
 			var xml:XML = file.readXML();
-			if (xml == null);
+			if (xml == null)
 				reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_XML, file.url);
 
-			return null;
+			return xml;
 		}
 
 		//

@@ -10,10 +10,45 @@ package browser.utils
 
 	public class NativeMenuAdapter
 	{
-		private var _nativeMenu:NativeMenu;
+		//
+		// Pooling
+		//
+		private static var POOL_SEPARATOR:Vector.<NativeMenuAdapter> = new <NativeMenuAdapter>[];
+		private static var POOL:Vector.<NativeMenuAdapter> = new <NativeMenuAdapter>[];
+
+		private function produce(name:String, isSeparator:Boolean):NativeMenuAdapter
+		{
+			var list:Vector.<NativeMenuAdapter> = isSeparator ? POOL_SEPARATOR : POOL;
+			var item:NativeMenuAdapter = list.pop() || new NativeMenuAdapter(name, isSeparator);
+
+			item._nativeItem.name = name;
+			item._name = name;
+			item.label = name;
+
+			return item;
+		}
+
+		private function release(item:NativeMenuAdapter):void
+		{
+			item.command = null;
+			item.label = null;
+			item._children.length = 0;
+			item._parent = null;
+
+			var list:Vector.<NativeMenuAdapter> = item.isSeparator ? POOL_SEPARATOR : POOL;
+			list[list.length] = item;
+		}
+
+		//
+		// Instance
+		//
+
 		private var _nativeItem:NativeMenuItem;
+		private var _nativeMenu:NativeMenu;
+
 		private var _parent:NativeMenuAdapter;
 		private var _name:String;
+		private var _isSeparator:Boolean;
 		private var _children:Vector.<NativeMenuAdapter>;
 
 		private var _command:Command;
@@ -22,7 +57,7 @@ package browser.utils
 		public function NativeMenuAdapter(name:String = null, isSeparator:Boolean = false)
 		{
 			_name = name;
-			_nativeMenu = new NativeMenu();
+			_isSeparator = isSeparator;
 			_nativeItem = new NativeMenuItem(name, isSeparator);
 			_nativeItem.data = this;
 			_nativeItem.addEventListener(Event.SELECT, onItemSelect);
@@ -34,10 +69,10 @@ package browser.utils
 		{
 			var isSeparator:Boolean = path.charAt(path.lastIndexOf("/") + 1) == "-";
 			var node:NativeMenuAdapter = addChildByPath(path, isSeparator);
+			if (command) node.command = command;
 			if (label) node.label = label;
-			node.command = command;
-			node.keyEquivalent = keyEquivalent;
-			node.keyEquivalentModifiers = keyEquivalentModifiers || [Keyboard.CONTROL];
+			if (keyEquivalent) node.keyEquivalent = keyEquivalent;
+			if (keyEquivalentModifiers) node.keyEquivalentModifiers = keyEquivalentModifiers || [Keyboard.CONTROL];
 			return node;
 		}
 
@@ -46,21 +81,25 @@ package browser.utils
 		//
 		private function refreshSubmenu():void
 		{
-			if (_children.length > 0 && !isSeparator)
-				_nativeItem.submenu = _nativeMenu;
+			if (_children.length > 0 && !isSeparator && _nativeItem.submenu != nativeMenu)
+				_nativeItem.submenu = nativeMenu;
 
 			// TODO: Cleanup submenu if there is no children
 		}
 
 		private function refreshStatus():void
 		{
-			_nativeItem.enabled = _command ? _command.isExecutable : _isEnabled;
-			_nativeItem.checked = _command && _command.isActive;
+			var isEnabled:Boolean = _command ? _command.isExecutable : _isEnabled;
+			if (isEnabled != _nativeItem.enabled) _nativeItem.enabled = isEnabled;
+
+			var isChecked:Boolean = _command && _command.isActive;
+			if (isChecked != _nativeItem.checked) _nativeItem.checked = isChecked;
 		}
 
 		private function onItemSelect(e:*):void
 		{
-			if (_command) _command.execute();
+			if (_command)
+				_command.execute();
 		}
 
 		//
@@ -102,8 +141,9 @@ package browser.utils
 			if (indexOf != -1)
 			{
 				_children.splice(indexOf, 1);
-				_nativeMenu.removeItem(child._nativeItem);
+				nativeMenu.removeItem(child._nativeItem);
 				refreshSubmenu();
+				release(child);
 			}
 		}
 
@@ -124,7 +164,7 @@ package browser.utils
 				return child.addChildByPath(childPath, isSeparator);
 			}
 
-			return addChild(new NativeMenuAdapter(path, isSeparator))
+			return addChild(produce(path, isSeparator))
 		}
 
 		public function addChild(child:NativeMenuAdapter):NativeMenuAdapter
@@ -134,7 +174,7 @@ package browser.utils
 				if (child.parent) child.parent.removeChild(child);
 				_children[_children.length] = child;
 				child._parent = this;
-				_nativeMenu.addItem(child._nativeItem);
+				nativeMenu.addItem(child._nativeItem);
 				refreshSubmenu();
 			}
 
@@ -146,7 +186,6 @@ package browser.utils
 		//
 		public function get parent():NativeMenuAdapter { return _parent }
 		public function get name():String { return _name }
-		public function get nativeMenu():NativeMenu { return _nativeMenu }
 		public function get isSeparator():Boolean { return _nativeItem.isSeparator }
 
 		public function get keyEquivalent():String { return _nativeItem.keyEquivalent }
@@ -171,6 +210,17 @@ package browser.utils
 		public function set isEnabled(value:Boolean):void { _isEnabled = value; refreshStatus() }
 
 		public function get isMenu():Boolean { return _nativeItem.submenu != null }
-		public function set isMenu(value:Boolean):void { if (value) _nativeItem.submenu = _nativeMenu }
+		public function set isMenu(value:Boolean):void { if (value) _nativeItem.submenu = nativeMenu }
+
+		//
+		// Lazy parts
+		//
+		public function get nativeMenu():NativeMenu
+		{
+			if (_nativeMenu == null)
+				_nativeMenu = new NativeMenu();
+
+			return _nativeMenu;
+		}
 	}
 }

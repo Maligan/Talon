@@ -19,7 +19,7 @@ package browser.dom.files.types
 		override public function attach():void
 		{
 			_xml = readFileXMLOrReport();
-			if (_xml) return;
+			if (_xml == null) return;
 
 			document.addEventListener(DocumentEvent.CHANGING, onDocumentChanging);
 		}

@@ -32,9 +32,6 @@ package browser
 		[Embed(source="/../assets/SourceSansPro.otf", embedAsCFF="false", fontName="Source Sans Pro")]
 		private static const INTERFACE_FONT:Class;
 
-		[Embed(source="/../assets/MyriadPro.otf", embedAsCFF="false", fontName="Myriad Pro")]
-		private static const INTERFACE_FONT_ALTERNATE:Class;
-
 		private var _controller:AppController;
 
 		private var _factory:TalonFactoryBase;

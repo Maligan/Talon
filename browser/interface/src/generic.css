@@ -36,6 +36,11 @@ popup
 	/*background9Scale: 4px 5px 2px 5px;*/
 }
 
+popup #close
+{
+	backgroundImage: res('close');
+	cursor: button;
+}
 
 #tools button
 {

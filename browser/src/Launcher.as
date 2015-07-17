@@ -30,15 +30,18 @@ package
 	import talon.utils.Gauge;
 	import talon.utils.StringSet;
 
-	[SWF(backgroundColor="#C7C7C7", frameRate="60")]
+	[SWF(frameRate="60")]
 	public class Launcher extends MovieClip
 	{
 		private var _overlay:MovieClip;
 		private var _controller:AppController;
 		private var _invoke:String;
+		private var _backgroundColor:SharedString;
 
 		public function Launcher()
 		{
+			_backgroundColor = new SharedString("backgroundColor", AppConstants.SETTING_BACKGROUND_DEFAULT);
+
 			stage ? initialize() : addEventListener(Event.ADDED_TO_STAGE, initialize);
 		}
 
@@ -46,6 +49,7 @@ package
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, initialize);
 
+			stage.color = getColorByBackground(_backgroundColor.value);
 			stage.align = StageAlign.TOP_LEFT;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.quality = StageQuality.BEST;
@@ -60,6 +64,23 @@ package
 			onResize(null);
 
 			_controller = new AppController(this);
+			_controller.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, onBackgroundChanged);
+		}
+
+		private function onBackgroundChanged():void
+		{
+			_backgroundColor.value = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DEFAULT);
+		}
+
+		private function getColorByBackground(key:String):uint
+		{
+			switch (key)
+			{
+				case AppConstants.SETTING_BACKGROUND_CHESS: return 0xB6B6B6;
+				case AppConstants.SETTING_BACKGROUND_DARK:  return 0x4A4D4E;
+				case AppConstants.SETTING_BACKGROUND_LIGHT: return 0xFFFFFF;
+				default: throw new ArgumentError("Unknown background key " + key);
+			}
 		}
 
 		private function onResize(e:*):void
@@ -77,6 +98,35 @@ package
 				_invoke = e.arguments[0];
 				_controller && _controller.invoke(_invoke);
 			}
+		}
+	}
+}
+
+import flash.net.SharedObject;
+
+class SharedString
+{
+	private var _sharedObject:SharedObject;
+
+	public function SharedString(key:String, initial:String)
+	{
+		_sharedObject = SharedObject.getLocal(key);
+
+		if (_sharedObject.data["value"] == undefined)
+			_sharedObject.data["value"] = initial;
+	}
+
+	public function get value():String { return _sharedObject.data["value"]; }
+	public function set value(string:String):void
+	{
+		try
+		{
+			_sharedObject.data["value"] = string;
+			_sharedObject.flush();
+		}
+		catch (e:Error)
+		{
+			// NOPE
 		}
 	}
 }

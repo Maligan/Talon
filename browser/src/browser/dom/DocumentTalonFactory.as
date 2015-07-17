@@ -1,35 +1,47 @@
 package browser.dom
 {
 	import browser.AppConstants;
-
-	import starling.display.DisplayObject;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
 	import starling.events.Event;
-
 	import talon.Node;
 
 	import talon.starling.TalonFactoryStarling;
-	import talon.utils.ITalonElement;
 
 	/** Extended version of TalonFactory for browser purpose. */
 	public final class DocumentTalonFactory extends TalonFactoryStarling
 	{
 		private var _document:Document;
 		private var _styles:StyleSheetCollection;
+		private var _timer:Timer;
 
 		public function DocumentTalonFactory(document:Document):void
 		{
 			_resources = new ObjectWithAccessLogger();
 			_document = document;
 			_styles = new StyleSheetCollection();
+			_timer = new Timer(1);
+			_timer.addEventListener(TimerEvent.TIMER, onTimer);
 
 			document.properties.addPropertyListener(AppConstants.HIDDEN_PROPERTY_CSF, onCSFChange);
 		}
 
-		private function onCSFChange(e:Event):void
+		private function dispatchChange():void
 		{
-			// For redraw...
+			_timer.reset();
+			_timer.start();
+		}
+
+		private function onTimer(e:TimerEvent):void
+		{
 			_document.tasks.begin();
 			_document.tasks.end();
+			_timer.reset();
+		}
+
+		private function onCSFChange(e:Event):void
+		{
+			dispatchChange();
 		}
 
 		public override function produce(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
@@ -43,9 +55,7 @@ package browser.dom
 		{
 			var node:Node = super.getElementNode(element);
 			if (node)
-			{
 				node.ppdp = csf;
-			}
 
 			return node;
 		}
@@ -63,9 +73,16 @@ package browser.dom
 			return _parser.templates[id] != null;
 		}
 
+		public override function addTemplate(xml:XML):void
+		{
+			super.addTemplate(xml);
+			dispatchChange();
+		}
+
 		public function removeTemplate(id:String):void
 		{
 			delete _parser.templates[id];
+			dispatchChange();
 		}
 
 		public function get templateIds():Vector.<String>
@@ -123,8 +140,14 @@ package browser.dom
 
 		public function removeResource(id:String):void
 		{
-			// TODO: Document change
 			delete _resources[id];
+			dispatchChange();
+		}
+
+		public override function addResource(id:String, resource:*):void
+		{
+			super.addResource(id, resource);
+			dispatchChange();
 		}
 
 		private function get resources():ObjectWithAccessLogger
@@ -135,8 +158,8 @@ package browser.dom
 		//
 		// Styles
 		//
-		public function addStyleSheetWithId(key:String, css:String):void { styles.insert(key, css); }
-		public function removeStyleSheetWithId(key:String):void { styles.remove(key); }
+		public function addStyleSheetWithId(key:String, css:String):void { styles.insert(key, css); dispatchChange(); }
+		public function removeStyleSheetWithId(key:String):void { styles.remove(key); dispatchChange(); }
 
 		public override function addStyleSheet(css:String):void
 		{

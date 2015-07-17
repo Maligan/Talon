@@ -21,8 +21,8 @@ package browser
 		private var _controller:AppController;
 		private var _menu:NativeMenuAdapter;
 
-		private var _prevTemplates:Vector.<String> = new <String>[];
-		private var _prevDocuments:Array = new Array();
+		private var _prevTemplates:Vector.<String>;
+		private var _prevDocuments:Array;
 
 		public function AppUINativeMenu(controller:AppController)
 		{
@@ -129,6 +129,8 @@ package browser
 
 		private static function isEqual(list1:*, list2:*):Boolean
 		{
+			if (list1 == null || list2 == null) return false;
+
 			var length1:int = list1.length;
 			var length2:int = list2.length;
 			if (length1 != length2) return false;

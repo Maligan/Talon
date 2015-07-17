@@ -23,8 +23,9 @@
 	</template>
 
 	<template id="popup">
-		<node position="50%" pivot="50%" width="256px" height="200px" layout="abs" padding="10px">
-			<label text="Talon Browser v0.0.1" width="100%" halign="left" />
+		<node position="50%" pivot="50%" width="256px" height="200px" layout="abs" padding="4px">
+			<!--<label text="Talon Browser v0.0.1" width="100%" halign="left" />-->
+			<node width="15px" height="15px" anchor="0% 100% none none" margin="4px" id="close"/>
 		</node>
 	</template>
 

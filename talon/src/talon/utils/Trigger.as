@@ -11,7 +11,7 @@ package talon.utils
 	 * - Function (as simple callback) - Lack of functional
 	 *
 	 * I stash this class via [ExcludeClass] specially.
-	 * Please, do not use this class - except if you understand what and why you do.
+	 * Please, do not use this class - except if you understand what and why you do it.
 	 */
 	[ExcludeClass]
 	public class Trigger

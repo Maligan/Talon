@@ -72,16 +72,7 @@ package talon.starling
 		//
 		// Listeners: Background
 		//
-		private function onBackgroundImageChange():void
-		{
-			if (_node.getAttributeCache("type") == "topcoat")
-			{
-				trace("Change to", _node.getOrCreateAttribute(Attribute.BACKGROUND_IMAGE).value);
-			}
-
-			_filler.texture = _node.getAttributeCache(Attribute.BACKGROUND_IMAGE) as Texture;
-		}
-
+		private function onBackgroundImageChange():void { _filler.texture = _node.getAttributeCache(Attribute.BACKGROUND_IMAGE) as Texture; }
 		private function onBackgroundTintChange():void { _filler.tint = StringUtil.parseColor(_node.getAttributeCache(Attribute.BACKGROUND_COLOR), Color.WHITE); }
 		private function onBackgroundFillModeChange():void { _filler.fillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE); }
 

@@ -73,6 +73,7 @@ package browser.dom
 
 				// For same assets
 				dispatchEventWith(DocumentEvent.CHANGING);
+
 				// After CHANGING, some file controllers may start new tasks
 				if (!tasks.isBusy) dispatchEventWith(DocumentEvent.CHANGED);
 

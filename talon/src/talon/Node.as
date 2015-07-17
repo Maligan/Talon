@@ -5,6 +5,8 @@ package talon
 	import flash.utils.Dictionary;
 	import flash.events.Event;
 
+	import talon.Attribute;
+
 	import talon.layout.Layout;
 	import talon.utils.Gauge;
 	import talon.utils.GaugePair;
@@ -49,9 +51,9 @@ package talon
 		private var _children:Vector.<Node> = new Vector.<Node>();
 		private var _bounds:Rectangle = new Rectangle();
 		private var _triggers:Dictionary = new Dictionary();
-		private var _invalidated:Boolean;
 		private var _ppdp:Number;
 		private var _ppmm:Number;
+		private var _invalidated:Boolean;
 
 		/** @private */
 		public function Node():void
@@ -65,8 +67,7 @@ package talon
 
 			bindings();
 
-			// TODO: Need initialize all inheritable attributes (for inherit listeners)
-
+			// Initialize all inheritable attributes (for inherit listeners)
 			var inheritable:Vector.<String> = Attribute.getInheritableAttributeNames();
 			for each (var attributeName:String in inheritable)
 				getOrCreateAttribute(attributeName);
@@ -74,9 +75,9 @@ package talon
 			// Listen attribute change
 			addListener(Event.CHANGE, onSelfAttributeChange);
 
-			_invalidated = true;
 			_ppdp = 1;
 			_ppmm = Capabilities.screenDPI / 25.4; // 25.4mm in 1 inch
+			_invalidated = true;
 		}
 
 		//
@@ -155,6 +156,18 @@ package talon
 			}
 
 			return result;
+		}
+
+		/** @private Experimental feature. */
+		public function injectAttribute(attribute:Attribute):void
+		{
+			if (attribute == null) throw new ArgumentError("Parameter attribute must be non-null");
+
+			var prev:Attribute = _attributes[attribute.name];
+			if (prev) prev.dispose();
+
+			_attributes[attribute.name] = attribute;
+			attribute.change.addListener(onAttributeChange);
 		}
 
 		private function onAttributeChange(attribute:Attribute):void

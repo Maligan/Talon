@@ -15,6 +15,9 @@ package talon.layout
 			var paddingBottom:Number = toPixelsSugar(node.padding.bottom, node, height);
 			var paddingLeft:Number = toPixelsSugar(node.padding.left, node, width);
 
+			width -= paddingLeft + paddingRight;
+			height -= paddingTop + paddingBottom;
+
 			// Node origin
 			var originX:Number = toPixelsSugar(node.origin.x, node, width);
 			var originY:Number = toPixelsSugar(node.origin.x, node, height);

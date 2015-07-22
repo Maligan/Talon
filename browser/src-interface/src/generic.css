@@ -68,14 +68,8 @@ popup #close
 	height: 100%;
 }
 
-#container.dark { backgroundColor: #4A4D4E; }
-#container.light { backgroundColor: #FFFFFF; }
-#container.transparent
-{
-	backgroundFillMode: repeat;
-	backgroundImage: res('transparent')
-}
-
+#container.dark { backgroundImage: res('bg_dark'); backgroundFillMode: repeat; }
+#container.light { backgroundImage: res('bg_light'); backgroundFillMode: repeat; }
 
 preview:hover { backgroundColor: #4F4F4F; }
 preview

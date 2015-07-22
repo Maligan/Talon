@@ -19,7 +19,7 @@ package browser.popups
 
 		public static function initialize(ui:AppUI, layer:DisplayObjectContainer):void
 		{
-			if (_layer != null) throw new ArgumentError("Already initialized");
+			if (_layer != null) return; //throw new ArgumentError("Already initialized");
 
 			_ui = ui;
 			_layer = layer;

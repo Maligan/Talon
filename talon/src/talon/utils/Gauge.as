@@ -25,7 +25,7 @@ package talon.utils
 		private static const PATTERN:RegExp = /^(-?\d*\.?\d+)(px|dp|mm|em|%|\*|)$/;
 		private static const HELPER:Gauge = new Gauge();
 
-		/** @private */
+ 		/** @private */
 		public static function toPixels(string:String, ppmm:Number, ppem:Number, ppdt:Number, pp100p:Number, aw:Number, ah:Number, ppts:Number, ts:int):Number
 		{
 			HELPER.parse(string);

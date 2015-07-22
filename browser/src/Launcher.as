@@ -41,7 +41,6 @@ package
 		public function Launcher()
 		{
 			_backgroundColor = new SharedString("backgroundColor", AppConstants.SETTING_BACKGROUND_DEFAULT);
-
 			stage ? initialize() : addEventListener(Event.ADDED_TO_STAGE, initialize);
 		}
 
@@ -76,7 +75,6 @@ package
 		{
 			switch (key)
 			{
-				case AppConstants.SETTING_BACKGROUND_CHESS: return 0xB6B6B6;
 				case AppConstants.SETTING_BACKGROUND_DARK:  return 0x4A4D4E;
 				case AppConstants.SETTING_BACKGROUND_LIGHT: return 0xFFFFFF;
 				default: throw new ArgumentError("Unknown background key " + key);

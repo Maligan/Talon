@@ -32,6 +32,9 @@ package browser
 		[Embed(source="/../assets/SourceSansPro.otf", embedAsCFF="false", fontName="Source Sans Pro")]
 		private static const INTERFACE_FONT:Class;
 
+		[Embed(source="/../assets/LG.ttf", embedAsCFF="false", fontName="Lucida Grande")] private static const INTERFACE_FONT_1:Class;
+		[Embed(source="/../assets/LGB.ttf", embedAsCFF="false", fontName="Lucida Grande Bold")] private static const INTERFACE_FONT_2:Class;
+
 		private var _controller:AppController;
 
 		private var _factory:TalonFactoryBase;
@@ -59,6 +62,7 @@ package browser
 		public function initialize():void
 		{
 			_factory = new TalonFactoryStarling();
+			_factory.setLinkage("interface", TalonSpriteWithDrawCountReset);
 			_factory.addArchiveContentAsync(new INTERFACE() as ByteArray, onFactoryComplete);
 		}
 
@@ -232,5 +236,18 @@ package browser
 				resizeTo(_controller.root.stage.stageWidth, _controller.root.stage.stageHeight);
 			}
 		}
+	}
+}
+
+import starling.core.RenderSupport;
+
+import talon.starling.TalonSprite;
+
+class TalonSpriteWithDrawCountReset extends TalonSprite
+{
+	public override function render(support:RenderSupport, parentAlpha:Number):void
+	{
+		super.render(support, parentAlpha);
+		support.raiseDrawCount(-1);
 	}
 }

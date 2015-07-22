@@ -38,6 +38,7 @@ package browser
 			_menu.push("file/-");
 			_menu.push("file/closeDocument",                    AppConstants.T_MENU_FILE_CLOSE_DOCUMENT,                new CloseDocumentCommand(_controller),  "w");
 			_menu.push("file/closeBrowser",                     AppConstants.T_MENU_FILE_CLOSE_BROWSER,                 new CloseBrowserCommand(_controller),   "w", [Keyboard.CONTROL, Keyboard.SHIFT]);
+//			_menu.push("file/instantiateBrowser",               "Instantiate",                                          new InstantiateBrowserCommand());
 			_menu.push("file/-");
 			_menu.push("file/publish",                          AppConstants.T_MENU_FILE_PUBLISH_AS,                    new PublishCommand(_controller),        "s", [Keyboard.CONTROL, Keyboard.SHIFT]);
 
@@ -45,7 +46,6 @@ package browser
 			_menu.push("view",                                  AppConstants.T_MENU_VIEW);
 			_menu.push("view/preference",                       AppConstants.T_MENU_VIEW_PREFERENCES);
 			_menu.push("view/preference/theme",                 AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND);
-			_menu.push("view/preference/theme/transparent",     AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND_CHESS,  new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_CHESS));
 			_menu.push("view/preference/theme/dark",            AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND_DARK,   new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
 			_menu.push("view/preference/theme/light",           AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND_LIGHT,  new SettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
 			_menu.push("view/preference/stats",                 AppConstants.T_MENU_VIEW_PREFERENCES_STATS,             new SettingCommand(_controller, AppConstants.SETTING_STATS, true, false));

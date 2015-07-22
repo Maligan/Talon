@@ -136,12 +136,39 @@ package talon.starling
 
 			_node.states.lock();
 
-			var isHover:Boolean = touch && touch.phase == TouchPhase.HOVER;
-			isHover ? _node.states.add("hover") : _node.states.remove("hover");
+			if (touch == null)
+			{
+				_node.states.remove("hover");
+				_node.states.remove("active");
+			}
+			else if (touch.phase == TouchPhase.HOVER)
+			{
+				_node.states.add("hover");
+			}
+			else if (touch.phase == TouchPhase.BEGAN && !_node.states.contains("active"))
+			{
+				_node.states.add("active");
+			}
+			else if (touch.phase == TouchPhase.MOVED)
+			{
+				var isWithinBounds:Boolean = _target.bounds.contains(touch.globalX, touch.globalY);
 
-			var isActive:Boolean = touch && touch.phase == TouchPhase.BEGAN;
-			isActive ? _node.states.add("active") : _node.states.remove("active");
-
+				if (_node.states.contains("active") && !isWithinBounds)
+				{
+					_node.states.remove("hover");
+					_node.states.remove("active");
+				}
+				else if (!_node.states.contains("active") && isWithinBounds)
+				{
+					_node.states.add("hover");
+					_node.states.add("active");
+				}
+			}
+			else if (touch.phase == TouchPhase.ENDED)
+			{
+				_node.states.remove("hover");
+				_node.states.remove("active");
+			}
 
 			_node.states.unlock();
 		}

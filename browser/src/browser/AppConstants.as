@@ -5,7 +5,7 @@ package browser
 	public class AppConstants
 	{
 		public static const APP_NAME:String = "Talon Browser";
-		public static const APP_UPDATE_URL:String = "https://www.dropbox.com/s/bfoptjwib70ndrf/TalonBrowserUpdater.xml?raw=true"; //"https://github.com/Maligan/Talon/tree/master/browser/update-descriptor.xml?raw=true";
+		public static const APP_UPDATE_URL:String = "https://github.com/Maligan/Talon/tree/master/browser/bin/update.xml?raw=true"; //"https://github.com/Maligan/Talon/tree/master/browser/update-descriptor.xml?raw=true";
 
 		public static function get APP_VERSION():String
 		{
@@ -25,7 +25,6 @@ package browser
 		public static const HIDDEN_PROPERTY_CSF:String      = "hidden.csf";
 
 		public static const SETTING_BACKGROUND:String = "background";
-		public static const SETTING_BACKGROUND_CHESS:String = "transparent";
 		public static const SETTING_BACKGROUND_DARK:String = "dark";
 		public static const SETTING_BACKGROUND_LIGHT:String = "light";
 		public static const SETTING_BACKGROUND_DEFAULT:String = SETTING_BACKGROUND_DARK;

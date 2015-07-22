@@ -2,6 +2,10 @@ package talon.starling
 {
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.text.AntiAliasType;
+	import flash.text.GridFitType;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
 
 	import starling.core.RenderSupport;
 	import starling.display.DisplayObject;
@@ -15,7 +19,7 @@ package talon.starling
 	import talon.utils.ITalonElement;
 	import talon.utils.StringUtil;
 
-	public class TalonTextField extends TextField implements ITalonElement
+	public class TalonTextField extends starling.text.TextField implements ITalonElement
 	{
 		private var _node:Node;
 		private var _bridge:DisplayObjectBridge;
@@ -31,6 +35,7 @@ package talon.starling
 			_node.width.auto = _node.minWidth.auto = _node.maxWidth.auto = measureWidth;
 			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = measureHeight;
 			autoSize = TextFieldAutoSize.NONE;
+			batchable = true;
 
 			// Bridge
 			_bridge = new DisplayObjectBridge(this, node);
@@ -40,6 +45,21 @@ package talon.starling
 			_bridge.addAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
+			_bridge.addAttributeChangeListener("sharpness", onSharpnessChange);
+		}
+
+		private function onSharpnessChange():void
+		{
+			var oldText:String = text;
+			text = "0";
+			text = oldText;
+		}
+
+		protected override function formatText(textField:flash.text.TextField, textFormat:TextFormat):void
+		{
+			super.formatText(textField, textFormat);
+			textField.sharpness = parseInt(_node.getAttributeCache("sharpness")) || 0;
+			textField.gridFitType = GridFitType.NONE;
 		}
 
 		//

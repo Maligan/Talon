@@ -96,7 +96,7 @@ package talon
 		public static const GAP:String                  = registerAttributeDefaults("gap",                 ZERO);
 		public static const INTERLINE:String            = registerAttributeDefaults("interline",           ZERO);
 		public static const WRAP:String                 = registerAttributeDefaults("wrap",                FALSE);
-		public static const BREAK:String                = registerAttributeDefaults("break",               Break.AUTO);
+		public static const BREAK:String                = registerAttributeDefaults("break",               BreakMode.AUTO);
 
 		public static const TEXT:String                 = registerAttributeDefaults("text");
 
@@ -163,7 +163,6 @@ package talon
 		private var _node:Node;
 		private var _name:String;
 		private var _change:Trigger;
-		private var _bindings:Vector.<TriggerBinding>;
 
 		private var _inited:SimpleValue;
 		private var _styled:SimpleValue;
@@ -306,22 +305,6 @@ package talon
 		}
 
 		//
-		// Bindings
-		//
-//		/** @private */
-//		public function addBinding(trigger:Trigger, getter:Function, setter:Function):void
-//		{
-//			_bindings ||= new <Binding>[];
-//			_bindings[_bindings.length] = new Binding(trigger, getter, null, setter, null);
-//		}
-//
-//		/** @private */
-//		public function addBinding_setter(value:String):void { setted = value; }
-//
-//		/** @private */
-//		public function addBinding_getter():String { return value; }
-
-		//
 		// Misc
 		//
 		public function dispose():void
@@ -329,7 +312,6 @@ package talon
 			_valueCache = null;
 			_valueCached = false;
 			_change.removeListeners();
-			if (_bindings) while (_bindings.length) _bindings.pop().dispose();
 		}
 
 		/** @private Value change trigger. */

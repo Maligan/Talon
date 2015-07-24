@@ -1,6 +1,6 @@
 package talon.enums
 {
-	public final class Break
+	public final class BreakMode
 	{
 		public static const AUTO:String = "auto";
 		public static const BEFORE:String = "before";
@@ -14,6 +14,18 @@ package talon.enums
 				|| mode == AFTER
 				|| mode == BOTH
 				|| mode == AUTO
+		}
+
+		public static function isBreakBefore(mode:String):Boolean
+		{
+			return mode == BEFORE
+				|| mode == BOTH;
+		}
+
+		public static function isBreakAfter(mode:String):Boolean
+		{
+			return mode == AFTER
+				|| mode == BOTH;
 		}
 	}
 }

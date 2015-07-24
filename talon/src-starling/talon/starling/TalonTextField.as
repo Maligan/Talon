@@ -111,7 +111,7 @@ package talon.starling
 		public override function render(support:RenderSupport, parentAlpha:Number):void
 		{
 			// Render background
-			_bridge.renderBackground(support, parentAlpha);
+			_bridge.renderBackground(support, parentAlpha * this.alpha);
 
 			// Render glyphs
 			super.render(support, parentAlpha);

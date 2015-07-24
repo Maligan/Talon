@@ -102,7 +102,7 @@ package talon.starling
 		public override function render(support:RenderSupport, parentAlpha:Number):void
 		{
 			// Background render
-			_bridge.renderBackground(support, parentAlpha);
+			_bridge.renderBackground(support, parentAlpha * this.alpha);
 
 			// Children render
 			super.render(support, parentAlpha);

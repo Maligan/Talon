@@ -8,10 +8,13 @@ package browser
 	import flash.display.Stage;
 
 	import flash.utils.ByteArray;
+	import flash.utils.setTimeout;
 
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
+	import starling.display.DisplayObjectContainer;
 	import starling.display.Sprite;
+	import starling.display.Sprite3D;
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 	import starling.filters.BlurFilter;
@@ -41,7 +44,7 @@ package browser
 		private var _interface:TalonSprite;
 		private var _errorPage:TalonSprite;
 		private var _isolatorContainer:TalonSprite;
-		private var _isolator:Sprite;
+		private var _isolator:DisplayObjectContainer;
 		private var _container:TalonSprite;
 
 		private var _template:DisplayObject;
@@ -77,12 +80,13 @@ package browser
 			Popup.initialize(this, _interface.getChildByName("popups") as TalonSprite);
 
 			_container = new TalonSprite();
-			_container.node.setAttribute(Attribute.LAYOUT, Layout.ABSOLUTE);
+			_container.node.setAttribute(Attribute.LAYOUT, Layout.FLOW);
 			_container.node.setAttribute(Attribute.VALIGN, VAlign.CENTER);
 			_container.node.setAttribute(Attribute.HALIGN, HAlign.CENTER);
 			_container.node.setAttribute(Attribute.ID, "IsolatedContainer");
 
 			_isolator = new Sprite();
+			_isolator.alignPivot();
 			_isolator.name = "Isolator";
 			_isolator.addChild(_container);
 

@@ -12,7 +12,7 @@ package talon.layout
 	{
 		public override function measureAutoWidth(node:Node, availableWidth:Number, availableHeight:Number):Number
 		{
-			var flow:Flow = measure(node, availableWidth, availableHeight, false);
+			var flow:Flow = calculateFlow(node, availableWidth, availableHeight);
 			var flowWidth:Number = node.getAttributeCache(Attribute.ORIENTATION) == Orientation.HORIZONTAL ? flow.getLength() : flow.getThickness();
 			flow.dispose();
 			return flowWidth;
@@ -20,7 +20,7 @@ package talon.layout
 
 		public override function measureAutoHeight(node:Node, availableWidth:Number, availableHeight:Number):Number
 		{
-			var flow:Flow = measure(node, availableWidth, availableHeight, false);
+			var flow:Flow = calculateFlow(node, availableWidth, availableHeight);
 			var flowHeight:Number = node.getAttributeCache(Attribute.ORIENTATION) == Orientation.VERTICAL ? flow.getLength() : flow.getThickness();
 			flow.dispose();
 			return flowHeight;
@@ -29,7 +29,8 @@ package talon.layout
 		public override function arrange(node:Node, width:Number, height:Number):void
 		{
 			var orientation:String = node.getAttributeCache(Attribute.ORIENTATION);
-			var flow:Flow = measure(node, width, height, true);
+			var flow:Flow = calculateFlow(node, width, height);
+			flow.arrange();
 
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
@@ -45,8 +46,8 @@ package talon.layout
 		//
 		// Implementation
 		//
-		// XXX: What about pp100p?
-		private function measure(node:Node, availableWidth:Number, availableHeight:Number, arrange:Boolean):Flow
+		// XXX: What about pp100p? (Nope: where is no % within auto layout) but this method use not always for measurement
+		private function calculateFlow(node:Node, availableWidth:Number, availableHeight:Number):Flow
 		{
 			var flow:Flow = new Flow();
 			flow.setSpacings(getGap(node), getInterline(node));
@@ -63,12 +64,13 @@ package talon.layout
 					var child:Node = node.getChildAt(i);
 
 					flow.beginChild();
-					// XXX: Auto
-					var amount:Number = child.width.toPixels(child.ppmm, child.ppem, child.ppdp, availableWidth);
+					// XXX: Auto limit|Min|Max
+					var childLength:Number = child.width.toPixels(child.ppmm, child.ppem, child.ppdp, availableWidth);
+					var childThickness:Number = child.height.toPixels(child.ppmm, child.ppem, child.ppdp, availableHeight);
 					//
-					flow.setChildLength(amount, child.width.unit == Gauge.STAR);
+					flow.setChildLength(childLength, child.width.unit == Gauge.STAR);
 					flow.setChildLengthMargin(child.margin.left.amount, child.margin.right.amount);
-					flow.setChildThickness(child.height.amount, child.height.unit == Gauge.STAR);
+					flow.setChildThickness(childThickness, child.height.unit == Gauge.STAR);
 					flow.setChildThicknessMargin(child.margin.top.amount, child.margin.top.amount);
 					flow.setChildInlineAlign(getAlign(child, Attribute.IVALIGN));
 					flow.setChildBreakMode(child.getAttributeCache(Attribute.BREAK));
@@ -77,10 +79,30 @@ package talon.layout
 			}
 			else
 			{
-				// NOP
+				// ---------------------------------------------------
+				flow.setMaxSize(availableHeight, availableWidth);
+				flow.setAlign(getAlign(node, Attribute.VALIGN), getAlign(node, Attribute.HALIGN));
+
+				for (var i:int = 0; i < node.numChildren; i++)
+				{
+					var child:Node = node.getChildAt(i);
+
+					flow.beginChild();
+					// XXX: Auto limit|Min|Max
+					var childLength:Number = child.height.toPixels(child.ppmm, child.ppem, child.ppdp, availableHeight);
+					var childThickness:Number = child.width.toPixels(child.ppmm, child.ppem, child.ppdp, availableWidth);
+					//
+					flow.setChildLength(childLength, child.height.unit == Gauge.STAR);
+					flow.setChildLengthMargin(child.margin.top.amount, child.margin.bottom.amount);
+					flow.setChildThickness(childThickness, child.width.unit == Gauge.STAR);
+					flow.setChildThicknessMargin(child.margin.left.amount, child.margin.right.amount);
+					flow.setChildInlineAlign(getAlign(child, Attribute.IHALIGN));
+					flow.setChildBreakMode(child.getAttributeCache(Attribute.BREAK));
+					flow.endChild();
+				}
+				// ---------------------------------------------------
 			}
 
-			if (arrange) flow.arrange();
 			return flow;
 		}
 
@@ -94,7 +116,7 @@ package talon.layout
 import flash.geom.Rectangle;
 import flash.utils.Dictionary;
 
-import talon.enums.Break;
+import talon.enums.BreakMode;
 import talon.enums.Orientation;
 
 class Flow
@@ -172,7 +194,6 @@ class Flow
 		_child = new FlowElement();
 		_child.lengthBefore = _child.lengthAfter = 0;
 
-		// New Line
 		if (_breakOnNextChild)
 		{
 			_breakOnNextChild = false;
@@ -193,14 +214,9 @@ class Flow
 
 		if (_wrap)
 		{
-			_breakOnNextChild = _childBreakMode == Break.AFTER || _childBreakMode == Break.BOTH;
+			_breakOnNextChild = BreakMode.isBreakAfter(_childBreakMode);
 
-			var hasBreakBefore:Boolean = _childBreakMode == Break.BEFORE || _childBreakMode == Break.BOTH;
-			if (hasBreakBefore && line.numChildren != 0)
-			{
-				line = getNewLine();
-			}
-			else if (!line.canAddChildWithoutOverflow(_child))
+			if (BreakMode.isBreakBefore(_childBreakMode) && line.numChildren != 0 || !line.canAddChildWithoutOverflow(_child))
 			{
 				line = getNewLine();
 			}
@@ -306,7 +322,7 @@ class FlowLine
 			element.tSize = element.thicknessIsStar ? _thickness : element.thickness;
 
 			if (!element.lengthIsStar) element.lSize = element.length;
-			else if (_maxLength!=Infinity && _maxLength>_length) element.lSize = (_maxLength-_length)*(element.length/_lengthStar);
+			else if (_maxLength!=Infinity && _length<_maxLength) element.lSize = (_maxLength-_length)*(element.length/_lengthStar);
 			else element.lSize = 0;
 
 			lOffset += element.lengthBefore + element.lSize + element.lengthAfter  + _gap;

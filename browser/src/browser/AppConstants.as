@@ -5,7 +5,7 @@ package browser
 	public class AppConstants
 	{
 		public static const APP_NAME:String = "Talon Browser";
-		public static const APP_UPDATE_URL:String = "https://github.com/Maligan/Talon/tree/master/browser/bin/update.xml?raw=true"; //"https://github.com/Maligan/Talon/tree/master/browser/update-descriptor.xml?raw=true";
+		public static const APP_UPDATE_URL:String = "https://github.com/Maligan/Talon/tree/master/browser/bin/update.xml?raw=true";
 
 		public static function get APP_VERSION():String
 		{

@@ -14,13 +14,10 @@ package
 		private var attribute:Attribute;
 		private var changes:int;
 
-		private var gauge:Gauge;
-
 		[Before]
 		public function reset():void
 		{
 			changes = 0;
-			gauge = new Gauge();
 
 			var node:Node = new Node();
 			attribute = node.getOrCreateAttribute("attribute");
@@ -132,15 +129,18 @@ package
 		[Test]
 		public function testBindingToGauge():void
 		{
-			attribute.addBinding(attribute.change, attribute.valueGetter, gauge.parse);
-			attribute.addBinding(gauge.change, gauge.toString, attribute.settedSetter);
+			var node:Node = attribute.node;
 
-			attribute.setted = "100px";
-			Assert.assertEquals(attribute.value, gauge.toString());
+			var widthGauge:Gauge = node.width;
+			var widthAttribute:Attribute = node.getOrCreateAttribute(Attribute.WIDTH);
 
-			gauge.amount = 30;
-			gauge.unit = Gauge.DP;
-			Assert.assertEquals(attribute.value, gauge.toString());
+			Assert.assertEquals(widthAttribute.value, widthGauge.toString());
+
+			widthGauge.parse("99px");
+			Assert.assertEquals(widthAttribute.value, widthGauge.toString());
+
+			widthAttribute.setted = "10%";
+			Assert.assertEquals(widthAttribute.value, widthGauge.toString());
 		}
 	}
 }

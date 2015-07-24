@@ -83,6 +83,14 @@ package browser.dom.files
 			return result;
 		}
 
+		public function dispose():void
+		{
+			var references:Vector.<DocumentFileReference> = toArray();
+
+			while (references.length)
+				removeReference(references.pop());
+		}
+
 		//
 		// Attach/Detach
 		//

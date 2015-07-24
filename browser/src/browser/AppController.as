@@ -146,6 +146,7 @@ package browser
 		{
 			if (_document != value)
 			{
+				_document && _document.dispose();
 				_document = value;
 				_documentDispatcher.target = _document;
 				_document && _document.properties.setValue(AppConstants.HIDDEN_PROPERTY_CSF, profile.csf);

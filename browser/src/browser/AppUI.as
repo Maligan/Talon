@@ -32,8 +32,8 @@ package browser
 		[Embed(source="/../assets/SourceSansPro.otf", embedAsCFF="false", fontName="Source Sans Pro")]
 		private static const INTERFACE_FONT:Class;
 
-		[Embed(source="/../assets/LG.ttf", embedAsCFF="false", fontName="Lucida Grande")] private static const INTERFACE_FONT_1:Class;
-		[Embed(source="/../assets/LGB.ttf", embedAsCFF="false", fontName="Lucida Grande Bold")] private static const INTERFACE_FONT_2:Class;
+//		[Embed(source="/../assets/LG.ttf", embedAsCFF="false", fontName="Lucida Grande")] private static const INTERFACE_FONT_1:Class;
+//		[Embed(source="/../assets/LGB.ttf", embedAsCFF="false", fontName="Lucida Grande Bold")] private static const INTERFACE_FONT_2:Class;
 
 		private var _controller:AppController;
 
@@ -179,6 +179,7 @@ package browser
 			_controller.document && _controller.document.messages.removeMessage(_templateProduceMessage);
 			_templateProduceMessage = null;
 
+			_template && _template.removeFromParent(true);
 			_template = canShow ? produce(_controller.templateId) : null;
 
 			// Show state

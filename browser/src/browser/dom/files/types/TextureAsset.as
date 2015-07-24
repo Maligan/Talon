@@ -36,10 +36,11 @@ package browser.dom.files.types
 
 				function onComplete(result:*):void
 				{
-					if (result)
-						addTexture(result);
-					else
-						reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_IMAGE_FORMAT, file.url);
+					if (document)
+					{
+						if (result) addTexture(result);
+						else reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_IMAGE_FORMAT, file.url);
+					}
 
 					taskEnd();
 				}

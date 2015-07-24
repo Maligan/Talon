@@ -8,6 +8,8 @@ package talon
 	import talon.Attribute;
 
 	import talon.layout.Layout;
+	import talon.utils.TriggerBinding;
+	import talon.utils.TriggerBinding;
 	import talon.utils.Gauge;
 	import talon.utils.GaugePair;
 	import talon.utils.GaugeQuad;
@@ -51,6 +53,7 @@ package talon
 		private var _children:Vector.<Node> = new Vector.<Node>();
 		private var _bounds:Rectangle = new Rectangle();
 		private var _triggers:Dictionary = new Dictionary();
+		private var _bindings:Dictionary = new Dictionary();
 		private var _ppdp:Number;
 		private var _ppmm:Number;
 		private var _invalidated:Boolean;
@@ -69,8 +72,7 @@ package talon
 
 			// Initialize all inheritable attributes (for inherit listeners)
 			var inheritable:Vector.<String> = Attribute.getInheritableAttributeNames();
-			for each (var attributeName:String in inheritable)
-				getOrCreateAttribute(attributeName);
+			for each (var attributeName:String in inheritable) getOrCreateAttribute(attributeName);
 
 			// Listen attribute change
 			addListener(Event.CHANGE, onSelfAttributeChange);
@@ -81,9 +83,7 @@ package talon
 		}
 
 		//
-		// Bindings
-		// XXX: May be make gauge not bindable? Send attribute for sync to gauge ctor.
-		// In this way attributes can't be lazy initialized
+		// Bindings initialization
 		//
 		private function bindings():void
 		{
@@ -103,8 +103,8 @@ package talon
 			bindPair(origin, Attribute.ORIGIN, Attribute.ORIGIN_X, Attribute.ORIGIN_Y);
 			bindPair(pivot, Attribute.PIVOT, Attribute.PIVOT_X, Attribute.PIVOT_Y);
 
-			bind(classes, Attribute.CLASS, false);
-			bind(states, Attribute.STATE, false);
+			bind(classes, Attribute.CLASS);
+			bind(states, Attribute.STATE);
 		}
 
 		private function bindPair(pair:GaugePair, name:String, x:String, y:String):void
@@ -123,17 +123,35 @@ package talon
 			bind(quad.left, left);
 		}
 
-		private function bind(source:*, name:String, two:Boolean = true):void
+		private function bind(source:*, name:String):void
 		{
-			var getter:Function = source.toString;
-			var setter:Function = source.parse;
-			var trigger:Trigger = source.change;
-
 			var attribute:Attribute = getOrCreateAttribute(name);
-			setter(attribute.value);
 
-			two && attribute.addBinding(attribute.change, attribute.valueGetter, setter);
-			attribute.addBinding(trigger, getter, attribute.settedSetter);
+			var fromAttribute:TriggerBinding = TriggerBinding.bind(attribute.change, attribute, "value", source, "parse");
+			fromAttribute.trigger();
+			addBinding(fromAttribute);
+
+			var toAttribute:TriggerBinding = TriggerBinding.bind(source.change, source, "toString", attribute, "setted");
+			addBinding(toAttribute);
+		}
+
+		//
+		// Bindings
+		//
+		/** Add attached binding (for dispose with node). */
+		public function addBinding(binding:TriggerBinding):void
+		{
+			_bindings[binding] = binding;
+		}
+
+		/** Remove attached binding. */
+		public function removeBinding(binding:TriggerBinding, dispose:Boolean = false):void
+		{
+			if (_bindings[binding] != null)
+			{
+				if (dispose) binding.dispose();
+				delete _bindings[binding];
+			}
 		}
 
 		//
@@ -156,18 +174,6 @@ package talon
 			}
 
 			return result;
-		}
-
-		/** @private Experimental feature. */
-		public function injectAttribute(attribute:Attribute):void
-		{
-			if (attribute == null) throw new ArgumentError("Parameter attribute must be non-null");
-
-			var prev:Attribute = _attributes[attribute.name];
-			if (prev) prev.dispose();
-
-			_attributes[attribute.name] = attribute;
-			attribute.change.addListener(onAttributeChange);
 		}
 
 		private function onAttributeChange(attribute:Attribute):void
@@ -432,6 +438,9 @@ package talon
 
 			for each (var attribute:Attribute in _attributes)
 				attribute.dispose();
+
+			for each (var binding:TriggerBinding in _bindings)
+				binding.dispose();
 		}
 	}
 }

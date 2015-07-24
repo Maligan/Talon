@@ -55,6 +55,8 @@ package talon.starling
 			addAttributeChangeListener(Attribute.BACKGROUND_FILL_MODE,  onBackgroundFillModeChange);
 			addAttributeChangeListener(Attribute.BACKGROUND_IMAGE,      onBackgroundImageChange);
 			addAttributeChangeListener(Attribute.BACKGROUND_TINT,       onBackgroundTintChange);
+			addAttributeChangeListener(Attribute.BACKGROUND_ALPHA,      onBackgroundAlphaChange);
+			addAttributeChangeListener(Attribute.BACKGROUND_BLEND_MODE, onBackgroundBlendModeChange);
 
 			// Common options
 			addAttributeChangeListener(Attribute.ID,                    onIDChange);
@@ -75,6 +77,8 @@ package talon.starling
 		private function onBackgroundImageChange():void { _filler.texture = _node.getAttributeCache(Attribute.BACKGROUND_IMAGE) as Texture; }
 		private function onBackgroundTintChange():void { _filler.tint = StringUtil.parseColor(_node.getAttributeCache(Attribute.BACKGROUND_COLOR), Color.WHITE); }
 		private function onBackgroundFillModeChange():void { _filler.fillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE); }
+		private function onBackgroundBlendModeChange():void { _filler.blendMode = _node.getAttributeCache(Attribute.BACKGROUND_BLEND_MODE); }
+		private function onBackgroundAlphaChange():void { _filler.alpha = parseFloat(_node.getAttributeCache(Attribute.BACKGROUND_ALPHA)); }
 
 		private function onBackgroundColorChange():void
 		{

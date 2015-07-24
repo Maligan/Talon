@@ -53,7 +53,7 @@ package talon.starling
 
 		public function render(support:RenderSupport, parentAlpha:Number):void
 		{
-			if (_texture == null && _transparent) return;
+			if (_batch.alpha == 0 || _texture == null && _transparent) return;
 
 			// TODO: Diff way for invalidate (_quads OR _batch)
 			if (_invalid)
@@ -211,7 +211,7 @@ package talon.starling
 
 					HELPER.adjustByTexture(texture);
 
-					_batch.addQuad(HELPER, _alpha, _texture, _smoothing, null, BlendMode.NONE);
+					_batch.addQuad(HELPER, _alpha, _texture, _smoothing);
 				}
 				else
 				{
@@ -322,11 +322,15 @@ package talon.starling
 		public function get alpha():Number { return _alpha; }
 		public function set alpha(value:Number):void
 		{
-			if (_alpha != value)
-			{
-				_alpha = value;
-				invalidate();
-			}
+			if (_batch.alpha != value)
+				_batch.alpha = value;
+		}
+
+		public function get blendMode():String { return _batch.blendMode; }
+		public function set blendMode(value:String):void
+		{
+			if (_batch.blendMode != value)
+				_batch.blendMode = value;
 		}
 
 		public function get fillMode():String { return _fillMode; }

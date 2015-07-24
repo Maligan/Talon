@@ -46,6 +46,8 @@ package talon.starling
 			_bridge.addAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
 			_bridge.addAttributeChangeListener("sharpness", onSharpnessChange);
+
+			border = true;
 		}
 
 		private function onSharpnessChange():void

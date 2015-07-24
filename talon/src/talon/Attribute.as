@@ -59,6 +59,8 @@ package talon
 		public static const BACKGROUND_TINT:String      = registerAttributeDefaults("backgroundTint",      WHITE);
 		public static const BACKGROUND_9SCALE:String    = registerAttributeDefaults("background9Scale",    NONE);
 		public static const BACKGROUND_COLOR:String     = registerAttributeDefaults("backgroundColor",     TRANSPARENT);
+		public static const BACKGROUND_ALPHA:String     = registerAttributeDefaults("backgroundAlpha",     ONE);
+		public static const BACKGROUND_BLEND_MODE:String= registerAttributeDefaults("backgroundBlendMode", AUTO);
 		public static const BACKGROUND_FILL_MODE:String = registerAttributeDefaults("backgroundFillMode",  FillMode.SCALE);
 
 		public static const FONT_COLOR:String           = registerAttributeDefaults("fontColor",           INHERIT,                  true);
@@ -161,7 +163,7 @@ package talon
 		private var _node:Node;
 		private var _name:String;
 		private var _change:Trigger;
-		private var _bindings:Vector.<Binding>;
+		private var _bindings:Vector.<TriggerBinding>;
 
 		private var _inited:SimpleValue;
 		private var _styled:SimpleValue;
@@ -306,18 +308,18 @@ package talon
 		//
 		// Bindings
 		//
-		/** @private */
-		public function addBinding(trigger:Trigger, getter:Function, setter:Function):void
-		{
-			_bindings ||= new <Binding>[];
-			_bindings[_bindings.length] = new Binding(trigger, getter, null, setter, null);
-		}
-
-		/** @private */
-		public function settedSetter(value:String):void { setted = value; }
-
-		/** @private */
-		public function valueGetter():String { return value; }
+//		/** @private */
+//		public function addBinding(trigger:Trigger, getter:Function, setter:Function):void
+//		{
+//			_bindings ||= new <Binding>[];
+//			_bindings[_bindings.length] = new Binding(trigger, getter, null, setter, null);
+//		}
+//
+//		/** @private */
+//		public function addBinding_setter(value:String):void { setted = value; }
+//
+//		/** @private */
+//		public function addBinding_getter():String { return value; }
 
 		//
 		// Misc

@@ -62,6 +62,11 @@ package browser.dom
 		/** Document files *.talon */
 		public function get project():File { return _project; }
 
+		public function dispose():void
+		{
+			files.dispose();
+		}
+
 		//
 		// Update
 		//

@@ -3,12 +3,9 @@ package talon.utils
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 
-	import starling.events.Event;
-
 	import talon.Attribute;
 	import talon.Node;
 	import talon.StyleSheet;
-	import talon.enums.BindMode;
 
 	public class TalonFactoryBase
 	{
@@ -109,20 +106,14 @@ package talon.utils
 				var source:Attribute = parent.node.getOrCreateAttribute(func[1]);
 				var target:Attribute = node.getOrCreateAttribute(attributeName);
 
-				var mode:String = func.length > 2 ? func[2] : BindMode.ONCE;
-				if (BindMode.isValid(mode) == false) new Error("Unknown bind mode: '" + mode + "'");
+				var toTarget:TriggerBinding = TriggerBinding.bind(source.change, source, "value", target, "setted");
+				toTarget.trigger();
+				var toSource:TriggerBinding = TriggerBinding.bind(target.change, target, "value", source, "setted");
 
-				switch (mode)
-				{
-					case BindMode.ONCE:
-						target.setted = source.setted;
-						break;
-					case BindMode.ONE_WAY:
-//						target.addBinding(source.change, source.value, target.setted);
-					case BindMode.TWO_WAY:
-//						source.addBinding(target.change, target.value, source.setted);
-						break;
-				}
+				parent.node.addBinding(toTarget);
+				parent.node.addBinding(toSource);
+				node.addBinding(toTarget);
+				node.addBinding(toSource);
 			}
 			else
 			{
@@ -130,7 +121,10 @@ package talon.utils
 			}
 		}
 
-		protected function addChild(parent:*, child:*):void { throw new ArgumentError("Not implemented"); }
+		protected function addChild(parent:*, child:*):void
+		{
+			throw new ArgumentError("Not implemented");
+		}
 
 		private function onElementEnd():void
 		{

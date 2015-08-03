@@ -1,7 +1,6 @@
 package talon
 {
 	import flash.events.Event;
-	import flash.utils.Dictionary;
 
 	import talon.layout.Layout;
 	import talon.enums.*;
@@ -103,12 +102,12 @@ package talon
 		//
 		// Defaults
 		//
-		private static var _defaults:Dictionary;
+		private static var _defaults:Object;
 		private static var _inheritable:Vector.<String>;
 
 		public static function registerAttributeDefaults(name:String, inited:String = null, isInheritable:Boolean = false, isStyleable:Boolean = true):String
 		{
-			_defaults ||= new Dictionary();
+			_defaults ||= new Object();
 			_defaults[name] = {};
 			_defaults[name].inited = inited;
 			_defaults[name].isInheritable = isInheritable;
@@ -124,37 +123,6 @@ package talon
 		public static function getInheritableAttributeNames():Vector.<String>
 		{
 			return _inheritable;
-		}
-
-		//
-		// Queries
-		//
-		private static var _queries:Dictionary;
-
-		private static function initialize():void
-		{
-			if (_queries == null)
-			{
-				_queries = new Dictionary();
-				registerQueryAlias_internal("res", QueryUtil.queryResource);
-				registerQueryAlias_internal("brightness", QueryUtil.queryBrightnessFilter);
-				registerQueryAlias_internal("blur", QueryUtil.queryBlurFilter);
-				registerQueryAlias_internal("glow", QueryUtil.queryGlowFilter);
-				registerQueryAlias_internal("drop-shadow", QueryUtil.queryDropShadow);
-			}
-		}
-
-		[Deprecated(message="Inflexible API, removal candidate")]
-		/** Add new attribute query. */
-		public static function registerQueryAlias(aliasName:String, callback:Function):void
-		{
-			registerQueryAlias_internal(aliasName, callback);
-		}
-
-		private static function registerQueryAlias_internal(aliasName:String, callback:Function):void
-		{
-			if (_queries == null) initialize();
-			_queries[aliasName] = callback;
 		}
 
 		//
@@ -175,8 +143,6 @@ package talon
 
 		public function Attribute(node:Node, name:String)
 		{
-			initialize();
-
 			if (node == null) throw new ArgumentError("Parameter node must be non-null");
 			if (name == null) throw new ArgumentError("Parameter name must be non-null");
 
@@ -239,17 +205,14 @@ package talon
 				_valueCached = true;
 				_valueCache = value;
 
-				// If attribute has no query - return origin value
-				var queryInfo:Array = StringUtil.parseFunction(value);
-				if (queryInfo == null) return _valueCache;
+				// Extract resource value
+				while (_valueCache is String)
+				{
+					var key:String = StringUtil.parseResource(_valueCache);
+					if (key == null) break;
 
-				// Obtain query method via queryInfo
-				var queryMethodName:String = queryInfo.shift();
-				var queryMethod:Function = _queries[queryMethodName];
-				if (queryMethod == null) return _valueCache;
-				queryInfo.unshift(this);
-
-				_valueCache = queryMethod.apply(null, queryInfo);
+					_valueCache = node.getResource(key);
+				}
 			}
 
 			return _valueCache;
@@ -298,11 +261,7 @@ package talon
 		public function get isInherit():Boolean { return _value.isInherit; }
 
 		/** Attribute value is mapped to resource. */
-		public function get isResource():Boolean
-		{
-			var split:Array = StringUtil.parseFunction(value);
-			return split && split[0] == "res";
-		}
+		public function get isResource():Boolean { return StringUtil.parseResource(value) != null; }
 
 		//
 		// Misc

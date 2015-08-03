@@ -3,7 +3,7 @@ package
 	import flash.display.Sprite;
 	import flash.events.Event;
 
-	import talon.utils.TriggerBinding;
+	import talon.utils.Binding;
 
 	[SWF(frameRate=60)]
 	public class EventTest extends Sprite
@@ -30,8 +30,8 @@ package
 
 		private function bind(tmp1:Tmp, tmp2:Tmp):void
 		{
-			TriggerBinding.bind(tmp1.change, tmp1, "value", tmp2, "value");
-			TriggerBinding.bind(tmp2.change, tmp2, "value", tmp1, "value");
+			Binding.bind(tmp1.change, tmp1, "value", tmp2, "value");
+			Binding.bind(tmp2.change, tmp2, "value", tmp1, "value");
 		}
 
 		private function onEnterFrame(e:Event):void

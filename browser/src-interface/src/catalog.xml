@@ -11,7 +11,7 @@
 		  <!--<node backgroundColor="green" width="*" height="12px" minHeight="*"/>-->
 		  <!--<label text="Can't access to file C:\Projects\Interface\Game\src\img\background.png" width="*" height="auto" minHeight="*" halign="left"/>-->
 		<!--</message>-->
-		<!--<image src="res(crutches)" position="50%" pivot="50%"/>-->
+		<!--<image src="$(crutches)" position="50%" pivot="50%"/>-->
 
 	  </node>
 	</template>

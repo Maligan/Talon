@@ -145,6 +145,7 @@ package browser
 		private function onDocumentChanged(e:Event):void
 		{
 			refreshCurrentTemplate();
+			refreshWindowTitle();
 		}
 
 		//
@@ -155,14 +156,14 @@ package browser
 			var result:Array = [];
 
 			if (_controller.document)
-				result.push(_controller.document.project.nativePath);
-
-			var profile:DeviceProfile = _controller.profile;
-			if (profile != DeviceProfile.CUSTOM) result.push(_controller.profile.id);
-			else result.push("[" + profile.width + "x" + profile.height + ", CSF=" + profile.csf + ", DPI=" + profile.dpi + "]");
+				result.push(_controller.document.project.name);
 
 			if (_controller.templateId)
 				result.push(_controller.templateId);
+
+			var profile:DeviceProfile = _controller.profile;
+			if (profile != DeviceProfile.CUSTOM) result.push("[" + _controller.profile.id + "]");
+			else result.push("[" + profile.width + "x" + profile.height + ", CSF=" + profile.csf + ", DPI=" + profile.dpi + "]");
 
 			result.push(AppConstants.APP_NAME + " " + AppConstants.APP_VERSION);
 

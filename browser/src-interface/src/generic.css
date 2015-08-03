@@ -1,8 +1,8 @@
-button:hover { backgroundImage: res('over') }
-button:active { backgroundImage: res('down') }
+button:hover { backgroundImage: $('over') }
+button:active { backgroundImage: $('down') }
 button
 {
-	backgroundImage: res('up');
+	backgroundImage: $('up');
 	background9Scale: 4px;
 	cursor: button;
 
@@ -32,13 +32,13 @@ popup
 	/*backgroundColor: #FFFFF0;*/
 
 	/*filter="drop-shadow(0, 0, black, 0.5, 1)" */
-	/*backgroundImage: res('popup');*/
+	/*backgroundImage: $('popup');*/
 	/*background9Scale: 4px 5px 2px 5px;*/
 }
 
 popup #close
 {
-	backgroundImage: res('close');
+	backgroundImage: $('close');
 	cursor: button;
 }
 
@@ -68,8 +68,8 @@ popup #close
 	height: 100%;
 }
 
-#container.dark { backgroundImage: res('bg_dark'); backgroundFillMode: repeat; }
-#container.light { backgroundImage: res('bg_light'); backgroundFillMode: repeat; }
+#container.dark { backgroundImage: $('bg_dark'); backgroundFillMode: repeat; }
+#container.light { backgroundImage: $('bg_light'); backgroundFillMode: repeat; }
 
 preview:hover { backgroundColor: #4F4F4F; }
 preview
@@ -102,7 +102,7 @@ message #icon
 }
 
 message.error { backgroundColor: #ffdfdf }
-message.error #icon { src: res(msg_type_error) }
+message.error #icon { src: $(msg_type_error) }
 
 message.warning { backgroundColor: #ffffdf }
-message.warning #icon { src: res(msg_type_warning) }
+message.warning #icon { src: $(msg_type_warning) }

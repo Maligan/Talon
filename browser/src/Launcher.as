@@ -1,34 +1,17 @@
 package
 {
-	import browser.AppController;
-	import browser.utils.Console;
 	import browser.AppConstants;
-	import browser.utils.DeviceProfile;
-	import browser.utils.Storage;
-	import browser.utils.registerClassAlias;
-
-	import flash.desktop.ClipboardFormats;
+	import browser.AppController;
 
 	import flash.desktop.NativeApplication;
-	import flash.desktop.NativeDragManager;
 	import flash.display.MovieClip;
-	import flash.display.NativeWindow;
 	import flash.display.StageAlign;
 	import flash.display.StageQuality;
 	import flash.display.StageScaleMode;
 	import flash.events.InvokeEvent;
-	import flash.events.NativeDragEvent;
-	import flash.filesystem.File;
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
 
-	import starling.core.Starling;
-	import starling.display.Sprite;
 	import starling.events.Event;
-
-	import talon.Node;
-	import talon.utils.Gauge;
-	import talon.utils.StringSet;
 
 	[SWF(frameRate="60")]
 	public class Launcher extends MovieClip
@@ -40,6 +23,8 @@ package
 
 		public function Launcher()
 		{
+			trace(NaN || 0)
+
 			_backgroundColor = new SharedString("backgroundColor", AppConstants.SETTING_BACKGROUND_DEFAULT);
 			stage ? initialize() : addEventListener(Event.ADDED_TO_STAGE, initialize);
 		}
@@ -75,9 +60,12 @@ package
 		{
 			switch (key)
 			{
-				case AppConstants.SETTING_BACKGROUND_DARK:  return 0x4A4D4E;
-				case AppConstants.SETTING_BACKGROUND_LIGHT: return 0xFFFFFF;
-				default: throw new ArgumentError("Unknown background key " + key);
+				case AppConstants.SETTING_BACKGROUND_DARK:
+					return 0x4A4D4E;
+				case AppConstants.SETTING_BACKGROUND_LIGHT:
+					return 0xFFFFFF;
+				default:
+					throw new ArgumentError("Unknown background key " + key);
 			}
 		}
 
@@ -111,10 +99,13 @@ class SharedString
 		_sharedObject = SharedObject.getLocal(key);
 
 		if (_sharedObject.data["value"] == undefined)
+		{
 			_sharedObject.data["value"] = initial;
+		}
 	}
 
 	public function get value():String { return _sharedObject.data["value"]; }
+
 	public function set value(string:String):void
 	{
 		try

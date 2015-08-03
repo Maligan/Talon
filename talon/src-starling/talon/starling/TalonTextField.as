@@ -36,6 +36,7 @@ package talon.starling
 			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = measureHeight;
 			autoSize = TextFieldAutoSize.NONE;
 			batchable = true;
+//			border = true;
 
 			// Bridge
 			_bridge = new DisplayObjectBridge(this, node);
@@ -46,8 +47,6 @@ package talon.starling
 			_bridge.addAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
 			_bridge.addAttributeChangeListener("sharpness", onSharpnessChange);
-
-			border = true;
 		}
 
 		private function onSharpnessChange():void

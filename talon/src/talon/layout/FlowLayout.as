@@ -83,21 +83,21 @@ package talon.layout
 				flow.setMaxSize(availableHeight, availableWidth);
 				flow.setAlign(getAlign(node, Attribute.VALIGN), getAlign(node, Attribute.HALIGN));
 
-				for (var i:int = 0; i < node.numChildren; i++)
+				for (var i2:int = 0; i2 < node.numChildren; i2++)
 				{
-					var child:Node = node.getChildAt(i);
+					var child2:Node = node.getChildAt(i2);
 
 					flow.beginChild();
 					// XXX: Auto limit|Min|Max
-					var childLength:Number = child.height.toPixels(child.ppmm, child.ppem, child.ppdp, availableHeight);
-					var childThickness:Number = child.width.toPixels(child.ppmm, child.ppem, child.ppdp, availableWidth);
+					var childLength2:Number = child2.height.toPixels(child2.ppmm, child2.ppem, child2.ppdp, availableHeight);
+					var childThickness2:Number = child2.width.toPixels(child2.ppmm, child2.ppem, child2.ppdp, availableWidth);
 					//
-					flow.setChildLength(childLength, child.height.unit == Gauge.STAR);
-					flow.setChildLengthMargin(child.margin.top.amount, child.margin.bottom.amount);
-					flow.setChildThickness(childThickness, child.width.unit == Gauge.STAR);
-					flow.setChildThicknessMargin(child.margin.left.amount, child.margin.right.amount);
-					flow.setChildInlineAlign(getAlign(child, Attribute.IHALIGN));
-					flow.setChildBreakMode(child.getAttributeCache(Attribute.BREAK));
+					flow.setChildLength(childLength2, child2.height.unit == Gauge.STAR);
+					flow.setChildLengthMargin(child2.margin.top.amount, child2.margin.bottom.amount);
+					flow.setChildThickness(childThickness2, child2.width.unit == Gauge.STAR);
+					flow.setChildThicknessMargin(child2.margin.left.amount, child2.margin.right.amount);
+					flow.setChildInlineAlign(getAlign(child2, Attribute.IHALIGN));
+					flow.setChildBreakMode(child2.getAttributeCache(Attribute.BREAK));
 					flow.endChild();
 				}
 				// ---------------------------------------------------

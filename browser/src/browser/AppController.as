@@ -75,11 +75,6 @@ package browser
 			initializeWindowBoundsMonitor();
 		}
 
-		public function resizeTo(width:int, height:int):void
-		{
-			_ui.resizeTo(width, height);
-		}
-
 		public function invoke(path:String):void
 		{
 			var file:File = new File(path);
@@ -93,7 +88,7 @@ package browser
 			}
 		}
 
-		private function adjust(width:int, height:int, isPortrait:Boolean):void
+		private function resizeWindowTo(width:int, height:int, isPortrait:Boolean):void
 		{
 			var window:NativeWindow = root.stage.nativeWindow;
 			var min:Number = Math.min(width, height);
@@ -130,7 +125,7 @@ package browser
 				_profile = value;
 
 				if (profile != DeviceProfile.CUSTOM)
-					adjust(profile.width, profile.height, _monitor.isPortrait);
+					resizeWindowTo(profile.width, profile.height, _monitor.isPortrait);
 
 				if (document != null)
 					document.properties.setValue(AppConstants.HIDDEN_PROPERTY_CSF, profile.csf);
@@ -221,11 +216,7 @@ package browser
 				window.x = bounds.x;
 				window.y = bounds.y;
 
-				if (profile == DeviceProfile.CUSTOM)
-				{
-					window.width = bounds.width;
-					window.height = bounds.height;
-				}
+				resizeWindowTo(bounds.width, bounds.height, bounds.width < bounds.height);
 			}
 		}
 
@@ -234,8 +225,7 @@ package browser
 			_starling.stage.stageWidth = _root.stage.stageWidth;
 			_starling.stage.stageHeight = _root.stage.stageHeight;
 			_starling.viewPort = new Rectangle(0, 0, _root.stage.stageWidth, _root.stage.stageHeight);
-
-			resizeTo(_root.stage.stageWidth, _root.stage.stageHeight);
+			_ui.resizeTo(_root.stage.stageWidth, _root.stage.stageHeight);
 		}
 
 		private function onMove(e:NativeWindowBoundsEvent):void

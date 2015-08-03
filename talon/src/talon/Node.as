@@ -5,17 +5,18 @@ package talon
 	import flash.utils.Dictionary;
 	import flash.events.Event;
 
-	import talon.Attribute;
-
 	import talon.layout.Layout;
-	import talon.utils.TriggerBinding;
-	import talon.utils.TriggerBinding;
+	import talon.utils.Binding;
 	import talon.utils.Gauge;
 	import talon.utils.GaugePair;
 	import talon.utils.GaugeQuad;
 	import talon.utils.StringSet;
 	import talon.utils.Trigger;
 
+	[Event(name="change")]
+	[Event(name="resize")]
+	[Event(name="added")]
+	[Event(name="removed")]
 	public final class Node
 	{
 		//
@@ -68,7 +69,7 @@ package talon
 			states.change.addListener(restyle);
 			classes.change.addListener(restyle);
 
-			bindings();
+			initializeBindings();
 
 			// Initialize all inheritable attributes (for inherit listeners)
 			var inheritable:Vector.<String> = Attribute.getInheritableAttributeNames();
@@ -85,7 +86,7 @@ package talon
 		//
 		// Bindings initialization
 		//
-		private function bindings():void
+		private function initializeBindings():void
 		{
 			bind(width, Attribute.WIDTH);
 			bind(minWidth, Attribute.MIN_WIDTH);
@@ -127,11 +128,11 @@ package talon
 		{
 			var attribute:Attribute = getOrCreateAttribute(name);
 
-			var fromAttribute:TriggerBinding = TriggerBinding.bind(attribute.change, attribute, "value", source, "parse");
+			var fromAttribute:Binding = Binding.bind(attribute.change, attribute, "value", source, "parse");
 			fromAttribute.trigger();
 			addBinding(fromAttribute);
 
-			var toAttribute:TriggerBinding = TriggerBinding.bind(source.change, source, "toString", attribute, "setted");
+			var toAttribute:Binding = Binding.bind(source.change, source, "toString", attribute, "setted");
 			addBinding(toAttribute);
 		}
 
@@ -139,13 +140,13 @@ package talon
 		// Bindings
 		//
 		/** Add attached binding (for dispose with node). */
-		public function addBinding(binding:TriggerBinding):void
+		public function addBinding(binding:Binding):void
 		{
 			_bindings[binding] = binding;
 		}
 
 		/** Remove attached binding. */
-		public function removeBinding(binding:TriggerBinding, dispose:Boolean = false):void
+		public function removeBinding(binding:Binding, dispose:Boolean = false):void
 		{
 			if (_bindings[binding] != null)
 			{
@@ -238,6 +239,7 @@ package talon
 		/** Find resource in self or ancestors resources. */
 		public function getResource(key:String):*
 		{
+			if (key == null) return null;
 			// Find self resource
 			if (_resources && _resources[key]) return _resources[key];
 			// Find inherited resource
@@ -439,7 +441,7 @@ package talon
 			for each (var attribute:Attribute in _attributes)
 				attribute.dispose();
 
-			for each (var binding:TriggerBinding in _bindings)
+			for each (var binding:Binding in _bindings)
 				binding.dispose();
 		}
 	}

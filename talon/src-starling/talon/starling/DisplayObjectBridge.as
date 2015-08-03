@@ -12,7 +12,10 @@ package talon.starling
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
+	import starling.filters.BlurFilter;
+	import starling.filters.ColorMatrixFilter;
 	import starling.filters.FragmentFilter;
+	import starling.filters.FragmentFilterMode;
 	import starling.textures.Texture;
 	import starling.utils.Color;
 	import starling.utils.MatrixUtil;
@@ -25,6 +28,129 @@ package talon.starling
 	/** Provide method for synchronize starling display tree and talon tree. */
 	internal class DisplayObjectBridge
 	{
+		//
+		// Starling FragmentFilter factories
+		//
+		private static const _filterParsers:Object = new Object();
+
+		public static function registerFilterParser(name:String, parser:Function):void
+		{
+			_filterParsers[name] = parser;
+		}
+
+		registerFilterParser("brightness", function (prev:FragmentFilter, args:Array):FragmentFilter
+		{
+			var brightness:Number = parseFloat(args[0]) || 0;
+
+			var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
+			colorMatrixFilter.reset();
+			colorMatrixFilter.adjustBrightness(brightness);
+
+			return colorMatrixFilter;
+		});
+
+		registerFilterParser("contrast", function (prev:FragmentFilter, args:Array):FragmentFilter
+		{
+			var contrast:Number = parseFloat(args[0]) || 0;
+
+			var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
+			colorMatrixFilter.reset();
+			colorMatrixFilter.adjustContrast(contrast);
+
+			return colorMatrixFilter;
+		});
+
+		registerFilterParser("hue", function (prev:FragmentFilter, args:Array):FragmentFilter
+		{
+			var hue:Number = parseFloat(args[0]) || 0;
+
+			var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
+			colorMatrixFilter.reset();
+			colorMatrixFilter.adjustHue(hue);
+
+			return colorMatrixFilter;
+		});
+
+		registerFilterParser("saturation", function (prev:FragmentFilter, args:Array):FragmentFilter
+		{
+			var saturation:Number = parseFloat(args[0]) || 0;
+
+			var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
+			colorMatrixFilter.reset();
+			colorMatrixFilter.adjustSaturation(saturation);
+
+			return colorMatrixFilter;
+		});
+
+		registerFilterParser("tint", function (prev:FragmentFilter, args:Array):FragmentFilter
+		{
+			var color:Number = StringUtil.parseColor(args[0], Color.WHITE);
+			var amount:Number = parseFloat(args[1]) || 1;
+
+			var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
+			colorMatrixFilter.reset();
+			colorMatrixFilter.tint(color, amount);
+
+			return colorMatrixFilter;
+		});
+
+		registerFilterParser("blur", function (prev:FragmentFilter, args:Array):FragmentFilter
+		{
+			var blurX:Number = parseFloat(args[0]) || 0;
+			var blurY:Number = (args.length > 1 ? parseFloat(args[1]) : blurX) || 0;
+
+			var blurFilter:BlurFilter = getCleanBlurFilter(prev as BlurFilter);
+			blurFilter.blurX = blurX;
+			blurFilter.blurY = blurY;
+
+			return blurFilter;
+		});
+
+		registerFilterParser("drop-shadow", function(prev:FragmentFilter, args:Array):FragmentFilter
+		{
+			var distance:Number = parseFloat(args[0]) || 0;
+			var angle:Number    = parseFloat(args[1]) || 0.785;
+			var color:Number    = StringUtil.parseColor(args[2], 0x000000);
+			var alpha:Number    = parseFloat(args[3]) || 0.5;
+			var blur:Number     = parseFloat(args[4]) || 1.1;
+
+			var dropShadowFilter:BlurFilter = getCleanBlurFilter(prev as BlurFilter);
+			dropShadowFilter.blurX = dropShadowFilter.blurY = blur;
+			dropShadowFilter.offsetX = Math.cos(angle) * distance;
+			dropShadowFilter.offsetY = Math.sin(angle) * distance;
+			dropShadowFilter.mode = FragmentFilterMode.BELOW;
+			dropShadowFilter.setUniformColor(true, color, alpha);
+
+			return dropShadowFilter;
+		});
+
+		registerFilterParser("glow", function(prev:FragmentFilter, args:Array):FragmentFilter
+		{
+			var color:Number    = StringUtil.parseColor(args[0], 0xffffff);
+			var alpha:Number    = parseFloat(args[1]) || 0.5;
+			var blur:Number     = parseFloat(args[2]) || 1.0;
+
+			var glowFilter:BlurFilter = getCleanBlurFilter(prev as BlurFilter);
+			glowFilter.blurX = glowFilter.blurY = blur;
+			glowFilter.mode = FragmentFilterMode.BELOW;
+			glowFilter.setUniformColor(true, color, alpha);
+
+			return glowFilter;
+		});
+
+		private static function getCleanBlurFilter(result:BlurFilter):BlurFilter
+		{
+			result ||= new BlurFilter();
+			result.blurX = result.blurY = 0;
+			result.offsetX = result.offsetY = 0;
+			result.mode = FragmentFilterMode.REPLACE;
+			result.setUniformColor(false);
+			return result;
+		}
+
+		//
+		// Bridge
+		//
 		private const MATRIX:Matrix = new Matrix();
 		private const POINT:Point = new Point();
 		private const GRID:GaugeQuad = new GaugeQuad();
@@ -42,12 +168,6 @@ package talon.starling
 
 			_node = node;
 			_filler = new BackgroundRenderer();
-
-			_node.states.change.addListener(function():void
-			{
-				if (_node.getAttributeCache("type") == "topcoat")
-					trace(_node.states);
-			});
 
 			// Background
 			addAttributeChangeListener(Attribute.BACKGROUND_9SCALE,     onBackground9ScaleChange);
@@ -113,8 +233,23 @@ package talon.starling
 
 		private function onFilterChange():void
 		{
-			_target.filter && _target.filter.dispose();
-			_target.filter = _node.getAttributeCache(Attribute.FILTER) as FragmentFilter;
+			var prevFilter:FragmentFilter = _target.filter;
+			var nextFilter:FragmentFilter = null;
+
+			var func:String = _node.getAttributeCache(Attribute.FILTER);
+			var funcSplit:Array = StringUtil.parseFunction(func);
+			if (funcSplit)
+			{
+				var funcName:String = funcSplit.shift();
+				var filterParser:Function = _filterParsers[funcName];
+				if (filterParser != null)
+					nextFilter = filterParser(prevFilter, funcSplit);
+			}
+
+			if (prevFilter && prevFilter != nextFilter)
+				prevFilter.dispose();
+
+			_target.filter = nextFilter;
 		}
 
 		private function onCursorChange():void

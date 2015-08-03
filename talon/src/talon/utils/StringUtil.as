@@ -22,7 +22,7 @@ package talon.utils
 			if (Color[string.toUpperCase()] is uint) return Color[string.toUpperCase()];
 
 			var method:Array = parseFunction(string);
-			if (method && method[0]=="rgb") return Color.rgb(parseInt(method[1]), parseInt(method[2]), parseInt(method[3]));
+			if (method && method[0]=="rgb" && method.length > 3) return Color.rgb(parseInt(method[1]), parseInt(method[2]), parseInt(method[3]));
 
 			return rollback;
 		}
@@ -60,7 +60,7 @@ package talon.utils
 			if (indexOfOpen == -1) return null;
 
 			// Regexp parsing
-			const notation:RegExp = /([\w-]+)\(\s*(["']?)(.*?)\2*\s*\)/;
+			const notation:RegExp = /([\w\d-$]+)\(\s*(["']?)(.*?)\2+\s*\)/;
 			var exec:Array = notation.exec(string);
 			if (exec == null) return null;
 
@@ -70,6 +70,23 @@ package talon.utils
 			args.unshift(exec[1]);
 
 			return args;
+		}
+
+		public static function parseResource(string:String):String
+		{
+			if (string == null) return null;
+			if (string.length < 2) return null;
+			if (string.charAt(0) != "$") return null;
+
+			// Short notation: $resourceKey
+			const notation:RegExp = /\$[\w\d-$]+/;
+			if (notation.test(string)) return string.substring(1);
+
+			// Functional notation: $("resourceKey")
+			var split:Array = parseFunction(string);
+			if (split && split.length > 1) return split[1];
+
+			return null;
 		}
 
 		public static function parseAlign(string:String):Number

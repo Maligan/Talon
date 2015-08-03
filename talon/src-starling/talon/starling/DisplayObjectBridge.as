@@ -40,7 +40,7 @@ package talon.starling
 
 		registerFilterParser("brightness", function (prev:FragmentFilter, args:Array):FragmentFilter
 		{
-			var brightness:Number = parseFloat(args[0]) || 0;
+			var brightness:Number =  parseNumber(args[0], 0);
 
 			var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
 			colorMatrixFilter.reset();
@@ -51,7 +51,7 @@ package talon.starling
 
 		registerFilterParser("contrast", function (prev:FragmentFilter, args:Array):FragmentFilter
 		{
-			var contrast:Number = parseFloat(args[0]) || 0;
+			var contrast:Number = parseNumber(args[0], 0);
 
 			var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
 			colorMatrixFilter.reset();
@@ -62,7 +62,7 @@ package talon.starling
 
 		registerFilterParser("hue", function (prev:FragmentFilter, args:Array):FragmentFilter
 		{
-			var hue:Number = parseFloat(args[0]) || 0;
+			var hue:Number = parseNumber(args[0], 0);
 
 			var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
 			colorMatrixFilter.reset();
@@ -73,7 +73,7 @@ package talon.starling
 
 		registerFilterParser("saturation", function (prev:FragmentFilter, args:Array):FragmentFilter
 		{
-			var saturation:Number = parseFloat(args[0]) || 0;
+			var saturation:Number = parseNumber(args[0], 0);
 
 			var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
 			colorMatrixFilter.reset();
@@ -85,7 +85,7 @@ package talon.starling
 		registerFilterParser("tint", function (prev:FragmentFilter, args:Array):FragmentFilter
 		{
 			var color:Number = StringUtil.parseColor(args[0], Color.WHITE);
-			var amount:Number = parseFloat(args[1]) || 1;
+			var amount:Number = parseNumber(args[1], 1);
 
 			var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
 			colorMatrixFilter.reset();
@@ -96,7 +96,7 @@ package talon.starling
 
 		registerFilterParser("blur", function (prev:FragmentFilter, args:Array):FragmentFilter
 		{
-			var blurX:Number = parseFloat(args[0]) || 0;
+			var blurX:Number = parseNumber(args[0], 0);
 			var blurY:Number = (args.length > 1 ? parseFloat(args[1]) : blurX) || 0;
 
 			var blurFilter:BlurFilter = getCleanBlurFilter(prev as BlurFilter);
@@ -108,11 +108,11 @@ package talon.starling
 
 		registerFilterParser("drop-shadow", function(prev:FragmentFilter, args:Array):FragmentFilter
 		{
-			var distance:Number = parseFloat(args[0]) || 0;
-			var angle:Number    = parseFloat(args[1]) || 0.785;
+			var distance:Number = parseNumber(args[0], 0);
+			var angle:Number    = StringUtil.parseAngle(args[1], 0.785);
 			var color:Number    = StringUtil.parseColor(args[2], 0x000000);
-			var alpha:Number    = parseFloat(args[3]) || 0.5;
-			var blur:Number     = parseFloat(args[4]) || 1.1;
+			var alpha:Number    = parseNumber(args[3], 0.5);
+			var blur:Number     = parseNumber(args[4], 1.0);
 
 			var dropShadowFilter:BlurFilter = getCleanBlurFilter(prev as BlurFilter);
 			dropShadowFilter.blurX = dropShadowFilter.blurY = blur;
@@ -127,8 +127,8 @@ package talon.starling
 		registerFilterParser("glow", function(prev:FragmentFilter, args:Array):FragmentFilter
 		{
 			var color:Number    = StringUtil.parseColor(args[0], 0xffffff);
-			var alpha:Number    = parseFloat(args[1]) || 0.5;
-			var blur:Number     = parseFloat(args[2]) || 1.0;
+			var alpha:Number    = parseNumber(args[1], 0.5);
+			var blur:Number     = parseNumber(args[2], 1.0);
 
 			var glowFilter:BlurFilter = getCleanBlurFilter(prev as BlurFilter);
 			glowFilter.blurX = glowFilter.blurY = blur;
@@ -145,6 +145,13 @@ package talon.starling
 			result.offsetX = result.offsetY = 0;
 			result.mode = FragmentFilterMode.REPLACE;
 			result.setUniformColor(false);
+			return result;
+		}
+
+		private static function parseNumber(value:*, ifNaN:Number):Number
+		{
+			var result:Number = parseFloat(value);
+			if (result != result) result = ifNaN;
 			return result;
 		}
 

@@ -23,8 +23,6 @@ package
 
 		public function Launcher()
 		{
-			trace(NaN || 0)
-
 			_backgroundColor = new SharedString("backgroundColor", AppConstants.SETTING_BACKGROUND_DEFAULT);
 			stage ? initialize() : addEventListener(Event.ADDED_TO_STAGE, initialize);
 		}

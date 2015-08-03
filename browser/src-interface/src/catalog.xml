@@ -23,9 +23,18 @@
 	</template>
 
 	<template id="popup">
-		<node position="50%" pivot="50%" width="256px" height="200px" layout="abs" padding="4px">
-			<!--<label text="Talon Browser v0.0.1" width="100%" halign="left" />-->
-			<node width="15px" height="15px" anchor="0% 100% none none" margin="4px" id="close"/>
+		<node layout="flow" orientation="vertical" padding="0px"> 
+			<label text="New version of !Talon Browser Cla Cla Cla !asdfasdfsdf asdf asd f dfd 1 2 3324" fontName="Marvin" fontSize="18px" width="100%" />
+			<node anchor="none 100% 100% none" margin="8px" gap="8px">
+				<button label="Update" class="action" />
+				<button label="Cancel" />
+			</node>
+		</node>
+	</template>
+
+	<template id="button">
+		<node label="Label">
+			<label text="@label" width="80px" height="32px" />
 		</node>
 	</template>
 

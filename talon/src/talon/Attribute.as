@@ -65,6 +65,7 @@ package talon
 		public static const FONT_COLOR:String           = registerAttributeDefaults("fontColor",           INHERIT,                  true);
 		public static const FONT_NAME:String            = registerAttributeDefaults("fontName",            INHERIT,                  true);
 		public static const FONT_SIZE:String            = registerAttributeDefaults("fontSize",            INHERIT,                  true);
+		public static const FONT_SHARPNESS:String       = registerAttributeDefaults("fontSharpness",       INHERIT,                  true);
 
 		public static const ALPHA:String                = registerAttributeDefaults("alpha",               ONE);
 		public static const CLIPPING:String             = registerAttributeDefaults("clipping",            FALSE);
@@ -141,6 +142,7 @@ package talon
 		private var _valueCache:*;
 		private var _valueCached:Boolean;
 
+		/** @private */
 		public function Attribute(node:Node, name:String)
 		{
 			if (node == null) throw new ArgumentError("Parameter node must be non-null");
@@ -225,6 +227,7 @@ package talon
 		public function get isStyleable():Boolean { return _styled.enable; }
 		public function set isStyleable(value:Boolean):void { _styled.enable = value; }
 
+		/** If attribute value == 'inherit' concrete value must be taken from parent node. */
 		public function get isInheritable():Boolean { return _value.isInheritable; }
 		public function set isInheritable(value:Boolean):void
 		{

@@ -27,6 +27,25 @@ package talon.utils
 			return rollback;
 		}
 
+		public static function parseAngle(string:String, rollback:Number = NaN):Number
+		{
+			var pattern:RegExp = /^(-?\d*\.?\d+)(deg|rad|)$/;
+			var split:Array = pattern.exec(string);
+			if (split == null) return rollback;
+
+			var amount:Number = parseFloat(split[1]);
+			var unit:String = split[2];
+			switch (unit)
+			{
+				case "deg":
+					return amount * Math.PI / 180;
+
+				case "rad":
+				default:
+					return amount;
+			}
+		}
+
 		public static function toHexRBG(color:uint):String
 		{
 			var string:String = color.toString(16);

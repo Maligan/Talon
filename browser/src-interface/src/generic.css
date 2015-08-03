@@ -1,35 +1,55 @@
-button:hover { backgroundImage: $('over') }
-button:active { backgroundImage: $('down') }
-button
-{
-	backgroundImage: $('up');
+button {
+	backgroundImage: $button_normal;
 	background9Scale: 4px;
 	cursor: button;
 
-	padding: 0.6em 1em 0.85em 1em;
+	minWidth: 23px;
+	minHeight: 23px;
+}
 
-	fontName: Tahoma;
-	fontSize: 11px;
-	fontColor: #C0C0C0;
+button:hover {
+	backgroundImage: $button_over;
+}
 
-	minWidth: 20px;
-	minHeight: 20px;
+button:active {
+	backgroundImage: $button_down;
 }
 
 button label
 {
 	width: 100%;
 	halign: center;
+
+	fontName: Source Sans Pro;
+	fontSize: 14px;
+	fontColor: #F0F1F1;
+	filter: drop-shadow(1, -90deg, black, 0.5, 0);
+
+	/* Deprecated */
+	margin: 8px;
+}
+
+button.action {
+	backgroundImage: $button_action_normal;
+	fontColor: #FFFFFF;
+}
+
+button.action:hover {
+	backgroundImage: $button_action_over;
+}
+
+button.action:active {
+	backgroundImage: $button_action_down;
 }
 
 popup
 {
 	fontName: Source Sans Pro;
 	fontSize: 14px;
-	/*fontColor: black;*/
+	fontColor: white;
+	/*fontSharpness: -1;*/
 	filter: drop-shadow(0, 0, black, 0.5, 2);
-	backgroundColor: #FFFFFF;
-	/*backgroundColor: #FFFFF0;*/
+	backgroundColor: #484B4C;
 
 	/*filter="drop-shadow(0, 0, black, 0.5, 1)" */
 	/*backgroundImage: $('popup');*/
@@ -38,10 +58,11 @@ popup
 
 popup #close
 {
-	backgroundImage: $('close');
+	/*backgroundImage: $('close');*/
 	cursor: button;
 }
 
+/*
 #tools button
 {
 	background9Scale: 0px;
@@ -61,6 +82,7 @@ popup #close
 	width: *;
 	height: 1px;
 }
+*/
 
 #container
 {

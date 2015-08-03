@@ -99,11 +99,14 @@ package talon.utils
 
 		protected function setNodeAttribute(node:Node, attributeName:String, value:String):void
 		{
-			var func:Array = StringUtil.parseFunction(value);
-			if (func && func[0] == "bind")
+			var bindPattern:RegExp = /@(\w+)/;
+			var bindSplit:Array = bindPattern.exec(value);
+			var bindTarget:String = bindSplit && bindSplit.length > 1 ? bindSplit[1] : null;
+
+			if (bindTarget)
 			{
 				var parent:ITalonElement = _parserProductStack[_parserProductStack.length - 1] as ITalonElement;
-				var source:Attribute = parent.node.getOrCreateAttribute(func[1]);
+				var source:Attribute = parent.node.getOrCreateAttribute(bindTarget);
 				var target:Attribute = node.getOrCreateAttribute(attributeName);
 
 				var toTarget:Binding = Binding.bind(source.change, source, "value", target, "setted");

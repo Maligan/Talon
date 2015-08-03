@@ -36,7 +36,7 @@ package talon.starling
 			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = measureHeight;
 			autoSize = TextFieldAutoSize.NONE;
 			batchable = true;
-//			border = true;
+			border = true;
 
 			// Bridge
 			_bridge = new DisplayObjectBridge(this, node);
@@ -46,7 +46,7 @@ package talon.starling
 			_bridge.addAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
-			_bridge.addAttributeChangeListener("sharpness", onSharpnessChange);
+			_bridge.addAttributeChangeListener(Attribute.FONT_SHARPNESS, onSharpnessChange);
 		}
 
 		private function onSharpnessChange():void
@@ -59,7 +59,7 @@ package talon.starling
 		protected override function formatText(textField:flash.text.TextField, textFormat:TextFormat):void
 		{
 			super.formatText(textField, textFormat);
-			textField.sharpness = parseInt(_node.getAttributeCache("sharpness")) || 0;
+			textField.sharpness = (parseFloat(_node.getAttributeCache(Attribute.FONT_SHARPNESS)) || 0) * 400;
 			textField.gridFitType = GridFitType.NONE;
 		}
 
@@ -72,20 +72,19 @@ package talon.starling
 		/** TODO: Optimize. */
 		private function measure(aw:Number, ah:Number):Rectangle
 		{
-			autoSize = getAutoSize(aw == Infinity, ah == Infinity);
+			autoSize = getAutoSize(node.width.isAuto, node.height.isAuto);
 			if (aw != Infinity) width = aw;
 			if (ah != Infinity) height = ah;
 			var result:Rectangle = textBounds;
-			autoSize = TextFieldAutoSize.NONE;
-			result.inflate(2, 2); // starling remove flash 2px offset
+			result.inflate((2 + 5)/2 , (2 + 4)/2); // starling remove flash 2px offset
 			return result;
 		}
 
 		private function getAutoSize(width:Boolean, height:Boolean):String
 		{
-			/**/ if ( width &&  height) autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
-			else if ( width && !height) autoSize = TextFieldAutoSize.VERTICAL;
-			else if (!width &&  height) autoSize = TextFieldAutoSize.HORIZONTAL;
+			/**/ if ( width &&  height) return TextFieldAutoSize.BOTH_DIRECTIONS;
+			else if ( width && !height) return TextFieldAutoSize.VERTICAL;
+			else if (!width &&  height) return TextFieldAutoSize.HORIZONTAL;
 			return TextFieldAutoSize.NONE;
 		}
 
@@ -94,12 +93,14 @@ package talon.starling
 		//
 		private function onNodeResize():void
 		{
+			autoSize = TextFieldAutoSize.NONE;
+
 			x = Math.round(_node.bounds.x);
 			y = Math.round(_node.bounds.y);
 			width = Math.round(_node.bounds.width);
 			height = Math.round(_node.bounds.height);
 
-			_bridge.resize(width, height);
+			_bridge.resize(_node.bounds.width, _node.bounds.height);
 
 			text = text;
 		}
@@ -151,7 +152,7 @@ package talon.starling
 		private function onVAlignChange():void { super.vAlign = _node.getAttributeCache(Attribute.VALIGN); }
 
 		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
-		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); }
+		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT).replace("!", "\n"); }
 
 		//
 		// Properties

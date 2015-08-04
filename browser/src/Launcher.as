@@ -10,6 +10,7 @@ package
 	import flash.display.StageScaleMode;
 	import flash.events.InvokeEvent;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 
 	import starling.events.Event;
 
@@ -23,6 +24,15 @@ package
 
 		public function Launcher()
 		{
+			var r1:Rectangle = new Rectangle(0, 0, Infinity, Infinity);
+			var r2:Rectangle = new Rectangle();
+
+
+			r2.copyFrom(r1);
+			trace(r2.width, Math.round(r2.height));
+
+
+
 			_backgroundColor = new SharedString("backgroundColor", AppConstants.SETTING_BACKGROUND_DEFAULT);
 			stage ? initialize() : addEventListener(Event.ADDED_TO_STAGE, initialize);
 		}

@@ -36,7 +36,7 @@ package talon.starling
 			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = measureHeight;
 			autoSize = TextFieldAutoSize.NONE;
 			batchable = true;
-			border = true;
+//			border = true;
 
 			// Bridge
 			_bridge = new DisplayObjectBridge(this, node);
@@ -73,18 +73,20 @@ package talon.starling
 		private function measure(aw:Number, ah:Number):Rectangle
 		{
 			autoSize = getAutoSize(node.width.isAuto, node.height.isAuto);
-			if (aw != Infinity) width = aw;
-			if (ah != Infinity) height = ah;
+			width = aw;
+			height = ah;
 			var result:Rectangle = textBounds;
-			result.inflate((2 + 5)/2 , (2 + 4)/2); // starling remove flash 2px offset
+			trace("Measure:", result.height, "Source:", aw, "x", ah, text);
+			autoSize = TextFieldAutoSize.NONE;
+			result.inflate(2, 2); // starling remove flash 2px offset
 			return result;
 		}
 
 		private function getAutoSize(width:Boolean, height:Boolean):String
 		{
 			/**/ if ( width &&  height) return TextFieldAutoSize.BOTH_DIRECTIONS;
-			else if ( width && !height) return TextFieldAutoSize.VERTICAL;
-			else if (!width &&  height) return TextFieldAutoSize.HORIZONTAL;
+			else if ( width && !height) return TextFieldAutoSize.HORIZONTAL;
+			else if (!width &&  height) return TextFieldAutoSize.VERTICAL;
 			return TextFieldAutoSize.NONE;
 		}
 
@@ -93,8 +95,6 @@ package talon.starling
 		//
 		private function onNodeResize():void
 		{
-			autoSize = TextFieldAutoSize.NONE;
-
 			x = Math.round(_node.bounds.x);
 			y = Math.round(_node.bounds.y);
 			width = Math.round(_node.bounds.width);

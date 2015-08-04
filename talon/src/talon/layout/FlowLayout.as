@@ -10,17 +10,17 @@ package talon.layout
 
 	public class FlowLayout extends Layout
 	{
-		public override function measureAutoWidth(node:Node, availableWidth:Number, availableHeight:Number):Number
+		public override function measureAutoWidth(node:Node, availableHeight:Number):Number
 		{
-			var flow:Flow = calculateFlow(node, availableWidth, availableHeight);
+			var flow:Flow = calculateFlow(node, Infinity, availableHeight);
 			var flowWidth:Number = node.getAttributeCache(Attribute.ORIENTATION) == Orientation.HORIZONTAL ? flow.getLength() : flow.getThickness();
 			flow.dispose();
 			return flowWidth;
 		}
 
-		public override function measureAutoHeight(node:Node, availableWidth:Number, availableHeight:Number):Number
+		public override function measureAutoHeight(node:Node, availableWidth:Number):Number
 		{
-			var flow:Flow = calculateFlow(node, availableWidth, availableHeight);
+			var flow:Flow = calculateFlow(node, availableWidth, Infinity);
 			var flowHeight:Number = node.getAttributeCache(Attribute.ORIENTATION) == Orientation.VERTICAL ? flow.getLength() : flow.getThickness();
 			flow.dispose();
 			return flowHeight;
@@ -46,67 +46,85 @@ package talon.layout
 		//
 		// Implementation
 		//
-		// XXX: What about pp100p? (Nope: where is no % within auto layout) but this method use not always for measurement
-		private function calculateFlow(node:Node, availableWidth:Number, availableHeight:Number):Flow
+		private function calculateFlow(node:Node, maxWidth:Number, maxHeight:Number):Flow
 		{
 			var flow:Flow = new Flow();
+			var orientation:String = node.getAttributeCache(Attribute.ORIENTATION);
+			var percentTargetWidth:Number = maxWidth==Infinity ? 0 : maxWidth;
+			var percentTargetHeight:Number = maxHeight==Infinity ? 0 : maxHeight;
+			if (!Orientation.isValid(orientation)) throw new Error("Orientation value is not valid: " + orientation);
+
 			flow.setSpacings(getGap(node), getInterline(node));
 			flow.setWrap(getWrap(node));
 
-			var orientation:String = node.getAttributeCache(Attribute.ORIENTATION);
+			// Common orientation based flow setup
 			if (orientation == Orientation.HORIZONTAL)
 			{
-				flow.setMaxSize(availableWidth, availableHeight);
+				flow.setMaxSize(maxWidth, maxHeight);
 				flow.setAlign(getAlign(node, Attribute.HALIGN), getAlign(node, Attribute.VALIGN));
-
-				for (var i:int = 0; i < node.numChildren; i++)
-				{
-					var child:Node = node.getChildAt(i);
-
-					flow.beginChild();
-					// XXX: Auto limit|Min|Max
-					var childLength:Number = child.width.toPixels(child.ppmm, child.ppem, child.ppdp, availableWidth);
-					var childThickness:Number = child.height.toPixels(child.ppmm, child.ppem, child.ppdp, availableHeight);
-					//
-					flow.setChildLength(childLength, child.width.unit == Gauge.STAR);
-					flow.setChildLengthMargin(child.margin.left.amount, child.margin.right.amount);
-					flow.setChildThickness(childThickness, child.height.unit == Gauge.STAR);
-					flow.setChildThicknessMargin(child.margin.top.amount, child.margin.top.amount);
-					flow.setChildInlineAlign(getAlign(child, Attribute.IVALIGN));
-					flow.setChildBreakMode(child.getAttributeCache(Attribute.BREAK));
-					flow.endChild();
-				}
 			}
 			else
 			{
-				// ---------------------------------------------------
-				flow.setMaxSize(availableHeight, availableWidth);
+				flow.setMaxSize(maxHeight, maxWidth);
 				flow.setAlign(getAlign(node, Attribute.VALIGN), getAlign(node, Attribute.HALIGN));
+			}
 
-				for (var i2:int = 0; i2 < node.numChildren; i2++)
+			// Child calculation
+			for (var i:int = 0; i < node.numChildren; i++)
+			{
+				var child:Node = node.getChildAt(i);
+
+				// TODO: Width/Height priority & minimum/maximum values
+				var childWidth:Number           = child.width.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetWidth, Infinity, Infinity, child.width.amount, child.width.amount);
+				var childHeight:Number          = child.height.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetHeight, Infinity, Infinity, child.height.amount, child.height.amount);
+
+				var childMarginLeft:Number      = child.margin.left.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetWidth);
+				var childMarginRight:Number     = child.margin.right.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetWidth);
+				var childMarginTop:Number       = child.margin.top.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetHeight);
+				var childMarginBottom:Number    = child.margin.bottom.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetHeight);
+
+				// Setup child flow values
+				flow.beginChild();
+				flow.setChildBreakMode(child.getAttributeCache(Attribute.BREAK));
+				if (orientation == Orientation.HORIZONTAL)
 				{
-					var child2:Node = node.getChildAt(i2);
-
-					flow.beginChild();
-					// XXX: Auto limit|Min|Max
-					var childLength2:Number = child2.height.toPixels(child2.ppmm, child2.ppem, child2.ppdp, availableHeight);
-					var childThickness2:Number = child2.width.toPixels(child2.ppmm, child2.ppem, child2.ppdp, availableWidth);
-					//
-					flow.setChildLength(childLength2, child2.height.unit == Gauge.STAR);
-					flow.setChildLengthMargin(child2.margin.top.amount, child2.margin.bottom.amount);
-					flow.setChildThickness(childThickness2, child2.width.unit == Gauge.STAR);
-					flow.setChildThicknessMargin(child2.margin.left.amount, child2.margin.right.amount);
-					flow.setChildInlineAlign(getAlign(child2, Attribute.IHALIGN));
-					flow.setChildBreakMode(child2.getAttributeCache(Attribute.BREAK));
-					flow.endChild();
+					flow.setChildLength(childWidth, child.width.unit == Gauge.STAR);
+					flow.setChildLengthMargin(childMarginLeft, childMarginRight);
+					flow.setChildThickness(childHeight, child.height.unit == Gauge.STAR);
+					flow.setChildThicknessMargin(childMarginTop, childMarginBottom);
+					flow.setChildInlineAlign(getAlign(child, Attribute.IVALIGN));
 				}
-				// ---------------------------------------------------
+				else
+				{
+					flow.setChildLength(childHeight, child.height.unit == Gauge.STAR);
+					flow.setChildLengthMargin(childMarginTop, childMarginBottom);
+					flow.setChildThickness(childWidth, child.width.unit == Gauge.STAR);
+					flow.setChildThicknessMargin(childMarginLeft, childMarginRight);
+					flow.setChildInlineAlign(getAlign(child, Attribute.IHALIGN));
+				}
+				flow.endChild();
 			}
 
 			return flow;
 		}
 
-		private function getWrap(node:Node):Boolean { return node.getAttributeCache(Attribute.WRAP) == "true"; }
+//		private function measure(node:Node, parentWidth:Number, parentHeight:Number, result:Point = null):Point
+//		{
+//			result ||= new Point();
+//
+//			if (node.width.isAuto && node.height.isAuto)
+//			{
+//				result.x = node.width.auto(Infinity, Infinity);
+//				result.y = node.height.auto(Infinity, Infinity);
+//			}
+//			else if (node.width.isAuto && !node.height.isAuto)
+//			{
+//				result.y = node.height.toPixels(node.ppmm, node.ppem, node.ppdp, parentHeight, Infinity, Infinity)
+////				result.x = node.width
+//			}
+//		}
+
+		private function getWrap(node:Node):Boolean { return StringUtil.parseBoolean(node.getAttributeCache(Attribute.WRAP)); }
 		private function getAlign(node:Node, name:String):Number { return StringUtil.parseAlign(node.getAttributeCache(name)) }
 		private function getGap(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.GAP), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0, 0); }
 		private function getInterline(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.INTERLINE), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0, 0); }
@@ -231,11 +249,12 @@ class Flow
 	{
 		var thickness:Number = 0;
 
-		var lShift:Number = _maxLength!=Infinity ? (_maxLength-getLength())*_alignLengthwise : 0;
+		var totalLength:Number = _maxLength!=Infinity ? _maxLength : getLength();
 		var tShift:Number = _maxThickness!=Infinity ? (_maxThickness-getThickness())*_alignThicknesswise : 0;
 
 		for each (var line:FlowLine in _lines)
 		{
+			var lShift:Number = (totalLength-line.length)*_alignLengthwise;
 			line.arrange(lShift, tShift + thickness);
 			thickness += line.thickness + _interline;
 		}
@@ -305,6 +324,7 @@ class FlowLine
 
 		if (child.lengthIsStar) _lengthStar += child.length;
 		else _length += child.length;
+
 		if (_children.length > 1) _length += _gap;
 		_length += child.lengthBefore + child.lengthAfter;
 
@@ -317,13 +337,15 @@ class FlowLine
 
 		for each (var element:FlowElement in _children)
 		{
+			// Via length
 			element.lPos = lShift + lOffset + element.lengthBefore;
-			element.tPos = tShift + (_thickness-element.thickness)*element.thicknessAlign;
-			element.tSize = element.thicknessIsStar ? _thickness : element.thickness;
-
 			if (!element.lengthIsStar) element.lSize = element.length;
 			else if (_maxLength!=Infinity && _length<_maxLength) element.lSize = (_maxLength-_length)*(element.length/_lengthStar);
 			else element.lSize = 0;
+
+			// Via thickness
+			element.tSize = element.thicknessIsStar ? _thickness : element.thickness;
+			element.tPos = tShift + (_thickness-element.tSize)*element.thicknessAlign;
 
 			lOffset += element.lengthBefore + element.lSize + element.lengthAfter  + _gap;
 		}

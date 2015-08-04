@@ -72,13 +72,13 @@ package talon.layout
 		// Layout methods
 		//
 		/** This method will be call while arranging, and must calculate node width in pixels, based on node children. */
-		public function measureAutoWidth(node:Node, availableWidth:Number, availableHeight:Number):Number
+		public function measureAutoWidth(node:Node, availableHeight:Number):Number
 		{
 			throw new Error("Method not implemented");
 		}
 
 		/** This method will be call while arranging, and must calculate node height in pixels, based on node children. */
-		public function measureAutoHeight(node:Node, availableWidth:Number, availableHeight:Number):Number
+		public function measureAutoHeight(node:Node, availableWidth:Number):Number
 		{
 			throw new Error("Method not implemented");
 		}

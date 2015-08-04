@@ -23,8 +23,8 @@
 	</template>
 
 	<template id="popup">
-		<node layout="flow" orientation="vertical" padding="0px"> 
-			<label text="New version of !Talon Browser Cla Cla Cla !asdfasdfsdf asdf asd f dfd 1 2 3324" fontName="Marvin" fontSize="18px" width="100%" />
+		<node layout="flow" orientation="horizontal" padding="0px"> 
+			<!--<label text="New version of Talon Browser Cla Cla Cla asdfasdfsdf asdf asd f dfd 1 2 Consolas" fontName="Source Sans Pro" fontSize="28px" width="100%" />-->
 			<node anchor="none 100% 100% none" margin="8px" gap="8px">
 				<button label="Update" class="action" />
 				<button label="Cancel" />

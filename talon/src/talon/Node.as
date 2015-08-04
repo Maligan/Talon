@@ -323,13 +323,13 @@ package talon
 		/** This is 'auto' callback for gauges: width, minWidth, maxWidth. */
 		private function measureAutoWidth(width:Number, height:Number):Number
 		{
-			return layout.measureAutoWidth(this, width, height);
+			return layout.measureAutoWidth(this, height);
 		}
 
 		/** This is 'auto' callback for gauges: height, minHeight, maxHeight. */
 		private function measureAutoHeight(width:Number, height:Number):Number
 		{
-			return layout.measureAutoHeight(this, width, height);
+			return layout.measureAutoHeight(this, width);
 		}
 
 		/** Node layout strategy class. */

@@ -96,7 +96,7 @@ package talon.layout
 			}
 		}
 
-		public override function measureAutoWidth(node:Node, width:Number, height:Number):Number
+		public override function measureAutoWidth(node:Node, availableHeight:Number):Number
 		{
 			var resultWidth:int = 0;
 
@@ -105,17 +105,17 @@ package talon.layout
 				var child:Node = node.getChildAt(i);
 				if (!StringUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBILITY))) continue;
 
-				var childWidth:int = toPixelsSugar(child.width, child, width, width, height, 0, 0, child.minWidth, child.maxWidth);
-				childWidth += toPixelsSugar(child.margin.left, child, width);
-				childWidth += toPixelsSugar(child.margin.right, child, width);
+				var childWidth:int = toPixelsSugar(child.width, child, 0, Infinity, availableHeight, 0, 0, child.minWidth, child.maxWidth);
+				childWidth += toPixelsSugar(child.margin.left, child);
+				childWidth += toPixelsSugar(child.margin.right, child);
 
 				resultWidth = Math.max(resultWidth, childWidth);
 			}
 
-			return resultWidth + toPixelsSugar(node.padding.right, node, width) + toPixelsSugar(node.padding.left, node, width);
+			return resultWidth + toPixelsSugar(node.padding.right, node) + toPixelsSugar(node.padding.left, node);
 		}
 
-		public override function measureAutoHeight(node:Node, width:Number, height:Number):Number
+		public override function measureAutoHeight(node:Node, availableWidth:Number):Number
 		{
 			var resultHeight:int = 0;
 
@@ -124,14 +124,14 @@ package talon.layout
 				var child:Node = node.getChildAt(i);
 				if (!StringUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBILITY))) continue;
 
-				var childHeight:int = toPixelsSugar(child.height, child, height, width, height, 0, 0, child.minHeight, child.maxHeight);
-				childHeight += toPixelsSugar(child.margin.top, child, width);
-				childHeight += toPixelsSugar(child.margin.bottom, child, width);
+				var childHeight:int = toPixelsSugar(child.height, child, 0, availableWidth, Infinity, 0, 0, child.minHeight, child.maxHeight);
+				childHeight += toPixelsSugar(child.margin.top, child);
+				childHeight += toPixelsSugar(child.margin.bottom, child);
 
 				resultHeight = Math.max(resultHeight, childHeight);
 			}
 
-			return resultHeight + toPixelsSugar(node.padding.top, node, height) + toPixelsSugar(node.padding.bottom, node, height);
+			return resultHeight + toPixelsSugar(node.padding.top, node) + toPixelsSugar(node.padding.bottom, node);
 		}
 
 		/**

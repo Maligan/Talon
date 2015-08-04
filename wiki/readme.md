@@ -54,15 +54,15 @@ This rule give solid basis for all toolkit, but it is not always easy to work wi
 Therefore for most used attributes (like `width`, `x`, `classes` and same another) `Node` has strong typed accessors.
 
 #### Name
-Attribute name can be any string value: `id`, `width`, `y`, `alpha`, `bla-bla-bla`, `1#@!:`, etc. as you want. Node has a dynamically collection of attributes witch is lazy initialized by request i.e. function [`Node#getOrCreateAttribute(name:String):Attribute`](http://google.com/) always return non-null attribute object (as difined in its name :-)
+Attribute name can be any string value: `"id"`, `"width"`, `"y"`, `"alpha"`, `"bla-bla-bla"`, `"1#@!:"`, etc. as you want. Node has a dynamically collection of attributes witch is lazy initialized by request i.e. function [`Node#getOrCreateAttribute(name:String):Attribute`](http://google.com/) always return non-null attribute object (as difined in its name :-)
 
 #### Value
 Attribute value has complex calculation algorithm, look at this diagram:
 
 ![Attribute value calculation](img/img3.png)
 
-1. `inited` this is a initial value of attribute. For example `width`, `height` set to *auto*, `visible` to *true*, `backgroundImage` to *none*, etc.
-2. `styled` this value witch installed from attached style sheet. For example if there is selector `*: { fontColor: #FF0000 }` in attached to node tree style sheet, and there is no other selectors, all nodes (CSS "\*" mean any node) has attribute `fontColor` value equal to *#FF0000*.
+1. `inited` this is a initial value of attribute. For example `width`, `height` set to `"auto"`, `visible` to `"true"`, `backgroundImage` to `"none"`, etc.
+2. `styled` this value witch installed from attached style sheet. For example if there is selector `*: { fontColor: #FF0000 }` in attached to node tree style sheet, and there is no other selectors, all nodes (CSS "\*" mean any node) has attribute `fontColor` value equal to `"#FF0000"`.
 This value is calculated only if attribute marked as [`Attriubte#isStyleable`](http://google.com/).
 3. `setted` this value changed directly from code via [`Node#setAttributeValue(name:String, setted:String)`](http://google.com/), strong typed node attribute accessors like `Node#width`, `Node#margin`, etc. or looking ahead while TML parsing in XML tag attribute `<node attribute="value" />`.
 4. `origin` this is first one of previous which is non-null `setted`, `styled`, `inited` (NB! in this sequence):<br/>
@@ -82,6 +82,73 @@ And there is one special `valueCache` property this is not attribute value in th
 But node resource may not be a string value, and therefore `valueCache` is only code sugar.
 
 ### Node Resources
+Resource Dictionary is simple key-value pair object. Resource key is always string value, resource value may has any type. You can use any object as you wish:
+[`Object`](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/Object.html),
+[`flash.utils.Dictionary`](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/utils/Dictionary.html),
+[`flash.utils.Proxy`](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/utils/Proxy.html) and any other.
+
+Resources can be attached to node, and after there is access to resource via node attribute. 
+In order to map resource to attribute `valueCache` you must use special syntax: `$key` or `$('key')` (if key has non alphanumeric characters)
+
+	var node:Node = new Node();
+	var resources:Object = {
+		"key1":           "string resource",
+		"key_2":          42,
+		"key with space": [1, 2, 3],
+		"\u2203\u262D":   Texture.empty(32, 32)
+	};
+
+	// Attach resources to node
+	node.setResources(resources);
+
+	// Set attributes 'setted' value
+	node.setAttribute("attr1", "$key1");
+	node.setAttribute("attr2", "$(key_2)");
+	node.setAttribute("attr3", "$('key with space')");
+	node.setAttribute("attr4", '$("\u2203\u262D")');
+
+	// Trace attributes 'valueCache' value
+	trace(node.getAttributeCache("attr1")); // string resource
+	trace(node.getAttributeCache("attr2")); // 42
+	trace(node.getAttributeCache("attr3")); // 1, 2, 3
+	trace(node.getAttributeCache("attr4")); // [object ConcreteTexture]
+
+All resources are inherit from parent to any children. In most case you may attach it only to root node. But child nodes may has attached resource dictionary too, and in this case can appear collisions: parent and child has resource with some key, in this case child resource have much priority than parent one.
+
+![Node tree with resources attached to root only](img/img4.png)
+
+![Node tree with resources attached to root and child node](img/img5.png)
+
+	// Source elements
+	var parent:Node = new Node();
+	var parentResources:Object = {
+		key1: "parentResource1",
+		key2: "parentResource2"
+	};
+
+	var child:Node = new Node();
+	var childResources:Object = {
+		key2: "childResource2",
+		key3: "childResource3"
+	};
+
+	// Add child to parent
+	parent.addChild(child);
+
+	// Attach resources to nodes
+	parent.setResources(parentResources);
+	child.setResources(childResources);
+
+	// Attach resource to child, and set attributes 'setted' value
+	child.setAttribute("attr1", "$key1");
+	child.setAttribute("attr2", "$key2");
+	parent.setAttribute("attr1", "$key3");
+
+	// Trace attributes 'valueCache' value
+	trace(child.getAttributeCache("attr1"));  // parentResource1 - used from parent resource dictionary
+	trace(child.getAttributeCache("attr2"));  // childResource2 - user from child resources dictionary
+	trace(parent.getAttributeCache("attr3")); // null - "$key3" doesn't exist in parent resource dictionary
+
 ### Node Style Sheet (CSS)
 ### Layouts
 #### Absolute

@@ -1,53 +1,56 @@
+dialog {
+	backgroundImage: $('dialog-border');
+	background9Scale: 20px;
+
+	padding: 16px;
+	height:200px;
+}
+
+dialog #header {
+	backgroundImage: $('dialog-header');
+	background9Scale: 16px;
+}
+
+button {
+	background9Scale: 8px 8px 15px;
+	backgroundImage: $('button-up');
+	cursor: button;
+
+	fontName: FrizQuadrata;
+	fontSize: 13px;
+	fontColor: #FFFF00;
+	/*fontColor: white;*/
+
+	marginBottom: -8px;
+
+	width: 128px;
+	height: 32px;
+}
+
 button:hover { filter: brightness(0.05) }
 button:active
 {
-	backgroundImage: res('button-down'); 
+	backgroundImage: $('button-down'); 
 	paddingBottom: 4px;
 }
 
 button.disabled:hover { filter: none; cursor: auto; }
 button.disabled
 {
-	backgroundImage: res('button-disabled');
+	backgroundImage: $('button-disabled');
 	fontColor: #FFFFFF;
 }
 
-button
-{
-	background9Scale: 8px 8px 15px;
-	backgroundImage: res('button-up');
-	cursor: button;
-
-	marginBottom: -8px;
-	fontColor: #FFFF00;
-
-	width: 150px;
-	minHeight: 38px;
-}
-
-border
-{
-	background9Scale: 20px;
-	backgroundImage: res('dialog-border');
-	padding: 24px 32px 18px;
-	orientation: vertical;
-	halign: right;
-	/*gap: 18px;*/
-
-	fontName: FrizQuadrata;
-	fontSize: 13px;
-	fontColor: white;
-}
 
 icon.alert
 {
-	src: res('dialog-alert-icon');
+	src: $('dialog-alert-icon');
 }
 
-#header
-{
-	width: 256px;
-	height: 64px;
-	backgroundImage: res('dialog-header');
-	marginTop: -37px;
-}
+/*#header*/
+/*{*/
+	/*width: 256px;*/
+	/*height: 64px;*/
+	/*backgroundImage: $('dialog-header');*/
+	/*marginTop: -37px;*/
+/*}*/

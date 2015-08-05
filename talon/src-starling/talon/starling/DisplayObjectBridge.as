@@ -210,7 +210,7 @@ package talon.starling
 		private function onBackgroundColorChange():void
 		{
 			var value:String = _node.getAttributeCache(Attribute.BACKGROUND_COLOR);
-			_filler.transparent = value == Attribute.TRANSPARENT;
+			_filler.transparent = value == Attribute.NONE;
 			_filler.color = StringUtil.parseColor(value, _filler.color);
 		}
 
@@ -297,7 +297,7 @@ package talon.starling
 			}
 			else if (touch.phase == TouchPhase.MOVED)
 			{
-				var isWithinBounds:Boolean = _target.bounds.contains(touch.globalX, touch.globalY);
+				var isWithinBounds:Boolean = _target.getBounds(_target.stage).contains(touch.globalX, touch.globalY);
 
 				if (_node.states.contains("active") && !isWithinBounds)
 				{

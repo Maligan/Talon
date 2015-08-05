@@ -42,6 +42,7 @@ package browser.dom.files
 
 		private function onFileChange(e:FileMonitorEvent):void
 		{
+			_type = null;
 			dispatchEventWith(Event.CHANGE);
 		}
 

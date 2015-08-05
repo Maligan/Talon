@@ -63,8 +63,8 @@ package talon
 		public function Node():void
 		{
 			// Setup width/height layout callbacks
-			width.auto = minWidth.auto = maxWidth.auto = measureAutoWidth;
-			height.auto = minHeight.auto = maxHeight.auto = measureAutoHeight;
+			width.auto = measureAutoWidth;
+			height.auto = measureAutoHeight;
 
 			states.change.addListener(restyle);
 			classes.change.addListener(restyle);
@@ -317,17 +317,17 @@ package talon
 			var inherit:Number = parent ? parent.ppem : base;
 			var attribute:Attribute = getOrCreateAttribute(Attribute.FONT_SIZE);
 			if (attribute.isInheritable && attribute.basic == Attribute.INHERIT) return inherit;
-			return Gauge.toPixels(attribute.basic, ppmm, inherit, ppdp, inherit, 0, 0, 0, 0);
+			return Gauge.toPixels(attribute.basic, ppmm, inherit, ppdp, inherit, 0, 0, 0);
 		}
 
 		/** This is 'auto' callback for gauges: width, minWidth, maxWidth. */
-		private function measureAutoWidth(width:Number, height:Number):Number
+		private function measureAutoWidth(height:Number):Number
 		{
 			return layout.measureAutoWidth(this, height);
 		}
 
 		/** This is 'auto' callback for gauges: height, minHeight, maxHeight. */
-		private function measureAutoHeight(width:Number, height:Number):Number
+		private function measureAutoHeight(width:Number):Number
 		{
 			return layout.measureAutoHeight(this, width);
 		}

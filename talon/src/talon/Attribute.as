@@ -8,12 +8,11 @@ package talon
 
 	public final class Attribute
 	{
-		public static const TRANSPARENT:String  = "transparent";
+		public static const AUTO:String         = "auto";
 		public static const WHITE:String        = "white";
 		public static const FALSE:String        = "false";
 		public static const TRUE:String         = "true";
-		public static const AUTO:String         = Gauge.AUTO;
-		public static const NONE:String         = Gauge.NONE;
+		public static const NONE:String         = "none";
 		public static const ZERO:String         = "0px";
 		public static const ONE:String          = "1";
 		public static const INHERIT:String      = "inherit";
@@ -28,11 +27,11 @@ package talon
 		public static const CLASS:String                = registerAttributeDefaults("class",               null,                     false,  false);
 		public static const STATE:String                = registerAttributeDefaults("state",               null,                     false,  false);
 
-		public static const WIDTH:String                = registerAttributeDefaults("width",               AUTO);
+		public static const WIDTH:String                = registerAttributeDefaults("width",               NONE);
 		public static const MIN_WIDTH:String            = registerAttributeDefaults("minWidth",            NONE);
 		public static const MAX_WIDTH:String            = registerAttributeDefaults("maxWidth",            NONE);
 
-		public static const HEIGHT:String               = registerAttributeDefaults("height",              AUTO);
+		public static const HEIGHT:String               = registerAttributeDefaults("height",              NONE);
 		public static const MIN_HEIGHT:String           = registerAttributeDefaults("minHeight",           NONE);
 		public static const MAX_HEIGHT:String           = registerAttributeDefaults("maxHeight",           NONE);
 
@@ -57,7 +56,7 @@ package talon
 		public static const BACKGROUND_IMAGE:String     = registerAttributeDefaults("backgroundImage",     NONE);
 		public static const BACKGROUND_TINT:String      = registerAttributeDefaults("backgroundTint",      WHITE);
 		public static const BACKGROUND_9SCALE:String    = registerAttributeDefaults("background9Scale",    NONE);
-		public static const BACKGROUND_COLOR:String     = registerAttributeDefaults("backgroundColor",     TRANSPARENT);
+		public static const BACKGROUND_COLOR:String     = registerAttributeDefaults("backgroundColor",     NONE);
 		public static const BACKGROUND_ALPHA:String     = registerAttributeDefaults("backgroundAlpha",     ONE);
 		public static const BACKGROUND_BLEND_MODE:String= registerAttributeDefaults("backgroundBlendMode", AUTO);
 		public static const BACKGROUND_FILL_MODE:String = registerAttributeDefaults("backgroundFillMode",  FillMode.SCALE);

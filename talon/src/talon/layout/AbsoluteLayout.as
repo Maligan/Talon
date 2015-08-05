@@ -145,17 +145,17 @@ package talon.layout
 		{
 			aw = Infinity;
 			ah = Infinity;
-			var value:Number = gauge.toPixels(context.ppmm, context.ppem, context.ppdp, pp100p, aw, ah, ppts, ts);
+			var value:Number = gauge.toPixels(context.ppmm, context.ppem, context.ppdp, pp100p, aw, ppts, ts);
 
 			if (min && !min.isNone)
 			{
-				var minValue:Number = min.toPixels(context.ppmm, context.ppem, context.ppdp, pp100p, aw, ah, ppts, ts);
+				var minValue:Number = min.toPixels(context.ppmm, context.ppem, context.ppdp, pp100p, aw, ppts, ts);
 				if (minValue > value) value = minValue;
 			}
 
 			if (max && !max.isNone)
 			{
-				var maxValue:Number = max.toPixels(context.ppmm, context.ppem, context.ppdp, pp100p, aw, ah, ppts, ts);
+				var maxValue:Number = max.toPixels(context.ppmm, context.ppem, context.ppdp, pp100p, aw, ppts, ts);
 				if (maxValue < value) value = maxValue;
 			}
 

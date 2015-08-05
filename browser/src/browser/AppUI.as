@@ -209,7 +209,7 @@ package browser
 			}
 			catch (e:Error)
 			{
-				_templateProduceMessage = new DocumentMessage(DocumentMessage.PRODUCE_ERROR, [templateId, e.message]);
+				_templateProduceMessage = new DocumentMessage(DocumentMessage.PRODUCE_ERROR, [templateId, e.getStackTrace()]);
 				_controller.document.messages.addMessage(_templateProduceMessage);
 			}
 

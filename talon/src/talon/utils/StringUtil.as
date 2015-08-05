@@ -1,8 +1,6 @@
 package talon.utils
 {
 	import starling.utils.Color;
-	import starling.utils.HAlign;
-	import starling.utils.VAlign;
 
 	/** This is utility method to work with strings in different formats and notation. */
 	public final class StringUtil
@@ -57,7 +55,6 @@ package talon.utils
 		 * Parse strings like:
 		 * url(http://example.com/) to ['url', 'http://example.com/']
 		 * rgb(128, 128, 128) to ['rgb', '128', '128', '128']
-		 * resource(background-image) to ['resource', 'background-image']
 		 * method(arg1) to ['method', 'arg1']
 		 * First item - function name, second and other - arguments
 		 * Or return null if input string doesn't match css functional notation.
@@ -112,14 +109,13 @@ package talon.utils
 		{
 			switch (string)
 			{
-				case HAlign.LEFT:
-				case VAlign.TOP:
+				case "left":
+				case "top":
 					return 0.0;
-				case HAlign.CENTER:
-				case VAlign.CENTER:
+				case "center":
 					return 0.5;
-				case HAlign.RIGHT:
-				case VAlign.BOTTOM:
+				case "right":
+				case "bottom":
 					return 1.0;
 				default:
 					return 0.0;

@@ -1,14 +1,10 @@
 package talon.utils
 {
-	import talon.Node;
-
 	/** Measured size. Defined by 'units' and 'amount'. */
 	public final class Gauge
 	{
-		/** Value is not set, and must be ignored. This is <code>null</code> analog. */
+		/** Value is not set. This is <code>null</code> analog. */
 		public static const NONE:String = "none";
-		/** Indicates that final value must be defined by measure context. */
-		public static const AUTO:String = "auto";
 		/** Regular pixel. */
 		public static const PX:String = "px";
 		/** Density-independent pixel (e.g. retina display set point per pixel as 1:2). */
@@ -26,10 +22,10 @@ package talon.utils
 		private static const HELPER:Gauge = new Gauge();
 
  		/** @private */
-		public static function toPixels(string:String, ppmm:Number, ppem:Number, ppdt:Number, pp100p:Number, aw:Number, ah:Number, ppts:Number, ts:int):Number
+		public static function toPixels(string:String, ppmm:Number, ppem:Number, ppdt:Number, pp100p:Number, aa:Number, ppts:Number, ts:int):Number
 		{
 			HELPER.parse(string);
-			return HELPER.toPixels(ppmm, ppem, ppdt, pp100p, aw, ah, ppts, ts);
+			return HELPER.toPixels(ppmm, ppem, ppdt, pp100p, aa, ppts, ts);
 		}
 
 		/** On change broadcaster, called when value of gauge was changed. */
@@ -48,12 +44,6 @@ package talon.utils
 			if (string == NONE)
 			{
 				_unit = NONE;
-				_amount = 0;
-			}
-			else if (string == AUTO)
-			{
-				if (!auto) throw new ArgumentError("Auto value is not allowed");
-				_unit = AUTO;
 				_amount = 0;
 			}
 			else if (string == STAR)
@@ -96,17 +86,15 @@ package talon.utils
 		 * @param ppem pixels per em
 		 * @param ppdp pixels per density-independent point
 		 * @param pp100p pixels per 100%
-		 * @param aw available width (for 'auto' measure)
-		 * @param ah available height (for 'auto' measure)
+		 * @param aa argument for auto measure
 		 * @param ppts pixels per total stars
 		 * @param ts total stars amount
 		 */
-		public function toPixels(ppmm:Number, ppem:Number, ppdp:Number, pp100p:Number, aw:Number = Infinity, ah:Number = Infinity, ppts:Number = 0, ts:int = 0):Number
+		public function toPixels(ppmm:Number, ppem:Number, ppdp:Number, pp100p:Number, aa:Number = Infinity, ppts:Number = 0, ts:int = 0):Number
 		{
 			switch (unit)
 			{
-				case NONE:		return 0;
-				case AUTO:		return auto(aw, ah);
+				case NONE:		return auto ? auto(aa) : 0;
 				case PX:		return amount;
 				case MM:		return amount * ppmm;
 				case EM:        return amount * ppem;
@@ -123,8 +111,6 @@ package talon.utils
 		{
 			if (_unit != value)
 			{
-				if (!auto && value == AUTO) throw new ArgumentError("Auto value is not allowed");
-
 				_unit = value;
 				change.dispatch();
 			}
@@ -145,13 +131,11 @@ package talon.utils
 		public function get auto():Function { return _auto }
 		public function set auto(value:Function):void
 		{
-			if (isAuto && value == null) throw new ArgumentError("Auto callback can't be null, when gauge unit == AUTO");
-
 			if (_auto != value)
 			{
 				_auto = value;
 				// Do not dispatch change
-				// This cause change in binded Attribute. (@see TalonImage)
+				// This cause change in binded Attribute.
 			}
 		}
 
@@ -164,13 +148,7 @@ package talon.utils
 				&& gauge.amount == amount;
 		}
 
-		/** talon.utils.Gauge unit == AUTO. */
-		public function get isAuto():Boolean
-		{
-			return _unit == AUTO;
-		}
-
-		/** talon.utils.Gauge unit == NONE. */
+		/** unit == NONE. */
 		public function get isNone():Boolean
 		{
 			return _unit == NONE;
@@ -179,7 +157,6 @@ package talon.utils
 		/** @private */
 		public function toString():String
 		{
-			if (isAuto) return AUTO;
 			if (isNone) return NONE;
 			if (_unit==STAR && _amount==1) return STAR;
 

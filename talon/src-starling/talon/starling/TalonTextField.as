@@ -2,7 +2,6 @@ package talon.starling
 {
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import flash.text.AntiAliasType;
 	import flash.text.GridFitType;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
@@ -32,8 +31,8 @@ package talon.starling
 			_node.addListener(Event.RESIZE, onNodeResize);
 
 			// TextField autoSize
-			_node.width.auto = _node.minWidth.auto = _node.maxWidth.auto = measureWidth;
-			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = measureHeight;
+			_node.width.auto = measureWidth;
+			_node.height.auto = measureHeight;
 			autoSize = TextFieldAutoSize.NONE;
 			batchable = true;
 //			border = true;
@@ -66,13 +65,13 @@ package talon.starling
 		//
 		// Measure size
 		//
-		private function measureWidth(availableWidth:Number, availableHeight:Number):Number { return measure(availableWidth, availableHeight).width; }
-		private function measureHeight(availableWidth:Number, availableHeight:Number):Number { return measure(availableWidth, availableHeight).height; }
+		private function measureWidth(availableHeight:Number):Number { return measure(Infinity, availableHeight).width; }
+		private function measureHeight(availableWidth:Number):Number { return measure(availableWidth, Infinity).height; }
 
 		/** TODO: Optimize. */
 		private function measure(aw:Number, ah:Number):Rectangle
 		{
-			autoSize = getAutoSize(node.width.isAuto, node.height.isAuto);
+			autoSize = getAutoSize(node.width.isNone, node.height.isNone);
 			width = aw;
 			height = ah;
 			var result:Rectangle = textBounds;
@@ -146,13 +145,13 @@ package talon.starling
 		private function onFontNameChange():void { super.fontName = node.getAttributeCache(Attribute.FONT_NAME) || BitmapFont.MINI }
 
 		public override function set hAlign(value:String):void { if (super.hAlign != value) node.setAttribute(Attribute.HALIGN, value) }
-		private function onHAlignChange():void { super.hAlign = _node.getAttributeCache(Attribute.HALIGN); }
+		private function onHAlignChange():void { super.hAlign = _node.getAttributeCache(Attribute.HALIGN) }
 
 		public override function set vAlign(value:String):void { if (super.vAlign != value) node.setAttribute(Attribute.VALIGN, value) }
-		private function onVAlignChange():void { super.vAlign = _node.getAttributeCache(Attribute.VALIGN); }
+		private function onVAlignChange():void { super.vAlign = _node.getAttributeCache(Attribute.VALIGN) }
 
 		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
-		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT).replace("!", "\n"); }
+		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT) }
 
 		//
 		// Properties

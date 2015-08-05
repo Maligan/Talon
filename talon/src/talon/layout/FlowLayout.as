@@ -54,6 +54,11 @@ package talon.layout
 			var percentTargetHeight:Number = maxHeight==Infinity ? 0 : maxHeight;
 			if (!Orientation.isValid(orientation)) throw new Error("Orientation value is not valid: " + orientation);
 
+			var paddingLeft:Number = node.padding.left.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
+			var paddingRight:Number = node.padding.right.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
+			var paddingTop:Number = node.padding.top.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
+			var paddingBottom:Number = node.padding.bottom.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
+
 			flow.setSpacings(getGap(node), getInterline(node));
 			flow.setWrap(getWrap(node));
 
@@ -62,11 +67,13 @@ package talon.layout
 			{
 				flow.setMaxSize(maxWidth, maxHeight);
 				flow.setAlign(getAlign(node, Attribute.HALIGN), getAlign(node, Attribute.VALIGN));
+				flow.setPadding(paddingLeft, paddingRight, paddingTop, paddingBottom);
 			}
 			else
 			{
 				flow.setMaxSize(maxHeight, maxWidth);
 				flow.setAlign(getAlign(node, Attribute.VALIGN), getAlign(node, Attribute.HALIGN));
+				flow.setPadding(paddingTop, paddingBottom, paddingLeft, paddingRight);
 			}
 
 			// Child calculation
@@ -75,8 +82,8 @@ package talon.layout
 				var child:Node = node.getChildAt(i);
 
 				// TODO: Width/Height priority & minimum/maximum values
-				var childWidth:Number           = child.width.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetWidth, Infinity, Infinity, child.width.amount, child.width.amount);
-				var childHeight:Number          = child.height.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetHeight, Infinity, Infinity, child.height.amount, child.height.amount);
+				var childWidth:Number           = child.width.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetWidth, Infinity, child.width.amount, child.width.amount);
+				var childHeight:Number          = child.height.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetHeight, Infinity, child.height.amount, child.height.amount);
 
 				var childMarginLeft:Number      = child.margin.left.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetWidth);
 				var childMarginRight:Number     = child.margin.right.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetWidth);
@@ -126,8 +133,8 @@ package talon.layout
 
 		private function getWrap(node:Node):Boolean { return StringUtil.parseBoolean(node.getAttributeCache(Attribute.WRAP)); }
 		private function getAlign(node:Node, name:String):Number { return StringUtil.parseAlign(node.getAttributeCache(name)) }
-		private function getGap(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.GAP), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0, 0); }
-		private function getInterline(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.INTERLINE), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0, 0); }
+		private function getGap(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.GAP), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0); }
+		private function getInterline(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.INTERLINE), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0); }
 	}
 }
 
@@ -141,13 +148,13 @@ class Flow
 {
 	// Properties
 	private var _maxLength:Number;
-	private var _lengthPaddingBegin:Number = 0;
-	private var _lengthPaddingEnd:Number = 0;
+	private var _lengthPaddingBegin:Number;
+	private var _lengthPaddingEnd:Number;
 	private var _gap:Number;
 
 	private var _maxThickness:Number;
-	private var _thicknessPaddingBegin:Number = 0;
-	private var _thicknessPaddingEnd:Number = 0;
+	private var _thicknessPaddingBegin:Number;
+	private var _thicknessPaddingEnd:Number;
 	private var _interline:Number;
 
 	private var _wrap:Boolean;
@@ -181,10 +188,10 @@ class Flow
 	}
 
 	// Phase 0
-	public function setMaxSize(maxLength:Number, maxThickness:Number):void
+	public function setMaxSize(lMax:Number, tMax:Number):void
 	{
-		_maxLength = maxLength;
-		_maxThickness = maxThickness;
+		_maxLength = lMax;
+		_maxThickness = tMax;
 	}
 
 	public function setWrap(wrap:Boolean):void
@@ -196,6 +203,14 @@ class Flow
 	{
 		_gap = gap;
 		_interline = interline;
+	}
+
+	public function setPadding(lBefore:Number, lAfter:Number, tBefore:Number, tAfter:Number):void
+	{
+		_lengthPaddingBegin = lBefore;
+		_lengthPaddingEnd = lAfter;
+		_thicknessPaddingBegin = tBefore;
+		_thicknessPaddingEnd = tAfter;
 	}
 
 	public function setAlign(lengthwise:Number, thicknesswise:Number):void
@@ -247,16 +262,16 @@ class Flow
 
 	public function arrange():void
 	{
-		var thickness:Number = 0;
+		var lMax:Number = _maxLength!=Infinity ? _maxLength : getLength();
 
-		var totalLength:Number = _maxLength!=Infinity ? _maxLength : getLength();
-		var tShift:Number = _maxThickness!=Infinity ? (_maxThickness-getThickness())*_alignThicknesswise : 0;
+		var tShift:Number = 0;
+		var tAlignShift:Number = _maxThickness!=Infinity ? (_maxThickness-getThickness())*_alignThicknesswise : 0;
 
 		for each (var line:FlowLine in _lines)
 		{
-			var lShift:Number = (totalLength-line.length)*_alignLengthwise;
-			line.arrange(lShift, tShift + thickness);
-			thickness += line.thickness + _interline;
+			var lAlignShift:Number = (lMax-line.length)*_alignLengthwise;
+			line.arrange(_lengthPaddingBegin + lAlignShift, _thicknessPaddingBegin + tAlignShift + tShift);
+			tShift += line.thickness + _interline;
 		}
 	}
 
@@ -270,9 +285,9 @@ class Flow
 
 	public function getLength():Number
 	{
-		var result:Number = _lengthPaddingBegin + _lengthPaddingEnd;
+		var result:Number = 0;
 		for each (var line:FlowLine in _lines) result = Math.max(result, line.length);
-		return result;
+		return _lengthPaddingBegin + result + _lengthPaddingEnd;
 	}
 
 	public function getThickness():Number
@@ -345,9 +360,9 @@ class FlowLine
 
 			// Via thickness
 			element.tSize = element.thicknessIsStar ? _thickness : element.thickness;
-			element.tPos = tShift + (_thickness-element.tSize)*element.thicknessAlign;
+			element.tPos = tShift + element.thicknessBefore + (_thickness-element.tSize)*element.thicknessAlign;
 
-			lOffset += element.lengthBefore + element.lSize + element.lengthAfter  + _gap;
+			lOffset += element.lengthBefore + element.lSize + element.lengthAfter + _gap;
 		}
 	}
 
@@ -376,7 +391,7 @@ class FlowElement
 	public var lengthIsStar:Boolean;
 
 	public var thicknessBefore:Number;
-	public var thicknessAfter:Number;
+	public var thicknessAfter:Number; // TODO
 	public var thickness:Number;
 	public var thicknessIsStar:Boolean;
 	public var thicknessAlign:Number;

@@ -2,29 +2,36 @@ dialog {
 	backgroundImage: $('dialog-border');
 	background9Scale: 20px;
 
+	fontName: FrizQuadrata;
+	fontSize: 13px;
+	fontColor: #FFFFFF;
+
 	padding: 16px;
-	height:200px;
 }
 
 dialog #header {
 	backgroundImage: $('dialog-header');
 	background9Scale: 16px;
+
+	marginTop: -28px;
+	ihalign: center;
+	height: 40px;
+	padding: none 24px;
 }
 
 button {
-	background9Scale: 8px 8px 15px;
+	background9Scale: 8px;
 	backgroundImage: $('button-up');
 	cursor: button;
 
 	fontName: FrizQuadrata;
 	fontSize: 13px;
 	fontColor: #FFFF00;
-	/*fontColor: white;*/
 
-	marginBottom: -8px;
+	align: center;
 
-	width: 128px;
-	height: 32px;
+	height: 28px;
+	padding: 2px 32px;
 }
 
 button:hover { filter: brightness(0.05) }
@@ -41,16 +48,7 @@ button.disabled
 	fontColor: #FFFFFF;
 }
 
-
-icon.alert
+icon.warning
 {
 	src: $('dialog-alert-icon');
 }
-
-/*#header*/
-/*{*/
-	/*width: 256px;*/
-	/*height: 64px;*/
-	/*backgroundImage: $('dialog-header');*/
-	/*marginTop: -37px;*/
-/*}*/

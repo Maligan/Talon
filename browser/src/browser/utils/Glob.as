@@ -30,10 +30,10 @@ package browser.utils
 		//
 		private function parse(string:String):RegExp
 		{
-			return new RegExp(regExpEscape(string).replace(/\\\*/g, '.*').replace(/\\\?/g, '.'), 'g');
+			return new RegExp(preg_quote(string).replace(/\\\*/g, '.*').replace(/\\\?/g, '.'), 'g');
 		}
 
-		private function regExpEscape(string:String, delimiter:String = null):String
+		private function preg_quote(string:String, delimiter:String = null):String
 		{
 			// http://kevin.vanzonneveld.net
 			// +   original by: booeyOH
@@ -47,7 +47,7 @@ package browser.utils
 			// *     returns 2: '\*RRRING\* Hello\?'
 			// *     example 3: preg_quote("\\.+*?[^]$(){}=!<>|:");
 			// *     returns 3: '\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:'
-			return (string + '').replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'), '\\$&');
+			return string.replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'), '\\$&');
 		}
 	}
 }

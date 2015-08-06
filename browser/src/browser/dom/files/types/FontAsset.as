@@ -22,6 +22,7 @@ package browser.dom.files.types
 			if (_xml == null) return;
 
 			document.addEventListener(DocumentEvent.CHANGING, onDocumentChanging);
+			onDocumentChanging(null);
 		}
 
 		override public function detach():void
@@ -34,13 +35,15 @@ package browser.dom.files.types
 			_font && TextField.unregisterBitmapFont(_font.name, false);
 			_font = null;
 
-			document.removeEventListener(DocumentEvent.CHANGING, onDocumentChanging);
+			_texture = null;
 
+			document.removeEventListener(DocumentEvent.CHANGING, onDocumentChanging);
 		}
 
 		private function onDocumentChanging(e:Event):void
 		{
 			if (document.tasks.isBusy) return;
+			reportCleanup();
 
 			var textureId:String = document.factory.getResourceId(_xml.pages.page.@file);
 			var texture:Texture = document.factory.getResource(textureId);
@@ -52,9 +55,11 @@ package browser.dom.files.types
 
 			if (_texture != texture)
 			{
+				document.tasks.begin();
 				_texture = texture;
 				_font = new BitmapFont(_texture, _xml);
 				TextField.registerBitmapFont(_font);
+				document.tasks.end();
 			}
 		}
 	}

@@ -21,14 +21,14 @@ package browser.dom.files.types
 			if (_xml == null) return;
 
 			document.addEventListener(DocumentEvent.CHANGING, onDocumentChanging);
+			onDocumentChanging(null);
 		}
 
 		public override function detach():void
 		{
 			reportCleanup();
-			document.removeEventListener(DocumentEvent.CHANGING, onDocumentChanging);
 
-			_texture = null; // NB! Do not dispose()
+			_texture = null;
 
 			_xml && System.disposeXML(_xml);
 			_xml = null;
@@ -43,11 +43,14 @@ package browser.dom.files.types
 				_atlas.dispose();
 				_atlas = null;
 			}
+
+			document.removeEventListener(DocumentEvent.CHANGING, onDocumentChanging);
 		}
 
 		private function onDocumentChanging(e:Event):void
 		{
 			if (document.tasks.isBusy) return;
+			reportCleanup();
 
 			var textureId:String = document.factory.getResourceId(_xml.@imagePath);
 			var texture:Texture = document.factory.getResource(textureId);

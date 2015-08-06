@@ -2,40 +2,28 @@
 <library>
 
 	<template id="dialog">
-		<node halign="center" valign="center" orientation="horizontal"> 
+		<node orientation="vertical" header="Pangram explorer"> 
 
-			<!--<node id="header"><label text="root" padding="32px"/></node>-->
-			<!--<node width="*" backgroundColor="red" height="40" />-->
+			<!-- Header -->
+			<node id="header"><label text="@header" height="100%" marginTop="2px" /></node>
 
-			<node backgroundColor="red">
-				<button label="Accept" />
-				<button label="Accept" />
+			<!-- Content -->
+			<node id="content" backgroundColor="none" gap="8px">
+				<image src="$('dialog-alert-icon')" width="48px" />
+				<label halign="left" text="The quick brown fox jumps over the lazy dog. &#13;Jackdaws love my big sphinx of quartz.&#13;The five boxing wizards jump quickly." />
 			</node>
+
+			<!-- Bottom button block -->
+			<node backgroundColor="none" ihalign="right" marginTop="8px">
+				<button label="Accept" />
+				<button label="Cancel" class="disabled" />
+			</node>
+
 		</node>
 	</template>
 
 	<template id="button">
-		<node label="Accept"><label text="@label" width="100%" height="100%" marginTop="-4px" /></node>
+		<node label="Label"><label text="@label" height="100%" marginTop="-0px" /></node>
 	</template>
-
-  <!--<border layout="abs">-->
-    <!--<node width="*" height="0px" halign="center">-->
-      <!--<node id="header" valign="center" halign="center" paddingBottom="22px">-->
-        <!--<label text="Attention"/>-->
-      <!--</node>-->
-    <!--</node>-->
-    <!--<node height="90px">-->
-      <!--<image class="alert" src="res(gray)" />-->
-      <!--<label margin="9px" halign="left" text="And remember all those assets belong to Blizzard Entertainment and cannot be used in your own projects. And bla-bla-bla long text which can be displayed in this mesage box." width="232px"/>-->
-    <!--</node>-->
-    <!--<node gap="16px">-->
-      <!--<button class="disabled">-->
-        <!--<label text="Cancel" width="100%" height="100%"/>-->
-      <!--</button>-->
-      <!--<button>-->
-        <!--<label text="Accept" width="100%" height="100%"/>-->
-      <!--</button>-->
-    <!--</node>-->
-  <!--</border>-->
 
 </library>

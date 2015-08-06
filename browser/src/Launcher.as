@@ -24,14 +24,15 @@ package
 
 		public function Launcher()
 		{
-			var r1:Rectangle = new Rectangle(0, 0, Infinity, Infinity);
-			var r2:Rectangle = new Rectangle();
+			var source:String = "This is \\\\\\n new line";
+			var target:String = source.replace(/[^\\](?:\\\\)?\\([nrt\s])/, replaceEscapedChars);
 
+			trace(target);
 
-			r2.copyFrom(r1);
-			trace(r2.width, Math.round(r2.height));
-
-
+			function replaceEscapedChars(match:String, char:String, offset:int, string:String):String
+			{
+				return match.replace("\\n", "\n");
+			}
 
 			_backgroundColor = new SharedString("backgroundColor", AppConstants.SETTING_BACKGROUND_DEFAULT);
 			stage ? initialize() : addEventListener(Event.ADDED_TO_STAGE, initialize);

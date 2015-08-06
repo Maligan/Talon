@@ -9,19 +9,19 @@ package browser.dom.log
 		//
 		// Types
 		//
-		public static const FILE_READ_ERROR:String =                    "E1:    Can't access to file {0}";
-		public static const FILE_LISTING_ERROR:String =                 "E2:    Folder {0} can't be listed";
+		public static const FILE_READ_ERROR:String =                    "E1:    Can't access to file '{0}'";
+		public static const FILE_LISTING_ERROR:String =                 "E2:    Folder '{0}' can't be listed";
 
-		public static const FILE_CONTAINS_WRONG_CSS:String =            "E3:    File {0} contains wrong CSS";
-		public static const FILE_CONTAINS_WRONG_XML:String =            "E4:    File {0} contains wrong XML";
-		public static const FILE_CONTAINS_WRONG_ELEMENT:String =        "W5:    File {0} contains wrong element '{1}'";
-		public static const FILE_CONTAINS_WRONG_IMAGE_FORMAT:String =   "E6:    File {0} has unknown texture format (supported only " + AppConstants.SUPPORTED_IMAGE_EXTENSIONS.join() + " formats)";
+		public static const FILE_CONTAINS_WRONG_CSS:String =            "E3:    File '{0}' contains wrong CSS";
+		public static const FILE_CONTAINS_WRONG_XML:String =            "E4:    File '{0}' contains wrong XML";
+		public static const FILE_CONTAINS_WRONG_ELEMENT:String =        "W5:    File '{0}' contains wrong element '{1}'";
+		public static const FILE_CONTAINS_WRONG_IMAGE_FORMAT:String =   "E6:    File '{0}' has unknown texture format (supported only " + AppConstants.SUPPORTED_IMAGE_EXTENSIONS.join() + " formats)";
 
-		public static const ATLAS_IMAGE_MISSED:String =                 "W7:    Atlas {0} image {1} not found";
-		public static const FONT_IMAGE_MISSED:String =                  "W8:    Font {0} image {1} not found";
+		public static const ATLAS_IMAGE_MISSED:String =                 "W7:    Atlas '{0}' image '{1}' not found";
+		public static const FONT_IMAGE_MISSED:String =                  "W8:    Font '{0}' image '{1}' not found";
 
-		public static const TEXTURE_ERROR:String =                      "E9:    Texture creation from file {0} produce error: {1}";
-		public static const TEMPLATE_ERROR:String =                     "E10:   Template in file {0} produce error: {1}";
+		public static const TEXTURE_ERROR:String =                      "E9:    Texture creation from file '{0}' produce error: {1}";
+		public static const TEMPLATE_ERROR:String =                     "E10:   Template in file '{0}' produce error: {1}";
 		public static const PRODUCE_ERROR:String =                      "E11:   Error while produce template '{0}': {1}";
 
 		//

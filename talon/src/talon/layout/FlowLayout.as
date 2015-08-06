@@ -7,6 +7,7 @@ package talon.layout
 	import talon.enums.Orientation;
 	import talon.utils.Gauge;
 	import talon.utils.StringUtil;
+	import talon.utils.StringUtil;
 
 	public class FlowLayout extends Layout
 	{
@@ -81,9 +82,28 @@ package talon.layout
 			{
 				var child:Node = node.getChildAt(i);
 
-				// TODO: Width/Height priority & minimum/maximum values
-				var childWidth:Number           = child.width.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetWidth, Infinity, child.width.amount, child.width.amount);
-				var childHeight:Number          = child.height.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetHeight, Infinity, child.height.amount, child.height.amount);
+				// TODO: Width/Height minimum/maximum values
+				// ------------------------------------------
+				var childWidth:Number = 0;
+				var childHeight:Number = 0;
+
+				if (child.width.isNone && !child.height.isNone)
+				{
+					// percentTargetWidth && and percentTargetHeight for auto!
+					childHeight = child.height.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetHeight, Infinity, child.height.amount, child.height.amount);
+					childWidth  = child.width.toPixels (node.ppmm, node.ppem, node.ppdp, percentTargetWidth, childHeight, child.width.amount, child.width.amount);
+				}
+				else if (child.height.isNone && !child.width.isNone)
+				{
+					childWidth  = child.width.toPixels (node.ppmm, node.ppem, node.ppdp, percentTargetWidth, Infinity, child.width.amount, child.width.amount);
+					childHeight = child.height.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetHeight, childWidth, child.height.amount, child.height.amount);
+				}
+				else
+				{
+					childWidth  = child.width.toPixels (node.ppmm, node.ppem, node.ppdp, percentTargetWidth, Infinity, child.width.amount, child.width.amount);
+					childHeight = child.height.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetHeight, Infinity, child.height.amount, child.height.amount);
+				}
+				// ------------------------------------------
 
 				var childMarginLeft:Number      = child.margin.left.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetWidth);
 				var childMarginRight:Number     = child.margin.right.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetWidth);
@@ -343,7 +363,7 @@ class FlowLine
 		if (_children.length > 1) _length += _gap;
 		_length += child.lengthBefore + child.lengthAfter;
 
-		if (!child.thicknessIsStar) _thickness = Math.max(_thickness, child.thickness);
+		_thickness = Math.max(_thickness, child.thicknessBefore + (!child.thicknessIsStar ? child.thickness : 0) + child.thicknessAfter);
 	}
 
 	public function arrange(lShift:Number, tShift:Number):void
@@ -391,7 +411,7 @@ class FlowElement
 	public var lengthIsStar:Boolean;
 
 	public var thicknessBefore:Number;
-	public var thicknessAfter:Number; // TODO
+	public var thicknessAfter:Number;
 	public var thickness:Number;
 	public var thicknessIsStar:Boolean;
 	public var thicknessAlign:Number;

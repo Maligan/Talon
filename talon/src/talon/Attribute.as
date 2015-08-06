@@ -73,7 +73,7 @@ package talon
 		public static const Z_INDEX:String              = registerAttributeDefaults("zIndex",              ZERO);
 
 		public static const LAYOUT:String               = registerAttributeDefaults("layout",              Layout.FLOW);
-		public static const VISIBILITY:String           = registerAttributeDefaults("visibility",          TRUE);
+		public static const VISIBLE:String              = registerAttributeDefaults("visible",             TRUE);
 
 		public static const POSITION:String             = registerAttributeDefaults("position",            ZERO);
 		public static const X:String                    = registerAttributeDefaults("x",                   ZERO);
@@ -98,6 +98,7 @@ package talon
 		public static const BREAK:String                = registerAttributeDefaults("break",               BreakMode.AUTO);
 
 		public static const TEXT:String                 = registerAttributeDefaults("text");
+		public static const SRC:String                  = registerAttributeDefaults("src");
 
 		//
 		// Defaults

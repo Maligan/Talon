@@ -191,6 +191,14 @@ package talon
 			restyle();
 		}
 
+		public function getStyle(node:Node):Object
+		{
+			if (_style == null && _parent != null) return _parent.getStyle(node);
+			if (_style != null && _parent == null) return _style.getStyle(node);
+			if (_style != null && _parent != null) return _style.getStyle(node, _parent.getStyle(node));
+			return new Object();
+		}
+
 		/** Recursive apply style to current node. */
 		private function restyle():void
 		{
@@ -216,14 +224,6 @@ package talon
 				var child:Node = getChildAt(i);
 				child.restyle();
 			}
-		}
-
-		public function getStyle(node:Node):Object
-		{
-			if (_style == null && _parent != null) return _parent.getStyle(node);
-			if (_style != null && _parent == null) return _style.getStyle(node);
-			if (_style != null && _parent != null) return _style.getStyle(node, _parent.getStyle(node));
-			return new Object();
 		}
 
 		//

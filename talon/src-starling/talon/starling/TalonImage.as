@@ -1,55 +1,79 @@
 package talon.starling
 {
+	import starling.core.RenderSupport;
 	import starling.display.Image;
 	import starling.events.Event;
-	import starling.filters.FragmentFilter;
 	import starling.textures.Texture;
 
 	import talon.Attribute;
+
 	import talon.Node;
 	import talon.utils.ITalonElement;
 
 	public class TalonImage extends Image implements ITalonElement
 	{
-		private static var _empty:Texture;
+		private static var EMPTY:Texture;
 
+		private var _bridge:DisplayObjectBridge;
 		private var _node:Node;
 
 		public function TalonImage()
 		{
-			super(_empty || (_empty = Texture.empty(1, 1)));
+			EMPTY ||= Texture.empty(1, 1);
+
+			super(EMPTY);
 
 			_node = new Node();
-			_node.width.auto = _node.minWidth.auto = _node.maxWidth.auto = getAutoWidth;
-			_node.height.auto = _node.minHeight.auto = _node.maxHeight.auto = getAutoHeight;
-			_node.addListener(Event.CHANGE, onNodeChange);
+			_node.width.auto = measureWidth;
+			_node.height.auto = measureHeight;
 			_node.addListener(Event.RESIZE, onNodeResize);
+
+			_bridge = new DisplayObjectBridge(this, _node);
+			_bridge.addAttributeChangeListener(Attribute.SRC, onSrcChange);
 		}
 
-		// Make calculation if one is auto and one is not auto
-		private function getAutoWidth(width:Number, height:Number):Number { return (texture == _empty) ? 0 : texture.width; }
-		private function getAutoHeight(width:Number, height:Number):Number { return (texture == _empty) ? 0 : texture.height; }
+		private function measureWidth(height:Number):Number { return measure(height, texture.height, texture.width); }
+		private function measureHeight(width:Number):Number { return measure(width,  texture.width,  texture.height); }
 
-		private function onNodeChange():void
+		private function measure(knownDimension:Number, knownTextureDimension:Number, altTextureDimension:Number):Number
 		{
-//			if (e.data == "src")
-//			{
-//				var texture:Texture = node.getAttribute("src") as Texture;
-//				if (texture != null)
-//				{
-//					this.texture = texture;
-//					node.width.isAuto   && node.dispatchEventWith(Event.CHANGE, false, Attribute.WIDTH);
-//					node.height.isAuto  && node.dispatchEventWith(Event.CHANGE, false, Attribute.HEIGHT);
-//				}
-//			}
+			// If there is no texture - size is zero
+			if (texture == EMPTY) return 0;
+			// If no limit on image size - return original texture size
+			if (knownDimension == Infinity) return knownTextureDimension;
+			// Else calculate new size preserving texture aspect ratio
+			return altTextureDimension * (knownDimension/knownTextureDimension);
+		}
+
+		private function onSrcChange():void
+		{
+			texture = node.getAttributeCache(Attribute.SRC) as Texture || EMPTY;
 		}
 
 		private function onNodeResize():void
 		{
-			x = Math.ceil(node.bounds.x);
-			y = Math.ceil(node.bounds.y);
-			width = Math.ceil(node.bounds.width);
-			height = Math.ceil(node.bounds.height);
+			x = Math.round(node.bounds.x);
+			y = Math.round(node.bounds.y);
+			width = Math.round(node.bounds.width);
+			height = Math.round(node.bounds.height);
+		}
+
+		//
+		// Background customization
+		//
+		public override function render(support:RenderSupport, parentAlpha:Number):void
+		{
+			// Background render
+			_bridge.renderBackground(support, parentAlpha * this.alpha);
+
+			// Children render
+			super.render(support, parentAlpha);
+		}
+
+		public override function dispose():void
+		{
+			node.dispose();
+			super.dispose();
 		}
 
 		public function get node():Node

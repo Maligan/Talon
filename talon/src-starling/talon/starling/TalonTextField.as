@@ -75,7 +75,7 @@ package talon.starling
 			width = aw;
 			height = ah;
 			var result:Rectangle = textBounds;
-			trace("Measure:", result.height, "Source:", aw, "x", ah, text);
+//			trace("Measure:", result.height, "Source:", aw, "x", ah, text);
 			autoSize = TextFieldAutoSize.NONE;
 			result.inflate(2, 2); // starling remove flash 2px offset
 			return result;

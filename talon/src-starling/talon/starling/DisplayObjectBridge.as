@@ -187,7 +187,7 @@ package talon.starling
 
 			// Common options
 			addAttributeChangeListener(Attribute.ID,                    onIDChange);
-			addAttributeChangeListener(Attribute.VISIBILITY,            onVisibilityChange);
+			addAttributeChangeListener(Attribute.VISIBLE,            onVisibleChange);
 			addAttributeChangeListener(Attribute.FILTER,                onFilterChange);
 			addAttributeChangeListener(Attribute.ALPHA,                 onAlphaChange);
 			addAttributeChangeListener(Attribute.CURSOR,                onCursorChange);
@@ -211,7 +211,7 @@ package talon.starling
 		{
 			var value:String = _node.getAttributeCache(Attribute.BACKGROUND_COLOR);
 			_filler.transparent = value == Attribute.NONE;
-			_filler.color = StringUtil.parseColor(value, _filler.color);
+			_filler.color = StringUtil.parseColor(value, Color.WHITE);
 		}
 
 		private function onBackground9ScaleChange():void
@@ -235,7 +235,7 @@ package talon.starling
 		// Listeners: Common
 		//
 		private function onIDChange():void { _target.name = _node.getAttributeCache(Attribute.ID); }
-		private function onVisibilityChange():void { _target.visible = StringUtil.parseBoolean(_node.getAttributeCache(Attribute.VISIBILITY)); }
+		private function onVisibleChange():void { _target.visible = StringUtil.parseBoolean(_node.getAttributeCache(Attribute.VISIBLE)); }
 		private function onAlphaChange():void { _target.alpha = parseFloat(_node.getAttributeCache(Attribute.ALPHA)); }
 
 		private function onFilterChange():void
@@ -345,6 +345,7 @@ package talon.starling
 		{
 			resultRect = base(targetSpace, resultRect);
 
+			// Expand resultRect with background bounds
 			if (_filler.texture || !_filler.transparent)
 			{
 				_target.getTransformationMatrix(targetSpace, MATRIX);

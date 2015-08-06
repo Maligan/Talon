@@ -15,6 +15,7 @@ package talon.utils
 
 		protected var _parser:TMLParser;
 		protected var _parserProductStack:Array;
+		protected var _parserProductStackNonTerminal:Array;
 		protected var _parserProduct:*;
 
 		protected var _linkageByDefault:Class;
@@ -27,6 +28,7 @@ package talon.utils
 			_linkageByDefault = linkageByDefault;
 			_parser = new TMLParser(null, null, onElementBegin, onElementEnd);
 			_parserProductStack = new Array();
+			_parserProductStackNonTerminal = new Array();
 		}
 
 		protected function setup(symbol:String, type:Class):void
@@ -80,6 +82,9 @@ package talon.utils
 			}
 
 			_parserProductStack.push(element);
+
+			var isNonTerminal:Boolean = type in _parser.templates;
+			if (isNonTerminal) _parserProductStackNonTerminal.push(element);
 		}
 
 		protected function getElementNode(element:*):Node
@@ -105,7 +110,7 @@ package talon.utils
 
 			if (bindTarget)
 			{
-				var parent:ITalonElement = _parserProductStack[_parserProductStack.length - 1] as ITalonElement;
+				var parent:ITalonElement = _parserProductStackNonTerminal[_parserProductStackNonTerminal.length - 1] as ITalonElement;
 				var source:Attribute = parent.node.getOrCreateAttribute(bindTarget);
 				var target:Attribute = node.getOrCreateAttribute(attributeName);
 
@@ -132,6 +137,9 @@ package talon.utils
 		private function onElementEnd():void
 		{
 			_parserProduct = _parserProductStack.pop();
+
+			var isNonTerminal:Boolean = getElementNode(_parserProduct).getAttributeCache(Attribute.TYPE) in _parser.templates;
+			if (isNonTerminal) _parserProductStackNonTerminal.pop();
 		}
 
 		//

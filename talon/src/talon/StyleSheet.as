@@ -164,13 +164,16 @@ package talon
 	}
 }
 
-import starling.utils.Color;
-
 import talon.Attribute;
 import talon.Node;
 
 class StyleSelector
 {
+	private static function getPriorityMerge(b:int, c:int, d:int):int
+	{
+		return (b << 16) | (c << 8) | d;
+	}
+
 	private var _priority:int;
 
 	private var _ancestor:StyleSelector;
@@ -207,7 +210,8 @@ class StyleSelector
 			current = current.substring(token.length);
 		}
 
-		_priority = (_ancestor ? _ancestor.priority : 0) + Color.rgb(_id?1:0, _classes.length+_states.length, _type?1:0);
+		// CSS Selector Priority (@see http://www.w3.org/wiki/CSS/Training/Priority_level_of_selector) merged to one integer
+		_priority = (_ancestor ? _ancestor.priority : 0) + getPriorityMerge(_id?1:0, _classes.length + _states.length, _type?1:0);
 	}
 
 	public function match(node:Node):Boolean

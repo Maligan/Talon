@@ -45,6 +45,7 @@ package talon.utils
 		public function parseTemplate(id:String):void
 		{
 			// TODO: Clean after error? _stack.length = 0;
+			// TODO: Separate 'id' and 'type'
 			parse(getTemplateOrDie(id), {type: id}, EMPTY_XML_LIST);
 		}
 
@@ -154,7 +155,7 @@ package talon.utils
 		{
 			var contents:XMLList = getRewrites(xml, rewrites, VAL_CONTENT);
 			if (contents.length() == 0) return xml.children();
-			return contents[contents.length() - 1];
+			return contents[contents.length() - 1].children();
 		}
 
 		/** Get xml-attributes for current xml defined in rewrites. */

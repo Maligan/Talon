@@ -1,3 +1,12 @@
+popup {
+	fontName: Source Sans Pro;
+	fontSize: 14px;
+	fontColor: white;
+	fontSharpness: -1;
+	filter: drop-shadow(0, 0, black, 0.5, 2);
+	backgroundColor: #484B4C;
+}
+
 button {
 	backgroundImage: $button_normal;
 	background9Scale: 4px;
@@ -15,18 +24,11 @@ button:active {
 	backgroundImage: $button_down;
 }
 
-button label
-{
-	width: 100%;
-	halign: center;
-
+button label {
 	fontName: Source Sans Pro;
 	fontSize: 14px;
 	fontColor: #F0F1F1;
 	filter: drop-shadow(1, -90deg, black, 0.5, 0);
-
-	/* Deprecated */
-	margin: 8px;
 }
 
 button.action {
@@ -40,20 +42,6 @@ button.action:hover {
 
 button.action:active {
 	backgroundImage: $button_action_down;
-}
-
-popup
-{
-	fontName: Source Sans Pro;
-	fontSize: 14px;
-	fontColor: white;
-	/*fontSharpness: -1;*/
-	filter: drop-shadow(0, 0, black, 0.5, 2);
-	backgroundColor: #484B4C;
-
-	/*filter="drop-shadow(0, 0, black, 0.5, 1)" */
-	/*backgroundImage: $('popup');*/
-	/*background9Scale: 4px 5px 2px 5px;*/
 }
 
 popup #close
@@ -84,31 +72,49 @@ popup #close
 }
 */
 
-#container
-{
+interface #container {
 	width: 100%;
 	height: 100%;
+	backgroundFillMode: repeat; 
 }
 
-#container.dark { backgroundImage: $('bg_dark'); backgroundFillMode: repeat; }
-#container.light { backgroundImage: $('bg_light'); backgroundFillMode: repeat; }
+interface.dark #container {
+	backgroundImage: $('bg_dark');
+}
 
-preview:hover { backgroundColor: #4F4F4F; }
-preview
-{
-	width: 128px;
-	height: 128px;
-	backgroundColor: #333333;
-	cursor: button;
+interface.light #container { 
+	backgroundImage: $('bg_light');
+}
+
+
+interface #bsod {
+	backgroundColor: #ff0000;
+	alpha: 0.1;
+
+	fontName: Consolas;
+	fontSize: 128px;
+
+	width: 100%;
+	height: 100%;
+	halign: center;
+	valign: center;
+	orientation: vertical;
+}
+
+interface.dark #bsod {
+	fontColor: white;
+}
+
+interface.white #bsod {
+	fontColor: black;
 }
 
 /* Messages */
-
+/*
 message
 {
 	width: 100%;
 	backgroundColor: white;
-	/*padding: 8px;*/
 	gap: 12px;
 	fontColor: black;
 	fontName: Tahoma;
@@ -128,3 +134,4 @@ message.error #icon { src: $(msg_type_error) }
 
 message.warning { backgroundColor: #ffffdf }
 message.warning #icon { src: $(msg_type_warning) }
+*/

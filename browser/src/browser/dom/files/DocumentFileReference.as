@@ -105,6 +105,7 @@ package browser.dom.files
 					if (root == "library") return DocumentFileType.LIBRARY;
 					if (root == "TextureAtlas") return DocumentFileType.ATLAS;
 				}
+				// TODO: Else message invalid XML
 
 				return DocumentFileType.UNKNOWN;
 			}

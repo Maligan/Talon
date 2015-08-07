@@ -109,7 +109,7 @@ package browser
 		private function onBackgroundChange(e:Event):void
 		{
 			var styleName:String = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DEFAULT);
-			_isolatorContainer.node.classes.parse(styleName);
+			_interface.node.classes.parse(styleName);
 		}
 
 		private function onStatsChange(e:Event):void

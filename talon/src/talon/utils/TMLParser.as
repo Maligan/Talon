@@ -42,39 +42,38 @@ package talon.utils
 			_onEnd = onElementEnd;
 		}
 
-		public function parseTemplate(id:String):void
+		public function parse(xml:XML):void
 		{
-			// TODO: Clean after error? _stack.length = 0;
-			// TODO: Separate 'id' and 'type'
-			parse(getTemplateOrDie(id), {type: id}, EMPTY_XML_LIST);
+			_stack.length = 0; // Clean after error?
+			parseInternal(xml, EMPTY_XML_LIST);
 		}
 
-		private function parse(xml:XML, attributes:Object, rewrites:XMLList):void
+		private function parseInternal(xml:XML, rewrites:XMLList):void
 		{
-			var type:String = xml.name();
-			var isTerminal:Boolean = _terminals.indexOf(type) != -1;
+			var tag:String = xml.name();
 
 			// If node can't be expanded - create node
+			var isTerminal:Boolean = _terminals.indexOf(tag) != -1;
 			if (isTerminal)
 			{
 				var replacer:XML = rewriteReplace(xml, rewrites);
 				if (replacer == null)
 				{
-					attributes = mergeAttributes(fetchAttributes(xml), rewriteAttributes(xml, rewrites), attributes);
-					dispatchBegin(attributes);
-					for each (var child:XML in rewriteContent(xml, rewrites)) parse(child, null, rewrites);
+					dispatchBegin(mergeAttributes(fetchAttributes(xml), rewriteAttributes(xml, rewrites)));
+					for each (var child:XML in rewriteContent(xml, rewrites)) parseInternal(child, rewrites);
 					dispatchEnd();
 				}
 				else if (replacer != EMPTY_XML)
 				{
-					parse(replacer, attributes, rewrites);
+					parseInternal(replacer, rewrites);
 				}
 			}
+
 			// Else if node is template
 			else
 			{
-				push(type);
-				parse(getTemplateOrDie(type), fetchAttributes(xml, attributes), fetchRewrites(xml, rewrites));
+				push(tag);
+				parseInternal(getTemplateOrDie(tag), fetchRewrites(xml, rewrites), fetchAttributes(xml, attributes));
 				pop();
 			}
 		}
@@ -100,8 +99,11 @@ package talon.utils
 			return template;
 		}
 
+		//
+		// Attributes (Static Methods)
+		//
 		/** Fetch attributes from XML to key-value pairs. */
-		private function fetchAttributes(xml:XML, force:Object = null):Object
+		private static function fetchAttributes(xml:XML, force:Object = null):Object
 		{
 			var result:Object = new Object();
 
@@ -118,7 +120,7 @@ package talon.utils
 			return mergeAttributes(result, force);
 		}
 
-		private function mergeAttributes(...sources):Object
+		private static function mergeAttributes(...sources):Object
 		{
 			var result:Object = new Object();
 
@@ -130,16 +132,16 @@ package talon.utils
 		}
 
 		//
-		// Rewrites
+		// Rewrites (Static Methods)
 		//
 		/** Fetch rewrites from xml. */
-		private function fetchRewrites(xml:XML, force:XMLList):XMLList
+		private static function fetchRewrites(xml:XML, force:XMLList):XMLList
 		{
 			return xml.child(TAG_REWRITE) + force;
 		}
 
 		/** Get xml-replacer for current xml defined in rewrites. */
-		private function rewriteReplace(xml:XML, rewrites:XMLList):XML
+		private static function rewriteReplace(xml:XML, rewrites:XMLList):XML
 		{
 			var replacers:XMLList = getRewrites(xml, rewrites, VAL_REPLACE);
 			if (replacers.length() == 0) return null;
@@ -151,7 +153,7 @@ package talon.utils
 		}
 
 		/** Get xml-children for current xml defined in rewrites. */
-		private function rewriteContent(xml:XML, rewrites:XMLList):XMLList
+		private static function rewriteContent(xml:XML, rewrites:XMLList):XMLList
 		{
 			var contents:XMLList = getRewrites(xml, rewrites, VAL_CONTENT);
 			if (contents.length() == 0) return xml.children();
@@ -159,7 +161,7 @@ package talon.utils
 		}
 
 		/** Get xml-attributes for current xml defined in rewrites. */
-		private function rewriteAttributes(xml:XML, rewrites:XMLList):Object
+		private static function rewriteAttributes(xml:XML, rewrites:XMLList):Object
 		{
 			var attributes:XMLList = getRewrites(xml, rewrites, VAL_ATTRIBUTES);
 			if (attributes.length() == 0) return null;
@@ -179,7 +181,7 @@ package talon.utils
 			return result;
 		}
 
-		private function getRewrites(target:XML, rewrites:XMLList, mode:String):XMLList
+		private static function getRewrites(target:XML, rewrites:XMLList, mode:String):XMLList
 		{
 			var id:String = target.attribute(ATT_ID);
 			// TODO: @ref && @mode (ATT_REF, ATT_MODE)

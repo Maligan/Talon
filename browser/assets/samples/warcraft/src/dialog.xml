@@ -1,6 +1,24 @@
 <?xml version="1.0"?>
 <library>
 
+	<template id="dialogOverride">
+		<dialog type="dialog">
+			<rewrite mode="content" ref="buttons">
+				<node width="32px" height="32px" backgroundColor="red" />
+			</rewrite>
+		</dialog>
+	</template>
+
+	<template id="ButtonBase">
+
+		<node type="button" label="Button" amount="0">
+			<label text="@label" />
+			<image src="@icon" />
+			<label text="@amount" />
+		</node>
+
+	</template>
+
 	<template id="dialog">
 		<node orientation="vertical" header="Available Pangramms"> 
 
@@ -23,7 +41,9 @@
 	</template>
 
 	<template id="button">
-		<node label="Label"><label id="button_label" text="@label" height="100%" /></node>
+		<node label="Label">
+			<label id="button_label" text="@label" height="100%" />
+		</node>
 	</template>
 
 </library>

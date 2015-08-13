@@ -160,6 +160,36 @@ All resources are inherit from parent to any children. In most case you may atta
 #### Flow
 
 ## TML
+### Example
+Try create simple button:
+	
+	<node width="150px" height="50px" backgroundColor="red" />
+
+Try add label to button:
+
+	<node minWidth="150px" minHeight="50px" backgroundColor="red">
+		<label text="Button" />
+	</node>
+
+Wrap for reusage:
+
+	<template type="button" id="ButtonTemplate">
+
+		<node type="button" minWidth="150px" minHeight="50px" backgroundColor="red" label="Label">
+			<label text="@label" />
+		</node>
+
+	</template>
+
+1. Added `<template>` around the tree
+2. Added attribute `type` to tree root
+3. Binded label's attriubte `text`to root's `label`
+
+Reusage:
+
+	<button label="I'm button" />
+
+### Overview
 > «Списывание с одного источника — плагиат, с двух — компиляция, с трех и более — диссертация»
 
 - XSLT — Это очень мощный инструмент общего пользования, хоть его сложность в разы меньше его мощности всё равно для моих целей он казался ядерной боеголовкой для охоты на уток. Тем не менее основной принцип что xslt - это набор шаблонов и трансформаций связаных с ними я позаимсвовал, но сильно упростив систему трансформации.

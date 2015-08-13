@@ -21,6 +21,7 @@ package talon.utils
 		protected var _linkageByDefault:Class;
 		protected var _linkage:Dictionary = new Dictionary();
 		protected var _resources:Object = new Dictionary();
+		protected var _templates:Object = new Dictionary();
 		protected var _style:StyleSheet = new StyleSheet();
 
 		public function TalonFactoryBase(linkageByDefault:Class):void
@@ -43,7 +44,7 @@ package talon.utils
 		public function produce(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
 		{
 			// Parse template, while parsing events dispatched (onElementBegin, onElementEnd)
-			_parser.parseTemplate(id);
+			_parser.parse(id);
 			var result:* = _parserProduct;
 			var resultAsTalonElement:ITalonElement = result as ITalonElement;
 			_parserProduct = null;
@@ -175,7 +176,9 @@ package talon.utils
 			if (xml.children().length() != 1) throw new ArgumentError("Template must contains one child");
 			if (_parser.templates[id] != null) throw new ArgumentError("Template with id " + id + " already exists");
 
-			_parser.templates[id] = xml.children()[0];
+			var template:XML = xml.children()[0];
+			_parser.templates[id] = template;
+			_templates[id] = template;
 		}
 
 		/** Add all templates and style sheets from library xml. */

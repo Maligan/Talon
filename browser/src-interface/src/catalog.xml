@@ -1,40 +1,35 @@
 <library>
 
-	<template id="interface">
-	  <node width="100%" height="100%" layout="abs" class="dark">
+	<template tag="interface" id="interface">
+
+	  <node type="interface" width="100%" height="100%" layout="abs" class="dark">
 		<node id="container" width="100%" height="100%" />
 		<node id="popups" width="100%" height="100%" layout="abs" halign="center" valign="center"/>
-
-		<node id="bsod">
-			<label text="¯\_(ツ)_/¯" />
-			<!--<label text=":(" fontName="Consolas" fontColor="white" fontSize="150px" />-->
-		</node>
-
-		<!--<message class="error">-->
-		  <!--<image id="icon"/>-->
-		  <!--<node backgroundColor="green" width="*" height="12px" minHeight="*"/>-->
-		  <!--<label text="Can't access to file C:\Projects\Interface\Game\src\img\background.png" width="*" height="auto" minHeight="*" halign="left"/>-->
-		<!--</message>-->
-		<!--<image src="$(crutches)" position="50%" pivot="50%"/>-->
-
+		<node id="bsod"><label text="¯\_(ツ)_/¯" /></node>
 	  </node>
+
 	</template>
 
-	<template id="popup">
-		<node layout="flow" orientation="vertical" padding="12px"> 
-			<!--<label text="New version of Talon Browser Cla Cla Cla asdfasdfsdf asdf asd f dfd 1 2 Consolas" fontName="Source Sans Pro" fontSize="14px" />-->
-			<!--<node width="300" height="140" backgroundColor="gray" backgroundAlpha="0.1" />-->
+	<template tag="popup" id="popup">
+
+		<node type="popup" layout="flow" orientation="vertical" padding="12px"> 
 			<node ihalign="center" margin="none" gap="8px">
 				<button label="Update" class="action" />
 				<button label="Cancel" />
 			</node>
 		</node>
+
 	</template>
 
-	<template id="button">
-		<node label="Label">
-			<label text="@label" width="80px" height="32px" />
-		</node>
+	<template tag="button" id="button">
+		<node type="button" label="Label"><label text="@label" width="80px" height="32px" /></node>
 	</template>
 
 </library>
+
+<!--<message class="error">-->
+<!--<image id="icon"/>-->
+<!--<node backgroundColor="green" width="*" height="12px" minHeight="*"/>-->
+<!--<label text="Can't access to file C:\Projects\Interface\Game\src\img\background.png" width="*" height="auto" minHeight="*" halign="left"/>-->
+<!--</message>-->
+<!--<image src="$(crutches)" position="50%" pivot="50%"/>-->

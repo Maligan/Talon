@@ -13,6 +13,9 @@ package talon.utils
 		public static const TAG_TEMPLATE:String = "template";
 		public static const TAG_STYLE:String = "style";
 
+		public static const ATT_ID:String = "id";
+		public static const ATT_TAG:String = "tag";
+
 		protected var _parser:TMLParser;
 		protected var _parserProductStack:Array;
 		protected var _parserProductStackNonTerminal:Array;
@@ -43,8 +46,11 @@ package talon.utils
 		//
 		public function produce(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
 		{
+			var template:XML = _templates[id];
+			if (template == null) throw new ArgumentError("Template with id: " + id + " doesn't exist");
+
 			// Parse template, while parsing events dispatched (onElementBegin, onElementEnd)
-			_parser.parse(id);
+			_parser.parse(template);
 			var result:* = _parserProduct;
 			var resultAsTalonElement:ITalonElement = result as ITalonElement;
 			_parserProduct = null;
@@ -146,8 +152,8 @@ package talon.utils
 		//
 		// Linkage
 		//
-		/** Setup class which created for symbol of type. */
-		public function setLinkage(symbol:String, type:Class):void { _linkage[symbol] = type; }
+		/** Setup class which created for tag of type. */
+		public function setLinkage(tag:String, type:Class):void { _linkage[tag] = type; }
 
 		//
 		// Library
@@ -170,15 +176,37 @@ package talon.utils
 			var type:String = xml.name();
 			if (type != TAG_TEMPLATE) throw new ArgumentError("Root node must be <" + TAG_TEMPLATE + ">");
 
-			var id:String = xml.@id;
-			if (id == null) throw new ArgumentError("Template must contains id attribute");
+			var id:String = xml.attribute(ATT_ID);
+			if (id == null) throw new ArgumentError("Template must contains " + ATT_ID + " attribute");
+			if (id in _templates) throw new ArgumentError("Template with " + ATT_ID + " already exists, removeTemplate() first");
 
-			if (xml.children().length() != 1) throw new ArgumentError("Template must contains one child");
-			if (_parser.templates[id] != null) throw new ArgumentError("Template with id " + id + " already exists");
+			var children:XMLList = xml.children();
+			if (children.length() != 1) throw new ArgumentError("Template must contains one child");
+			var template:XML = children[0];
 
-			var template:XML = xml.children()[0];
-			_parser.templates[id] = template;
+			// Registry by template id
 			_templates[id] = template;
+
+			// Registry by tag for reusable templates
+			var tag:String = xml.attribute(ATT_TAG);
+			_parser.templates[tag] = template;
+		}
+
+		public function removeTemplate(id:String):void
+		{
+			var template:XML = _templates[id];
+			if (template == null) return;
+
+			delete _templates[id];
+
+			for (var tag:String in _parser.templates)
+			{
+				if (template == _parser.templates[tag])
+				{
+					delete _parser.templates[tag];
+					break;
+				}
+			}
 		}
 
 		/** Add all templates and style sheets from library xml. */
@@ -200,9 +228,18 @@ package talon.utils
 						addStyleSheet(child.text());
 						break;
 					default:
-						throw new ArgumentError("Bad library content: " + subtype);
+						logger("Ignore library part", "'" + subtype + "'", "unknown type");
 				}
 			}
+		}
+
+		//
+		// Utils
+		//
+		protected function logger(...args):void
+		{
+			var message:String = args.join(" ");
+			trace("[TalonFactory]", message);
 		}
 	}
 }

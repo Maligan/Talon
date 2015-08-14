@@ -44,36 +44,36 @@ package talon.utils
 
 		public function parse(xml:XML):void
 		{
-			_stack.length = 0; // Clean after error?
-			parseInternal(xml, EMPTY_XML_LIST);
+			_stack.length = 0;
+			parseInternal(xml, null, EMPTY_XML_LIST);
 		}
 
-		private function parseInternal(xml:XML, rewrites:XMLList):void
+		private function parseInternal(xml:XML, attributes:Object, rewrites:XMLList):void
 		{
-			var tag:String = xml.name();
+			var type:String = xml.name();
 
 			// If node can't be expanded - create node
-			var isTerminal:Boolean = _terminals.indexOf(tag) != -1;
+			var isTerminal:Boolean = _terminals.indexOf(type) != -1;
 			if (isTerminal)
 			{
 				var replacer:XML = rewriteReplace(xml, rewrites);
 				if (replacer == null)
 				{
-					dispatchBegin(mergeAttributes(fetchAttributes(xml), rewriteAttributes(xml, rewrites)));
-					for each (var child:XML in rewriteContent(xml, rewrites)) parseInternal(child, rewrites);
+					attributes = mergeAttributes(fetchAttributes(xml), rewriteAttributes(xml, rewrites), attributes);
+					dispatchBegin(attributes);
+					for each (var child:XML in rewriteContent(xml, rewrites)) parseInternal(child, null, rewrites);
 					dispatchEnd();
 				}
 				else if (replacer != EMPTY_XML)
 				{
-					parseInternal(replacer, rewrites);
+					parseInternal(replacer, attributes, rewrites);
 				}
 			}
-
 			// Else if node is template
 			else
 			{
-				push(tag);
-				parseInternal(getTemplateOrDie(tag), fetchRewrites(xml, rewrites), fetchAttributes(xml, attributes));
+				push(type);
+				parseInternal(getTemplateOrDie(type), fetchAttributes(xml, attributes), fetchRewrites(xml, rewrites));
 				pop();
 			}
 		}

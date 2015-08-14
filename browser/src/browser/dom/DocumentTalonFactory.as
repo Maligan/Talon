@@ -70,7 +70,7 @@ package browser.dom
 		//
 		public function hasTemplate(id:String):Boolean
 		{
-			return _parser.templates[id] != null;
+			return _templates[id] != null;
 		}
 
 		public override function addTemplate(xml:XML):void
@@ -79,16 +79,16 @@ package browser.dom
 			dispatchChange();
 		}
 
-		public function removeTemplate(id:String):void
+		public override function removeTemplate(id:String):void
 		{
-			delete _parser.templates[id];
+			super.removeTemplate(id);
 			dispatchChange();
 		}
 
 		public function get templateIds():Vector.<String>
 		{
 			var result:Vector.<String> = new Vector.<String>();
-			for (var id:String in _parser.templates) result[result.length] = id;
+			for (var id:String in _templates) result[result.length] = id;
 			return result.sort(byName);
 		}
 

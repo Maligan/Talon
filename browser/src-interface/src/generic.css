@@ -50,44 +50,18 @@ popup #close
 	cursor: button;
 }
 
-/*
-#tools button
-{
-	background9Scale: 0px;
-	width: 32px;
-	height: 32px;
-}
-
-#tools button:hover
-{
-	filter: brightness(0.1);
-}
-
-#tools hr
-{
-	backgroundColor: #444444;
-	margin: -4px 0px;
-	width: *;
-	height: 1px;
-}
-*/
-
-interface #container {
+#interface.dark #container  { backgroundImage: $('bg_dark'); }
+#interface.light #container { backgroundImage: $('bg_light'); }
+#interface #container {
 	width: 100%;
 	height: 100%;
 	backgroundFillMode: repeat; 
 }
 
-interface.dark #container {
-	backgroundImage: $('bg_dark');
-}
 
-interface.light #container { 
-	backgroundImage: $('bg_light');
-}
-
-
-interface #bsod {
+#interface.dark #bsod  { fontColor: white; }
+#interface.white #bsod { fontColor: black; }
+#interface #bsod {
 	backgroundColor: #ff0000;
 	alpha: 0.1;
 
@@ -100,38 +74,3 @@ interface #bsod {
 	valign: center;
 	orientation: vertical;
 }
-
-interface.dark #bsod {
-	fontColor: white;
-}
-
-interface.white #bsod {
-	fontColor: black;
-}
-
-/* Messages */
-/*
-message
-{
-	width: 100%;
-	backgroundColor: white;
-	gap: 12px;
-	fontColor: black;
-	fontName: Tahoma;
-	fontSize: 14px;
-	filter: glow(black, 1);
-	valign: center;
-}
-
-message #icon
-{
-	width: 24px;
-	height: 24px;
-}
-
-message.error { backgroundColor: #ffdfdf }
-message.error #icon { src: $(msg_type_error) }
-
-message.warning { backgroundColor: #ffffdf }
-message.warning #icon { src: $(msg_type_warning) }
-*/

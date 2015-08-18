@@ -277,12 +277,15 @@ package talon
 			}
 		}
 
-		/** Validate node layout:
-		 *  - Apply 'bounds' via dispatch RESIZE event
-		 *  - Arrange children
+		/** Commint node bounds (and validate node layout):
+		 *
+		 *  - Apply 'bounds' via dispatch RESIZE event.
+		 *  - Arrange children with layout algorithm.
+		 *  - Reset isInvalidated flag.
+		 *
 		 *  Call this method after manually change 'bounds' property to validate layout.
 		 *  NB! Node layout will be validated independently isInvalidated flag is true or false. */
-		public function validate():void
+		public function commit():void
 		{
 			// Update self view object attached to node
 			dispatch(Event.RESIZE);

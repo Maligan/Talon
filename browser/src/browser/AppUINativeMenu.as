@@ -2,17 +2,13 @@ package browser
 {
 	import browser.commands.*;
 	import browser.dom.DocumentEvent;
-	import browser.popups.Popup;
 	import browser.popups.ProfilePopup;
 	import browser.utils.DeviceProfile;
 	import browser.utils.NativeMenuAdapter;
 
-	import flash.desktop.NativeApplication;
-
 	import flash.display.NativeWindow;
 	import flash.filesystem.File;
 	import flash.ui.Keyboard;
-	import flash.utils.setTimeout;
 
 	import talon.enums.Orientation;
 

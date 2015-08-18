@@ -38,6 +38,7 @@ package
 			stage ? initialize() : addEventListener(Event.ADDED_TO_STAGE, initialize);
 		}
 
+
 		private function initialize(e:* = null):void
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, initialize);

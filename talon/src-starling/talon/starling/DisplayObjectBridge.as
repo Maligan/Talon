@@ -329,7 +329,7 @@ package talon.starling
 		{
 			if (_node.isInvalidated && (_node.parent == null || !_node.parent.isInvalidated))
 			{
-				_node.validate();
+				_node.commit();
 			}
 		}
 

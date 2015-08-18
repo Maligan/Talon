@@ -14,7 +14,7 @@ package talon.utils
 		public static const TAG_STYLE:String = "style";
 
 		public static const ATT_ID:String = "id";
-		public static const ATT_TAG:String = "tag";
+		public static const ATT_TYPE:String = "type";
 
 		protected var _parser:TMLParser;
 		protected var _parserProductStack:Array;
@@ -188,7 +188,7 @@ package talon.utils
 			_templates[id] = template;
 
 			// Registry by tag for reusable templates
-			var tag:String = xml.attribute(ATT_TAG);
+			var tag:String = xml.attribute(ATT_TYPE);
 			_parser.templates[tag] = template;
 		}
 

@@ -1,28 +1,32 @@
 <library>
 
-	<template tag="interface" id="interface">
-
-	  <node type="interface" width="100%" height="100%" layout="abs" class="dark">
-		<node id="container" width="100%" height="100%" />
-		<node id="popups" width="100%" height="100%" layout="abs" halign="center" valign="center"/>
-		<node id="bsod"><label text="¯\_(ツ)_/¯" /></node>
-	  </node>
-
+	<template id="Interface">
+		<node id="interface" width="100%" height="100%" layout="abs" class="dark">
+			<node id="container" width="100%" height="100%" />
+			<node id="popups" width="100%" height="100%" layout="abs" halign="center" valign="center"/>
+			<node id="bsod"><label text="¯\_(ツ)_/¯" /></node>
+		</node>
 	</template>
 
-	<template tag="popup" id="popup">
+	<template id="UpdatePopup">
+		<popup>
+			<rewrite mode="content" ref="button" />
+		</popup>
+	</template>
 
+	<template type="popup">
 		<node type="popup" layout="flow" orientation="vertical" padding="12px"> 
 			<node ihalign="center" margin="none" gap="8px">
 				<button label="Update" class="action" />
 				<button label="Cancel" />
 			</node>
 		</node>
-
 	</template>
 
-	<template tag="button" id="button">
-		<node type="button" label="Label"><label text="@label" width="80px" height="32px" /></node>
+	<template type="button">
+		<node type="button" label="Label">
+			<label text="@label" width="80px" height="32px" />
+		</node>
 	</template>
 
 </library>

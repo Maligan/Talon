@@ -80,7 +80,9 @@ package talon.utils
 
 		private function push(id:String):void
 		{
-			if (_stack.indexOf(id) != -1) throw new Error("Template is recursive nested");
+			if (_stack.indexOf(id) != -1)
+				throw new Error("Template is recursive nested");
+
 			_stack.push(id);
 		}
 

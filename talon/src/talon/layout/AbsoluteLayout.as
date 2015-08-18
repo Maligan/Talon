@@ -92,7 +92,7 @@ package talon.layout
 					}
 				}
 
-				child.validate();
+				child.commit();
 			}
 		}
 

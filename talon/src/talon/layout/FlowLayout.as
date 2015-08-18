@@ -38,7 +38,7 @@ package talon.layout
 				var child:Node = node.getChildAt(i);
 				var childBounds:Rectangle = flow.getChildBounds(i, orientation);
 				child.bounds.copyFrom(childBounds);
-				child.validate();
+				child.commit();
 			}
 
 			flow.dispose();
@@ -135,22 +135,6 @@ package talon.layout
 			return flow;
 		}
 
-//		private function measure(node:Node, parentWidth:Number, parentHeight:Number, result:Point = null):Point
-//		{
-//			result ||= new Point();
-//
-//			if (node.width.isAuto && node.height.isAuto)
-//			{
-//				result.x = node.width.auto(Infinity, Infinity);
-//				result.y = node.height.auto(Infinity, Infinity);
-//			}
-//			else if (node.width.isAuto && !node.height.isAuto)
-//			{
-//				result.y = node.height.toPixels(node.ppmm, node.ppem, node.ppdp, parentHeight, Infinity, Infinity)
-////				result.x = node.width
-//			}
-//		}
-
 		private function getWrap(node:Node):Boolean { return StringUtil.parseBoolean(node.getAttributeCache(Attribute.WRAP)); }
 		private function getAlign(node:Node, name:String):Number { return StringUtil.parseAlign(node.getAttributeCache(name)) }
 		private function getGap(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.GAP), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0); }
@@ -163,6 +147,7 @@ import flash.utils.Dictionary;
 
 import talon.enums.BreakMode;
 import talon.enums.Orientation;
+import talon.utils.pad;
 
 class Flow
 {
@@ -282,16 +267,24 @@ class Flow
 
 	public function arrange():void
 	{
-		var lMax:Number = _maxLength!=Infinity ? _maxLength : getLength();
+		// Real used bounds
+		var usedLength:Number = getLength() - _lengthPaddingBegin - _lengthPaddingEnd;
+		var usedThickness:Number = getThickness() - _thicknessPaddingBegin - _thicknessPaddingEnd;
 
-		var tShift:Number = 0;
-		var tAlignShift:Number = _maxThickness!=Infinity ? (_maxThickness-getThickness())*_alignThicknesswise : 0;
+		// @see box-sizing: padding-box
+		var contentLength:Number    = _maxLength - _lengthPaddingBegin - _lengthPaddingEnd;
+		if (contentLength == Infinity) contentLength = usedLength;
+		var contentThickness:Number = _maxThickness - _thicknessPaddingBegin - _thicknessPaddingEnd;
+		if (contentThickness == Infinity) contentThickness = usedThickness;
 
+		var offset:Number = 0;
 		for each (var line:FlowLine in _lines)
 		{
-			var lAlignShift:Number = (lMax-line.length)*_alignLengthwise;
-			line.arrange(_lengthPaddingBegin + lAlignShift, _thicknessPaddingBegin + tAlignShift + tShift);
-			tShift += line.thickness + _interline;
+			var l:Number = pad(contentLength, usedLength, _lengthPaddingBegin, _lengthPaddingEnd, _alignLengthwise);
+			var t:Number = pad(contentThickness, usedThickness, _thicknessPaddingBegin, _thicknessPaddingEnd, _alignThicknesswise);
+
+			line.arrange(l, offset + t);
+			offset += line.thickness + _interline;
 		}
 	}
 
@@ -380,7 +373,8 @@ class FlowLine
 
 			// Via thickness
 			element.tSize = element.thicknessIsStar ? _thickness : element.thickness;
-			element.tPos = tShift + element.thicknessBefore + (_thickness-element.tSize)*element.thicknessAlign;
+//			element.tPos = tShift + element.thicknessBefore + (_thickness-element.tSize)*element.thicknessAlign;
+			element.tPos = tShift + (_thickness-element.tSize)*element.thicknessAlign/2;
 
 			lOffset += element.lengthBefore + element.lSize + element.lengthAfter + _gap;
 		}

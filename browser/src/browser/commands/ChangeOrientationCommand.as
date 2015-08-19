@@ -6,11 +6,11 @@ package browser.commands
 
 	import talon.enums.Orientation;
 
-	public class OrientationCommand extends Command
+	public class ChangeOrientationCommand extends Command
 	{
 		private var _orientation:String;
 
-		public function OrientationCommand(controller:AppController, orientation:String)
+		public function ChangeOrientationCommand(controller:AppController, orientation:String)
 		{
 			super(controller);
 			controller.monitor.addEventListener(Event.CHANGE, onOrientationChange);

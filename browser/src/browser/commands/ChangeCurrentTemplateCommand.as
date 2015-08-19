@@ -4,14 +4,14 @@ package browser.commands
 
 	import starling.events.Event;
 
-	public class SelectCommand extends Command
+	public class ChangeCurrentTemplateCommand extends Command
 	{
 		private var _prototypeId:String;
 
-		public function SelectCommand(controller:AppController, prototypeId:String)
+		public function ChangeCurrentTemplateCommand(controller:AppController, prototypeId:String)
 		{
 			super(controller);
-			controller.addEventListener(AppController.EVENT_PROTOTYPE_CHANGE, onControllerPrototypeChange);
+			controller.addEventListener(AppController.EVENT_TEMPLATE_CHANGE, onControllerPrototypeChange);
 			_prototypeId = prototypeId;
 		}
 

@@ -55,7 +55,7 @@ package browser
 		{
 			_controller = controller;
 			_controller.addEventListener(AppController.EVENT_PROFILE_CHANGE, refreshWindowTitle);
-			_controller.addEventListener(AppController.EVENT_PROTOTYPE_CHANGE, refreshCurrentTemplate);
+			_controller.addEventListener(AppController.EVENT_TEMPLATE_CHANGE, refreshCurrentTemplate);
 			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChanged);
 
 			_controller.documentDispatcher.addEventListener(DocumentEvent.CHANGED, onDocumentChanged);

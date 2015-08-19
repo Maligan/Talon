@@ -3,13 +3,13 @@ package browser.commands
 	import browser.AppConstants;
 	import browser.AppController;
 
-	public class SettingCommand extends Command
+	public class ChangeSettingCommand extends Command
 	{
 		private var _name:String;
 		private var _value:*;
 		private var _alternate:*;
 
-		public function SettingCommand(controller:AppController, name:String, value:*, alternate:* = null)
+		public function ChangeSettingCommand(controller:AppController, name:String, value:*, alternate:* = null)
 		{
 			super(controller);
 			controller.settings.addPropertyListener(name, dispatchEvent);

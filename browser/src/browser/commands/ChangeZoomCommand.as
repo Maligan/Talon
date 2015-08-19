@@ -3,11 +3,11 @@ package browser.commands
 	import browser.AppConstants;
 	import browser.AppController;
 
-	public class ZoomCommand extends Command
+	public class ChangeZoomCommand extends Command
 	{
 		private var _delta:int;
 
-		public function ZoomCommand(controller:AppController, delta:int)
+		public function ChangeZoomCommand(controller:AppController, delta:int)
 		{
 			super(controller);
 			controller.settings.addPropertyListener(AppConstants.SETTING_ZOOM, dispatchEvent);

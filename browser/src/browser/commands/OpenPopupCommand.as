@@ -3,12 +3,12 @@ package browser.commands
 	import browser.AppController;
 	import browser.popups.Popup;
 
-	public class PopupCommand extends Command
+	public class OpenPopupCommand extends Command
 	{
 		private var _popupClass:Class;
 		private var _modal:Boolean;
 
-		public function PopupCommand(controller:AppController, modal:Boolean, popupClass:Class)
+		public function OpenPopupCommand(controller:AppController, modal:Boolean, popupClass:Class)
 		{
 			super(controller);
 			_popupClass = popupClass;

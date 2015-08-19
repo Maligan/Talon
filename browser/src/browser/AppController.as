@@ -39,7 +39,7 @@ package browser
 	public class AppController extends EventDispatcher
 	{
 		public static const EVENT_DOCUMENT_CHANGE:String = "documentChange";
-		public static const EVENT_PROTOTYPE_CHANGE:String = "prototypeChange";
+		public static const EVENT_TEMPLATE_CHANGE:String = "templateChange";
 		public static const EVENT_PROFILE_CHANGE:String = "profileChange";
 
 		private var _root:DisplayObject;
@@ -157,7 +157,7 @@ package browser
 			{
 				_templateId = value;
 				_settings.setValue(AppConstants.SETTING_RECENT_TEMPLATE, _templateId);
-				dispatchEventWith(EVENT_PROTOTYPE_CHANGE);
+				dispatchEventWith(EVENT_TEMPLATE_CHANGE);
 			}
 		}
 

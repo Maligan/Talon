@@ -7,11 +7,11 @@ package browser.commands
 
 	import starling.events.Event;
 
-	public class ProfileCommand extends Command
+	public class ChangeProfileCommand extends Command
 	{
 		private var _profile:DeviceProfile;
 
-		public function ProfileCommand(controller:AppController, profile:DeviceProfile)
+		public function ChangeProfileCommand(controller:AppController, profile:DeviceProfile)
 		{
 			super(controller);
 			controller.addEventListener(AppController.EVENT_PROFILE_CHANGE, onProfileChange);

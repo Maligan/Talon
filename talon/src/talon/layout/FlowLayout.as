@@ -147,7 +147,7 @@ import flash.utils.Dictionary;
 
 import talon.enums.BreakMode;
 import talon.enums.Orientation;
-import talon.utils.pad;
+import talon.layout.Layout;
 
 class Flow
 {
@@ -271,17 +271,15 @@ class Flow
 		var usedLength:Number = getLength() - _lengthPaddingBegin - _lengthPaddingEnd;
 		var usedThickness:Number = getThickness() - _thicknessPaddingBegin - _thicknessPaddingEnd;
 
-		// @see box-sizing: padding-box
-		var contentLength:Number    = _maxLength - _lengthPaddingBegin - _lengthPaddingEnd;
-		if (contentLength == Infinity) contentLength = usedLength;
-		var contentThickness:Number = _maxThickness - _thicknessPaddingBegin - _thicknessPaddingEnd;
-		if (contentThickness == Infinity) contentThickness = usedThickness;
+		// Setted bounds
+		var boundLength:Number = _maxLength!=Infinity ? _maxLength : usedLength;
+		var boundThickness:Number = _maxThickness!= Infinity ? _maxThickness : usedThickness;
 
 		var offset:Number = 0;
 		for each (var line:FlowLine in _lines)
 		{
-			var l:Number = pad(contentLength, usedLength, _lengthPaddingBegin, _lengthPaddingEnd, _alignLengthwise);
-			var t:Number = pad(contentThickness, usedThickness, _thicknessPaddingBegin, _thicknessPaddingEnd, _alignThicknesswise);
+			var l:Number = Layout.pad(boundLength, usedLength, _lengthPaddingBegin, _lengthPaddingEnd, _alignLengthwise);
+			var t:Number = Layout.pad(boundThickness, usedThickness, _thicknessPaddingBegin, _thicknessPaddingEnd, _alignThicknesswise);
 
 			line.arrange(l, offset + t);
 			offset += line.thickness + _interline;
@@ -374,7 +372,7 @@ class FlowLine
 			// Via thickness
 			element.tSize = element.thicknessIsStar ? _thickness : element.thickness;
 //			element.tPos = tShift + element.thicknessBefore + (_thickness-element.tSize)*element.thicknessAlign;
-			element.tPos = tShift + (_thickness-element.tSize)*element.thicknessAlign/2;
+			element.tPos = tShift + Layout.pad(_thickness, element.tSize, element.thicknessBefore, element.thicknessAfter, element.thicknessAlign);
 
 			lOffset += element.lengthBefore + element.lSize + element.lengthAfter + _gap;
 		}

@@ -69,6 +69,15 @@ package talon.layout
 		}
 
 		//
+		// Useful layout methods
+		//
+		public static function pad(parent:Number, child:Number, paddingBefore:Number, paddingAfter:Number, k:Number):Number
+		{
+			// NB! k in [0; 1]
+			return paddingBefore + (parent - paddingBefore - child - paddingAfter) * k;
+		}
+
+		//
 		// Layout methods
 		//
 		/** This method will be call while arranging, and must calculate node width in pixels, based on node children. */

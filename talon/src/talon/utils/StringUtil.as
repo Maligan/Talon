@@ -81,7 +81,7 @@ package talon.utils
 			if (exec == null) return null;
 
 			// Last regexp group is arguments (split & trim)
-			var args:Array = exec[3].split(/\s*,\s*/);
+			var args:Array = exec[3] ? exec[3].split(/\s*,\s*/) : [];
 			// First regexp group is function name
 			args.unshift(exec[1]);
 

@@ -28,26 +28,27 @@ package talon.starling
 			_node.height.auto = measureHeight;
 			_node.addListener(Event.RESIZE, onNodeResize);
 
-			_bridge = new DisplayObjectBridge(this, _node);
+			_bridge = new DisplayObjectBridge(this, node);
 			_bridge.addAttributeChangeListener(Attribute.SRC, onSrcChange);
 		}
 
 		private function measureWidth(height:Number):Number { return measure(height, texture.height, texture.width); }
 		private function measureHeight(width:Number):Number { return measure(width,  texture.width,  texture.height); }
 
-		private function measure(knownDimension:Number, knownTextureDimension:Number, altTextureDimension:Number):Number
+		private function measure(knownDimension:Number, knownDimensionOfTexture:Number, measuredDimensionOfTexture:Number):Number
 		{
 			// If there is no texture - size is zero
 			if (texture == EMPTY) return 0;
 			// If no limit on image size - return original texture size
-			if (knownDimension == Infinity) return knownTextureDimension;
+			if (knownDimension == Infinity) return measuredDimensionOfTexture;
 			// Else calculate new size preserving texture aspect ratio
-			return altTextureDimension * (knownDimension/knownTextureDimension);
+			return measuredDimensionOfTexture * (knownDimension/knownDimensionOfTexture);
 		}
 
 		private function onSrcChange():void
 		{
 			texture = node.getAttributeCache(Attribute.SRC) as Texture || EMPTY;
+			readjustSize();
 		}
 
 		private function onNodeResize():void
@@ -56,6 +57,8 @@ package talon.starling
 			y = Math.round(node.bounds.y);
 			width = Math.round(node.bounds.width);
 			height = Math.round(node.bounds.height);
+
+			_bridge.resize(node.bounds.width/scaleX, node.bounds.height/scaleY);
 		}
 
 		//
@@ -66,7 +69,7 @@ package talon.starling
 			// Background render
 			_bridge.renderBackground(support, parentAlpha * this.alpha);
 
-			// Children render
+			// Self image render
 			super.render(support, parentAlpha);
 		}
 

@@ -61,9 +61,12 @@ package talon.starling
 				_invalid = false;
 				remesh();
 				compose();
+
+				// Starling recommend use batchable if batch has less when 16 quads
+				_batch.batchable = _batch.numQuads <= 16;
 			}
 
-			support.batchQuadBatch(_batch, parentAlpha);
+			_batch.render(support, parentAlpha);
 		}
 
 		private function invalidate():void { _invalid = true; }
@@ -172,7 +175,12 @@ package talon.starling
 
 		private function remeshClip():void
 		{
-
+			var width:Number = Math.min(_width, texture.width);
+			var height:Number = Math.min(_height, texture.height);
+			var quad = getQuadData();
+			quad.setPositions(0, 0, width, height);
+			quad.setTexCoords(0, 0, width/texture.width, height/texture.height);
+			_quads[_quads.length] = quad;
 		}
 
 		//

@@ -71,6 +71,8 @@ package talon.starling
 		/** TODO: Optimize. */
 		private function measure(aw:Number, ah:Number):Rectangle
 		{
+			// TODO: Added padding!
+
 			autoSize = getAutoSize(node.width.isNone, node.height.isNone);
 			width = aw;
 			height = ah;

@@ -68,7 +68,7 @@ package browser.dom.files.types
 
 			function onIOError(e:* = null):void
 			{
-				complete();
+				complete(null);
 			}
 		}
 

@@ -9,11 +9,15 @@ package browser.dom.files.types
 	{
 		public override function attach():void
 		{
+			document.tasks.begin();
+
 			var children:Vector.<File> = getListing(file.target);
 
 			for each (var child:File in children)
 				if (document.files.hasURL(child.url) == false)
 					document.files.addReference(new DocumentFileReference(document, child));
+
+			document.tasks.end();
 		}
 
 		private function getListing(dir:File):Vector.<File>

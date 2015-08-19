@@ -20,8 +20,10 @@ package browser
 		public static const SUPPORTED_IMAGE_EXTENSIONS:Vector.<String> = new <String>["atf", "png", "jpg", "gif"];
 
 		public static const PROPERTY_SOURCE_PATH:String     = "source.path";
-		public static const PROPERTY_EXPORT_IGNORE:String   = "export.ignore";
+		public static const PROPERTY_SOURCE_IGNORE:String   = "source.ignore";
 		public static const PROPERTY_EXPORT_PATH:String     = "export.path";
+		public static const PROPERTY_EXPORT_IGNORE:String   = "export.ignore";
+		public static const PROPERTY_EXPORT_EXEC:String     = "export.exec";
 		public static const HIDDEN_PROPERTY_CSF:String      = "hidden.csf";
 
 		public static const SETTING_BACKGROUND:String = "background";

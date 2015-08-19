@@ -47,7 +47,6 @@ package browser
 		private var _document:Document;
 		private var _templateId:String;
 		private var _ui:AppUI;
-		private var _menu:AppUINativeMenu;
 		private var _settings:Storage;
 		private var _monitor:OrientationMonitor;
 		private var _profile:DeviceProfile;
@@ -62,17 +61,15 @@ package browser
 			registerClassAlias(Rectangle);
 
 			_settings = Storage.fromSharedObject("settings");
-
 			_profile = DeviceProfile.getById(settings.getValueOrDefault(AppConstants.SETTING_PROFILE, null)) || DeviceProfile.CUSTOM;
 			_monitor = new OrientationMonitor(_root.stage);
 			_documentDispatcher = new EventDispatcherAdapter();
-			_menu = new AppUINativeMenu(this);
 			_ui = new AppUI(this);
 
 			initializeConsole();
 			initializeDragAndDrop();
 			initializeStarling();
-			initializeWindowBoundsMonitor();
+			initializeWindowMonitor();
 		}
 
 		public function invoke(path:String):void
@@ -198,7 +195,7 @@ package browser
 		//
 		// [Events] Move And Resize
 		//
-		private function initializeWindowBoundsMonitor():void
+		private function initializeWindowMonitor():void
 		{
 			_root.stage.addEventListener(Event.RESIZE, onStageResize);
 			_root.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.MOVE, onMove);

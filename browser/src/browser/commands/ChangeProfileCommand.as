@@ -28,7 +28,7 @@ package browser.commands
 			if (_profile == DeviceProfile.CUSTOM)
 			{
 				var popup:ProfilePopup = new ProfilePopup();
-				popup.open();
+//				popup.open();
 			}
 			else
 			{

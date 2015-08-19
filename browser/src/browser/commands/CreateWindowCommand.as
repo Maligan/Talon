@@ -4,9 +4,9 @@ package browser.commands
 	import flash.display.NativeWindowInitOptions;
 	import flash.display.NativeWindowRenderMode;
 
-	public class InstantiateBrowserCommand extends Command
+	public class CreateWindowCommand extends Command
 	{
-		public function InstantiateBrowserCommand()
+		public function CreateWindowCommand()
 		{
 			super(null);
 		}
@@ -21,6 +21,12 @@ package browser.commands
 
 			var launcher:Launcher = new Launcher();
 			window.stage.addChild(launcher);
+		}
+
+		public override function get isExecutable():Boolean
+		{
+			// Disabled
+			return false;
 		}
 	}
 }

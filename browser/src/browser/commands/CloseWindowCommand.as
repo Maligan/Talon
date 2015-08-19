@@ -4,16 +4,16 @@ package browser.commands
 
 	import flash.desktop.NativeApplication;
 
-	public class CloseBrowserCommand extends Command
+	public class CloseWindowCommand extends Command
 	{
-		public function CloseBrowserCommand(controller:AppController)
+		public function CloseWindowCommand(controller:AppController)
 		{
 			super(controller);
 		}
 
 		public override function execute():void
 		{
-			NativeApplication.nativeApplication.exit();
+			controller.root.stage.nativeWindow.close();
 		}
 	}
 }

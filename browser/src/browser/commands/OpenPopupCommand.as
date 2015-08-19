@@ -18,7 +18,7 @@ package browser.commands
 		public override function execute():void
 		{
 			var popup:Popup = new _popupClass();
-			popup.open(_modal);
+			controller.ui.popups.open(popup);
 		}
 	}
 }

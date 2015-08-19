@@ -54,11 +54,12 @@ package browser
 		public static const T_MENU_FILE:String = "File";
 		public static const T_MENU_FILE_OPEN:String = "Open...";
 		public static const T_MENU_FILE_NEW_DOCUMENT:String = "New Document...";
+		public static const T_MENU_FILE_NEW_WINDOW:String = "New Window";
 		public static const T_MENU_FILE_RECENT:String = "Open Recent";
 		public static const T_MENU_FILE_RECENT_CLEAR:String = "Clear";
 		public static const T_MENU_FILE_PUBLISH_AS:String = "Publish As...";
 		public static const T_MENU_FILE_CLOSE_DOCUMENT:String = "Close Document";
-		public static const T_MENU_FILE_CLOSE_BROWSER:String = "Close Browser";
+		public static const T_MENU_FILE_CLOSE_BROWSER:String = "Close Window";
 		public static const T_MENU_NAVIGATE:String = "Navigate";
 		public static const T_MENU_NAVIGATE_OPEN_DOCUMENT_FOLDER:String = "Go to Document Folder";
 		public static const T_MENU_NAVIGATE_SEARCH:String = "Go to Template";

@@ -6,6 +6,8 @@ package browser
 	import browser.utils.DeviceProfile;
 	import browser.utils.NativeMenuAdapter;
 
+	import flash.display.NativeMenuItem;
+
 	import flash.display.NativeWindow;
 	import flash.filesystem.File;
 	import flash.ui.Keyboard;
@@ -27,13 +29,14 @@ package browser
 
 			// File
 			_menu.push("file",                                  AppConstants.T_MENU_FILE);
-			_menu.push("file/new",                              AppConstants.T_MENU_FILE_NEW_DOCUMENT,                  new CreateDocumentCommand(_controller),    "n");
+			_menu.push("file/new",                              AppConstants.T_MENU_FILE_NEW_DOCUMENT,                  new CreateDocumentCommand(_controller),     "n");
+			_menu.push("file/new",                              AppConstants.T_MENU_FILE_NEW_WINDOW,                    new CreateWindowCommand(),                  "n", [Keyboard.CONTROL, Keyboard.SHIFT]);
 			_menu.push("file/-");
 			_menu.push("file/recent",                           AppConstants.T_MENU_FILE_RECENT);
 			_menu.push("file/open",                             AppConstants.T_MENU_FILE_OPEN,                          new OpenDocumentCommand(_controller),   "o");
 			_menu.push("file/-");
 			_menu.push("file/closeDocument",                    AppConstants.T_MENU_FILE_CLOSE_DOCUMENT,                new CloseDocumentCommand(_controller),  "w");
-			_menu.push("file/closeBrowser",                     AppConstants.T_MENU_FILE_CLOSE_BROWSER,                 new CloseBrowserCommand(_controller),   "w", [Keyboard.CONTROL, Keyboard.SHIFT]);
+			_menu.push("file/closeBrowser",                     AppConstants.T_MENU_FILE_CLOSE_BROWSER,                 new CloseWindowCommand(_controller),   "w", [Keyboard.CONTROL, Keyboard.SHIFT]);
 //			_menu.push("file/instantiateBrowser",               "Instantiate",                                          new InstantiateBrowserCommand());
 			_menu.push("file/-");
 			_menu.push("file/publish",                          AppConstants.T_MENU_FILE_PUBLISH_AS,                    new PublishCommand(_controller),        "s", [Keyboard.CONTROL, Keyboard.SHIFT]);
@@ -135,6 +138,18 @@ package browser
 				if (list1[i] != list2[i]) return false;
 
 			return true;
+		}
+
+		public function get locked():Boolean { return _menu.isEnabled; }
+		public function set locked(value:Boolean):void
+		{
+			if (_menu.isEnabled != value)
+			{
+				_menu.isEnabled = value;
+
+				for each (var item:NativeMenuItem in _menu.nativeMenu.items)
+					item.enabled = value;
+			}
 		}
 	}
 }

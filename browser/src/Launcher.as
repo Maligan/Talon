@@ -44,9 +44,6 @@ package
 			removeEventListener(Event.ADDED_TO_STAGE, initialize);
 
 			stage.color = getColorByBackground(_backgroundColor.value);
-			stage.align = StageAlign.TOP_LEFT;
-			stage.scaleMode = StageScaleMode.NO_SCALE;
-			stage.quality = StageQuality.BEST;
 			stage.nativeWindow.minSize = new Point(200, 100);
 
 			NativeApplication.nativeApplication.setAsDefaultApplication(AppConstants.DESIGNER_FILE_EXTENSION);

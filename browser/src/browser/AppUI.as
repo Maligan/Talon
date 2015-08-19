@@ -39,6 +39,8 @@ package browser
 //		[Embed(source="/../assets/LGB.ttf", embedAsCFF="false", fontName="Lucida Grande Bold")] private static const INTERFACE_FONT_2:Class;
 
 		private var _controller:AppController;
+		private var _menu:AppUINativeMenu;
+		private var _popups:AppUIPopupManager;
 
 		private var _factory:TalonFactoryBase;
 		private var _interface:TalonSprite;
@@ -57,8 +59,10 @@ package browser
 			_controller.addEventListener(AppController.EVENT_PROFILE_CHANGE, refreshWindowTitle);
 			_controller.addEventListener(AppController.EVENT_TEMPLATE_CHANGE, refreshCurrentTemplate);
 			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChanged);
-
 			_controller.documentDispatcher.addEventListener(DocumentEvent.CHANGED, onDocumentChanged);
+
+			_menu = new AppUINativeMenu(_controller);
+			_popups = new AppUIPopupManager();
 		}
 
 		/** Call after starling initialize completed. */
@@ -77,7 +81,7 @@ package browser
 			_interface = _factory.produce("interface") as TalonSprite;
 			_controller.host.addChild(_interface);
 
-			Popup.initialize(this, _interface.getChildByName("popups") as TalonSprite);
+			_popups.initialize(this, _interface.getChildByName("popups") as DisplayObjectContainer);
 
 			_container = new TalonSprite();
 			_container.node.setAttribute(Attribute.LAYOUT, Layout.FLOW);
@@ -219,6 +223,8 @@ package browser
 		//
 		// Properties
 		//
+		public function get popups():AppUIPopupManager { return _popups; }
+
 		public function get factory():TalonFactoryBase { return _factory; }
 		public function get template():DisplayObject { return _template; }
 
@@ -228,6 +234,7 @@ package browser
 			if (_locked != value)
 			{
 				_locked = value;
+				_menu.locked = !value;
 				_isolatorContainer.filter = _locked ? new BlurFilter(1, 1) : null;
 				_isolatorContainer.touchable = !_locked;
 			}

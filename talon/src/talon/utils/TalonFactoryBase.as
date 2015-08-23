@@ -189,6 +189,7 @@ package talon.utils
 
 			// Registry by tag for reusable templates
 			var tag:String = xml.attribute(ATT_TYPE);
+			if (tag == null) throw new ArgumentError("Template must contains " + ATT_TYPE + " attribute");
 			_parser.templates[tag] = template;
 		}
 

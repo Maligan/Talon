@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <library>
 
-	<template tag="dialog" id="DialogBase">
+	<template type="dialog" id="DialogBase">
 		<node type="dialog" orientation="vertical" header="Available Pangramms"> 
 
 			<!-- Header -->
@@ -22,10 +22,10 @@
 		</node>
 	</template>
 
-	<template tag="button" id="ButtonBase">
+	<template type="button" id="ButtonBase">
 
 		<node type="button" label="Label">
-			<label id="button_label" text="@label" height="100%" />
+			<label text="@label" height="100%" />
 		</node>
 
 	</template>

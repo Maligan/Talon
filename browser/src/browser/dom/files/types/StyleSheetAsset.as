@@ -1,11 +1,17 @@
 package browser.dom.files.types
 {
+	import browser.dom.files.DocumentFileReference;
 	import browser.dom.log.DocumentMessage;
 
 	import talon.StyleSheet;
 
 	public class StyleSheetAsset extends Asset
 	{
+		public static function checker(file:DocumentFileReference):Boolean
+		{
+			return file.extension == "css";
+		}
+
 		internal static function isCSS(css:String):Boolean
 		{
 			var style:StyleSheet = new StyleSheet();

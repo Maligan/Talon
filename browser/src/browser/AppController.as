@@ -42,6 +42,10 @@ package browser
 		public static const EVENT_TEMPLATE_CHANGE:String = "templateChange";
 		public static const EVENT_PROFILE_CHANGE:String = "profileChange";
 
+		public static const EVENT_DRAG_IN:String = "documentDragIn";
+		public static const EVENT_DRAG_OUT:String = "documentDragOut";
+		public static const EVENT_DRAG_DROP:String = "documentDrop";
+
 		private var _root:DisplayObject;
 		private var _console:Console;
 		private var _document:Document;
@@ -52,6 +56,7 @@ package browser
 		private var _profile:DeviceProfile;
 		private var _documentDispatcher:EventDispatcherAdapter;
 		private var _starling:Starling;
+		private var _preventProfileChange:Boolean;
 
 		public function AppController(root:DisplayObject)
 		{
@@ -85,22 +90,23 @@ package browser
 			}
 		}
 
-		private function resizeWindowTo(width:int, height:int, isPortrait:Boolean):void
+		public function rotate():void
+		{
+			_preventProfileChange = true;
+			var window:NativeWindow = root.stage.nativeWindow;
+			var bounds:Rectangle = window.bounds;
+			window.width = bounds.height;
+			window.height = bounds.width;
+			_preventProfileChange = false;
+		}
+
+		private function resizeWindowTo(stageWidth:int, stageHeight:int):void
 		{
 			var window:NativeWindow = root.stage.nativeWindow;
-			var min:Number = Math.min(width, height);
-			var max:Number = Math.max(width, height);
-
-			if (isPortrait)
-			{
-				window.width = min;
-				window.height = max;
-			}
-			else
-			{
-				window.width = max;
-				window.height = min;
-			}
+			var deltaWidth:int = window.width - root.stage.stageWidth;
+			var deltaHeight:int = window.height - root.stage.stageHeight;
+			window.width = stageWidth + deltaWidth;
+			window.height = stageHeight + deltaHeight;
 		}
 
 		//
@@ -122,10 +128,17 @@ package browser
 				_profile = value;
 
 				if (profile != DeviceProfile.CUSTOM)
-					resizeWindowTo(profile.width, profile.height, _monitor.isPortrait);
+				{
+					var max:int = Math.max(profile.width,  profile.height);
+					var min:int = Math.min(profile.width,  profile.height);
 
-				if (document != null)
-					document.properties.setValue(AppConstants.HIDDEN_PROPERTY_CSF, profile.csf);
+					var width:int  = _monitor.isPortrait ? min : max;
+					var height:int = _monitor.isPortrait ? max : min;
+
+					_preventProfileChange = true;
+					resizeWindowTo(width, height);
+					_preventProfileChange = false;
+				}
 
 				settings.setValue(AppConstants.SETTING_PROFILE, _profile.id);
 				dispatchEventWith(EVENT_PROFILE_CHANGE);
@@ -141,7 +154,6 @@ package browser
 				_document && _document.dispose();
 				_document = value;
 				_documentDispatcher.target = _document;
-				_document && _document.properties.setValue(AppConstants.HIDDEN_PROPERTY_CSF, profile.csf);
 				dispatchEventWith(EVENT_DOCUMENT_CHANGE);
 				templateId = _document ? _document.factory.templateIds.shift() : null;
 			}
@@ -164,12 +176,13 @@ package browser
 		private function initializeDragAndDrop():void
 		{
 			_root.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragIn);
+			_root.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragOut);
 			_root.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
 		}
 
 		private function onDragIn(e:NativeDragEvent):void
 		{
-			var hasFiles:Boolean = e.clipboard.hasFormat(ClipboardFormats.FILE_PROMISE_LIST_FORMAT);
+			var hasFiles:Boolean = e.clipboard.hasFormat(ClipboardFormats.FILE_LIST_FORMAT);
 			if (hasFiles)
 			{
 				var files:Array = e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
@@ -179,14 +192,21 @@ package browser
 					if (file.extension == AppConstants.DESIGNER_FILE_EXTENSION)
 					{
 						NativeDragManager.acceptDragDrop(_root as InteractiveObject);
-						NativeDragManager.dropAction = NativeDragActions.LINK;
+						NativeDragManager.dropAction = NativeDragActions.MOVE;
+						dispatchEventWith(EVENT_DRAG_IN, files[0]);
 					}
 				}
 			}
 		}
 
+		private function onDragOut(e:NativeDragEvent):void
+		{
+			dispatchEventWith(EVENT_DRAG_OUT);
+		}
+
 		private function onDragDrop(e:NativeDragEvent):void
 		{
+			dispatchEventWith(EVENT_DRAG_DROP);
 			var files:Array = e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
 			var file:File = File(files[0]);
 			invoke(file.nativePath);
@@ -208,12 +228,12 @@ package browser
 		{
 			var window:NativeWindow = root.stage.nativeWindow;
 			var bounds:Rectangle = settings.getValueOrDefault(AppConstants.SETTING_WINDOW_BOUNDS);
-			if (bounds)
+			if (bounds && bounds.width >= window.minSize.x && bounds.height >= window.minSize.y)
 			{
 				window.x = bounds.x;
 				window.y = bounds.y;
-
-				resizeWindowTo(bounds.width, bounds.height, bounds.width < bounds.height);
+				window.width = bounds.width;
+				window.height = bounds.height;
 			}
 		}
 
@@ -223,33 +243,35 @@ package browser
 			_starling.stage.stageHeight = _root.stage.stageHeight;
 			_starling.viewPort = new Rectangle(0, 0, _root.stage.stageWidth, _root.stage.stageHeight);
 			_ui.resizeTo(_root.stage.stageWidth, _root.stage.stageHeight);
-		}
 
-		private function onMove(e:NativeWindowBoundsEvent):void
-		{
-			settings.setValue(AppConstants.SETTING_WINDOW_BOUNDS, e.afterBounds);
-		}
-
-		private function onResizing(e:NativeWindowBoundsEvent):void
-		{
-			var prevent:Boolean = settings.getValueOrDefault(AppConstants.SETTING_LOCK_RESIZE, false);
-			if (prevent)
+			if (_profile != DeviceProfile.CUSTOM && _preventProfileChange == false)
 			{
-				e.preventDefault();
+				_profile = DeviceProfile.CUSTOM;
 			}
-			else
+
+			if (_profile == DeviceProfile.CUSTOM)
 			{
-				var window:NativeWindow = root.stage.nativeWindow;
-				profile = DeviceProfile.CUSTOM;
-				profile.width = window.width;
-				profile.height = window.height;
+				_profile.width = _starling.stage.stageWidth;
+				_profile.height = _starling.stage.stageHeight;
 				dispatchEventWith(EVENT_PROFILE_CHANGE);
 			}
 		}
 
+		private function onResizing(e:NativeWindowBoundsEvent):void
+		{
+			// NativeWindow#resizable is read only, this is fix:
+			var needPrevent:Boolean = settings.getValueOrDefault(AppConstants.SETTING_LOCK_RESIZE, false);
+			if (needPrevent)
+				e.preventDefault();
+		}
+
 		private function onResize(e:NativeWindowBoundsEvent):void
 		{
-			settings.setValue(AppConstants.SETTING_IS_PORTRAIT, _monitor.isPortrait);
+			settings.setValue(AppConstants.SETTING_WINDOW_BOUNDS, e.afterBounds);
+		}
+
+		private function onMove(e:NativeWindowBoundsEvent):void
+		{
 			settings.setValue(AppConstants.SETTING_WINDOW_BOUNDS, e.afterBounds);
 		}
 
@@ -272,7 +294,7 @@ package browser
 
 		private function onUIComplete(e:Event):void
 		{
-			// Auto reopen TODO: Invoke coflict
+			// Auto reopen TODO: Invoke conflict
 			var isEnableReopen:Boolean = settings.getValueOrDefault(AppConstants.SETTING_AUTO_REOPEN, false);
 			if (isEnableReopen)
 			{

@@ -8,7 +8,6 @@ package browser.dom
 	import browser.dom.files.types.TemplateAsset;
 	import browser.dom.files.types.TextureAsset;
 	import browser.dom.files.DocumentFileReferenceCollection;
-	import browser.dom.files.DocumentFileType;
 	import browser.dom.log.DocumentMessageCollection;
 	import browser.dom.log.DocumentTaskTracker;
 	import browser.utils.Storage;
@@ -40,13 +39,14 @@ package browser.dom
 			_factory = new DocumentTalonFactory(this);
 
 			_files = new DocumentFileReferenceCollection(this);
-			_files.registerControllerForType(DocumentFileType.DIRECTORY, DirectoryAsset);
-			_files.registerControllerForType(DocumentFileType.IMAGE, TextureAsset);
-			_files.registerControllerForType(DocumentFileType.TEMPLATE, TemplateAsset);
-			_files.registerControllerForType(DocumentFileType.ATLAS, AtlasAsset);
-			_files.registerControllerForType(DocumentFileType.STYLE, StyleSheetAsset);
-			_files.registerControllerForType(DocumentFileType.BITMAP_FONT, FontAsset);
-			_files.registerControllerForType(DocumentFileType.LIBRARY, LibraryAsset);
+
+			_files.registerController(DirectoryAsset,   DirectoryAsset.checker);
+			_files.registerController(TextureAsset,     TextureAsset.checker);
+			_files.registerController(TemplateAsset,    TemplateAsset.checker);
+			_files.registerController(AtlasAsset,       AtlasAsset.checker);
+			_files.registerController(StyleSheetAsset,  StyleSheetAsset.checker);
+			_files.registerController(FontAsset,        FontAsset.checker);
+			_files.registerController(LibraryAsset,      LibraryAsset.checker);
 		}
 
 		/** Background task counter. */

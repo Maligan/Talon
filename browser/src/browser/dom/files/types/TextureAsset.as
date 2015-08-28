@@ -1,5 +1,7 @@
 package browser.dom.files.types
 {
+	import browser.AppConstants;
+	import browser.dom.files.DocumentFileReference;
 	import browser.dom.log.DocumentMessage;
 
 	import flash.display.Loader;
@@ -12,6 +14,11 @@ package browser.dom.files.types
 
 	public class TextureAsset extends Asset
 	{
+		public static function checker(file:DocumentFileReference):Boolean
+		{
+			return AppConstants.SUPPORTED_IMAGE_EXTENSIONS.indexOf(file.extension) != -1;
+		}
+
 		private var _id:String;
 		private var _texture:Texture;
 

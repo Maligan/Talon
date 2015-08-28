@@ -23,7 +23,7 @@ package browser.dom
 			_timer = new Timer(1);
 			_timer.addEventListener(TimerEvent.TIMER, onTimer);
 
-			document.properties.addPropertyListener(AppConstants.HIDDEN_PROPERTY_CSF, onCSFChange);
+			document.properties.addPropertyListener("CSF", onCSFChange);
 		}
 
 		private function dispatchChange():void
@@ -62,7 +62,7 @@ package browser.dom
 
 		private function get csf():Number
 		{
-			return _document.properties.getValueOrDefault(AppConstants.HIDDEN_PROPERTY_CSF, 1);
+			return _document.properties.getValueOrDefault("CSF", 1);
 		}
 
 		//

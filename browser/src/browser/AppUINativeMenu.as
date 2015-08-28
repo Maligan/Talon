@@ -29,15 +29,14 @@ package browser
 
 			// File
 			_menu.push("file",                                  AppConstants.T_MENU_FILE);
-			_menu.push("file/new",                              AppConstants.T_MENU_FILE_NEW_DOCUMENT,                  new CreateDocumentCommand(_controller),     "n");
-			_menu.push("file/new",                              AppConstants.T_MENU_FILE_NEW_WINDOW,                    new CreateWindowCommand(),                  "n", [Keyboard.CONTROL, Keyboard.SHIFT]);
+			_menu.push("file/new",                              AppConstants.T_MENU_FILE_NEW_DOCUMENT,                  new CreateDocumentCommand(_controller), "n");
+//			_menu.push("file/instantiate",                      AppConstants.T_MENU_FILE_NEW_WINDOW,                    new CreateWindowCommand(),              "n", [Keyboard.CONTROL, Keyboard.SHIFT]);
 			_menu.push("file/-");
 			_menu.push("file/recent",                           AppConstants.T_MENU_FILE_RECENT);
 			_menu.push("file/open",                             AppConstants.T_MENU_FILE_OPEN,                          new OpenDocumentCommand(_controller),   "o");
 			_menu.push("file/-");
 			_menu.push("file/closeDocument",                    AppConstants.T_MENU_FILE_CLOSE_DOCUMENT,                new CloseDocumentCommand(_controller),  "w");
-			_menu.push("file/closeBrowser",                     AppConstants.T_MENU_FILE_CLOSE_BROWSER,                 new CloseWindowCommand(_controller),   "w", [Keyboard.CONTROL, Keyboard.SHIFT]);
-//			_menu.push("file/instantiateBrowser",               "Instantiate",                                          new InstantiateBrowserCommand());
+			_menu.push("file/closeBrowser",                     AppConstants.T_MENU_FILE_CLOSE_BROWSER,                 new CloseWindowCommand(_controller),    "w", [Keyboard.CONTROL, Keyboard.SHIFT]);
 			_menu.push("file/-");
 			_menu.push("file/publish",                          AppConstants.T_MENU_FILE_PUBLISH_AS,                    new PublishCommand(_controller),        "s", [Keyboard.CONTROL, Keyboard.SHIFT]);
 
@@ -56,8 +55,8 @@ package browser
 			_menu.push("view/zoomOut",                          AppConstants.T_MENU_VIEW_ZOOM_OUT,                      new ChangeZoomCommand(_controller, -25),   "-");
 			_menu.push("view/-");
 			_menu.push("view/orientation",                      AppConstants.T_MENU_VIEW_ORIENTATION);
-			_menu.push("view/orientation/portrait",             AppConstants.T_MENU_VIEW_ORIENTATION_PORTRAIT,          new ChangeOrientationCommand(_controller, Orientation.VERTICAL), "p", [Keyboard.CONTROL, Keyboard.SHIFT]);
-			_menu.push("view/orientation/landscape",            AppConstants.T_MENU_VIEW_ORIENTATION_LANDSCAPE,         new ChangeOrientationCommand(_controller, Orientation.HORIZONTAL), "l", [Keyboard.CONTROL, Keyboard.SHIFT]);
+			_menu.push("view/orientation/portrait",             AppConstants.T_MENU_VIEW_ORIENTATION_PORTRAIT,          new ChangeOrientationCommand(_controller, Orientation.VERTICAL), "p", [Keyboard.ALTERNATE]);
+			_menu.push("view/orientation/landscape",            AppConstants.T_MENU_VIEW_ORIENTATION_LANDSCAPE,         new ChangeOrientationCommand(_controller, Orientation.HORIZONTAL), "l", [Keyboard.ALTERNATE]);
 			_menu.push("view/profile",                          AppConstants.T_MENU_VIEW_PROFILE);
 			_menu.push("view/profile/custom",                   AppConstants.T_MENU_VIEW_PROFILE_CUSTOM,                new ChangeProfileCommand(_controller, DeviceProfile.CUSTOM));
 			_menu.push("view/profile/-");

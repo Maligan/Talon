@@ -1,11 +1,21 @@
 package browser.dom.files.types
 {
+	import browser.dom.files.DocumentFileReference;
 	import browser.dom.log.DocumentMessage;
 
 	import flash.system.System;
 
+	import talon.utils.TalonFactoryBase;
+
 	public class TemplateAsset extends Asset
 	{
+		public static function checker(file:DocumentFileReference):Boolean
+		{
+			return file.checkFirstMeaningfulChar("<")
+				&& file.xml
+				&& file.xml.name().toString() == TalonFactoryBase.TAG_TEMPLATE;
+		}
+
 		private var _id:String;
 		private var _xml:XML;
 

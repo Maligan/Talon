@@ -7,6 +7,11 @@ package browser.dom.files.types
 
 	public class DirectoryAsset extends Asset
 	{
+		public static function checker(file:DocumentFileReference):Boolean
+		{
+			return file.target.isDirectory;
+		}
+
 		public override function attach():void
 		{
 			document.tasks.begin();

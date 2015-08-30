@@ -29,14 +29,8 @@ package browser
 
 	public class AppUI extends EventDispatcher
 	{
-		[Embed(source="/../assets/interface.zip", mimeType="application/octet-stream")]
-		private static const INTERFACE:Class;
-
-		[Embed(source="/../assets/SourceSansPro.otf", embedAsCFF="false", fontName="Source Sans Pro")]
-		private static const INTERFACE_FONT:Class;
-
-//		[Embed(source="/../assets/LG.ttf", embedAsCFF="false", fontName="Lucida Grande")] private static const INTERFACE_FONT_1:Class;
-//		[Embed(source="/../assets/LGB.ttf", embedAsCFF="false", fontName="Lucida Grande Bold")] private static const INTERFACE_FONT_2:Class;
+		[Embed(source="/../assets/interface.zip", mimeType="application/octet-stream")] private static const INTERFACE:Class;
+		[Embed(source="/../assets/SourceSansPro.otf", embedAsCFF="false", fontName="Source Sans Pro")] private static const INTERFACE_FONT:Class;
 
 		private var _controller:AppController;
 		private var _menu:AppUINativeMenu;
@@ -57,10 +51,12 @@ package browser
 		{
 			_controller = controller;
 			_controller.addEventListener(AppController.EVENT_PROFILE_CHANGE, refreshWindowTitle);
+			_controller.addEventListener(AppController.EVENT_TEMPLATE_CHANGE, refreshWindowTitle);
 			_controller.addEventListener(AppController.EVENT_TEMPLATE_CHANGE, refreshCurrentTemplate);
-			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChanged);
-			_controller.documentDispatcher.addEventListener(DocumentEvent.CHANGED, onDocumentChanged);
+			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, refreshCurrentTemplate);
+			_controller.documentDispatcher.addEventListener(DocumentEvent.CHANGED, refreshCurrentTemplate);
 
+			_isolator = new Sprite();
 			_menu = new AppUINativeMenu(_controller);
 			_popups = new AppUIPopupManager();
 		}
@@ -89,7 +85,6 @@ package browser
 			_container.node.setAttribute(Attribute.HALIGN, HAlign.CENTER);
 			_container.node.setAttribute(Attribute.ID, "IsolatedContainer");
 
-			_isolator = new Sprite();
 			_isolator.alignPivot();
 			_isolator.name = "Isolator";
 			_isolator.addChild(_container);
@@ -124,6 +119,7 @@ package browser
 		private function onZoomChange(e:Event):void
 		{
 			zoom = _controller.settings.getValueOrDefault(AppConstants.SETTING_ZOOM, 100) / 100;
+			refreshWindowTitle();
 		}
 
 		private function onAlwaysOnTopChange(e:Event):void
@@ -146,12 +142,6 @@ package browser
 			}
 		}
 
-		private function onDocumentChanged(e:Event):void
-		{
-			refreshCurrentTemplate();
-			refreshWindowTitle();
-		}
-
 		//
 		// Refresh
 		//
@@ -159,17 +149,24 @@ package browser
 		{
 			var result:Array = [];
 
+			// Open document/template
 			if (_controller.document)
-				result.push(_controller.document.project.name);
-
-			if (_controller.templateId)
-				result.push(_controller.templateId);
+			{
+				var title:String = _controller.document.project.name.replace(/\.[^\.]*$/,"");
+				if (_controller.templateId) title += "/" + _controller.templateId;
+				result.push(title);
+			}
 
 			var profile:DeviceProfile = _controller.profile;
-			if (profile != DeviceProfile.CUSTOM) result.push("[" + _controller.profile.id + "]");
-			else result.push("[" + profile.width + "x" + profile.height + ", CSF=" + profile.csf + ", DPI=" + profile.dpi + "]");
 
-			result.push(AppConstants.APP_NAME + " " + AppConstants.APP_VERSION);
+			// Profile preference
+			result.push("[" + profile.width + "x" + profile.height + ", CSF=" + profile.csf + ", DPI=" + profile.dpi + "]");
+			// Profile name (if exist)
+			if (profile != DeviceProfile.CUSTOM) result.push(profile.id);
+			// Zoom (if non 100%)
+			if (zoom != 1) result.push(int(zoom * 100) + "%");
+			// Application name + version
+			result.push(AppConstants.APP_NAME + " " + AppConstants.APP_VERSION.replace(/\.0$/, ""));
 
 			_controller.root.stage.nativeWindow.title = result.join(" - ");
 		}
@@ -219,6 +216,10 @@ package browser
 
 			return result;
 		}
+
+		//
+		// Drag&Drop
+		//
 
 		//
 		// Properties

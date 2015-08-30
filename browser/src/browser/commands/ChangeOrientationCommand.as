@@ -25,21 +25,7 @@ package browser.commands
 		public override function execute():void
 		{
 			if (isActive) return;
-
-			var window:NativeWindow  = controller.root.stage.nativeWindow;
-			var min:Number = Math.min(window.width, window.height);
-			var max:Number = Math.max(window.width, window.height);
-
-			if (_orientation == Orientation.VERTICAL)
-			{
-				window.width = min;
-				window.height = max;
-			}
-			else
-			{
-				window.width = max;
-				window.height = min;
-			}
+			controller.rotate();
 		}
 
 		public override function get isActive():Boolean

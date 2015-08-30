@@ -1,6 +1,7 @@
 package browser.dom.files.types
 {
 	import browser.dom.DocumentEvent;
+	import browser.dom.files.DocumentFileReference;
 	import browser.dom.log.DocumentMessage;
 
 	import flash.system.System;
@@ -11,6 +12,13 @@ package browser.dom.files.types
 
 	public class AtlasAsset extends Asset
 	{
+		public static function checker(file:DocumentFileReference):Boolean
+		{
+			return file.checkFirstMeaningfulChar("<")
+				&& file.xml
+				&& file.xml.name().toString() == "TextureAtlas";
+		}
+
 		private var _xml:XML;
 		private var _texture:Texture;
 		private var _atlas:TextureAtlas;

@@ -4,7 +4,7 @@ package browser
 
 	public class AppConstants
 	{
-		public static const APP_NAME:String = "Talon Browser ALPHA";
+		public static const APP_NAME:String = "Talon Browser";
 		public static const APP_UPDATE_URL:String = "https://github.com/Maligan/Talon/tree/master/browser/bin/update.xml?raw=true";
 
 		public static function get APP_VERSION():String
@@ -24,7 +24,6 @@ package browser
 		public static const PROPERTY_EXPORT_PATH:String     = "export.path";
 		public static const PROPERTY_EXPORT_IGNORE:String   = "export.ignore";
 		public static const PROPERTY_EXPORT_EXEC:String     = "export.exec";
-		public static const HIDDEN_PROPERTY_CSF:String      = "hidden.csf";
 
 		public static const SETTING_BACKGROUND:String = "background";
 		public static const SETTING_BACKGROUND_DARK:String = "dark";
@@ -38,7 +37,6 @@ package browser
 		public static const SETTING_RECENT_ARRAY:String = "recentDocuments";
 		public static const SETTING_RECENT_TEMPLATE:String = "recentTemplate";
 		public static const SETTING_PROFILE:String = "profile";
-		public static const SETTING_IS_PORTRAIT:String = "isPortrait";
 		public static const SETTING_WINDOW_BOUNDS:String = "windowBounds";
 
 		public static const ZOOM_MIN:int = 25;

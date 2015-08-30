@@ -9,6 +9,7 @@ package browser.dom.files
 	{
 		private var _document:Document;
 		private var _mappings:Dictionary;
+		private var _checkers:Vector.<Function>;
 
 		private var _references:Dictionary;
 		private var _controllers:Dictionary;
@@ -17,14 +18,16 @@ package browser.dom.files
 		{
 			_document = document;
 			_mappings = new Dictionary();
+			_checkers = new <Function>[];
 
 			_references = new Dictionary();
 			_controllers = new Dictionary();
 		}
 
-		public function registerControllerForType(typeName:String, typeClass:Class):void
+		public function registerController(typeClass:Class, checker:Function = null):void
 		{
-			_mappings[typeName] = typeClass;
+			_checkers[_checkers.length] = checker;
+			_mappings[checker] = typeClass;
 		}
 
 		public function addReference(reference:DocumentFileReference):void
@@ -97,7 +100,17 @@ package browser.dom.files
 		/** Add controller to reference. */
 		private function attachController(reference:DocumentFileReference):void
 		{
-			var controllerClass:Class = _mappings[reference.type] || Asset;
+			var controllerClass:Class = Asset;
+
+			// Define controller class
+			for each (var checker:Function in _checkers)
+			{
+				if (checker(reference) === true)
+				{
+					controllerClass = _mappings[checker];
+					break;
+				}
+			}
 
 			var controller:IDocumentFileController = new controllerClass();
 			controller.setReference(reference);

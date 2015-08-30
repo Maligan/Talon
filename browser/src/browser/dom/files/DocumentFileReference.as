@@ -3,6 +3,7 @@ package browser.dom.files
 	import browser.dom.Document;
 	import browser.dom.log.DocumentMessage;
 	import browser.utils.Glob;
+	import browser.utils.byteArrayStartsWith;
 
 	import com.adobe.air.filesystem.FileMonitor;
 	import com.adobe.air.filesystem.events.FileMonitorEvent;
@@ -21,10 +22,13 @@ package browser.dom.files
 	[Event(name="change", type="starling.events.Event")]
 	public class DocumentFileReference extends EventDispatcher
 	{
+		private static const NAME_REGEX:RegExp = /([^\?\/\\]+?)(?:\.([\w\-]+))?(?:\?.*)?$/;
+
 		private var _document:Document;
 		private var _target:File;
 		private var _monitor:FileMonitor;
-		private var _type:String;
+		private var _bytes:ByteArray;
+		private var _xml:XML;
 
 		public function DocumentFileReference(document:Document, target:File)
 		{
@@ -42,10 +46,117 @@ package browser.dom.files
 
 		private function onFileChange(e:FileMonitorEvent):void
 		{
-			_type = null;
+			_bytes && _bytes.clear();
+			_bytes = null;
+			_xml && System.disposeXML(_xml);
+			_xml = null;
+
 			dispatchEventWith(Event.CHANGE);
 		}
 
+		public function checkFirstMeaningfulChar(char:String):Boolean
+		{
+			if (bytes == null) return false;
+			var starts:Boolean = byteArrayStartsWith(bytes, char);
+
+			return starts;
+		}
+
+		public function checkSignature(signature:String):Boolean
+		{
+			if (bytes == null) return false;
+			if (bytes.bytesAvailable < signature.length) return false;
+
+			for (var i:int = 0; i < signature.length; i++)
+			{
+				if (signature.charCodeAt(i) != bytes[i]) return false;
+			}
+
+			return true;
+		}
+
+		/** File is ignored for export. */
+		public function get isIgnored():Boolean
+		{
+			if (target.isDirectory) return false;
+
+			var result:Boolean = false;
+			var property:String = document.properties.getValueOrDefault(AppConstants.PROPERTY_EXPORT_IGNORE);
+			if (property == null) return false;
+			var spilt:Array = property.split(/\s*,\s*/);
+
+			for each (var pattern:String in spilt)
+			{
+ 				var glob:Glob = new Glob(pattern);
+				if (glob.match(exportPath))
+				{
+					result = !glob.invert;
+					if (result == false) break;
+				}
+			}
+
+			return result;
+		}
+
+		//
+		// Names
+		//
+		public function get url():String
+		{
+			return _target.url;
+		}
+
+		public function get basename():String
+		{
+			var matches:Array = NAME_REGEX.exec(url);
+			if (matches && matches.length > 0) return matches[1];
+			else return null;
+		}
+
+		public function get extension():String
+		{
+			var matches:Array = NAME_REGEX.exec(url);
+			if (matches && matches.length > 0) return matches[2];
+			else return null;
+		}
+
+		public function get exportPath():String
+		{
+			var sourcePathProperty:String = document.properties.getValueOrDefault(AppConstants.PROPERTY_SOURCE_PATH);
+			var sourcePath:File = document.project.parent.resolvePath(sourcePathProperty || document.project.parent.nativePath);
+			if (sourcePath.exists == false) sourcePath = document.project.parent;
+			return sourcePath.getRelativePath(target);
+		}
+
+		//
+		// Properties
+		//
+		public function get exists():Boolean { return _target.exists; }
+
+		public function get document():Document { return _document; }
+
+		/** @private For internal usage ONLY. */
+		public function get target():File { return _target; }
+
+		public function get bytes():ByteArray
+		{
+			if (_bytes == null)
+				_bytes = readBytes();
+
+			return readBytes();
+		}
+
+		public function get xml():XML
+		{
+			if (_xml == null)
+				_xml = readXML();
+
+			return _xml;
+		}
+
+		//
+		// Read
+		//
 		public function readBytes():ByteArray
 		{
 			if (!exists) throw new ArgumentError("File not exists");
@@ -82,88 +193,6 @@ package browser.dom.files
 			{
 				return null;
 			}
-		}
-
-		/** @see browser.dom.files.DocumentFileType */
-		public function get type():String
-		{
-			return _type || (_type = getType());
-		}
-
-		private function getType():String
-		{
-			if (extension == "css") return DocumentFileType.STYLE;
-			if (extension == "xml")
-			{
-				var xml:XML = readXML();
-				if (xml != null)
-				{
-					var root:String = xml.name();
-					System.disposeXML(xml);
-
-					if (root == "template") return DocumentFileType.TEMPLATE;
-					if (root == "library") return DocumentFileType.LIBRARY;
-					if (root == "TextureAtlas") return DocumentFileType.ATLAS;
-				}
-				// TODO: Else message invalid XML
-
-				return DocumentFileType.UNKNOWN;
-			}
-			if (extension == "fnt") return DocumentFileType.BITMAP_FONT;
-			if (AppConstants.SUPPORTED_IMAGE_EXTENSIONS.indexOf(extension) != -1) return DocumentFileType.IMAGE;
-			if (_target.isDirectory) return DocumentFileType.DIRECTORY;
-
-			return DocumentFileType.UNKNOWN;
-		}
-
-		private function get extension():String
-		{
-			var extensionDotIndex:int = url.lastIndexOf('.');
-			if (extensionDotIndex != -1) return url.substring(extensionDotIndex + 1);
-			return null;
-		}
-
-		/** Unique reference url. */
-		public function get url():String { return _target.url; }
-		public function get exists():Boolean { return _target.exists; }
-		public function get document():Document { return _document; }
-
-		/** @private For internal usage ONLY. */
-		public function get target():File
-		{
-			return _target;
-		}
-
-		/** File is ignored for export. */
-		public function get isIgnored():Boolean
-		{
-			if (type == DocumentFileType.DIRECTORY) return true;
-			if (type == DocumentFileType.UNKNOWN) return true;
-
-			var result:Boolean = false;
-			var property:String = document.properties.getValueOrDefault(AppConstants.PROPERTY_EXPORT_IGNORE);
-			if (property == null) return false;
-			var spilt:Array = property.split(/\s*,\s*/);
-
-			for each (var pattern:String in spilt)
-			{
- 				var glob:Glob = new Glob(pattern);
-				if (glob.match(exportPath))
-				{
-					result = !glob.invert;
-					if (result == false) break;
-				}
-			}
-
-			return result;
-		}
-
-		public function get exportPath():String
-		{
-			var sourcePathProperty:String = document.properties.getValueOrDefault(AppConstants.PROPERTY_SOURCE_PATH);
-			var sourcePath:File = document.project.parent.resolvePath(sourcePathProperty || document.project.parent.nativePath);
-			if (sourcePath.exists == false) sourcePath = document.project.parent;
-			return sourcePath.getRelativePath(target);
 		}
 	}
 }

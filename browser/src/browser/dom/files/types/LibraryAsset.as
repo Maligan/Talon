@@ -1,5 +1,6 @@
 package browser.dom.files.types
 {
+	import browser.dom.files.DocumentFileReference;
 	import browser.dom.log.DocumentMessage;
 
 	import flash.system.System;
@@ -8,6 +9,13 @@ package browser.dom.files.types
 
 	public class LibraryAsset extends Asset
 	{
+		public static function checker(file:DocumentFileReference):Boolean
+		{
+			return file.checkFirstMeaningfulChar("<")
+				&& file.xml
+				&& file.xml.name().toString() == TalonFactoryBase.TAG_LIBRARY;
+		}
+
 		private var _xml:XML;
 		private var _css:Vector.<String> = new Vector.<String>();
 		private var _templates:Vector.<String> = new Vector.<String>();

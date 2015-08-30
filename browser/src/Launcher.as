@@ -2,6 +2,7 @@ package
 {
 	import browser.AppConstants;
 	import browser.AppController;
+	import browser.utils.parseProperties;
 
 	import flash.desktop.NativeApplication;
 	import flash.display.MovieClip;
@@ -11,6 +12,7 @@ package
 	import flash.events.InvokeEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.utils.getTimer;
 
 	import starling.events.Event;
 
@@ -24,20 +26,109 @@ package
 
 		public function Launcher()
 		{
-			var source:String = "This is \\\\\\n new line";
-			var target:String = source.replace(/[^\\](?:\\\\)?\\([nrt\s])/, replaceEscapedChars);
 
-			trace(target);
+			var str:String = new XML(
+				<node><![CDATA[
 
-			function replaceEscapedChars(match:String, char:String, offset:int, string:String):String
-			{
-				return match.replace("\\n", "\n");
-			}
+				appWidth=530
+
+				#CheckForUpdates
+				titleCheck=Nach Updates suchen
+				msgCheck=Zulassen, dass die Anwendung nach Updates sucht?
+				btnCheck=Nach Updates suchen
+				btnCancel=Abbrechen
+
+				#CheckForUpdates - No updates available
+				titleCheckNoUpdates=Keine Updates verf?gbar
+				msgCheckNoUpdates=F?r die Anwendung sind keine Updates verf?gbar.
+				btnClose=Schlie?en
+
+				#CheckForUpdates - Connection Error
+				titleCheckError=Updatefehler
+				msgCheckError=Fehler beim Suchen nach Updates. Fehlernr. {0}
+
+				#UpdateAvailable
+				titleUpdate=Update verf?gbar
+				msgUpdate=Eine aktualisierte Version der Anwendung kann aus dem Internet heruntergeladen werden.
+				lblApplication=Anwendung:
+				lblInstalledVersion=Installierte Version:
+				lblAvailableVersion=Updateversion:
+				btnDownload=Jetzt herunterladen
+				btnDownloadLater=Sp?ter herunterladen
+				lnkReleaseNotes=Versionshinweise
+
+				#DownloadProgress
+				titleProgress=Downloadfortschritt...
+				msgProgress=Update wird heruntergeladen
+
+				#DownloadError
+				titleDownloadError=Download fehlgeschlagen
+				msgDownloadError=Beim Herunterladen des Updates ist ein Fehler aufgetreten. Fehlernr. {0}
+
+				#InstallUpdate
+				titleInstall=Update installieren
+				msgInstall=Das Update f?r die Anwendung wurde heruntergeladen und kann installiert werden.
+				btnInstall=Jetzt installieren
+				btnInstallLater=Nach dem Neustart
+
+				#UnexpectedError
+				titleUnexpectedError=Unerwarteter Fehler
+				msgUnexpectedError=Ein unerwarteter Fehler ist aufgetreten. Fehlernr. {0}
+
+				#File - Update Available
+				titleFileUpdate=Update verf?gbar
+				msgFileUpdate=Die Datei enth?lt eine aktualisierte Version der Anwendung. Installieren?
+				lblFile=Datei:
+
+
+				#File - No updates available
+				titleFileNoUpdate=Kein Update verf?gbar
+				msgFileNoUpdate=Die Datei enth?lt keine neuere Version der Anwendung.
+
+				#File - Error
+				titleFileError=Dateifehler
+				msgFileError=Bei Validieren der Updatedatei ist ein Fehler aufgetreten. Fehlernr. {0}
+
+				#Title window
+				titleWindow=Aktualisieren:
+
+
+				]]></node>).valueOf();
+
 
 			_backgroundColor = new SharedString("backgroundColor", AppConstants.SETTING_BACKGROUND_DEFAULT);
 			stage ? initialize() : addEventListener(Event.ADDED_TO_STAGE, initialize);
 		}
 
+		private function test(func:Function, str:String, count:int):int
+		{
+			var timer:uint = getTimer();
+			for (var i:int = 0; i < 10000; i++)
+				parseProperties(str);
+			return getTimer() - timer;
+		}
+
+
+		/** Simple Properties file format parser. */
+		private function parse(string:String):Object
+		{
+			var result:Object = new Object();
+			var values:Array = string.split(/[\n\r]/);
+			var pattern:RegExp = /\s*([\w\.]+)\s*\=\s*(.*)\s*$/;
+
+			for each (var line:String in values)
+			{
+				var property:Array = pattern.exec(line);
+				if (property)
+				{
+					var key:String = property[1];
+					var value:String = property[2];
+					result[key] = value;
+				}
+			}
+
+			return result;
+		}
 
 		private function initialize(e:* = null):void
 		{
@@ -45,6 +136,7 @@ package
 
 			stage.color = getColorByBackground(_backgroundColor.value);
 			stage.nativeWindow.minSize = new Point(200, 100);
+			stage.addEventListener(Event.RESIZE, onResize);
 
 			NativeApplication.nativeApplication.setAsDefaultApplication(AppConstants.DESIGNER_FILE_EXTENSION);
 			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);

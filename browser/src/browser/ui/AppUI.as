@@ -1,8 +1,9 @@
-package browser
+package browser.ui
 {
+	import browser.*;
 	import browser.dom.DocumentEvent;
 	import browser.dom.log.DocumentMessage;
-	import browser.popups.Popup;
+	import browser.ui.popups.Popup;
 	import browser.utils.DeviceProfile;
 
 	import flash.display.Stage;
@@ -25,6 +26,7 @@ package browser
 	import talon.layout.Layout;
 	import talon.starling.TalonFactoryStarling;
 	import talon.starling.TalonSprite;
+	import talon.utils.ITalonElement;
 	import talon.utils.TalonFactoryBase;
 
 	public class AppUI extends EventDispatcher
@@ -109,6 +111,7 @@ package browser
 		{
 			var styleName:String = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DEFAULT);
 			_interface.node.classes.parse(styleName);
+			_controller.root.stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[styleName];
 		}
 
 		private function onStatsChange(e:Event):void
@@ -195,6 +198,8 @@ package browser
 			}
 			else if (_template != null)
 			{
+				_container.node.ppmm = ITalonElement(_template).node.ppmm;
+				_container.node.ppdp = ITalonElement(_template).node.ppdp;
 				_container.addChild(_template);
 				_controller.root.stage && resizeTo(_controller.root.stage.stageWidth, _controller.root.stage.stageHeight);
 			}

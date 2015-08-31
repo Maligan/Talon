@@ -27,7 +27,7 @@ package browser.commands
 			}
 			else
 			{
-				var filter:FileFilter = new FileFilter(AppConstants.T_DESIGNER_FILE_EXTENSION_NAME, "*." + AppConstants.DESIGNER_FILE_EXTENSION);
+				var filter:FileFilter = new FileFilter(AppConstants.T_BROWSER_FILE_EXTENSION_NAME, "*." + AppConstants.DESIGNER_FILE_EXTENSION);
 				var source:File = new File();
 				source .addEventListener(Event.SELECT, onOpenFileSelect);
 				source.browseForOpen(AppConstants.T_MENU_FILE_OPEN, [filter]);
@@ -43,12 +43,12 @@ package browser.commands
 		{
 			controller.document = readDocument(source);
 
-			var recent:Array = controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_ARRAY, []);
+			var recent:Array = controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, []);
 			var indexOf:int = recent.indexOf(source.nativePath);
 			if (indexOf != -1) recent.splice(indexOf, 1);
 			recent.unshift(source.nativePath);
 			recent = recent.slice(0, AppConstants.HISTORY_RECENT_MAX);
-			controller.settings.setValue(AppConstants.SETTING_RECENT_ARRAY, recent);
+			controller.settings.setValue(AppConstants.SETTING_RECENT_DOCUMENTS, recent);
 		}
 
 		private function readDocument(documentFile:File):Document

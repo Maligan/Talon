@@ -1,8 +1,9 @@
-package browser
+package browser.ui
 {
+	import browser.*;
 	import browser.commands.*;
 	import browser.dom.DocumentEvent;
-	import browser.popups.ProfilePopup;
+	import browser.ui.popups.ProfilePopup;
 	import browser.utils.DeviceProfile;
 	import browser.utils.NativeMenuAdapter;
 
@@ -78,7 +79,7 @@ package browser
 			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, refreshDocumentTemplatesList);
 			refreshDocumentTemplatesList();
 
-			_controller.settings.addPropertyListener(AppConstants.SETTING_RECENT_ARRAY, refreshRecentOpenedDocumentsList);
+			_controller.settings.addPropertyListener(AppConstants.SETTING_RECENT_DOCUMENTS, refreshRecentOpenedDocumentsList);
 			refreshRecentOpenedDocumentsList();
 
 			_menu.push("help",          AppConstants.T_MENU_HELP);
@@ -91,7 +92,7 @@ package browser
 
 		private function refreshRecentOpenedDocumentsList():void
 		{
-			var recent:Array = _controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_ARRAY, []);
+			var recent:Array = _controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, []);
 			if (isEqual(recent, _prevDocuments)) return;
 			_prevDocuments = recent;
 
@@ -106,7 +107,7 @@ package browser
 					recentMenu.push(path, null, new OpenDocumentCommand(_controller, new File(path)));
 
 				recentMenu.push("-");
-				recentMenu.push("clear", AppConstants.T_MENU_FILE_RECENT_CLEAR, new ChangeSettingCommand(_controller, AppConstants.SETTING_RECENT_ARRAY, []));
+				recentMenu.push("clear", AppConstants.T_MENU_FILE_RECENT_CLEAR, new ChangeSettingCommand(_controller, AppConstants.SETTING_RECENT_DOCUMENTS, []));
 			}
 		}
 

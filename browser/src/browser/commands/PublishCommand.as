@@ -62,7 +62,7 @@ package browser.commands
 			{
 				if (file.isIgnored) continue;
 				var name:String = file.exportPath;
-				var data:ByteArray = file.readBytes();
+				var data:ByteArray = file.bytes;
 				zip.addFile(name, data);
 			}
 

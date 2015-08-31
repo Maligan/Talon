@@ -46,7 +46,7 @@ package browser.dom
 			_files.registerController(AtlasAsset,       AtlasAsset.checker);
 			_files.registerController(StyleSheetAsset,  StyleSheetAsset.checker);
 			_files.registerController(FontAsset,        FontAsset.checker);
-			_files.registerController(LibraryAsset,      LibraryAsset.checker);
+			_files.registerController(LibraryAsset,     LibraryAsset.checker);
 		}
 
 		/** Background task counter. */

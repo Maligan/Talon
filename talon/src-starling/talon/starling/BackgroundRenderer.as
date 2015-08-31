@@ -177,7 +177,7 @@ package talon.starling
 		{
 			var width:Number = Math.min(_width, texture.width);
 			var height:Number = Math.min(_height, texture.height);
-			var quad = getQuadData();
+			var quad:QuadData = getQuadData();
 			quad.setPositions(0, 0, width, height);
 			quad.setTexCoords(0, 0, width/texture.width, height/texture.height);
 			_quads[_quads.length] = quad;

@@ -1,7 +1,10 @@
 package browser.dom
 {
 	import browser.AppConstants;
+	import browser.utils.DeviceProfile;
+
 	import flash.events.TimerEvent;
+	import flash.system.Capabilities;
 	import flash.utils.Timer;
 	import starling.events.Event;
 	import talon.Node;
@@ -14,6 +17,8 @@ package browser.dom
 		private var _document:Document;
 		private var _styles:StyleSheetCollection;
 		private var _timer:Timer;
+		private var _csf:Number;
+		private var _dpi:Number;
 
 		public function DocumentTalonFactory(document:Document):void
 		{
@@ -22,8 +27,6 @@ package browser.dom
 			_styles = new StyleSheetCollection();
 			_timer = new Timer(1);
 			_timer.addEventListener(TimerEvent.TIMER, onTimer);
-
-			document.properties.addPropertyListener("CSF", onCSFChange);
 		}
 
 		private function dispatchChange():void
@@ -39,11 +42,6 @@ package browser.dom
 			_timer.reset();
 		}
 
-		private function onCSFChange(e:Event):void
-		{
-			dispatchChange();
-		}
-
 		public override function produce(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
 		{
 			resources.reset();
@@ -54,16 +52,21 @@ package browser.dom
 		protected override function getElementNode(element:*):Node
 		{
 			var node:Node = super.getElementNode(element);
+
 			if (node)
-				node.ppdp = csf;
+			{
+				if (csf == csf) node.ppdp = csf;
+				if (dpi == dpi) node.ppmm = dpi / 25.4;
+			}
 
 			return node;
 		}
 
-		private function get csf():Number
-		{
-			return _document.properties.getValueOrDefault("CSF", 1);
-		}
+		public function set csf(value:Number):void { _csf = value; dispatchChange(); }
+		public function get csf():Number { return _csf; }
+
+		public function set dpi(value:Number):void { _dpi = value; dispatchChange(); }
+		public function get dpi():Number { return _dpi; }
 
 		//
 		// Templates

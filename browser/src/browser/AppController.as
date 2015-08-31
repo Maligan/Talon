@@ -4,6 +4,7 @@ package browser
 	import browser.commands.OpenDocumentCommand;
 	import browser.dom.Document;
 	import browser.dom.log.DocumentMessage;
+	import browser.ui.AppUI;
 	import browser.utils.Console;
 	import browser.utils.DeviceProfile;
 	import browser.utils.EventDispatcherAdapter;
@@ -140,6 +141,12 @@ package browser
 					_preventProfileChange = false;
 				}
 
+				if (_document)
+				{
+					_document.factory.dpi = _profile.dpi;
+					_document.factory.csf = _profile.csf;
+				}
+
 				settings.setValue(AppConstants.SETTING_PROFILE, _profile.id);
 				dispatchEventWith(EVENT_PROFILE_CHANGE);
 			}
@@ -154,6 +161,13 @@ package browser
 				_document && _document.dispose();
 				_document = value;
 				_documentDispatcher.target = _document;
+
+				if (_document)
+				{
+					_document.factory.dpi = _profile.dpi;
+					_document.factory.csf = _profile.csf;
+				}
+
 				dispatchEventWith(EVENT_DOCUMENT_CHANGE);
 				templateId = _document ? _document.factory.templateIds.shift() : null;
 			}
@@ -246,7 +260,7 @@ package browser
 
 			if (_profile != DeviceProfile.CUSTOM && _preventProfileChange == false)
 			{
-				_profile = DeviceProfile.CUSTOM;
+				profile = DeviceProfile.CUSTOM;
 			}
 
 			if (_profile == DeviceProfile.CUSTOM)
@@ -294,11 +308,14 @@ package browser
 
 		private function onUIComplete(e:Event):void
 		{
-			// Auto reopen TODO: Invoke conflict
+			// Document can be opened via invoke (click on document file)
+			// in this case need omit autoReopen feature
+			if (document != null) return;
+
 			var isEnableReopen:Boolean = settings.getValueOrDefault(AppConstants.SETTING_AUTO_REOPEN, false);
 			if (isEnableReopen)
 			{
-				var recentArray:Array = settings.getValueOrDefault(AppConstants.SETTING_RECENT_ARRAY);
+				var recentArray:Array = settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS);
 				var recentPath:String = recentArray && recentArray.length ? recentArray[0] : null;
 				if (recentPath)
 				{

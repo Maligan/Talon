@@ -157,7 +157,7 @@ package browser.dom.files
 		//
 		// Read
 		//
-		public function readBytes():ByteArray
+		private function readBytes():ByteArray
 		{
 			if (!exists) throw new ArgumentError("File not exists");
 
@@ -181,7 +181,7 @@ package browser.dom.files
 			}
 		}
 
-		public function readXML():XML
+		private function readXML():XML
 		{
 			var bytes:ByteArray = readBytes();
 

@@ -1,7 +1,7 @@
 package browser.commands
 {
 	import browser.AppController;
-	import browser.popups.ProfilePopup;
+	import browser.ui.popups.ProfilePopup;
 	import browser.utils.DeviceProfile;
 	import browser.utils.DeviceProfile;
 

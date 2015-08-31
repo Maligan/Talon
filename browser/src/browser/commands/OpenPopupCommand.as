@@ -1,7 +1,7 @@
 package browser.commands
 {
 	import browser.AppController;
-	import browser.popups.Popup;
+	import browser.ui.popups.Popup;
 
 	public class OpenPopupCommand extends Command
 	{

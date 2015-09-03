@@ -25,7 +25,7 @@ package browser.commands
 
 		public override function get isActive():Boolean
 		{
-			return controller.settings.getValueOrDefault(_name) == _value;
+			return controller.settings.getValueOrDefault(_name, String) == _value;
 		}
 	}
 }

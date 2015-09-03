@@ -14,7 +14,7 @@ package browser.commands
 		public function ChangeProfileCommand(controller:AppController, profile:DeviceProfile)
 		{
 			super(controller);
-			controller.addEventListener(AppController.EVENT_PROFILE_CHANGE, onProfileChange);
+			controller.profile.addEventListener(Event.CHANGE, onProfileChange);
 			_profile = profile;
 		}
 
@@ -25,20 +25,12 @@ package browser.commands
 
 		public override function execute():void
 		{
-			if (_profile == DeviceProfile.CUSTOM)
-			{
-				var popup:ProfilePopup = new ProfilePopup();
-//				popup.open();
-			}
-			else
-			{
-				controller.profile = _profile;
-			}
+			controller.profile.copyFrom(_profile);
 		}
 
 		public override function get isActive():Boolean
 		{
-			return _profile != DeviceProfile.CUSTOM && controller.profile == _profile;
+			return controller.profile.equals(_profile);
 		}
 	}
 }

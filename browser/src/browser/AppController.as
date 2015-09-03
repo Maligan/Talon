@@ -23,6 +23,7 @@ package browser
 	import flash.filesystem.File;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.system.Capabilities;
 
 	import starling.core.Starling;
 	import starling.display.DisplayObjectContainer;
@@ -41,7 +42,6 @@ package browser
 	{
 		public static const EVENT_DOCUMENT_CHANGE:String = "documentChange";
 		public static const EVENT_TEMPLATE_CHANGE:String = "templateChange";
-		public static const EVENT_PROFILE_CHANGE:String = "profileChange";
 
 		public static const EVENT_DRAG_IN:String = "documentDragIn";
 		public static const EVENT_DRAG_OUT:String = "documentDragOut";
@@ -57,17 +57,14 @@ package browser
 		private var _profile:DeviceProfile;
 		private var _documentDispatcher:EventDispatcherAdapter;
 		private var _starling:Starling;
-		private var _preventProfileChange:Boolean;
 
 		public function AppController(root:DisplayObject)
 		{
 			_root = root;
 
 			registerClassAlias(Point);
-			registerClassAlias(Rectangle);
-
 			_settings = Storage.fromSharedObject("settings");
-			_profile = DeviceProfile.getById(settings.getValueOrDefault(AppConstants.SETTING_PROFILE, null)) || DeviceProfile.CUSTOM;
+			_profile = new DeviceProfile(_root.stage.stageWidth, root.stage.stageHeight, 1, Capabilities.screenDPI);
 			_monitor = new OrientationMonitor(_root.stage);
 			_documentDispatcher = new EventDispatcherAdapter();
 			_ui = new AppUI(this);
@@ -91,23 +88,13 @@ package browser
 			}
 		}
 
-		public function rotate():void
-		{
-			_preventProfileChange = true;
-			var window:NativeWindow = root.stage.nativeWindow;
-			var bounds:Rectangle = window.bounds;
-			window.width = bounds.height;
-			window.height = bounds.width;
-			_preventProfileChange = false;
-		}
-
-		private function resizeWindowTo(stageWidth:int, stageHeight:int):void
+		public function resizeWindowTo(stageWidth:int, stageHeight:int):void
 		{
 			var window:NativeWindow = root.stage.nativeWindow;
 			var deltaWidth:int = window.width - root.stage.stageWidth;
 			var deltaHeight:int = window.height - root.stage.stageHeight;
-			window.width = stageWidth + deltaWidth;
-			window.height = stageHeight + deltaHeight;
+			window.width = Math.max(stageWidth + deltaWidth, window.minSize.x);
+			window.height = Math.max(stageHeight + deltaHeight, window.minSize.y);
 		}
 
 		//
@@ -120,37 +107,6 @@ package browser
 		public function get monitor():OrientationMonitor { return _monitor; }
 		public function get root():DisplayObject { return _root; }
 		public function get profile():DeviceProfile { return _profile; }
-		public function set profile(value:DeviceProfile):void
-		{
-			if (value == null) throw new ArgumentError("Device Profile can't be null, use DeviceProfile.CUSTOM instead");
-
-			if (_profile != value)
-			{
-				_profile = value;
-
-				if (profile != DeviceProfile.CUSTOM)
-				{
-					var max:int = Math.max(profile.width,  profile.height);
-					var min:int = Math.min(profile.width,  profile.height);
-
-					var width:int  = _monitor.isPortrait ? min : max;
-					var height:int = _monitor.isPortrait ? max : min;
-
-					_preventProfileChange = true;
-					resizeWindowTo(width, height);
-					_preventProfileChange = false;
-				}
-
-				if (_document)
-				{
-					_document.factory.dpi = _profile.dpi;
-					_document.factory.csf = _profile.csf;
-				}
-
-				settings.setValue(AppConstants.SETTING_PROFILE, _profile.id);
-				dispatchEventWith(EVENT_PROFILE_CHANGE);
-			}
-		}
 
 		public function get documentDispatcher():EventDispatcherAdapter { return _documentDispatcher }
 		public function get document():Document { return _document; }
@@ -235,58 +191,65 @@ package browser
 			_root.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.MOVE, onMove);
 			_root.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.RESIZING, onResizing);
 			_root.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.RESIZE, onResize);
-			restoreWindowBounds();
+			_profile.addEventListener(Event.CHANGE, onProfileChange);
+			restoreWindowPosition();
 		}
 
-		private function restoreWindowBounds():void
+		private function restoreWindowPosition():void
 		{
-			var window:NativeWindow = root.stage.nativeWindow;
-			var bounds:Rectangle = settings.getValueOrDefault(AppConstants.SETTING_WINDOW_BOUNDS);
-			if (bounds && bounds.width >= window.minSize.x && bounds.height >= window.minSize.y)
+			var position:Point = settings.getValueOrDefault(AppConstants.SETTING_WINDOW_POSITION, Point);
+			if (position)
 			{
-				window.x = bounds.x;
-				window.y = bounds.y;
-				window.width = bounds.width;
-				window.height = bounds.height;
+				root.stage.nativeWindow.x = position.x;
+				root.stage.nativeWindow.y = position.y;
+			}
+		}
+
+		private function onProfileChange(e:*):void
+		{
+			resizeWindowTo(profile.width, profile.height);
+
+			if (_document)
+			{
+				_document.factory.dpi = _profile.dpi;
+				_document.factory.csf = _profile.csf;
 			}
 		}
 
 		private function onStageResize(e:*):void
 		{
+			// ADL can dispatch resize twice on app start
+			// Avoid profile reset
+			var noChanged:Boolean = true;
+			noChanged &&= _root.stage.stageWidth == _starling.stage.stageWidth;
+			noChanged &&= _root.stage.stageHeight == _starling.stage.stageHeight;
+			if (noChanged) return;
+
 			_starling.stage.stageWidth = _root.stage.stageWidth;
 			_starling.stage.stageHeight = _root.stage.stageHeight;
 			_starling.viewPort = new Rectangle(0, 0, _root.stage.stageWidth, _root.stage.stageHeight);
 			_ui.resizeTo(_root.stage.stageWidth, _root.stage.stageHeight);
 
-			if (_profile != DeviceProfile.CUSTOM && _preventProfileChange == false)
-			{
-				profile = DeviceProfile.CUSTOM;
-			}
-
-			if (_profile == DeviceProfile.CUSTOM)
-			{
-				_profile.width = _starling.stage.stageWidth;
-				_profile.height = _starling.stage.stageHeight;
-				dispatchEventWith(EVENT_PROFILE_CHANGE);
-			}
+			_profile.width = _starling.stage.stageWidth;
+			_profile.height = _starling.stage.stageHeight;
 		}
 
 		private function onResizing(e:NativeWindowBoundsEvent):void
 		{
 			// NativeWindow#resizable is read only, this is fix:
-			var needPrevent:Boolean = settings.getValueOrDefault(AppConstants.SETTING_LOCK_RESIZE, false);
+			var needPrevent:Boolean = settings.getValueOrDefault(AppConstants.SETTING_LOCK_RESIZE, Boolean, false);
 			if (needPrevent)
 				e.preventDefault();
 		}
 
 		private function onResize(e:NativeWindowBoundsEvent):void
 		{
-			settings.setValue(AppConstants.SETTING_WINDOW_BOUNDS, e.afterBounds);
+			settings.setValue(AppConstants.SETTING_WINDOW_POSITION, e.afterBounds);
 		}
 
 		private function onMove(e:NativeWindowBoundsEvent):void
 		{
-			settings.setValue(AppConstants.SETTING_WINDOW_BOUNDS, e.afterBounds);
+			settings.setValue(AppConstants.SETTING_WINDOW_POSITION, e.afterBounds);
 		}
 
 		//
@@ -312,14 +275,14 @@ package browser
 			// in this case need omit autoReopen feature
 			if (document != null) return;
 
-			var isEnableReopen:Boolean = settings.getValueOrDefault(AppConstants.SETTING_AUTO_REOPEN, false);
+			var isEnableReopen:Boolean = settings.getValueOrDefault(AppConstants.SETTING_AUTO_REOPEN, Boolean, false);
 			if (isEnableReopen)
 			{
-				var recentArray:Array = settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS);
+				var recentArray:Array = settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array);
 				var recentPath:String = recentArray && recentArray.length ? recentArray[0] : null;
 				if (recentPath)
 				{
-					var template:String = settings.getValueOrDefault(AppConstants.SETTING_RECENT_TEMPLATE);
+					var template:String = settings.getValueOrDefault(AppConstants.SETTING_RECENT_TEMPLATE, String);
 					invoke(recentPath);
 					if (template != null) templateId = template;
 				}

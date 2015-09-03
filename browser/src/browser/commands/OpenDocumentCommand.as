@@ -43,7 +43,7 @@ package browser.commands
 		{
 			controller.document = readDocument(source);
 
-			var recent:Array = controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, []);
+			var recent:Array = controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);
 			var indexOf:int = recent.indexOf(source.nativePath);
 			if (indexOf != -1) recent.splice(indexOf, 1);
 			recent.unshift(source.nativePath);
@@ -64,7 +64,7 @@ package browser.commands
 
 		private function getSourceRoot(document:Document):File
 		{
-			var sourcePathProperty:String = document.properties.getValueOrDefault(AppConstants.PROPERTY_SOURCE_PATH);
+			var sourcePathProperty:String = document.properties.getValueOrDefault(AppConstants.PROPERTY_SOURCE_PATH, String);
 			var sourceFile:File = document.project.parent.resolvePath(sourcePathProperty || document.project.parent.nativePath);
 			if (sourceFile.exists == false) sourceFile = document.project.parent;
 			return sourceFile;

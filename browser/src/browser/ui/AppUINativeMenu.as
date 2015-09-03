@@ -39,19 +39,19 @@ package browser.ui
 			_menu.push("file/closeDocument",                    AppConstants.T_MENU_FILE_CLOSE_DOCUMENT,                new CloseDocumentCommand(_controller),  "w");
 			_menu.push("file/closeBrowser",                     AppConstants.T_MENU_FILE_CLOSE_BROWSER,                 new CloseWindowCommand(_controller),    "w", [Keyboard.CONTROL, Keyboard.SHIFT]);
 			_menu.push("file/-");
+			_menu.push("file/preference",                       AppConstants.T_MENU_VIEW_PREFERENCES);
+			_menu.push("file/preference/theme",                 AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND);
+			_menu.push("file/preference/theme/dark",            AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND_DARK,   new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
+			_menu.push("file/preference/theme/light",           AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND_LIGHT,  new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
+			_menu.push("file/preference/stats",                 AppConstants.T_MENU_VIEW_PREFERENCES_STATS,             new ChangeSettingCommand(_controller, AppConstants.SETTING_STATS, true, false));
+			_menu.push("file/preference/resize",                AppConstants.T_MENU_VIEW_PREFERENCES_LOCK_RESIZE,       new ChangeSettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
+			_menu.push("file/preference/alwaysOnTop",           AppConstants.T_MENU_VIEW_PREFERENCES_ALWAYS_ON_TOP,     new ChangeSettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
+			_menu.push("file/preference/autoReopen",            AppConstants.T_MENU_VIEW_PREFERENCES_AUTO_REOPEN,       new ChangeSettingCommand(_controller, AppConstants.SETTING_AUTO_REOPEN, true, false));
+			_menu.push("file/-");
 			_menu.push("file/publish",                          AppConstants.T_MENU_FILE_PUBLISH_AS,                    new PublishCommand(_controller),        "s", [Keyboard.CONTROL, Keyboard.SHIFT]);
 
 			// View
 			_menu.push("view",                                  AppConstants.T_MENU_VIEW);
-			_menu.push("view/preference",                       AppConstants.T_MENU_VIEW_PREFERENCES);
-			_menu.push("view/preference/theme",                 AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND);
-			_menu.push("view/preference/theme/dark",            AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND_DARK,   new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
-			_menu.push("view/preference/theme/light",           AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND_LIGHT,  new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
-			_menu.push("view/preference/stats",                 AppConstants.T_MENU_VIEW_PREFERENCES_STATS,             new ChangeSettingCommand(_controller, AppConstants.SETTING_STATS, true, false));
-			_menu.push("view/preference/resize",                AppConstants.T_MENU_VIEW_PREFERENCES_LOCK_RESIZE,       new ChangeSettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
-			_menu.push("view/preference/alwaysOnTop",           AppConstants.T_MENU_VIEW_PREFERENCES_ALWAYS_ON_TOP,     new ChangeSettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
-			_menu.push("view/preference/autoReopen",            AppConstants.T_MENU_VIEW_PREFERENCES_AUTO_REOPEN,       new ChangeSettingCommand(_controller, AppConstants.SETTING_AUTO_REOPEN, true, false));
-			_menu.push("view/-");
 			_menu.push("view/zoomIn",                           AppConstants.T_MENU_VIEW_ZOOM_IN,                       new ChangeZoomCommand(_controller, +25),   "=");
 			_menu.push("view/zoomOut",                          AppConstants.T_MENU_VIEW_ZOOM_OUT,                      new ChangeZoomCommand(_controller, -25),   "-");
 			_menu.push("view/-");
@@ -59,7 +59,7 @@ package browser.ui
 			_menu.push("view/orientation/portrait",             AppConstants.T_MENU_VIEW_ORIENTATION_PORTRAIT,          new ChangeOrientationCommand(_controller, Orientation.VERTICAL), "p", [Keyboard.ALTERNATE]);
 			_menu.push("view/orientation/landscape",            AppConstants.T_MENU_VIEW_ORIENTATION_LANDSCAPE,         new ChangeOrientationCommand(_controller, Orientation.HORIZONTAL), "l", [Keyboard.ALTERNATE]);
 			_menu.push("view/profile",                          AppConstants.T_MENU_VIEW_PROFILE);
-			_menu.push("view/profile/custom",                   AppConstants.T_MENU_VIEW_PROFILE_CUSTOM,                new ChangeProfileCommand(_controller, DeviceProfile.CUSTOM));
+			_menu.push("view/profile/custom",                   AppConstants.T_MENU_VIEW_PROFILE_CUSTOM,                new OpenPopupCommand(_controller, ProfilePopup));
 			_menu.push("view/profile/-");
 
 			var profiles:Vector.<DeviceProfile> = DeviceProfile.getProfiles();
@@ -85,14 +85,14 @@ package browser.ui
 			_menu.push("help",          AppConstants.T_MENU_HELP);
 			_menu.push("help/online",   AppConstants.T_MENU_HELP_ONLINE);
 			_menu.push("help/update",   AppConstants.T_MENU_HELP_UPDATE, new UpdateCommand(_controller));
-			_menu.push("help/about",    AppConstants.T_MENU_HELP_ABOUT, new OpenPopupCommand(_controller, true, ProfilePopup));
+			_menu.push("help/about",    AppConstants.T_MENU_HELP_ABOUT, new OpenPopupCommand(_controller, ProfilePopup));
 
 			if (NativeWindow.supportsMenu) controller.root.stage.nativeWindow.menu = _menu.nativeMenu;
 		}
 
 		private function refreshRecentOpenedDocumentsList():void
 		{
-			var recent:Array = _controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, []);
+			var recent:Array = _controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);
 			if (isEqual(recent, _prevDocuments)) return;
 			_prevDocuments = recent;
 

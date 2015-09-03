@@ -45,7 +45,7 @@ package browser
 		public static const SETTING_RECENT_DOCUMENTS:String = "recentDocuments";
 		public static const SETTING_RECENT_TEMPLATE:String = "recentTemplate";
 		public static const SETTING_PROFILE:String = "profile";
-		public static const SETTING_WINDOW_BOUNDS:String = "windowBounds";
+		public static const SETTING_WINDOW_POSITION:String = "windowPosition";
 
 		//
 		// Language

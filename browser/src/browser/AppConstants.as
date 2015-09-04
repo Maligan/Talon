@@ -45,6 +45,7 @@ package browser
 		public static const SETTING_RECENT_DOCUMENTS:String = "recentDocuments";
 		public static const SETTING_RECENT_TEMPLATE:String = "recentTemplate";
 		public static const SETTING_PROFILE:String = "profile";
+		public static const SETTING_CHECK_FOR_UPDATE_ON_START:String = "checkForUpdateOnStart";
 		public static const SETTING_WINDOW_POSITION:String = "windowPosition";
 
 		//
@@ -69,15 +70,16 @@ package browser
 		public static const T_MENU_NAVIGATE_OPEN_DOCUMENT_FOLDER:String     = "Go to Document Folder";
 		public static const T_MENU_NAVIGATE_SEARCH:String                   = "Go to Template";
 		public static const T_MENU_VIEW:String                              = "View";
-		public static const T_MENU_VIEW_PREFERENCES:String                  = "Preferences";
-		public static const T_MENU_VIEW_PREFERENCES_BACKGROUND:String       = "Background";
-		public static const T_MENU_VIEW_PREFERENCES_BACKGROUND_LIGHT:String = "Light";
-		public static const T_MENU_VIEW_PREFERENCES_BACKGROUND_DARK:String  = "Dark";
-		public static const T_MENU_VIEW_PREFERENCES_BACKGROUND_CHESS:String = "Transparent";
-		public static const T_MENU_VIEW_PREFERENCES_STATS:String            = "Show Stats";
-		public static const T_MENU_VIEW_PREFERENCES_LOCK_RESIZE:String      = "Lock Window Size";
-		public static const T_MENU_VIEW_PREFERENCES_ALWAYS_ON_TOP:String    = "Always On Top";
-		public static const T_MENU_VIEW_PREFERENCES_AUTO_REOPEN:String      = "Open Last Document on Startup";
+		public static const T_MENU_FILE_PREFERENCES:String                  = "Preferences";
+		public static const T_MENU_FILE_PREFERENCES_BACKGROUND:String       = "Background";
+		public static const T_MENU_FILE_PREFERENCES_BACKGROUND_LIGHT:String = "Light";
+		public static const T_MENU_FILE_PREFERENCES_BACKGROUND_DARK:String  = "Dark";
+		public static const T_MENU_FILE_PREFERENCES_BACKGROUND_CHESS:String = "Transparent";
+		public static const T_MENU_FILE_PREFERENCES_STATS:String            = "Show Stats";
+		public static const T_MENU_FILE_PREFERENCES_LOCK_RESIZE:String      = "Lock Window Size";
+		public static const T_MENU_FILE_PREFERENCES_ALWAYS_ON_TOP:String    = "Always On Top";
+		public static const T_MENU_FILE_PREFERENCES_AUTO_REOPEN:String      = "Open Last Document on Startup";
+		public static const T_MENU_FILE_PREFERENCES_AUTO_UPDATE:String      = "Check for Update on Startup";
 		public static const T_MENU_VIEW_ZOOM_IN:String                      = "Zoom In";
 		public static const T_MENU_VIEW_ZOOM_OUT:String                     = "Zoom Out";
 		public static const T_MENU_VIEW_ORIENTATION:String                  = "Orientation";

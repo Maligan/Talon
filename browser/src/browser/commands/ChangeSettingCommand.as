@@ -1,6 +1,5 @@
 package browser.commands
 {
-	import browser.AppConstants;
 	import browser.AppController;
 
 	public class ChangeSettingCommand extends Command
@@ -20,12 +19,12 @@ package browser.commands
 
 		public override function execute():void
 		{
-			controller.settings.setValue(_name, (isActive && _alternate!=null) ? _alternate : _value);
+			controller.settings.setValue(_name, (isActive && _alternate!==null) ? _alternate : _value);
 		}
 
 		public override function get isActive():Boolean
 		{
-			return controller.settings.getValueOrDefault(_name, String) == _value;
+			return controller.settings.getValueOrDefault(_name) == _value;
 		}
 	}
 }

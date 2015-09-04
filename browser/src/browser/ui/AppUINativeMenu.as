@@ -39,14 +39,15 @@ package browser.ui
 			_menu.push("file/closeDocument",                    AppConstants.T_MENU_FILE_CLOSE_DOCUMENT,                new CloseDocumentCommand(_controller),  "w");
 			_menu.push("file/closeBrowser",                     AppConstants.T_MENU_FILE_CLOSE_BROWSER,                 new CloseWindowCommand(_controller),    "w", [Keyboard.CONTROL, Keyboard.SHIFT]);
 			_menu.push("file/-");
-			_menu.push("file/preference",                       AppConstants.T_MENU_VIEW_PREFERENCES);
-			_menu.push("file/preference/theme",                 AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND);
-			_menu.push("file/preference/theme/dark",            AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND_DARK,   new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
-			_menu.push("file/preference/theme/light",           AppConstants.T_MENU_VIEW_PREFERENCES_BACKGROUND_LIGHT,  new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
-			_menu.push("file/preference/stats",                 AppConstants.T_MENU_VIEW_PREFERENCES_STATS,             new ChangeSettingCommand(_controller, AppConstants.SETTING_STATS, true, false));
-			_menu.push("file/preference/resize",                AppConstants.T_MENU_VIEW_PREFERENCES_LOCK_RESIZE,       new ChangeSettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
-			_menu.push("file/preference/alwaysOnTop",           AppConstants.T_MENU_VIEW_PREFERENCES_ALWAYS_ON_TOP,     new ChangeSettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
-			_menu.push("file/preference/autoReopen",            AppConstants.T_MENU_VIEW_PREFERENCES_AUTO_REOPEN,       new ChangeSettingCommand(_controller, AppConstants.SETTING_AUTO_REOPEN, true, false));
+			_menu.push("file/preference",                       AppConstants.T_MENU_FILE_PREFERENCES);
+			_menu.push("file/preference/theme",                 AppConstants.T_MENU_FILE_PREFERENCES_BACKGROUND);
+			_menu.push("file/preference/theme/dark",            AppConstants.T_MENU_FILE_PREFERENCES_BACKGROUND_DARK,   new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
+			_menu.push("file/preference/theme/light",           AppConstants.T_MENU_FILE_PREFERENCES_BACKGROUND_LIGHT,  new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
+			_menu.push("file/preference/stats",                 AppConstants.T_MENU_FILE_PREFERENCES_STATS,             new ChangeSettingCommand(_controller, AppConstants.SETTING_STATS, true, false));
+			_menu.push("file/preference/resize",                AppConstants.T_MENU_FILE_PREFERENCES_LOCK_RESIZE,       new ChangeSettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
+			_menu.push("file/preference/alwaysOnTop",           AppConstants.T_MENU_FILE_PREFERENCES_ALWAYS_ON_TOP,     new ChangeSettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
+			_menu.push("file/preference/autoReopen",            AppConstants.T_MENU_FILE_PREFERENCES_AUTO_REOPEN,       new ChangeSettingCommand(_controller, AppConstants.SETTING_AUTO_REOPEN, true, false));
+			_menu.push("file/preference/autoUpdate",             AppConstants.T_MENU_FILE_PREFERENCES_AUTO_UPDATE,      new ChangeSettingCommand(_controller, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_START, true, false));
 			_menu.push("file/-");
 			_menu.push("file/publish",                          AppConstants.T_MENU_FILE_PUBLISH_AS,                    new PublishCommand(_controller),        "s", [Keyboard.CONTROL, Keyboard.SHIFT]);
 

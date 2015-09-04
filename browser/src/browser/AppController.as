@@ -1,5 +1,7 @@
 package browser
 {
+	import air.update.ApplicationUpdaterUI;
+
 	import browser.commands.CloseDocumentCommand;
 	import browser.commands.OpenDocumentCommand;
 	import browser.dom.Document;
@@ -24,6 +26,7 @@ package browser
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.system.Capabilities;
+	import flash.utils.setTimeout;
 
 	import starling.core.Starling;
 	import starling.display.DisplayObjectContainer;
@@ -57,6 +60,7 @@ package browser
 		private var _profile:DeviceProfile;
 		private var _documentDispatcher:EventDispatcherAdapter;
 		private var _starling:Starling;
+		private var _updater:ApplicationUpdaterUI;
 
 		public function AppController(root:DisplayObject)
 		{
@@ -70,6 +74,10 @@ package browser
 			_monitor = new OrientationMonitor(_root.stage);
 			_documentDispatcher = new EventDispatcherAdapter();
 			_ui = new AppUI(this);
+			_updater = new ApplicationUpdaterUI();
+			_updater.isCheckForUpdateVisible = false;
+			_updater.updateURL = AppConstants.APP_UPDATE_URL + "?rnd=" + int(Math.random() * int.MAX_VALUE);
+			_updater.initialize();
 
 			initializeConsole();
 			initializeDragAndDrop();
@@ -111,6 +119,7 @@ package browser
 		public function get monitor():OrientationMonitor { return _monitor; }
 		public function get root():DisplayObject { return _root; }
 		public function get profile():DeviceProfile { return _profile; }
+		public function get updater():ApplicationUpdaterUI { return _updater; }
 
 		public function get documentDispatcher():EventDispatcherAdapter { return _documentDispatcher }
 		public function get document():Document { return _document; }
@@ -279,9 +288,7 @@ package browser
 		{
 			// Document can be opened via invoke (click on document file)
 			// in this case need omit autoReopen feature
-			if (document != null) return;
-
-			var isEnableReopen:Boolean = settings.getValueOrDefault(AppConstants.SETTING_AUTO_REOPEN, Boolean, false);
+			var isEnableReopen:Boolean = settings.getValueOrDefault(AppConstants.SETTING_AUTO_REOPEN, Boolean, false) && document == null;
 			if (isEnableReopen)
 			{
 				var recentArray:Array = settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array);
@@ -292,6 +299,16 @@ package browser
 					invoke(recentPath);
 					if (template != null) templateId = template;
 				}
+			}
+
+			// Updater#checkNow() run only after delay, UI inited is a good, moment for this
+			var isEnableAutoUpdate:Boolean = _settings.getValueOrDefault(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_START, Boolean, true);
+			// XXX: Save for have default value != null
+			_settings.setValue(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_START, isEnableAutoUpdate);
+
+			if (isEnableAutoUpdate)
+			{
+				_updater.checkNow();
 			}
 		}
 

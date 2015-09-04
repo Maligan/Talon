@@ -1,12 +1,15 @@
 package browser.utils
 {
 	import flash.utils.Dictionary;
+	import flash.utils.IDataInput;
+	import flash.utils.IDataOutput;
+	import flash.utils.IExternalizable;
 
 	import starling.events.Event;
 
 	import starling.events.EventDispatcher;
 
-	public class DeviceProfile extends EventDispatcher
+	public class DeviceProfile extends EventDispatcher implements IExternalizable
 	{
 		public static const IPHONE:DeviceProfile = registerDeviceProfile("iPhone", 320, 480, 1, 163);
 		public static const IPHONE_RETINA:DeviceProfile = registerDeviceProfile("iPhone (Retina)", 640, 960, 2, 326);
@@ -61,7 +64,7 @@ package browser.utils
 		private var _suppress:Boolean;
 		private var _suppressedEvent:Boolean;
 
-		public function DeviceProfile(width:Number, height:Number, csf:Number, dpi:Number)
+		public function DeviceProfile(width:Number = NaN, height:Number = NaN, csf:Number = NaN, dpi:Number = NaN)
 		{
 			_width = width;
 			_height = height;
@@ -161,6 +164,25 @@ package browser.utils
 			{
 				dispatchEventWith(Event.CHANGE);
 			}
+		}
+
+		//
+		// IExternalizable
+		//
+		public function writeExternal(output:IDataOutput):void
+		{
+			output.writeFloat(width);
+			output.writeFloat(height);
+			output.writeFloat(csf);
+			output.writeFloat(dpi);
+		}
+
+		public function readExternal(input:IDataInput):void
+		{
+			width = input.readFloat();
+			height = input.readFloat();
+			csf = input.readFloat();
+			dpi= input.readFloat();
 		}
 	}
 }

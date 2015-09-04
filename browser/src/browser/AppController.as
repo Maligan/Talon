@@ -63,8 +63,10 @@ package browser
 			_root = root;
 
 			registerClassAlias(Point);
+			registerClassAlias(DeviceProfile);
+
 			_settings = Storage.fromSharedObject("settings");
-			_profile = new DeviceProfile(_root.stage.stageWidth, root.stage.stageHeight, 1, Capabilities.screenDPI);
+			_profile = _settings.getValueOrDefault(AppConstants.SETTING_PROFILE, DeviceProfile) || new DeviceProfile(_root.stage.stageWidth, root.stage.stageHeight, 1, Capabilities.screenDPI);
 			_monitor = new OrientationMonitor(_root.stage);
 			_documentDispatcher = new EventDispatcherAdapter();
 			_ui = new AppUI(this);
@@ -73,6 +75,8 @@ package browser
 			initializeDragAndDrop();
 			initializeStarling();
 			initializeWindowMonitor();
+
+			onProfileChange(null);
 		}
 
 		public function invoke(path:String):void
@@ -214,6 +218,8 @@ package browser
 				_document.factory.dpi = _profile.dpi;
 				_document.factory.csf = _profile.csf;
 			}
+
+			_settings.setValue(AppConstants.SETTING_PROFILE, _profile);
 		}
 
 		private function onStageResize(e:*):void
@@ -244,12 +250,12 @@ package browser
 
 		private function onResize(e:NativeWindowBoundsEvent):void
 		{
-			settings.setValue(AppConstants.SETTING_WINDOW_POSITION, e.afterBounds);
+			settings.setValue(AppConstants.SETTING_WINDOW_POSITION, e.afterBounds.topLeft);
 		}
 
 		private function onMove(e:NativeWindowBoundsEvent):void
 		{
-			settings.setValue(AppConstants.SETTING_WINDOW_POSITION, e.afterBounds);
+			settings.setValue(AppConstants.SETTING_WINDOW_POSITION, e.afterBounds.topLeft);
 		}
 
 		//

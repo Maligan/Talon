@@ -75,21 +75,20 @@ package browser.utils
 		//
 		// Comparing
 		//
+		public function setSize(width:Number, height:Number):void
+		{
+			_width = width;
+			_height = height;
+			dispatchChange();
+		}
+
 		public function copyFrom(profile:DeviceProfile):void
 		{
 			_suppressedEvent = false;
 			_suppress = true;
 
-			if (width > height)
-			{
-				width = Math.max(profile.width, profile.height);
-				height = Math.min(profile.width, profile.height);
-			}
-			else
-			{
-				width = Math.min(profile.width, profile.height);
-				height = Math.max(profile.width, profile.height);
-			}
+			if (width > height) setSize(Math.max(profile.width, profile.height), Math.min(profile.width, profile.height));
+			else                setSize(Math.min(profile.width, profile.height), Math.max(profile.width, profile.height));
 
 			csf = profile.csf;
 			dpi = profile.dpi;
@@ -113,26 +112,8 @@ package browser.utils
 		// Properties
 		//
 		public function get id():String { return _id; }
-
 		public function get width():Number { return _width }
-		public function set width(value:Number):void
-		{
-		    if (_width != value)
-		    {
-		        _width = value;
-			    dispatchChange();
-		    }
-		}
-
 		public function get height():Number { return _height }
-		public function set height(value:Number):void
-		{
-		    if (_height != value)
-		    {
-		        _height = value;
-			    dispatchChange();
-		    }
-		}
 
 		public function get csf():Number { return _csf }
 		public function set csf(value:Number):void
@@ -171,18 +152,18 @@ package browser.utils
 		//
 		public function writeExternal(output:IDataOutput):void
 		{
-			output.writeFloat(width);
-			output.writeFloat(height);
-			output.writeFloat(csf);
-			output.writeFloat(dpi);
+			output.writeFloat(_width);
+			output.writeFloat(_height);
+			output.writeFloat(_csf);
+			output.writeFloat(_dpi);
 		}
 
 		public function readExternal(input:IDataInput):void
 		{
-			width = input.readFloat();
-			height = input.readFloat();
-			csf = input.readFloat();
-			dpi= input.readFloat();
+			_width = input.readFloat();
+			_height = input.readFloat();
+			_csf = input.readFloat();
+			_dpi= input.readFloat();
 		}
 	}
 }

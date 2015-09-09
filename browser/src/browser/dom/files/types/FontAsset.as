@@ -15,7 +15,8 @@ package browser.dom.files.types
 	{
 		public static function checker(file:DocumentFileReference):Boolean
 		{
-			return file.extension == "fnt";
+			return file.extension == "fnt"
+				|| (file.checkFirstMeaningfulChar("<") && file.xml && file.xml.name() == "font");
 		}
 
 		private var _xml:XML;

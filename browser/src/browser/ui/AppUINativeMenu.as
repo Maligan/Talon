@@ -47,7 +47,7 @@ package browser.ui
 			_menu.push("file/preference/resize",                AppConstants.T_MENU_FILE_PREFERENCES_LOCK_RESIZE,       new ChangeSettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
 			_menu.push("file/preference/alwaysOnTop",           AppConstants.T_MENU_FILE_PREFERENCES_ALWAYS_ON_TOP,     new ChangeSettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
 			_menu.push("file/preference/autoReopen",            AppConstants.T_MENU_FILE_PREFERENCES_AUTO_REOPEN,       new ChangeSettingCommand(_controller, AppConstants.SETTING_AUTO_REOPEN, true, false));
-			_menu.push("file/preference/autoUpdate",             AppConstants.T_MENU_FILE_PREFERENCES_AUTO_UPDATE,      new ChangeSettingCommand(_controller, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_START, true, false));
+			_menu.push("file/preference/autoUpdate",            AppConstants.T_MENU_FILE_PREFERENCES_AUTO_UPDATE,      new ChangeSettingCommand(_controller, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, true, false));
 			_menu.push("file/-");
 			_menu.push("file/publish",                          AppConstants.T_MENU_FILE_PUBLISH_AS,                    new PublishCommand(_controller),        "s", [Keyboard.CONTROL, Keyboard.SHIFT]);
 
@@ -86,7 +86,6 @@ package browser.ui
 			_menu.push("help",          AppConstants.T_MENU_HELP);
 			_menu.push("help/online",   AppConstants.T_MENU_HELP_ONLINE);
 			_menu.push("help/update",   AppConstants.T_MENU_HELP_UPDATE, new UpdateCommand(_controller));
-			_menu.push("help/about",    AppConstants.T_MENU_HELP_ABOUT, new OpenPopupCommand(_controller, ProfilePopup));
 
 			if (NativeWindow.supportsMenu) controller.root.stage.nativeWindow.menu = _menu.nativeMenu;
 		}

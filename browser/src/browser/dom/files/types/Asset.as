@@ -58,8 +58,13 @@ package browser.dom.files.types
 		//
 		// IDocumentFileController
 		//
-		public function attach():void { }
-		public function detach():void { }
+		public function attach():void
+		{
+			var isXML:Boolean = file.checkFirstMeaningfulChar("<");
+			if (isXML && file.xml == null) reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_XML, file.url);
+		}
+
+		public function detach():void { reportCleanup(); }
 
 		//
 		// Properties

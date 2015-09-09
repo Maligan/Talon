@@ -113,7 +113,7 @@ package browser.ui
 		{
 			var styleName:String = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
 			_interface.node.classes.parse(styleName);
-			_controller.root.stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[styleName];
+//			_controller.root.stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[styleName];
 		}
 
 		private function onStatsChange(e:Event):void

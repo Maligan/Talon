@@ -58,18 +58,21 @@ package talon.starling
 			// TODO: Diff way for invalidate (_quads OR _batch)
 			if (_invalid)
 			{
-				_invalid = false;
 				remesh();
 				compose();
 
 				// Starling recommend use batchable if batch has less when 16 quads
 				_batch.batchable = _batch.numQuads <= 16;
+				_invalid = false;
 			}
 
 			_batch.render(support, parentAlpha);
 		}
 
-		private function invalidate():void { _invalid = true; }
+		private function invalidate():void
+		{
+			_invalid = true;
+		}
 
 		//
 		// Defining quads for render

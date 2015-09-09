@@ -15,6 +15,7 @@ package talon.starling
 
 	import talon.Attribute;
 	import talon.Node;
+	import talon.layout.Layout;
 	import talon.utils.ITalonElement;
 	import talon.utils.StringUtil;
 
@@ -33,7 +34,7 @@ package talon.starling
 			// TextField autoSize
 			_node.width.auto = measureWidth;
 			_node.height.auto = measureHeight;
-			autoSize = TextFieldAutoSize.NONE;
+			super.autoSize = TextFieldAutoSize.NONE;
 			batchable = true;
 //			border = true;
 
@@ -69,25 +70,45 @@ package talon.starling
 		private function measureHeight(availableWidth:Number):Number { return measure(availableWidth, Infinity).height; }
 
 		/** TODO: Optimize. */
-		private function measure(aw:Number, ah:Number):Rectangle
+		private function measure(availableWidth:Number, availableHeight:Number):Rectangle
 		{
-			// TODO: Added padding!
+			super.autoSize = getAutoSize(availableWidth == Infinity, availableHeight == Infinity);
+			super.width = availableWidth;
+			super.height = availableHeight;
+			var result:Rectangle = super.getBounds(this);
 
-			autoSize = getAutoSize(node.width.isNone, node.height.isNone);
-			width = aw;
-			height = ah;
-			var result:Rectangle = textBounds;
-			autoSize = TextFieldAutoSize.NONE;
-			result.inflate(2, 2); // starling remove flash 2px offset
+			// Starling have strange behavior for text with autoSize
+			// * ignore halign/valign properties
+			// * recalculate mHitArea without after offset (with bitmap font)
+			if (getBitmapFont(fontName) != null)
+			{
+				if (availableWidth == Infinity)
+					result.width += textBounds.x;
 
+				if (availableHeight == Infinity)
+					result.height += textBounds.y;
+
+				// Add 2px gutter (like native flash)
+				// May be this is bad, idea: flash/starling do not provide text padding, but has hardcoded gutter
+				// Talon allow add padding.
+				//result.inflate(2, 2);
+			}
+
+			// TODO: Add padding!
+			result.width += node.padding.left.toPixels(node.ppem, node.ppem, node.ppdp, 0) + node.padding.right.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+			result.height += node.padding.top.toPixels(node.ppem, node.ppem, node.ppdp, 0) + node.padding.bottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+
+			super.autoSize = TextFieldAutoSize.NONE;
+
+			trace("Measured", availableWidth + "x" + availableHeight, "=", result);
 			return result;
 		}
 
-		private function getAutoSize(width:Boolean, height:Boolean):String
+		private function getAutoSize(autoWidth:Boolean, autoHeight:Boolean):String
 		{
-			/**/ if ( width &&  height) return TextFieldAutoSize.BOTH_DIRECTIONS;
-			else if ( width && !height) return TextFieldAutoSize.HORIZONTAL;
-			else if (!width &&  height) return TextFieldAutoSize.VERTICAL;
+			/**/ if ( autoWidth &&  autoHeight) return TextFieldAutoSize.BOTH_DIRECTIONS;
+			else if ( autoWidth && !autoHeight) return TextFieldAutoSize.HORIZONTAL;
+			else if (!autoWidth &&  autoHeight) return TextFieldAutoSize.VERTICAL;
 			return TextFieldAutoSize.NONE;
 		}
 
@@ -98,12 +119,41 @@ package talon.starling
 		{
 			x = Math.round(_node.bounds.x);
 			y = Math.round(_node.bounds.y);
-			width = Math.round(_node.bounds.width);
-			height = Math.round(_node.bounds.height);
+			width = Math.ceil(_node.bounds.width);
+			height = Math.ceil(_node.bounds.height);
+
+//			if (numChildren > 0)
+//			{
+//				var child:DisplayObject = getChildAt(0);
+//
+//				var childPaddingLeft:Number = node.padding.left.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+//				var childPaddingRight:Number = node.padding.right.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+//
+//				child.x = childPaddingLeft - (childPaddingLeft + childPaddingRight) * StringUtil.parseAlign(hAlign);
+////				child.y = Layout.pad(height, textBounds.height, node.padding.top.toPixels(node.ppem, node.ppem, node.ppdp, 0), node.padding.bottom.toPixels(node.ppem, node.ppem, node.ppdp, 0), StringUtil.parseAlign(vAlign));
+//				trace(textBounds, width, height, child.x, child.y);
+//			}
 
 			_bridge.resize(_node.bounds.width, _node.bounds.height);
+			//text = text;
+		}
 
-			text = text;
+		public override function redraw():void
+		{
+			super.redraw();
+
+			if (numChildren > 0)
+			{
+				var child:DisplayObject = getChildAt(0);
+
+				var childPaddingLeft:Number = node.padding.left.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				var childPaddingRight:Number = node.padding.right.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				child.x = childPaddingLeft - (childPaddingLeft + childPaddingRight) * StringUtil.parseAlign(hAlign);
+
+				var childPaddingTop:Number = node.padding.top.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				var childPaddingBottom:Number = node.padding.bottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				child.y = childPaddingTop - (childPaddingTop + childPaddingBottom) * StringUtil.parseAlign(vAlign);
+			}
 		}
 
 		//
@@ -161,6 +211,12 @@ package talon.starling
 		public function get node():Node
 		{
 			return _node;
+		}
+
+		public override function get autoSize():String { return getAutoSize(node.width.isNone, node.height.isNone); }
+		public override function set autoSize(value:String):void
+		{
+			trace("[TalonTextFiled]", "Ignore autoSize value, this value defined via node width/height == 'none'");
 		}
 	}
 }

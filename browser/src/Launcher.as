@@ -36,7 +36,7 @@ package
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, initialize);
 
-			stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[_backgroundColor.value];
+//			stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[_backgroundColor.value];
 			stage.nativeWindow.minSize = new Point(200, 100);
 			stage.addEventListener(Event.RESIZE, onResize);
 
@@ -54,7 +54,7 @@ package
 
 		private function onBackgroundChanged():void
 		{
-			_backgroundColor.value = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
+//			_backgroundColor.value = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
 		}
 
 		private function onResize(e:*):void

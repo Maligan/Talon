@@ -30,13 +30,8 @@ package talon.starling
 
 			_node = new Node();
 			_node.addListener(Event.RESIZE, onNodeResize);
-
-			// TextField autoSize
 			_node.width.auto = measureWidth;
 			_node.height.auto = measureHeight;
-			super.autoSize = TextFieldAutoSize.NONE;
-			batchable = true;
-//			border = true;
 
 			// Bridge
 			_bridge = new DisplayObjectBridge(this, node);
@@ -94,13 +89,11 @@ package talon.starling
 				//result.inflate(2, 2);
 			}
 
-			// TODO: Add padding!
-			result.width += node.padding.left.toPixels(node.ppem, node.ppem, node.ppdp, 0) + node.padding.right.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-			result.height += node.padding.top.toPixels(node.ppem, node.ppem, node.ppdp, 0) + node.padding.bottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+			// Add paddings
+			result.width  += node.padding.left.toPixels(node.ppem, node.ppem, node.ppdp, 0) + node.padding.right.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+			result.height += node.padding.top.toPixels(node.ppem, node.ppem, node.ppdp, 0)  + node.padding.bottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 
 			super.autoSize = TextFieldAutoSize.NONE;
-
-			trace("Measured", availableWidth + "x" + availableHeight, "=", result);
 			return result;
 		}
 
@@ -119,23 +112,13 @@ package talon.starling
 		{
 			x = Math.round(_node.bounds.x);
 			y = Math.round(_node.bounds.y);
+
+			// NB! Up to ceil: bitmap font rendering omit lines with height < lineHeight
+			// with float values easy forget this feature
 			width = Math.ceil(_node.bounds.width);
 			height = Math.ceil(_node.bounds.height);
 
-//			if (numChildren > 0)
-//			{
-//				var child:DisplayObject = getChildAt(0);
-//
-//				var childPaddingLeft:Number = node.padding.left.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-//				var childPaddingRight:Number = node.padding.right.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-//
-//				child.x = childPaddingLeft - (childPaddingLeft + childPaddingRight) * StringUtil.parseAlign(hAlign);
-////				child.y = Layout.pad(height, textBounds.height, node.padding.top.toPixels(node.ppem, node.ppem, node.ppdp, 0), node.padding.bottom.toPixels(node.ppem, node.ppem, node.ppdp, 0), StringUtil.parseAlign(vAlign));
-//				trace(textBounds, width, height, child.x, child.y);
-//			}
-
 			_bridge.resize(_node.bounds.width, _node.bounds.height);
-			//text = text;
 		}
 
 		public override function redraw():void
@@ -146,13 +129,18 @@ package talon.starling
 			{
 				var child:DisplayObject = getChildAt(0);
 
+				// User modified Layout.pad() formula:
+				// without parent and child sizes, because starling.text.TextField
+				// already arrange text within self bounds.
+				// This code only add 'padding' feature.
+
 				var childPaddingLeft:Number = node.padding.left.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 				var childPaddingRight:Number = node.padding.right.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-				child.x = childPaddingLeft - (childPaddingLeft + childPaddingRight) * StringUtil.parseAlign(hAlign);
+				child.x = Layout.pad(0, 0, childPaddingLeft, childPaddingRight, StringUtil.parseAlign(hAlign));
 
 				var childPaddingTop:Number = node.padding.top.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 				var childPaddingBottom:Number = node.padding.bottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-				child.y = childPaddingTop - (childPaddingTop + childPaddingBottom) * StringUtil.parseAlign(vAlign);
+				child.y = Layout.pad(0, 0, childPaddingTop, childPaddingBottom, StringUtil.parseAlign(vAlign));
 			}
 		}
 
@@ -217,6 +205,12 @@ package talon.starling
 		public override function set autoSize(value:String):void
 		{
 			trace("[TalonTextFiled]", "Ignore autoSize value, this value defined via node width/height == 'none'");
+		}
+
+		public override function get border():Boolean { return super.border; }
+		public override function set border(value:Boolean):void
+		{
+			trace("[TalonTextFiled]", "Ignore border value, for debug draw use custom backgroundColor property");
 		}
 	}
 }

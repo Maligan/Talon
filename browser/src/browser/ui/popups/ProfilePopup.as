@@ -1,4 +1,4 @@
-package browser.popups
+package browser.ui.popups
 {
 	import starling.display.DisplayObject;
 	import starling.display.Quad;

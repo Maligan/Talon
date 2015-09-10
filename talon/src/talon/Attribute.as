@@ -68,6 +68,7 @@ package talon
 
 		public static const ALPHA:String                = registerAttributeDefaults("alpha",               ONE);
 		public static const CLIPPING:String             = registerAttributeDefaults("clipping",            FALSE);
+		public static const BLEND_MODE:String           = registerAttributeDefaults("blendMode",           AUTO);
 		public static const CURSOR:String               = registerAttributeDefaults("cursor",              AUTO);
 		public static const FILTER:String               = registerAttributeDefaults("filter",              NONE);
 		public static const Z_INDEX:String              = registerAttributeDefaults("zIndex",              ZERO);
@@ -97,6 +98,7 @@ package talon
 		public static const WRAP:String                 = registerAttributeDefaults("wrap",                FALSE);
 		public static const BREAK:String                = registerAttributeDefaults("break",               BreakMode.AUTO);
 
+		public static const AUTO_SCALE:String           = registerAttributeDefaults("autoScale");
 		public static const TEXT:String                 = registerAttributeDefaults("text");
 		public static const SRC:String                  = registerAttributeDefaults("src");
 

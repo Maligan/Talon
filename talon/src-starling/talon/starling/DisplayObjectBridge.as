@@ -187,10 +187,11 @@ package talon.starling
 
 			// Common options
 			addAttributeChangeListener(Attribute.ID,                    onIDChange);
-			addAttributeChangeListener(Attribute.VISIBLE,            onVisibleChange);
+			addAttributeChangeListener(Attribute.VISIBLE,               onVisibleChange);
 			addAttributeChangeListener(Attribute.FILTER,                onFilterChange);
 			addAttributeChangeListener(Attribute.ALPHA,                 onAlphaChange);
 			addAttributeChangeListener(Attribute.CURSOR,                onCursorChange);
+			addAttributeChangeListener(Attribute.BLEND_MODE,            onBlendModeChange);
 		}
 
 		public function addAttributeChangeListener(attribute:String, listener:Function):void
@@ -222,7 +223,7 @@ package talon.starling
 			var backgroundScale9Grid:String = _node.getAttributeCache(Attribute.BACKGROUND_9SCALE);
 			GRID.parse(backgroundScale9Grid);
 
-			_filler.setScaleOffsets
+			_filler.set9ScaleOffsets
 			(
 				GRID.top.toPixels(_node.ppmm, _node.ppem, _node.ppdp, textureHeight),
 				GRID.right.toPixels(_node.ppmm, _node.ppem, _node.ppdp, textureWidth),
@@ -237,6 +238,7 @@ package talon.starling
 		private function onIDChange():void { _target.name = _node.getAttributeCache(Attribute.ID); }
 		private function onVisibleChange():void { _target.visible = StringUtil.parseBoolean(_node.getAttributeCache(Attribute.VISIBLE)); }
 		private function onAlphaChange():void { _target.alpha = parseFloat(_node.getAttributeCache(Attribute.ALPHA)); }
+		private function onBlendModeChange():void { _target.blendMode = _node.getAttributeCache(Attribute.BLEND_MODE); }
 
 		private function onFilterChange():void
 		{

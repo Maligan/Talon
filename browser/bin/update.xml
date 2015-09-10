@@ -1,5 +1,5 @@
 <update xmlns="http://ns.adobe.com/air/framework/update/description/2.5">
-	<versionNumber>0.0.1</versionNumber>
-	<url>https://github.com/Maligan/Talon/tree/master/browser/bin/TalonBrowser.air?raw=true</url>
+	<versionNumber>0.1.1</versionNumber>
+	<url>https://raw.githubusercontent.com/Maligan/Talon/master/browser/bin/TalonBrowser.air</url>
 	<description>This is the latest version of the Talon Browser.</description>
 </update>

@@ -98,9 +98,9 @@ package browser.utils
 			removeEventListener(Event.CHANGE, _listeners[listener]);
 		}
 
-		public function getValueOrDefault(name:String, value:* = null):*
+		public function getValueOrDefault(name:String, type:Class = null, value:* = null):*
 		{
-			return _inner.hasOwnProperty(name) ? _inner[name] : value;
+			return _inner.hasOwnProperty(name) ? (type ? _inner[name] as type : _inner[name]) : value;
 		}
 
 		public function setValue(name:String, value:*):void

@@ -15,6 +15,7 @@ package talon.starling
 
 	import talon.Attribute;
 	import talon.Node;
+	import talon.layout.Layout;
 	import talon.utils.ITalonElement;
 	import talon.utils.StringUtil;
 
@@ -29,17 +30,13 @@ package talon.starling
 
 			_node = new Node();
 			_node.addListener(Event.RESIZE, onNodeResize);
-
-			// TextField autoSize
 			_node.width.auto = measureWidth;
 			_node.height.auto = measureHeight;
-			autoSize = TextFieldAutoSize.NONE;
-			batchable = true;
-//			border = true;
 
 			// Bridge
 			_bridge = new DisplayObjectBridge(this, node);
 			_bridge.addAttributeChangeListener(Attribute.TEXT, onTextChange);
+			_bridge.addAttributeChangeListener(Attribute.AUTO_SCALE, onAutoScaleChange);
 			_bridge.addAttributeChangeListener(Attribute.HALIGN, onHAlignChange);
 			_bridge.addAttributeChangeListener(Attribute.VALIGN, onVAlignChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange);
@@ -50,9 +47,9 @@ package talon.starling
 
 		private function onSharpnessChange():void
 		{
-			var oldText:String = text;
-			text = "0";
-			text = oldText;
+			var prev:String = text;
+			text = null;
+			text = prev;
 		}
 
 		protected override function formatText(textField:flash.text.TextField, textFormat:TextFormat):void
@@ -68,42 +65,80 @@ package talon.starling
 		private function measureWidth(availableHeight:Number):Number { return measure(Infinity, availableHeight).width; }
 		private function measureHeight(availableWidth:Number):Number { return measure(availableWidth, Infinity).height; }
 
-		/** TODO: Optimize. */
-		private function measure(aw:Number, ah:Number):Rectangle
+		private function measure(availableWidth:Number, availableHeight:Number):Rectangle
 		{
-			// TODO: Added padding!
+			super.autoSize = getAutoSize(availableWidth == Infinity, availableHeight == Infinity);
+			super.width = availableWidth;
+			super.height = availableHeight;
+			var result:Rectangle = super.getBounds(this);
 
-			autoSize = getAutoSize(node.width.isNone, node.height.isNone);
-			width = aw;
-			height = ah;
-			var result:Rectangle = textBounds;
-			autoSize = TextFieldAutoSize.NONE;
-			result.inflate(2, 2); // starling remove flash 2px offset
+			// Starling have strange behavior for text with autoSize
+			// * ignore halign/valign properties
+			// * recalculate mHitArea without after offset (with bitmap font)
+			if (getBitmapFont(fontName) != null)
+			{
+				if (availableWidth == Infinity)
+					result.width += textBounds.x;
 
+				if (availableHeight == Infinity)
+					result.height += textBounds.y;
+
+				// Add 2px gutter (like native flash)
+				// May be this is bad, idea: flash do not provide text padding, but has hardcoded gutter
+				// Talon allow add padding.
+				//result.inflate(2, 2);
+			}
+
+			// Add paddings
+			result.width  += node.padding.left.toPixels(node.ppem, node.ppem, node.ppdp, 0) + node.padding.right.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+			result.height += node.padding.top.toPixels(node.ppem, node.ppem, node.ppdp, 0)  + node.padding.bottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+
+			super.autoSize = TextFieldAutoSize.NONE;
 			return result;
 		}
 
-		private function getAutoSize(width:Boolean, height:Boolean):String
+		private function getAutoSize(autoWidth:Boolean, autoHeight:Boolean):String
 		{
-			/**/ if ( width &&  height) return TextFieldAutoSize.BOTH_DIRECTIONS;
-			else if ( width && !height) return TextFieldAutoSize.HORIZONTAL;
-			else if (!width &&  height) return TextFieldAutoSize.VERTICAL;
+			/**/ if ( autoWidth &&  autoHeight) return TextFieldAutoSize.BOTH_DIRECTIONS;
+			else if ( autoWidth && !autoHeight) return TextFieldAutoSize.HORIZONTAL;
+			else if (!autoWidth &&  autoHeight) return TextFieldAutoSize.VERTICAL;
 			return TextFieldAutoSize.NONE;
 		}
 
-		//
-		// Resize
-		//
 		private function onNodeResize():void
 		{
 			x = Math.round(_node.bounds.x);
 			y = Math.round(_node.bounds.y);
-			width = Math.round(_node.bounds.width);
-			height = Math.round(_node.bounds.height);
+
+			// NB! Up to ceil: bitmap font rendering omit lines with height < lineHeight
+			// with float values easy forget this feature
+			width = Math.ceil(_node.bounds.width);
+			height = Math.ceil(_node.bounds.height);
 
 			_bridge.resize(_node.bounds.width, _node.bounds.height);
+		}
 
-			text = text;
+		public override function redraw():void
+		{
+			super.redraw();
+
+			if (numChildren > 0)
+			{
+				var child:DisplayObject = getChildAt(0);
+
+				// User modified Layout.pad() formula:
+				// without parent and child sizes, because starling.text.TextField
+				// already arrange text within self bounds.
+				// This code only add 'padding' feature.
+
+				var childPaddingLeft:Number = node.padding.left.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				var childPaddingRight:Number = node.padding.right.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				child.x = Layout.pad(0, 0, childPaddingLeft, childPaddingRight, StringUtil.parseAlign(hAlign));
+
+				var childPaddingTop:Number = node.padding.top.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				var childPaddingBottom:Number = node.padding.bottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				child.y = Layout.pad(0, 0, childPaddingTop, childPaddingBottom, StringUtil.parseAlign(vAlign));
+			}
 		}
 
 		//
@@ -135,7 +170,7 @@ package talon.starling
 		}
 
 		//
-		// Properties Overrides
+		// Properties Delegating
 		//
 		public override function set color(value:uint):void { node.setAttribute(Attribute.FONT_COLOR, StringUtil.toHexRBG(value)) }
 		private function onFontColorChange():void { super.color = StringUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
@@ -155,12 +190,27 @@ package talon.starling
 		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
 		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT) }
 
+		public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.AUTO_SCALE, StringUtil.toBoolean(value)); }
+		private function onAutoScaleChange():void { super.autoScale = StringUtil.parseBoolean(_node.getAttributeCache(Attribute.AUTO_SCALE)); }
+
 		//
 		// Properties
 		//
 		public function get node():Node
 		{
 			return _node;
+		}
+
+		public override function get autoSize():String { return getAutoSize(node.width.isNone, node.height.isNone); }
+		public override function set autoSize(value:String):void
+		{
+			trace("[TalonTextFiled]", "Ignore autoSize value, this value defined via node width/height == 'none'");
+		}
+
+		public override function get border():Boolean { return super.border; }
+		public override function set border(value:Boolean):void
+		{
+			trace("[TalonTextFiled]", "Ignore border value, for debug draw use custom backgroundColor property");
 		}
 	}
 }

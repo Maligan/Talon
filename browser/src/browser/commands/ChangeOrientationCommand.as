@@ -25,7 +25,8 @@ package browser.commands
 		public override function execute():void
 		{
 			if (isActive) return;
-			controller.rotate();
+
+			controller.resizeWindowTo(controller.profile.height, controller.profile.width);
 		}
 
 		public override function get isActive():Boolean

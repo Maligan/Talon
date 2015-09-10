@@ -1,6 +1,6 @@
-package browser
+package browser.ui
 {
-	import browser.popups.Popup;
+	import browser.ui.popups.Popup;
 
 	import starling.display.DisplayObjectContainer;
 

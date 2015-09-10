@@ -24,21 +24,19 @@ package talon.starling
 		private var _transparent:Boolean;
 		private var _alpha:Number;
 		private var _fillMode:String;
-
 		private var _offsets:Scale9Offsets;
 
-		private var _quads:Vector.<QuadData>;
+		private var _mesh:Vector.<QuadData>;
 		private var _batch:QuadBatch;
-
-		private var _invalid:Boolean;
+		private var _requestRedraw:Boolean;
 
 		public function BackgroundRenderer():void
 		{
 			POOL = new <QuadData>[];
 			HELPER = new QuadWithUnsafeAccess();
 
-			_invalid = true;
-			_quads = new <QuadData>[];
+			_requestRedraw = true;
+			_mesh = new <QuadData>[];
 			_batch = new QuadBatch();
 			_width = 0;
 			_height = 0;
@@ -55,31 +53,28 @@ package talon.starling
 		{
 			if (_batch.alpha == 0 || _texture == null && _transparent) return;
 
-			// TODO: Diff way for invalidate (_quads OR _batch)
-			if (_invalid)
+			if (_requestRedraw)
 			{
-				_invalid = false;
-				remesh();
-				compose();
+				createMesh();
+				createQuadBatch();
 
 				// Starling recommend use batchable if batch has less when 16 quads
 				_batch.batchable = _batch.numQuads <= 16;
+				_requestRedraw = false;
 			}
 
 			_batch.render(support, parentAlpha);
 		}
 
-		private function invalidate():void { _invalid = true; }
-
 		//
 		// Defining quads for render
 		//
-		private function remesh():void
+		private function createMesh():void
 		{
 			// Release prev quads list
-			while (_quads.length > 0) POOL[POOL.length] = _quads.pop();
+			while (_mesh.length > 0) POOL[POOL.length] = _mesh.pop();
 
-			// Define _quads for render
+			// Define _mesh for render
 			if (_texture)
 			{
 				switch (_fillMode)
@@ -100,7 +95,7 @@ package talon.starling
 		{
 			var quad:QuadData = getQuadData();
 			quad.setPositions(0, 0, _width, _height);
-			_quads[_quads.length] = quad;
+			_mesh[_mesh.length] = quad;
 		}
 
 		private function remeshScale():void
@@ -120,7 +115,7 @@ package talon.starling
 					var quad:QuadData = getQuadData();
 					quad.setPositions(hp[x], vp[y], hp[x+1], vp[y+1]);
 					quad.setTexCoords(ht[x], vt[y], ht[x+1], vt[y+1]);
-					_quads[_quads.length] = quad;
+					_mesh[_mesh.length] = quad;
 				}
 			}
 		}
@@ -160,7 +155,7 @@ package talon.starling
 
 						quad.setPositions(quadX, quadY, quadX + quadWidth, quadY + quadHeight);
 						quad.setTexCoords(0, 0, quadWidth/textureWidth, quadHeight/textureHeight);
-						_quads[_quads.length] = quad;
+						_mesh[_mesh.length] = quad;
 					}
 				}
 			}
@@ -169,7 +164,7 @@ package talon.starling
 				quad = getQuadData();
 				quad.setPositions(0, 0, _width, _height);
 				quad.setTexCoords(0, 0, _width/textureWidth, _height/textureHeight);
-				_quads[_quads.length] = quad;
+				_mesh[_mesh.length] = quad;
 			}
 		}
 
@@ -177,26 +172,26 @@ package talon.starling
 		{
 			var width:Number = Math.min(_width, texture.width);
 			var height:Number = Math.min(_height, texture.height);
-			var quad = getQuadData();
+			var quad:QuadData = getQuadData();
 			quad.setPositions(0, 0, width, height);
 			quad.setTexCoords(0, 0, width/texture.width, height/texture.height);
-			_quads[_quads.length] = quad;
+			_mesh[_mesh.length] = quad;
 		}
 
 		//
 		// Assembling QuadBatch
 		//
-		/** Compose BatchQuad use _quads list. */
-		private function compose():void
+		/** Compose BatchQuad use _mesh list. */
+		private function createQuadBatch():void
 		{
 			_batch.reset();
 
-			var numQuads:int = _quads.length;
+			var numQuads:int = _mesh.length;
 			var data:QuadData = null;
 
 			for (var i:int = 0; i < numQuads; i++)
 			{
-				data = _quads[i];
+				data = _mesh[i];
 
 				// Position
 				HELPER.setVertexPosition(0, data.x1, data.y1);
@@ -247,23 +242,23 @@ package talon.starling
 		//
 		// Properties
 		//
+		public function set9ScaleOffsets(topOffset:Number, rightOffset:Number, bottomOffset:Number, leftOffset:Number):void
+		{
+			_offsets.top = topOffset;
+			_offsets.right = rightOffset;
+			_offsets.bottom = bottomOffset;
+			_offsets.left = leftOffset;
+			_requestRedraw = true;
+		}
+
 		public function get texture():Texture { return _texture; }
 		public function set texture(value:Texture):void
 		{
 			if (texture != value)
 			{
 				_texture = value;
-				invalidate();
+				_requestRedraw = true;
 			}
-		}
-
-		public function setScaleOffsets(topOffset:Number, rightOffset:Number, bottomOffset:Number, leftOffset:Number):void
-		{
-			_offsets.top = topOffset;
-			_offsets.right = rightOffset;
-			_offsets.bottom = bottomOffset;
-			_offsets.left = leftOffset;
-			invalidate();
 		}
 
 		public function get smoothing():String { return _smoothing; }
@@ -273,7 +268,7 @@ package talon.starling
 			{
 				if (TextureSmoothing.isValid(value)) _smoothing = value;
 				else throw new ArgumentError("Invalid smoothing mode: " + value);
-				invalidate();
+				_requestRedraw = true;
 			}
 		}
 
@@ -283,7 +278,7 @@ package talon.starling
 			if (_width != value)
 			{
 				_width = value;
-				invalidate();
+				_requestRedraw = true;
 			}
 		}
 
@@ -293,7 +288,7 @@ package talon.starling
 			if (_height != value)
 			{
 				_height = value;
-				invalidate();
+				_requestRedraw = true;
 			}
 		}
 
@@ -303,7 +298,7 @@ package talon.starling
 			if (_color != value)
 			{
 				_color = value;
-				invalidate();
+				_requestRedraw = true;
 			}
 		}
 
@@ -313,7 +308,7 @@ package talon.starling
 			if (_tint != value)
 			{
 				_tint = value;
-				invalidate();
+				_requestRedraw = true;
 			}
 		}
 
@@ -323,7 +318,7 @@ package talon.starling
 			if (_transparent != value)
 			{
 				_transparent = value;
-				invalidate();
+				_requestRedraw = true;
 			}
 		}
 
@@ -347,7 +342,7 @@ package talon.starling
 			if (_fillMode != value)
 			{
 				_fillMode = value;
-				invalidate();
+				_requestRedraw = true;
 			}
 		}
 	}

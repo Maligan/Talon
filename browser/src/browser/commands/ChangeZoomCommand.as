@@ -29,7 +29,7 @@ package browser.commands
 			return true;
 		}
 
-		private function get zoom():int { return controller.settings.getValueOrDefault(AppConstants.SETTING_ZOOM, 100) }
+		private function get zoom():int { return controller.settings.getValueOrDefault(AppConstants.SETTING_ZOOM, int, 100) }
 		private function set zoom(value:int):void { controller.settings.setValue(AppConstants.SETTING_ZOOM, value) }
 	}
 }

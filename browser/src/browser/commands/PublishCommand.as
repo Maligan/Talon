@@ -62,7 +62,7 @@ package browser.commands
 			{
 				if (file.isIgnored) continue;
 				var name:String = file.exportPath;
-				var data:ByteArray = file.readBytes();
+				var data:ByteArray = file.bytes;
 				zip.addFile(name, data);
 			}
 
@@ -98,7 +98,7 @@ package browser.commands
 		//
 		private function getDocumentExportPath(document:Document):String
 		{
-			var exportPath:String = document.properties.getValueOrDefault(AppConstants.PROPERTY_EXPORT_PATH);
+			var exportPath:String = document.properties.getValueOrDefault(AppConstants.PROPERTY_EXPORT_PATH, String);
 			if (exportPath == null)
 				exportPath = document.project.name.replace(AppConstants.DESIGNER_FILE_EXTENSION, AppConstants.DESIGNER_EXPORT_FILE_EXTENSION);
 

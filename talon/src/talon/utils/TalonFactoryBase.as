@@ -113,20 +113,20 @@ package talon.utils
 		{
 			var bindPattern:RegExp = /@(\w+)/;
 			var bindSplit:Array = bindPattern.exec(value);
-			var bindTarget:String = bindSplit && bindSplit.length > 1 ? bindSplit[1] : null;
+			var bindSource:String = bindSplit && bindSplit.length > 1 ? bindSplit[1] : null;
 
-			if (bindTarget)
+			if (bindSource)
 			{
-				var parent:ITalonElement = _parserProductStackNonTerminal[_parserProductStackNonTerminal.length - 1] as ITalonElement;
-				var source:Attribute = parent.node.getOrCreateAttribute(bindTarget);
+				var sourceElement:ITalonElement = _parserProductStackNonTerminal[_parserProductStackNonTerminal.length - 1] as ITalonElement;
+				var source:Attribute = sourceElement.node.getOrCreateAttribute(bindSource);
 				var target:Attribute = node.getOrCreateAttribute(attributeName);
 
 				var toTarget:Binding = Binding.bind(source.change, source, "value", target, "setted");
 				toTarget.trigger();
 				var toSource:Binding = Binding.bind(target.change, target, "value", source, "setted");
 
-				parent.node.addBinding(toTarget);
-				parent.node.addBinding(toSource);
+				sourceElement.node.addBinding(toTarget);
+				sourceElement.node.addBinding(toSource);
 				node.addBinding(toTarget);
 				node.addBinding(toSource);
 			}

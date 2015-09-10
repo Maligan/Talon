@@ -1,8 +1,9 @@
-package browser
+package browser.ui
 {
+	import browser.*;
 	import browser.dom.DocumentEvent;
 	import browser.dom.log.DocumentMessage;
-	import browser.popups.Popup;
+	import browser.ui.popups.Popup;
 	import browser.utils.DeviceProfile;
 
 	import flash.display.Stage;
@@ -25,6 +26,7 @@ package browser
 	import talon.layout.Layout;
 	import talon.starling.TalonFactoryStarling;
 	import talon.starling.TalonSprite;
+	import talon.utils.ITalonElement;
 	import talon.utils.TalonFactoryBase;
 
 	public class AppUI extends EventDispatcher
@@ -50,11 +52,12 @@ package browser
 		public function AppUI(controller:AppController)
 		{
 			_controller = controller;
-			_controller.addEventListener(AppController.EVENT_PROFILE_CHANGE, refreshWindowTitle);
 			_controller.addEventListener(AppController.EVENT_TEMPLATE_CHANGE, refreshWindowTitle);
 			_controller.addEventListener(AppController.EVENT_TEMPLATE_CHANGE, refreshCurrentTemplate);
 			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, refreshCurrentTemplate);
 			_controller.documentDispatcher.addEventListener(DocumentEvent.CHANGED, refreshCurrentTemplate);
+
+			_controller.profile.addEventListener(Event.CHANGE, refreshWindowTitle);
 
 			_isolator = new Sprite();
 			_menu = new AppUINativeMenu(_controller);
@@ -99,6 +102,7 @@ package browser
 			_controller.settings.addPropertyListener(AppConstants.SETTING_STATS, onStatsChange); onStatsChange(null);
 			_controller.settings.addPropertyListener(AppConstants.SETTING_ZOOM, onZoomChange); onZoomChange(null);
 			_controller.settings.addPropertyListener(AppConstants.SETTING_ALWAYS_ON_TOP, onAlwaysOnTopChange); onAlwaysOnTopChange(null);
+			_controller.monitor.addEventListener(Event.CHANGE, refreshCurrentTemplate);
 
 			resizeTo(_controller.root.stage.stageWidth, _controller.root.stage.stageHeight);
 
@@ -107,24 +111,25 @@ package browser
 
 		private function onBackgroundChange(e:Event):void
 		{
-			var styleName:String = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DEFAULT);
+			var styleName:String = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
 			_interface.node.classes.parse(styleName);
+//			_controller.root.stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[styleName];
 		}
 
 		private function onStatsChange(e:Event):void
 		{
-			Starling.current.showStats = _controller.settings.getValueOrDefault(AppConstants.SETTING_STATS, false);
+			Starling.current.showStats = _controller.settings.getValueOrDefault(AppConstants.SETTING_STATS, Boolean, false);
 		}
 
 		private function onZoomChange(e:Event):void
 		{
-			zoom = _controller.settings.getValueOrDefault(AppConstants.SETTING_ZOOM, 100) / 100;
+			zoom = _controller.settings.getValueOrDefault(AppConstants.SETTING_ZOOM, int, 100) / 100;
 			refreshWindowTitle();
 		}
 
 		private function onAlwaysOnTopChange(e:Event):void
 		{
-			_controller.root.stage.nativeWindow.alwaysInFront = _controller.settings.getValueOrDefault(AppConstants.SETTING_ALWAYS_ON_TOP, false);
+			_controller.root.stage.nativeWindow.alwaysInFront = _controller.settings.getValueOrDefault(AppConstants.SETTING_ALWAYS_ON_TOP, Boolean, false);
 		}
 
 		public function resizeTo(width:int, height:int):void
@@ -158,11 +163,13 @@ package browser
 			}
 
 			var profile:DeviceProfile = _controller.profile;
+			var profileEqual:DeviceProfile = DeviceProfile.getEqual(profile);
+			var profileName:String = profileEqual ? profileEqual.id : null;
 
 			// Profile preference
 			result.push("[" + profile.width + "x" + profile.height + ", CSF=" + profile.csf + ", DPI=" + profile.dpi + "]");
 			// Profile name (if exist)
-			if (profile != DeviceProfile.CUSTOM) result.push(profile.id);
+			if (profileName) result.push(profileName);
 			// Zoom (if non 100%)
 			if (zoom != 1) result.push(int(zoom * 100) + "%");
 			// Application name + version
@@ -171,7 +178,7 @@ package browser
 			_controller.root.stage.nativeWindow.title = result.join(" - ");
 		}
 
-		private function refreshCurrentTemplate():void
+		private function refreshCurrentTemplate(e:* = null):void
 		{
 			// Refresh current prototype
 			var canShow:Boolean = true;
@@ -195,6 +202,8 @@ package browser
 			}
 			else if (_template != null)
 			{
+				_container.node.ppmm = ITalonElement(_template).node.ppmm;
+				_container.node.ppdp = ITalonElement(_template).node.ppdp;
 				_container.addChild(_template);
 				_controller.root.stage && resizeTo(_controller.root.stage.stageWidth, _controller.root.stage.stageHeight);
 			}

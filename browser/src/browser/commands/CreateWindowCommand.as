@@ -1,5 +1,7 @@
 package browser.commands
 {
+	import browser.AppLauncher;
+
 	import flash.display.NativeWindow;
 	import flash.display.NativeWindowInitOptions;
 	import flash.display.NativeWindowRenderMode;
@@ -19,7 +21,7 @@ package browser.commands
 			var window:NativeWindow = new NativeWindow(windowOptions);
 			window.activate();
 
-			var launcher:Launcher = new Launcher();
+			var launcher:AppLauncher = new AppLauncher();
 			window.stage.addChild(launcher);
 		}
 

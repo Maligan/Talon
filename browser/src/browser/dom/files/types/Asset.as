@@ -35,11 +35,18 @@ package browser.dom.files.types
 
 		public final function readFileBytesOrReport():ByteArray
 		{
-			var bytes:ByteArray = file.readBytes();
-			if (bytes == null)
+			if (file.bytes == null)
 				reportMessage(DocumentMessage.FILE_READ_ERROR, file.url);
 
-			return bytes;
+			return file.bytes;
+		}
+
+		public final function readFileXMLOrReport():XML
+		{
+			if (file.xml == null)
+				reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_XML, file.url);
+
+			return file.xml;
 		}
 
 		public final function readFileStringOrReport():String
@@ -48,20 +55,16 @@ package browser.dom.files.types
 			return bytes ? bytes.toString() : null;
 		}
 
-		public final function readFileXMLOrReport():XML
+		//
+		// IDocumentFileController
+		//
+		public function attach():void
 		{
-			var xml:XML = file.readXML();
-			if (xml == null)
-				reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_XML, file.url);
-
-			return xml;
+			var isXML:Boolean = file.checkFirstMeaningfulChar("<");
+			if (isXML && file.xml == null) reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_XML, file.url);
 		}
 
-		//
-		// DocumentFileController
-		//
-		public function attach():void { }
-		public function detach():void { }
+		public function detach():void { reportCleanup(); }
 
 		//
 		// Properties

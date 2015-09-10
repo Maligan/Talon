@@ -1,4 +1,4 @@
-package browser.popups
+package browser.ui.popups
 {
 	import talon.utils.ITalonElement;
 	import talon.starling.TalonSprite;

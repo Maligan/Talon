@@ -223,7 +223,7 @@ package talon.starling
 			var backgroundScale9Grid:String = _node.getAttributeCache(Attribute.BACKGROUND_9SCALE);
 			GRID.parse(backgroundScale9Grid);
 
-			_filler.setScaleOffsets
+			_filler.set9ScaleOffsets
 			(
 				GRID.top.toPixels(_node.ppmm, _node.ppem, _node.ppdp, textureHeight),
 				GRID.right.toPixels(_node.ppmm, _node.ppem, _node.ppdp, textureWidth),

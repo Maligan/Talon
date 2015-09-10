@@ -20,7 +20,7 @@ package talon.layout
 
 			// Node origin
 			var originX:Number = toPixelsSugar(node.origin.x, node, width);
-			var originY:Number = toPixelsSugar(node.origin.x, node, height);
+			var originY:Number = toPixelsSugar(node.origin.y, node, height);
 
 			for (var i:int = 0; i < node.numChildren; i++)
 			{

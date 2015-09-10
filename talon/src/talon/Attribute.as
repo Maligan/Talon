@@ -98,6 +98,7 @@ package talon
 		public static const WRAP:String                 = registerAttributeDefaults("wrap",                FALSE);
 		public static const BREAK:String                = registerAttributeDefaults("break",               BreakMode.AUTO);
 
+		public static const AUTO_SCALE:String           = registerAttributeDefaults("autoScale");
 		public static const TEXT:String                 = registerAttributeDefaults("text");
 		public static const SRC:String                  = registerAttributeDefaults("src");
 

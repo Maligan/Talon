@@ -44,13 +44,6 @@ package talon.utils
 			}
 		}
 
-		public static function toHexRBG(color:uint):String
-		{
-			var string:String = color.toString(16);
-			while (string.length < 6) string = "0" + string;
-			return "#" + string;
-		}
-
 		/**
 		 * Parse strings like:
 		 * url(http://example.com/) to ['url', 'http://example.com/']
@@ -125,6 +118,22 @@ package talon.utils
 		public static function parseBoolean(string:String):Boolean
 		{
 			return string == "true";
+		}
+
+
+		//
+		// To string
+		//
+		public static function toHexRBG(color:uint):String
+		{
+			var string:String = color.toString(16);
+			while (string.length < 6) string = "0" + string;
+			return "#" + string;
+		}
+
+		public static function toBoolean(boolean:Boolean):String
+		{
+			return boolean ? "true" : "false";
 		}
 	}
 }

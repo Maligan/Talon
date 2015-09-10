@@ -36,6 +36,7 @@ package talon.starling
 			// Bridge
 			_bridge = new DisplayObjectBridge(this, node);
 			_bridge.addAttributeChangeListener(Attribute.TEXT, onTextChange);
+			_bridge.addAttributeChangeListener(Attribute.AUTO_SCALE, onAutoScaleChange);
 			_bridge.addAttributeChangeListener(Attribute.HALIGN, onHAlignChange);
 			_bridge.addAttributeChangeListener(Attribute.VALIGN, onVAlignChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange);
@@ -46,9 +47,9 @@ package talon.starling
 
 		private function onSharpnessChange():void
 		{
-			var oldText:String = text;
-			text = "0";
-			text = oldText;
+			var prev:String = text;
+			text = null;
+			text = prev;
 		}
 
 		protected override function formatText(textField:flash.text.TextField, textFormat:TextFormat):void
@@ -64,7 +65,6 @@ package talon.starling
 		private function measureWidth(availableHeight:Number):Number { return measure(Infinity, availableHeight).width; }
 		private function measureHeight(availableWidth:Number):Number { return measure(availableWidth, Infinity).height; }
 
-		/** TODO: Optimize. */
 		private function measure(availableWidth:Number, availableHeight:Number):Rectangle
 		{
 			super.autoSize = getAutoSize(availableWidth == Infinity, availableHeight == Infinity);
@@ -84,7 +84,7 @@ package talon.starling
 					result.height += textBounds.y;
 
 				// Add 2px gutter (like native flash)
-				// May be this is bad, idea: flash/starling do not provide text padding, but has hardcoded gutter
+				// May be this is bad, idea: flash do not provide text padding, but has hardcoded gutter
 				// Talon allow add padding.
 				//result.inflate(2, 2);
 			}
@@ -105,9 +105,6 @@ package talon.starling
 			return TextFieldAutoSize.NONE;
 		}
 
-		//
-		// Resize
-		//
 		private function onNodeResize():void
 		{
 			x = Math.round(_node.bounds.x);
@@ -173,7 +170,7 @@ package talon.starling
 		}
 
 		//
-		// Properties Overrides
+		// Properties Delegating
 		//
 		public override function set color(value:uint):void { node.setAttribute(Attribute.FONT_COLOR, StringUtil.toHexRBG(value)) }
 		private function onFontColorChange():void { super.color = StringUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
@@ -192,6 +189,9 @@ package talon.starling
 
 		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
 		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT) }
+
+		public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.AUTO_SCALE, StringUtil.toBoolean(value)); }
+		private function onAutoScaleChange():void { super.autoScale = StringUtil.parseBoolean(_node.getAttributeCache(Attribute.AUTO_SCALE)); }
 
 		//
 		// Properties

@@ -245,8 +245,7 @@ package browser
 			_starling.viewPort = new Rectangle(0, 0, _root.stage.stageWidth, _root.stage.stageHeight);
 			_ui.resizeTo(_root.stage.stageWidth, _root.stage.stageHeight);
 
-			_profile.width = _starling.stage.stageWidth;
-			_profile.height = _starling.stage.stageHeight;
+			_profile.setSize(_starling.stage.stageWidth, _starling.stage.stageHeight);
 		}
 
 		private function onResizing(e:NativeWindowBoundsEvent):void
@@ -302,9 +301,9 @@ package browser
 			}
 
 			// Updater#checkNow() run only after delay, UI inited is a good, moment for this
-			var isEnableAutoUpdate:Boolean = _settings.getValueOrDefault(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_START, Boolean, true);
+			var isEnableAutoUpdate:Boolean = _settings.getValueOrDefault(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, Boolean, true);
 			// XXX: Save for have default value != null
-			_settings.setValue(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_START, isEnableAutoUpdate);
+			_settings.setValue(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, isEnableAutoUpdate);
 
 			if (isEnableAutoUpdate)
 			{

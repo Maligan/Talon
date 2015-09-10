@@ -143,7 +143,7 @@ package browser.dom.files
 			if (_bytes == null)
 				_bytes = readBytes();
 
-			return readBytes();
+			return _bytes;
 		}
 
 		public function get xml():XML
@@ -159,7 +159,8 @@ package browser.dom.files
 		//
 		private function readBytes():ByteArray
 		{
-			if (!exists) throw new ArgumentError("File not exists");
+//			if (!exists) throw new ArgumentError("File not exists: ", url);
+			if (!exists) new ByteArray();
 
 			var result:ByteArray = null;
 			var stream:FileStream = new FileStream();

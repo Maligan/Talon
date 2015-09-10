@@ -1,32 +1,21 @@
-package
+package browser
 {
-	import browser.AppConstants;
-	import browser.AppController;
-	import browser.utils.parseProperties;
-
-	import flash.desktop.InvokeEventReason;
-
 	import flash.desktop.NativeApplication;
 	import flash.display.MovieClip;
-	import flash.display.StageAlign;
-	import flash.display.StageQuality;
-	import flash.display.StageScaleMode;
 	import flash.events.InvokeEvent;
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
-	import flash.utils.getTimer;
 
 	import starling.events.Event;
 
 	[SWF(frameRate="60")]
-	public class Launcher extends MovieClip
+	public class AppLauncher extends MovieClip
 	{
 		private var _overlay:MovieClip;
 		private var _controller:AppController;
 		private var _invoke:String;
 		private var _backgroundColor:SharedString;
 
-		public function Launcher()
+		public function AppLauncher()
 		{
 			_backgroundColor = new SharedString("backgroundColor", AppConstants.SETTING_BACKGROUND_DEFAULT);
 			stage ? initialize() : addEventListener(Event.ADDED_TO_STAGE, initialize);
@@ -36,7 +25,7 @@ package
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, initialize);
 
-//			stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[_backgroundColor.value];
+			stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[_backgroundColor.value];
 			stage.nativeWindow.minSize = new Point(200, 100);
 			stage.addEventListener(Event.RESIZE, onResize);
 
@@ -54,7 +43,7 @@ package
 
 		private function onBackgroundChanged():void
 		{
-//			_backgroundColor.value = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
+			_backgroundColor.value = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
 		}
 
 		private function onResize(e:*):void

@@ -51,14 +51,15 @@ package talon.layout
 		{
 			var flow:Flow = new Flow();
 			var orientation:String = node.getAttributeCache(Attribute.ORIENTATION);
-			var percentTargetWidth:Number = maxWidth==Infinity ? 0 : maxWidth;
-			var percentTargetHeight:Number = maxHeight==Infinity ? 0 : maxHeight;
 			if (!Orientation.isValid(orientation)) throw new Error("Orientation value is not valid: " + orientation);
 
 			var paddingLeft:Number = node.padding.left.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
 			var paddingRight:Number = node.padding.right.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
 			var paddingTop:Number = node.padding.top.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
 			var paddingBottom:Number = node.padding.bottom.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
+
+			var percentTargetWidth:Number = maxWidth==Infinity ? 0 : (maxWidth - paddingLeft - paddingRight);
+			var percentTargetHeight:Number = maxHeight==Infinity ? 0 : (maxHeight - paddingTop - paddingBottom);
 
 			flow.setSpacings(getGap(node), getInterline(node));
 			flow.setWrap(getWrap(node));

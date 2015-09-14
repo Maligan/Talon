@@ -401,6 +401,12 @@ package talon
 			return _children[index];
 		}
 
+		/** Returns the index of a child within the node, or "-1" if it is not found. */
+		public function getChildIndex(child:Node):int
+		{
+			return _children.indexOf(child);
+		}
+
 		//
 		// Dispatcher
 		//

@@ -180,12 +180,12 @@ class StyleSelector
 	private var _id:String;
 	private var _type:String;
 	private var _classes:Vector.<String>;
-	private var _states:Vector.<String>;
+	private var _states:Vector.<Object>;
 
 	public function StyleSelector(string:String)
 	{
 		_classes = new <String>[];
-		_states = new <String>[];
+		_states = new <Object>[];
 
 		var split:Array = string.split(' ');
 		var current:String = split.pop();
@@ -194,7 +194,7 @@ class StyleSelector
 		if (split.length > 0) _ancestor = new StyleSelector(split.join(' '));
 
 		// This selector
-		var pattern:RegExp = /\*|[.#:]?[\w]+/;
+		var pattern:RegExp = /\*|[.#:]?[\w-()+-]+/;
 		while (current.length)
 		{
 			var token:String = pattern.exec(current)[0];
@@ -203,7 +203,7 @@ class StyleSelector
 
 			/**/ if (tokenType == '#') _id = tokenValue;
 			else if (tokenType == '.') _classes.push(tokenValue);
-			else if (tokenType == ':') _states.push(tokenValue);
+			else if (tokenType == ':') _states.push(NthToken.fromString(tokenValue) || tokenValue);
 			else if (tokenType != '*') _type = token;
 
 			// Continue parse
@@ -221,7 +221,7 @@ class StyleSelector
 			&& byType(node)
 			&& byAncestor(node)
 			&& byClasses(node)
-			&& byStates(node);
+			&& byStates(node)
 	}
 
 	private function byType(node:Node):Boolean
@@ -261,9 +261,20 @@ class StyleSelector
 
 	private function byStates(node:Node):Boolean
 	{
-		for each (var stateName:String in _states)
+		for each (var state:Object in _states)
 		{
-			if (!node.states.contains(stateName)) return false;
+			if (state is String)
+			{
+				var stateName:String = state as String;
+				if (node.states.contains(stateName) == false) return false;
+			}
+			else if (state is NthToken)
+			{
+				var stateNth:NthToken = state as NthToken;
+				var parent:Node = node.parent;
+				if (parent == null) return false;
+				if (stateNth.match(parent.getChildIndex(node), parent.numChildren) == false) return false;
+			}
 		}
 
 		return true;
@@ -272,5 +283,45 @@ class StyleSelector
 	public function get priority():int
 	{
 		return _priority;
+	}
+}
+
+class NthToken
+{
+	public static const NTH:String = "nth-child";
+	public static const NTH_LAST:String = "nth-last-child";
+	public static const NTH_PATTERN:RegExp = new RegExp("(" + NTH + "|" + NTH_LAST + ")" + "\\((?:([+-]?\\d+)n)?([+-]?\\d+)?\\)");
+
+	public static function fromString(state:String):NthToken
+	{
+		var stateSplit:Array = NTH_PATTERN.exec(state);
+		if (stateSplit == null) return null;
+		return new NthToken(stateSplit[1] == NTH_LAST, parseInt(stateSplit[2]), parseInt(stateSplit[3]));
+	}
+
+	private var _last:Boolean;
+	private var _a:int;
+	private var _b:int;
+
+	public function NthToken(last:Boolean, a:int, b:int)
+	{
+		_last = last;
+		_a = a;
+		_b = b;
+	}
+
+	public function match(indexOf:int, numChildren:int):Boolean
+	{
+		// x is a number of element (not index)
+		// NB! It begin from 1
+		var x:int = _last ? (numChildren - indexOf) : (indexOf + 1);
+
+		// x = a*n + b
+		// n = (x - b) / a
+		// if n is integer then match else false
+		if (_a != 0)
+			return (x - _b) % _a == 0;
+		else
+			return x == _b;
 	}
 }

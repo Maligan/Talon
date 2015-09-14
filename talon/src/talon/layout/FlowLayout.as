@@ -49,31 +49,35 @@ package talon.layout
 		//
 		private function calculateFlow(node:Node, maxWidth:Number, maxHeight:Number):Flow
 		{
-			var flow:Flow = new Flow();
 			var orientation:String = node.getAttributeCache(Attribute.ORIENTATION);
-			if (!Orientation.isValid(orientation)) throw new Error("Orientation value is not valid: " + orientation);
+			if (Orientation.isValid(orientation) == false)
+			{
+				trace("[FlowLayout]", "Invalid orientation value ='" + orientation + "' use default.");
+				orientation = Attribute.getAttributeDefault(Attribute.ORIENTATION);
+			}
 
 			var paddingLeft:Number = node.padding.left.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
 			var paddingRight:Number = node.padding.right.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
 			var paddingTop:Number = node.padding.top.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
 			var paddingBottom:Number = node.padding.bottom.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
 
-			var percentTargetWidth:Number = maxWidth==Infinity ? 0 : (maxWidth - paddingLeft - paddingRight);
-			var percentTargetHeight:Number = maxHeight==Infinity ? 0 : (maxHeight - paddingTop - paddingBottom);
+			var contentWidth:Number = maxWidth==Infinity ? 0 : (maxWidth - paddingLeft - paddingRight);
+			var contentHeight:Number = maxHeight==Infinity ? 0 : (maxHeight - paddingTop - paddingBottom);
 
+			var flow:Flow = new Flow();
 			flow.setSpacings(getGap(node), getInterline(node));
 			flow.setWrap(getWrap(node));
 
 			// Common orientation based flow setup
 			if (orientation == Orientation.HORIZONTAL)
 			{
-				flow.setMaxSize(maxWidth, maxHeight);
+				flow.setMaxSize(maxWidth==Infinity ? Infinity : contentWidth, maxHeight==Infinity ? maxHeight : contentHeight);
 				flow.setAlign(getAlign(node, Attribute.HALIGN), getAlign(node, Attribute.VALIGN));
 				flow.setPadding(paddingLeft, paddingRight, paddingTop, paddingBottom);
 			}
 			else
 			{
-				flow.setMaxSize(maxHeight, maxWidth);
+				flow.setMaxSize(maxHeight==Infinity ? maxHeight : contentHeight, maxWidth==Infinity ? Infinity : contentWidth);
 				flow.setAlign(getAlign(node, Attribute.VALIGN), getAlign(node, Attribute.HALIGN));
 				flow.setPadding(paddingTop, paddingBottom, paddingLeft, paddingRight);
 			}
@@ -90,26 +94,26 @@ package talon.layout
 
 				if (child.width.isNone && !child.height.isNone)
 				{
-					// percentTargetWidth && and percentTargetHeight for auto!
-					childHeight = child.height.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetHeight, Infinity, child.height.amount, child.height.amount);
-					childWidth  = child.width.toPixels (node.ppmm, node.ppem, node.ppdp, percentTargetWidth, childHeight, child.width.amount, child.width.amount);
+					// contentWidth && and contentHeight for auto!
+					childHeight = child.height.toPixels(node.ppmm, node.ppem, node.ppdp, contentHeight, Infinity, child.height.amount, child.height.amount);
+					childWidth  = child.width.toPixels (node.ppmm, node.ppem, node.ppdp, contentWidth, childHeight, child.width.amount, child.width.amount);
 				}
 				else if (child.height.isNone && !child.width.isNone)
 				{
-					childWidth  = child.width.toPixels (node.ppmm, node.ppem, node.ppdp, percentTargetWidth, Infinity, child.width.amount, child.width.amount);
-					childHeight = child.height.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetHeight, childWidth, child.height.amount, child.height.amount);
+					childWidth  = child.width.toPixels (node.ppmm, node.ppem, node.ppdp, contentWidth, Infinity, child.width.amount, child.width.amount);
+					childHeight = child.height.toPixels(node.ppmm, node.ppem, node.ppdp, contentHeight, childWidth, child.height.amount, child.height.amount);
 				}
 				else
 				{
-					childWidth  = child.width.toPixels (node.ppmm, node.ppem, node.ppdp, percentTargetWidth, Infinity, child.width.amount, child.width.amount);
-					childHeight = child.height.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetHeight, Infinity, child.height.amount, child.height.amount);
+					childWidth  = child.width.toPixels (node.ppmm, node.ppem, node.ppdp, contentWidth, Infinity, child.width.amount, child.width.amount);
+					childHeight = child.height.toPixels(node.ppmm, node.ppem, node.ppdp, contentHeight, Infinity, child.height.amount, child.height.amount);
 				}
 				// ------------------------------------------
 
-				var childMarginLeft:Number      = child.margin.left.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetWidth);
-				var childMarginRight:Number     = child.margin.right.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetWidth);
-				var childMarginTop:Number       = child.margin.top.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetHeight);
-				var childMarginBottom:Number    = child.margin.bottom.toPixels(node.ppmm, node.ppem, node.ppdp, percentTargetHeight);
+				var childMarginLeft:Number      = child.margin.left.toPixels(node.ppmm, node.ppem, node.ppdp, contentWidth);
+				var childMarginRight:Number     = child.margin.right.toPixels(node.ppmm, node.ppem, node.ppdp, contentWidth);
+				var childMarginTop:Number       = child.margin.top.toPixels(node.ppmm, node.ppem, node.ppdp, contentHeight);
+				var childMarginBottom:Number    = child.margin.bottom.toPixels(node.ppmm, node.ppem, node.ppdp, contentHeight);
 
 				// Setup child flow values
 				flow.beginChild();

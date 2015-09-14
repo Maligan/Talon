@@ -128,6 +128,11 @@ package talon
 			return _inheritable;
 		}
 
+		public static function getAttributeDefault(name:String):String
+		{
+			return _defaults[name].inited;
+		}
+
 		//
 		// Attribute Implementation
 		//

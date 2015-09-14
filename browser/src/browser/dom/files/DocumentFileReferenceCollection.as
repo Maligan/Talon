@@ -79,6 +79,11 @@ package browser.dom.files
 			return _references[url] != null;
 		}
 
+		public function getController(url:String):IDocumentFileController
+		{
+			return _controllers[url];
+		}
+
 		public function toArray():Vector.<DocumentFileReference>
 		{
 			var result:Vector.<DocumentFileReference> = new Vector.<DocumentFileReference>();

@@ -4,7 +4,7 @@
 		<node id="interface" width="100%" height="100%" layout="abs" class="dark">
 			<node id="container" width="100%" height="100%" />
 			<node id="popups" width="100%" height="100%" layout="abs" halign="center" valign="center"/>
-			<node id="bsod"><label text="¯\_(ツ)_/¯" /></node>
+			<node id="bsod" width="100%" height="100%"><label width="100%" height="100%" autoScale="true" text="¯\_(ツ)_/¯" /></node>
 		</node>
 	</template>
 
@@ -14,7 +14,7 @@
 		</popup>
 	</template>
 
-	<template type="popup">
+	<template id="PopupBase" type="popup">
 		<node type="popup" layout="flow" orientation="vertical" padding="12px"> 
 			<node ihalign="center" margin="none" gap="8px">
 				<button label="Update" class="action" />
@@ -23,8 +23,8 @@
 		</node>
 	</template>
 
-	<template type="button">
-		<node type="button" label="Label">
+	<template id="Button" type="button">
+		<node type="button" label="label">
 			<label text="@label" width="80px" height="32px" />
 		</node>
 	</template>

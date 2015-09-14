@@ -10,5 +10,10 @@ package browser.ui.popups
 			node.position.parse("50%");
 			node.pivot.parse("50%");
 		}
+
+		public function initialize(manager:PopupManager):void
+		{
+
+		}
 	}
 }

@@ -1,28 +1,26 @@
 package browser.ui.popups
 {
 	import starling.display.DisplayObject;
-	import starling.display.Quad;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
-	import starling.utils.Color;
 
 	public class ProfilePopup extends Popup
 	{
-		public function ProfilePopup()
-		{
-//			var view:DisplayObject = factory.produce("popup");
-//			addChild(view);
-//			addEventListener("hide", close);
+		private var _manager:PopupManager;
 
-			var view:DisplayObject = new Quad(100, 100, Color.WHITE);
-			view.alignPivot();
+		public override function initialize(manager:PopupManager):void
+		{
+			_manager = manager;
+
+			var view:DisplayObject = _manager.factory.produce("PopupBase");
 			addChild(view);
-			addEventListener(TouchEvent.TOUCH, onTouch);
+
+			view.addEventListener(TouchEvent.TOUCH, onTouch);
 		}
 
 		private function onTouch(e:TouchEvent):void
 		{
-//			if (e.getTouch(this, TouchPhase.ENDED)) close();
+			e.getTouch(getChildAt(0), TouchPhase.ENDED) && _manager.close(this);
 		}
 	}
 }

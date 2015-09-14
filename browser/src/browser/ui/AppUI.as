@@ -4,6 +4,7 @@ package browser.ui
 	import browser.dom.DocumentEvent;
 	import browser.dom.log.DocumentMessage;
 	import browser.ui.popups.Popup;
+	import browser.ui.popups.PopupManager;
 	import browser.utils.DeviceProfile;
 
 	import flash.display.Stage;
@@ -36,9 +37,9 @@ package browser.ui
 
 		private var _controller:AppController;
 		private var _menu:AppUINativeMenu;
-		private var _popups:AppUIPopupManager;
+		private var _popups:PopupManager;
 
-		private var _factory:TalonFactoryBase;
+		private var _factory:TalonFactoryStarling;
 		private var _interface:TalonSprite;
 		private var _errorPage:TalonSprite;
 		private var _isolatorContainer:TalonSprite;
@@ -61,7 +62,7 @@ package browser.ui
 
 			_isolator = new Sprite();
 			_menu = new AppUINativeMenu(_controller);
-			_popups = new AppUIPopupManager();
+			_popups = new PopupManager();
 		}
 
 		/** Call after starling initialize completed. */
@@ -77,10 +78,10 @@ package browser.ui
 		//
 		private function onFactoryComplete():void
 		{
-			_interface = _factory.produce("interface") as TalonSprite;
+			_interface = _factory.produce("Interface") as TalonSprite;
 			_controller.host.addChild(_interface);
 
-			_popups.initialize(this, _interface.getChildByName("popups") as DisplayObjectContainer);
+			_popups.initialize(this, _interface.getChildByName("popups") as DisplayObjectContainer, _factory);
 
 			_container = new TalonSprite();
 			_container.node.setAttribute(Attribute.LAYOUT, Layout.FLOW);
@@ -233,7 +234,7 @@ package browser.ui
 		//
 		// Properties
 		//
-		public function get popups():AppUIPopupManager { return _popups; }
+		public function get popups():PopupManager { return _popups; }
 
 		public function get factory():TalonFactoryBase { return _factory; }
 		public function get template():DisplayObject { return _template; }

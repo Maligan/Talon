@@ -1,6 +1,11 @@
 package browser.commands
 {
+	import avmplus.getQualifiedClassName;
+
 	import browser.dom.Document;
+	import browser.dom.files.IDocumentFileController;
+	import browser.dom.files.types.Asset;
+	import browser.dom.files.types.DirectoryAsset;
 
 	import deng.fzip.FZip;
 
@@ -13,6 +18,7 @@ package browser.commands
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.utils.ByteArray;
+	import flash.utils.getDefinitionByName;
 
 	import starling.events.Event;
 
@@ -60,7 +66,7 @@ package browser.commands
 
 			for each (var file:DocumentFileReference in controller.document.files.toArray())
 			{
-				if (file.isIgnored) continue;
+				if (isIgnored(file)) continue;
 				var name:String = file.exportPath;
 				var data:ByteArray = file.bytes;
 				zip.addFile(name, data);
@@ -71,6 +77,39 @@ package browser.commands
 
 			writeFile(target, zip);
 		}
+
+		/** File is ignored for export. */
+		private function isIgnored(file:DocumentFileReference):Boolean
+		{
+			var fileController:IDocumentFileController = controller.document.files.getController(file.url);
+			var fileControllerClassName:String = getQualifiedClassName(fileController);
+			var fileControllerClass:Class = getDefinitionByName(fileControllerClassName) as Class;
+
+			if (fileControllerClass == DirectoryAsset) return true;
+			if (fileControllerClass == Asset) return true;
+
+			return false;
+
+			//			if (target.isDirectory) return false;
+			//
+			//			var result:Boolean = false;
+			//			var property:String = document.properties.getValueOrDefault(AppConstants.PROPERTY_EXPORT_IGNORE, String);
+			//			if (property == null) return false;
+			//			var spilt:Array = property.split(/\s*,\s*/);
+			//
+			//			for each (var pattern:String in spilt)
+			//			{
+			// 				var glob:Glob = new Glob(pattern);
+			//				if (glob.match(exportPath))
+			//				{
+			//					result = !glob.invert;
+			//					if (result == false) break;
+			//				}
+			//			}
+			//
+			//			return result;
+		}
+
 
 		private function writeFile(file:File, zip:FZip):void
 		{

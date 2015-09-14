@@ -1,21 +1,25 @@
-package browser.ui
+package browser.ui.popups
 {
+	import browser.ui.*;
 	import browser.ui.popups.Popup;
 
 	import starling.display.DisplayObjectContainer;
 
-	public class AppUIPopupManager
+	import talon.starling.TalonFactoryStarling;
+
+	public class PopupManager
 	{
 		private var _ui:AppUI;
 		private var _layer:DisplayObjectContainer;
-
+		private var _factory:TalonFactoryStarling;
 		private var _popups:Vector.<Popup>;
 
-		public function initialize(ui:AppUI, layer:DisplayObjectContainer):void
+		public function initialize(ui:AppUI, layer:DisplayObjectContainer, factory:TalonFactoryStarling):void
 		{
 			_popups = new <Popup>[];
 			_ui = ui;
 			_layer = layer;
+			_factory = factory;
 		}
 
 		public function open(popup:Popup):void
@@ -25,6 +29,7 @@ package browser.ui
 				_popups.push(popup);
 				_ui.locked = true;
 				_layer.addChild(popup);
+				popup.initialize(this);
 			}
 		}
 
@@ -37,6 +42,11 @@ package browser.ui
 				_layer.removeChild(popup);
 				_ui.locked = _popups.length>0;
 			}
+		}
+
+		public function get factory():TalonFactoryStarling
+		{
+			return _factory;
 		}
 	}
 }

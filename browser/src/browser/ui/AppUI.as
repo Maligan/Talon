@@ -81,7 +81,8 @@ package browser.ui
 			_interface = _factory.produce("Interface") as TalonSprite;
 			_controller.host.addChild(_interface);
 
-			_popups.initialize(this, _interface.getChildByName("popups") as DisplayObjectContainer, _factory);
+			_popups.initialize(_interface.getChildByName("popups") as DisplayObjectContainer, _factory);
+			_popups.addEventListener(Event.CHANGE, onPopupManagerChange);
 
 			_container = new TalonSprite();
 			_container.node.setAttribute(Attribute.LAYOUT, Layout.FLOW);
@@ -110,11 +111,16 @@ package browser.ui
 			dispatchEventWith(Event.COMPLETE);
 		}
 
+		private function onPopupManagerChange(e:Event):void
+		{
+			locked = _popups.hasOpenedPopup;
+		}
+
 		private function onBackgroundChange(e:Event):void
 		{
 			var styleName:String = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
 			_interface.node.classes.parse(styleName);
-//			_controller.root.stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[styleName];
+			_controller.root.stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[styleName];
 		}
 
 		private function onStatsChange(e:Event):void

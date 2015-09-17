@@ -16,7 +16,7 @@ package browser.dom.files.types
 	{
 		public static function checker(file:DocumentFileReference):Boolean
 		{
-			return AppConstants.SUPPORTED_IMAGE_EXTENSIONS.indexOf(file.extension) != -1;
+			return AppConstants.BROWSER_SUPPORTED_IMAGE_EXTENSIONS.indexOf(file.extension) != -1;
 		}
 
 		private var _id:String;

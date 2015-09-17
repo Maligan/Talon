@@ -172,7 +172,7 @@ package browser
 				if (files.length == 1)
 				{
 					var file:File = File(files[0]);
-					if (file.extension == AppConstants.DESIGNER_FILE_EXTENSION)
+					if (file.extension == AppConstants.BROWSER_DOCUMENT_EXTENSION)
 					{
 						NativeDragManager.acceptDragDrop(_root as InteractiveObject);
 						NativeDragManager.dropAction = NativeDragActions.MOVE;

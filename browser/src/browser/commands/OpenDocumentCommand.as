@@ -27,7 +27,7 @@ package browser.commands
 			}
 			else
 			{
-				var filter:FileFilter = new FileFilter(AppConstants.T_BROWSER_FILE_EXTENSION_NAME, "*." + AppConstants.DESIGNER_FILE_EXTENSION);
+				var filter:FileFilter = new FileFilter(AppConstants.T_BROWSER_FILE_EXTENSION_NAME, "*." + AppConstants.BROWSER_DOCUMENT_EXTENSION);
 				var source:File = new File();
 				source .addEventListener(Event.SELECT, onOpenFileSelect);
 				source.browseForOpen(AppConstants.T_MENU_FILE_OPEN, [filter]);

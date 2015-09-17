@@ -7,7 +7,6 @@ package browser
 		//
 		// Application info
 		//
-
 		public static const APP_NAME:String = "Talon Browser";
 		public static const APP_UPDATE_URL:String = "https://raw.githubusercontent.com/Maligan/Talon/master/browser/bin/update.xml";
 		public static function get APP_VERSION():String
@@ -18,9 +17,9 @@ package browser
 			return version;
 		}
 
-		public static const DESIGNER_FILE_EXTENSION:String = "talon";
-		public static const DESIGNER_EXPORT_FILE_EXTENSION:String = "zip";
-		public static const SUPPORTED_IMAGE_EXTENSIONS:Vector.<String> = new <String>["atf", "png", "jpg", "gif"];
+		public static const BROWSER_DOCUMENT_EXTENSION:String = "talon";
+		public static const BROWSER_PUBLISH_EXTENSION:String = "zip";
+		public static const BROWSER_SUPPORTED_IMAGE_EXTENSIONS:Vector.<String> = new <String>["atf", "png", "jpg", "gif"];
 
 		public static const ZOOM_MIN:int = 25;
 		public static const ZOOM_MAX:int = 300;
@@ -90,7 +89,6 @@ package browser
 		public static const T_MENU_VIEW_CONSOLE:String                      = "Console";
 		public static const T_MENU_HELP:String                              = "Help";
 		public static const T_MENU_HELP_ONLINE:String                       = "Online Documentation";
-		public static const T_MENU_HELP_ABOUT:String                        = "About";
 		public static const T_MENU_HELP_UPDATE:String                       = "Check for Update...";
 	}
 }

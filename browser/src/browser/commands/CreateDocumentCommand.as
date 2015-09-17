@@ -22,7 +22,7 @@ package browser.commands
 			_project = null;
 			_projectRoot = null;
 
-			_project = new File("/" + AppConstants.T_PROJECT_FILE_DEFAULT_NAME + "." + AppConstants.DESIGNER_FILE_EXTENSION);
+			_project = new File("/" + AppConstants.T_PROJECT_FILE_DEFAULT_NAME + "." + AppConstants.BROWSER_DOCUMENT_EXTENSION);
 			_project.addEventListener(Event.SELECT, onProjectFileSelect);
 			_project.browseForSave(AppConstants.T_PROJECT_FILE_TITLE);
 		}

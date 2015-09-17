@@ -1,5 +1,7 @@
 package browser.ui.popups
 {
+	import starling.errors.AbstractMethodError;
+
 	import talon.utils.ITalonElement;
 	import talon.starling.TalonSprite;
 
@@ -13,7 +15,7 @@ package browser.ui.popups
 
 		public function initialize(manager:PopupManager):void
 		{
-
+			throw new AbstractMethodError();
 		}
 	}
 }

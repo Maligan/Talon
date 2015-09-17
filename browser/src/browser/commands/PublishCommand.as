@@ -139,7 +139,7 @@ package browser.commands
 		{
 			var exportPath:String = document.properties.getValueOrDefault(AppConstants.PROPERTY_EXPORT_PATH, String);
 			if (exportPath == null)
-				exportPath = document.project.name.replace(AppConstants.DESIGNER_FILE_EXTENSION, AppConstants.DESIGNER_EXPORT_FILE_EXTENSION);
+				exportPath = document.project.name.replace(AppConstants.BROWSER_DOCUMENT_EXTENSION, AppConstants.BROWSER_PUBLISH_EXTENSION);
 
 			var exportPathResolved:String = document.project.parent.resolvePath(exportPath).nativePath;
 			return exportPathResolved;

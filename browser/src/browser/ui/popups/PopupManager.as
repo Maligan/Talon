@@ -1,24 +1,22 @@
 package browser.ui.popups
 {
-	import browser.ui.*;
-	import browser.ui.popups.Popup;
+	import flash.events.Event;
 
 	import starling.display.DisplayObjectContainer;
+	import starling.events.EventDispatcher;
 
 	import talon.starling.TalonFactoryStarling;
 
-	public class PopupManager
+	public class PopupManager extends EventDispatcher
 	{
-		private var _ui:AppUI;
-		private var _layer:DisplayObjectContainer;
-		private var _factory:TalonFactoryStarling;
 		private var _popups:Vector.<Popup>;
+		private var _host:DisplayObjectContainer;
+		private var _factory:TalonFactoryStarling;
 
-		public function initialize(ui:AppUI, layer:DisplayObjectContainer, factory:TalonFactoryStarling):void
+		public function initialize(host:DisplayObjectContainer, factory:TalonFactoryStarling):void
 		{
 			_popups = new <Popup>[];
-			_ui = ui;
-			_layer = layer;
+			_host = host;
 			_factory = factory;
 		}
 
@@ -27,9 +25,19 @@ package browser.ui.popups
 			if (_popups.indexOf(popup) == -1)
 			{
 				_popups.push(popup);
-				_ui.locked = true;
-				_layer.addChild(popup);
-				popup.initialize(this);
+				_host.addChild(popup);
+
+				try
+				{
+					popup.initialize(this);
+				}
+				catch (e:Error)
+				{
+					trace("[PopupManager]", "Error while initialize popup:\n" + e.getStackTrace());
+					close(popup);
+				}
+
+				dispatchEventWith(Event.CHANGE);
 			}
 		}
 
@@ -39,14 +47,19 @@ package browser.ui.popups
 			if (indexOf != -1)
 			{
 				_popups.splice(indexOf, 1);
-				_layer.removeChild(popup);
-				_ui.locked = _popups.length>0;
+				_host.removeChild(popup);
+				dispatchEventWith(Event.CHANGE);
 			}
 		}
 
 		public function get factory():TalonFactoryStarling
 		{
 			return _factory;
+		}
+
+		public function get hasOpenedPopup():Boolean
+		{
+			return _popups.length > 0;
 		}
 	}
 }

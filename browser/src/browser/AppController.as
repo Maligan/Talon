@@ -290,13 +290,16 @@ package browser
 			var isEnableReopen:Boolean = settings.getValueOrDefault(AppConstants.SETTING_AUTO_REOPEN, Boolean, false) && document == null;
 			if (isEnableReopen)
 			{
-				var recentArray:Array = settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array);
-				var recentPath:String = recentArray && recentArray.length ? recentArray[0] : null;
-				if (recentPath)
+				var template:String = settings.getValueOrDefault(AppConstants.SETTING_RECENT_TEMPLATE, String);
+				if (template != null)
 				{
-					var template:String = settings.getValueOrDefault(AppConstants.SETTING_RECENT_TEMPLATE, String);
-					invoke(recentPath);
-					if (template != null) templateId = template;
+					var recentArray:Array = settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array);
+					var recentPath:String = recentArray && recentArray.length ? recentArray[0] : null;
+					if (recentPath)
+					{
+						invoke(recentPath);
+						if (template != null) templateId = template;
+					}
 				}
 			}
 

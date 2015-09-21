@@ -1,15 +1,16 @@
-package browser.dom
+package browser.document
 {
-	import browser.dom.files.types.AtlasAsset;
-	import browser.dom.files.types.DirectoryAsset;
-	import browser.dom.files.types.FontAsset;
-	import browser.dom.files.types.LibraryAsset;
-	import browser.dom.files.types.StyleSheetAsset;
-	import browser.dom.files.types.TemplateAsset;
-	import browser.dom.files.types.TextureAsset;
-	import browser.dom.files.DocumentFileReferenceCollection;
-	import browser.dom.log.DocumentMessageCollection;
-	import browser.dom.log.DocumentTaskTracker;
+	import browser.document.files.types.AtlasAsset;
+	import browser.document.files.types.DirectoryAsset;
+	import browser.document.files.types.FontAsset;
+	import browser.document.files.types.LibraryAsset;
+import browser.document.files.types.PropertiesAsset;
+import browser.document.files.types.StyleSheetAsset;
+	import browser.document.files.types.TemplateAsset;
+	import browser.document.files.types.TextureAsset;
+	import browser.document.files.DocumentFileReferenceCollection;
+	import browser.document.log.DocumentMessageCollection;
+	import browser.document.log.DocumentTaskTracker;
 	import browser.utils.Storage;
 
 	import flash.filesystem.File;
@@ -47,6 +48,7 @@ package browser.dom
 			_files.registerController(StyleSheetAsset,  StyleSheetAsset.checker);
 			_files.registerController(FontAsset,        FontAsset.checker);
 			_files.registerController(LibraryAsset,     LibraryAsset.checker);
+			_files.registerController(PropertiesAsset,  PropertiesAsset.checker);
 		}
 
 		/** Background task counter. */

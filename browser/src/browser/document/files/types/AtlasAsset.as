@@ -1,8 +1,8 @@
-package browser.dom.files.types
+package browser.document.files.types
 {
-	import browser.dom.DocumentEvent;
-	import browser.dom.files.DocumentFileReference;
-	import browser.dom.log.DocumentMessage;
+	import browser.document.DocumentEvent;
+	import browser.document.files.DocumentFileReference;
+	import browser.document.log.DocumentMessage;
 
 	import flash.system.System;
 

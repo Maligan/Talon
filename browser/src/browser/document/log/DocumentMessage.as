@@ -1,4 +1,4 @@
-package browser.dom.log
+package browser.document.log
 {
 	import browser.AppConstants;
 

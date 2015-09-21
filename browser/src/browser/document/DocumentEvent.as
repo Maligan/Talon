@@ -1,4 +1,4 @@
-package browser.dom
+package browser.document
 {
 	public class DocumentEvent
 	{

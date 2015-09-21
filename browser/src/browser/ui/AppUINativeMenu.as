@@ -2,7 +2,7 @@ package browser.ui
 {
 	import browser.*;
 	import browser.commands.*;
-	import browser.dom.DocumentEvent;
+	import browser.document.DocumentEvent;
 	import browser.ui.popups.ProfilePopup;
 	import browser.utils.DeviceProfile;
 	import browser.utils.NativeMenuAdapter;
@@ -92,7 +92,7 @@ package browser.ui
 
 		private function refreshRecentOpenedDocumentsList():void
 		{
-			var recent:Array = _controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);
+			var recent:Array = _controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []).filter(isFileByPathExist);
 			if (isEqual(recent, _prevDocuments)) return;
 			_prevDocuments = recent;
 
@@ -110,6 +110,12 @@ package browser.ui
 				recentMenu.push("clear", AppConstants.T_MENU_FILE_RECENT_CLEAR, new ChangeSettingCommand(_controller, AppConstants.SETTING_RECENT_DOCUMENTS, []));
 			}
 		}
+
+        private function isFileByPathExist(path:String, index:int, array:Array):Boolean
+        {
+            var file:File = new File(path);
+            return file.exists;
+        }
 
 		private function refreshDocumentTemplatesList():void
 		{

@@ -1,9 +1,9 @@
 package browser.commands
 {
-	import browser.dom.files.DocumentFileReference;
+	import browser.document.files.DocumentFileReference;
 	import browser.AppConstants;
 	import browser.AppController;
-	import browser.dom.Document;
+	import browser.document.Document;
 
 	import flash.events.Event;
 	import flash.filesystem.File;

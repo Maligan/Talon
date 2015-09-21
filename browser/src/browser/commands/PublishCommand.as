@@ -2,17 +2,17 @@ package browser.commands
 {
 	import avmplus.getQualifiedClassName;
 
-	import browser.dom.Document;
-	import browser.dom.files.IDocumentFileController;
-	import browser.dom.files.types.Asset;
-	import browser.dom.files.types.DirectoryAsset;
+	import browser.document.Document;
+	import browser.document.files.IDocumentFileController;
+	import browser.document.files.types.Asset;
+	import browser.document.files.types.DirectoryAsset;
 
 	import deng.fzip.FZip;
 
 	import browser.AppConstants;
 
 	import browser.AppController;
-	import browser.dom.files.DocumentFileReference;
+	import browser.document.files.DocumentFileReference;
 
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;

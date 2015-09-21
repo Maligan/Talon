@@ -1,7 +1,7 @@
-package browser.dom.files
+package browser.document.files
 {
-	import browser.dom.Document;
-	import browser.dom.files.types.Asset;
+	import browser.document.Document;
+	import browser.document.files.types.Asset;
 	import flash.utils.Dictionary;
 	import starling.events.Event;
 

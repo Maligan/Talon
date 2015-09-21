@@ -1,7 +1,7 @@
-package browser.dom.files
+package browser.document.files
 {
-	import browser.dom.Document;
-	import browser.dom.log.DocumentMessage;
+	import browser.document.Document;
+	import browser.document.log.DocumentMessage;
 	import browser.utils.Glob;
 	import browser.utils.byteArrayStartsWith;
 

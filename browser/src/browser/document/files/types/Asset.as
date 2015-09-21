@@ -1,9 +1,9 @@
-package browser.dom.files.types
+package browser.document.files.types
 {
-	import browser.dom.Document;
-	import browser.dom.files.IDocumentFileController;
-	import browser.dom.files.DocumentFileReference;
-	import browser.dom.log.DocumentMessage;
+	import browser.document.Document;
+	import browser.document.files.IDocumentFileController;
+	import browser.document.files.DocumentFileReference;
+	import browser.document.log.DocumentMessage;
 	import flash.utils.ByteArray;
 
 	public class Asset implements IDocumentFileController

@@ -1,4 +1,4 @@
-package browser.dom
+package browser.document
 {
 	import browser.AppConstants;
 	import browser.utils.DeviceProfile;

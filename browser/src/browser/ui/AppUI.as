@@ -1,8 +1,8 @@
 package browser.ui
 {
 	import browser.*;
-	import browser.dom.DocumentEvent;
-	import browser.dom.log.DocumentMessage;
+	import browser.document.DocumentEvent;
+	import browser.document.log.DocumentMessage;
 	import browser.ui.popups.Popup;
 	import browser.ui.popups.PopupManager;
 	import browser.utils.DeviceProfile;

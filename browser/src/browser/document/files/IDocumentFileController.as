@@ -1,4 +1,4 @@
-package browser.dom.files
+package browser.document.files
 {
 	public interface IDocumentFileController
 	{

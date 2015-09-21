@@ -4,8 +4,8 @@ package browser
 
 	import browser.commands.CloseDocumentCommand;
 	import browser.commands.OpenDocumentCommand;
-	import browser.dom.Document;
-	import browser.dom.log.DocumentMessage;
+	import browser.document.Document;
+	import browser.document.log.DocumentMessage;
 	import browser.ui.AppUI;
 	import browser.utils.Console;
 	import browser.utils.DeviceProfile;

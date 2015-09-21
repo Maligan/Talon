@@ -214,6 +214,9 @@ package talon
 				_valueCached = true;
 				_valueCache = value;
 
+                if (value == "$STR_HELLO")
+                    trace()
+
 				// Extract resource value
 				while (_valueCache is String)
 				{

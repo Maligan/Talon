@@ -48,8 +48,9 @@ package talon.starling
 		private function onSharpnessChange():void
 		{
 			var prev:String = text;
-			text = null;
-			text = prev;
+			// Use super.text to save attribute value
+            super.text = null;
+            super.text = prev;
 		}
 
 		protected override function formatText(textField:flash.text.TextField, textFormat:TextFormat):void
@@ -70,6 +71,8 @@ package talon.starling
 			super.autoSize = getAutoSize(availableWidth == Infinity, availableHeight == Infinity);
 			super.width = availableWidth;
 			super.height = availableHeight;
+
+			// NB! Use super.getBounds()
 			var result:Rectangle = super.getBounds(this);
 
 			// Starling have strange behavior for text with autoSize
@@ -82,11 +85,6 @@ package talon.starling
 
 				if (availableHeight == Infinity)
 					result.height += textBounds.y;
-
-				// Add 2px gutter (like native flash)
-				// May be this is bad, idea: flash do not provide text padding, but has hardcoded gutter
-				// Talon allow add padding.
-				//result.inflate(2, 2);
 			}
 
 			// Add paddings
@@ -124,12 +122,13 @@ package talon.starling
 
 			if (numChildren > 0)
 			{
+                // NB! Used first children (border is DISABLED)
 				var child:DisplayObject = getChildAt(0);
 
 				// User modified Layout.pad() formula:
 				// without parent and child sizes, because starling.text.TextField
 				// already arrange text within self bounds.
-				// This code only add 'padding' feature.
+				// This code only add 'padding' distance.
 
 				var childPaddingLeft:Number = node.padding.left.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 				var childPaddingRight:Number = node.padding.right.toPixels(node.ppem, node.ppem, node.ppdp, 0);
@@ -188,7 +187,7 @@ package talon.starling
 		private function onVAlignChange():void { super.vAlign = _node.getAttributeCache(Attribute.VALIGN) }
 
 		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
-		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT) }
+		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); }
 
 		public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.AUTO_SCALE, StringUtil.toBoolean(value)); }
 		private function onAutoScaleChange():void { super.autoScale = StringUtil.parseBoolean(_node.getAttributeCache(Attribute.AUTO_SCALE)); }
@@ -207,7 +206,7 @@ package talon.starling
 			trace("[TalonTextFiled]", "Ignore autoSize value, this value defined via node width/height == 'none'");
 		}
 
-		public override function get border():Boolean { return super.border; }
+		public override function get border():Boolean { return false; }
 		public override function set border(value:Boolean):void
 		{
 			trace("[TalonTextFiled]", "Ignore border value, for debug draw use custom backgroundColor property");

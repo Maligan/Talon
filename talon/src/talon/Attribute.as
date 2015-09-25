@@ -8,16 +8,17 @@ package talon
 
 	public final class Attribute
 	{
-		public static const AUTO:String         = "auto";
-		public static const WHITE:String        = "white";
-		public static const FALSE:String        = "false";
-		public static const TRUE:String         = "true";
-		public static const NONE:String         = "none";
-		public static const ZERO:String         = "0px";
-		public static const ONE:String          = "1";
-		public static const INHERIT:String      = "inherit";
-		public static const LEFT:String         = "left";
-		public static const TOP:String          = "top";
+        public static const INHERIT:String      = "inherit";
+        public static const NONE:String         = "none";
+
+        private static const AUTO:String         = "auto";
+        private static const WHITE:String        = "white";
+        private static const FALSE:String        = StringUtil.toBoolean(false);
+        private static const TRUE:String         = StringUtil.toBoolean(true);
+        private static const ZERO:String         = "0px";
+        private static const ONE:String          = "1";
+        private static const LEFT:String         = "left";
+		private static const TOP:String          = "top";
 
 		//
 		// Standard Attribute list
@@ -128,11 +129,6 @@ package talon
 			return _inheritable;
 		}
 
-		public static function getAttributeDefault(name:String):String
-		{
-			return _defaults[name].inited;
-		}
-
 		//
 		// Attribute Implementation
 		//
@@ -205,7 +201,7 @@ package talon
 		/** Value calculated from basic & inherit parent attribute. */
 		public function get value():String { return _value.string; }
 
-		/** NB! Optimized <code>value</code>property. Witch call invokers (like 'url(...)', 'res(...)', 'blur(...)' etc.) for convert value to strongly typed object. */
+		/** NB! Optimized <code>value</code>property. Witch can extract mapped resource. */
 		public function get valueCache():*
 		{
 			if (_valueCached == false)
@@ -214,10 +210,8 @@ package talon
 				_valueCached = true;
 				_valueCache = value;
 
-                if (value == "$STR_HELLO")
-                    trace()
-
 				// Extract resource value
+                // XXX: Stack overflow (loops)
 				while (_valueCache is String)
 				{
 					var key:String = StringUtil.parseResource(_valueCache);

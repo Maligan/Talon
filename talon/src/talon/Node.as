@@ -368,15 +368,20 @@ package talon
 		public function get numChildren():int { return _children.length; }
 
 		/** Adds a child to the container. It will be at the frontmost position. */
-		public function addChild(child:Node):void
+		public function addChild(child:Node, refresh:Boolean = false):void
 		{
-			_children.push(child);
+			_children[_children.length] = child;
 			child._parent = this;
-			child.restyle();
-			child.resource();
+
+            if (refresh)
+            {
+                child.restyle();
+                child.resource();
+            }
+
 			child.addListener(Event.CHANGE, onChildAttributeChange);
 			child.dispatch(Event.ADDED);
-			invalidate();
+            invalidate();
 		}
 
 		/** Removes a child from the container. If the object is not a child throws ArgumentError. */

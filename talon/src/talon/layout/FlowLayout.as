@@ -49,11 +49,12 @@ package talon.layout
 		//
 		private function calculateFlow(node:Node, maxWidth:Number, maxHeight:Number):Flow
 		{
-			var orientation:String = node.getAttributeCache(Attribute.ORIENTATION);
+			var orientationAttribute:Attribute = node.getOrCreateAttribute(Attribute.ORIENTATION);
+			var orientation:String = orientationAttribute.valueCache;
 			if (Orientation.isValid(orientation) == false)
 			{
 				trace("[FlowLayout]", "Invalid orientation value ='" + orientation + "' use default.");
-				orientation = Attribute.getAttributeDefault(Attribute.ORIENTATION);
+				orientation = orientationAttribute.inited;
 			}
 
 			var paddingLeft:Number = node.padding.left.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
@@ -71,13 +72,13 @@ package talon.layout
 			// Common orientation based flow setup
 			if (orientation == Orientation.HORIZONTAL)
 			{
-				flow.setMaxSize(maxWidth==Infinity ? Infinity : contentWidth, maxHeight==Infinity ? maxHeight : contentHeight);
+				flow.setMaxSize(maxWidth, maxHeight);
 				flow.setAlign(getAlign(node, Attribute.HALIGN), getAlign(node, Attribute.VALIGN));
 				flow.setPadding(paddingLeft, paddingRight, paddingTop, paddingBottom);
 			}
 			else
 			{
-				flow.setMaxSize(maxHeight==Infinity ? maxHeight : contentHeight, maxWidth==Infinity ? Infinity : contentWidth);
+				flow.setMaxSize(maxHeight, maxWidth);
 				flow.setAlign(getAlign(node, Attribute.VALIGN), getAlign(node, Attribute.HALIGN));
 				flow.setPadding(paddingTop, paddingBottom, paddingLeft, paddingRight);
 			}
@@ -87,7 +88,7 @@ package talon.layout
 			{
 				var child:Node = node.getChildAt(i);
 
-				// TODO: Width/Height minimum/maximum values
+				// TODO: Respect minWidth/maxWidth/minHeight/maxHeight values
 				// ------------------------------------------
 				var childWidth:Number = 0;
 				var childHeight:Number = 0;
@@ -272,19 +273,22 @@ class Flow
 
 	public function arrange():void
 	{
-		// Real used bounds
-		var usedLength:Number = getLength() - _lengthPaddingBegin - _lengthPaddingEnd;
-		var usedThickness:Number = getThickness() - _thicknessPaddingBegin - _thicknessPaddingEnd;
+		var calcLength:Number = getLength();
+		var calcThickness:Number = getThickness();
 
-		// Setted bounds
-		var boundLength:Number = _maxLength!=Infinity ? _maxLength : usedLength;
-		var boundThickness:Number = _maxThickness!= Infinity ? _maxThickness : usedThickness;
+		// Content bounds
+		var contentLength:Number    = calcLength - _lengthPaddingBegin - _lengthPaddingEnd;
+		var contentThickness:Number = calcThickness - _thicknessPaddingBegin - _thicknessPaddingEnd;
+
+		// Full bounds
+		var length:Number           = _maxLength != Infinity    ? _maxLength    : calcLength;
+		var thickness:Number        = _maxThickness != Infinity ? _maxThickness : calcLength;
 
 		var offset:Number = 0;
 		for each (var line:FlowLine in _lines)
 		{
-			var l:Number = Layout.pad(boundLength, usedLength, _lengthPaddingBegin, _lengthPaddingEnd, _alignLengthwise);
-			var t:Number = Layout.pad(boundThickness, usedThickness, _thicknessPaddingBegin, _thicknessPaddingEnd, _alignThicknesswise);
+			var l:Number = Layout.pad(length, contentLength, _lengthPaddingBegin, _lengthPaddingEnd, _alignLengthwise);
+			var t:Number = Layout.pad(thickness, contentThickness, _thicknessPaddingBegin, _thicknessPaddingEnd, _alignThicknesswise);
 
 			line.arrange(l, offset + t);
 			offset += line.thickness + _interline;
@@ -376,7 +380,6 @@ class FlowLine
 
 			// Via thickness
 			element.tSize = element.thicknessIsStar ? _thickness : element.thickness;
-//			element.tPos = tShift + element.thicknessBefore + (_thickness-element.tSize)*element.thicknessAlign;
 			element.tPos = tShift + Layout.pad(_thickness, element.tSize, element.thicknessBefore, element.thicknessAfter, element.thicknessAlign);
 
 			lOffset += element.lengthBefore + element.lSize + element.lengthAfter + _gap;

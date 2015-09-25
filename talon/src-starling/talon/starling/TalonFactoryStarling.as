@@ -69,6 +69,17 @@ package talon.starling
 				if (xml.name() == "template") addTemplate(xml);
 				if (xml.name() == "library") addLibrary(xml);
 			}
+
+			var propertiesIds:Vector.<String> = manager.getPropertiesNames();
+			for each (var propertiesId:String in propertiesIds)
+			{
+				var properties:Object = manager.getProperties(propertiesId);
+				for (var propertyName:String in properties)
+				{
+					var propertyValue:String = properties[propertyName];
+					addResource(propertyName, propertyValue);
+				}
+			}
 		}
 	}
 }
@@ -88,6 +99,8 @@ import starling.events.Event;
 import starling.utils.AssetManager;
 import starling.utils.SystemUtil;
 
+import talon.utils.StringUtil;
+
 class AssetManagerExtended extends AssetManager
 {
 	private static const PNG:String = "\u0089PNG\r\n\u001A\n";
@@ -96,14 +109,20 @@ class AssetManagerExtended extends AssetManager
 	private static const GIF89a:String = "\u0047\u0049\u0046\u0038\u0039\u0061";
 
 	private var mGetNameCallback:Function;
+
 	private var mCss:Dictionary;
 	private var mCssGuess:Dictionary;
+
+	private var mProperties:Dictionary;
+	private var mPropertiesGuess:Dictionary;
 
 	public function AssetManagerExtended(getNameCallback:Function)
 	{
 		mGetNameCallback = getNameCallback;
 		mCss = new Dictionary();
 		mCssGuess = new Dictionary(true);
+		mProperties = new Dictionary();
+		mPropertiesGuess = new Dictionary(true);
 	}
 
 	public function enqueueZip(bytes:ByteArray):void
@@ -121,9 +140,10 @@ class AssetManagerExtended extends AssetManager
 			var asset:ByteArray = file.content;
 
 			if (extension == "css")
-			{
 				mCssGuess[asset] = name;
-			}
+
+			if (extension == "properties")
+				mPropertiesGuess[asset] = name;
 
 			enqueueWithName(asset, name);
 		}
@@ -175,6 +195,12 @@ class AssetManagerExtended extends AssetManager
 					{
 						addCss(mCssGuess[asset], asset.toString());
 						delete mCssGuess[asset];
+						original(null);
+					}
+					else if (asset in mPropertiesGuess)
+					{
+						addProperties(mPropertiesGuess[asset],  StringUtil.parseProperties(asset.toString()));
+						delete mPropertiesGuess[asset];
 						original(null);
 					}
 					else
@@ -250,7 +276,7 @@ class AssetManagerExtended extends AssetManager
 		mCss[name] = css;
 	}
 
-	/** Removes a certain Css object. */
+	/** Removes a certain CSS object. */
 	public function removeCss(name:String):void
 	{
 		log("Removing css '" + name + "'");
@@ -270,6 +296,47 @@ class AssetManagerExtended extends AssetManager
 		return getDictionaryKeys(mCss, prefix, result);
 	}
 
+	//
+	// Properties Extension
+	//
+	/** Register an Properties object under a certain name. It will be available right away.
+	 *  If the name was already taken, the existing Properties will be disposed and replaced
+	 *  by the new one. */
+	public function addProperties(name:String, properties:Object):void
+	{
+		log("Adding properties '" + name + "'");
+
+		if (name in mProperties)
+		{
+			log("Warning: name was already in use; the previous properties will be replaced.");
+		}
+
+		mProperties[name] = properties;
+	}
+
+	/** Removes a certain properties object. */
+	public function removeProperties(name:String):void
+	{
+		log("Removing properties '" + name + "'");
+		delete mProperties[name];
+	}
+
+	/** Returns an properties with a certain name, or null if it's not found. */
+	public function getProperties(name:String):Object
+	{
+		return mProperties[name];
+	}
+
+	/** Returns all Properties names that start with a certain string, sorted alphabetically.
+	 *  If you pass a result vector, the names will be added to that vector. */
+	public function getPropertiesNames(prefix:String = "", result:Vector.<String> = null):Vector.<String>
+	{
+		return getDictionaryKeys(mProperties, prefix, result);
+	}
+
+	//
+	// Misc
+	//
 	/** NB! Copy-Paste from super. */
 	private function getDictionaryKeys(dictionary:Dictionary, prefix:String = "", result:Vector.<String> = null):Vector.<String>
 	{

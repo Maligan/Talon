@@ -3,8 +3,20 @@ popup {
 	fontSize: 14px;
 	fontColor: white;
 	fontSharpness: -1;
-	filter: drop-shadow(0, 0, black, 0.5, 2);
+
 	backgroundColor: #484B4C;
+	backgroundImage: $bg_dialog;
+	background9Scale: 18px;
+
+	padding: 24px;
+}
+
+.input {
+	backgroundImage: $input_normal;
+	background9Scale: 10px;
+
+	margin: -4px;
+	height: 35px;
 }
 
 button {
@@ -42,12 +54,6 @@ button.action:hover {
 
 button.action:active {
 	backgroundImage: $button_action_down;
-}
-
-popup #close
-{
-	/*backgroundImage: $('close');*/
-	cursor: button;
 }
 
 #interface.dark #container  { backgroundImage: $('bg_dark'); }

@@ -15,11 +15,31 @@
 	</template>
 
 	<template id="PopupBase" type="popup">
-		<node type="popup" layout="flow" orientation="vertical" padding="12px"> 
-			<node ihalign="center" margin="none" gap="8px">
-				<button label="Update" class="action" />
-				<button label="Cancel" />
+		<node type="popup" layout="flow" orientation="vertical" gap="8px"> 
+
+			<label text="$dialog.profile.title" />
+
+			<node width="*" gap="8px">
+				<label text="$dialog.profile.size" width="*" height="*" halign="left" />
+				<node class="input" width="48" />
+				<node class="input" width="48" />
 			</node>
+
+			<node width="*"> 
+				<label text="$dialog.profile.DPI" width="*" height="*" halign="left" />
+				<node class="input" width="48" />
+			</node>
+
+			<node width="*"> 
+				<label text="$dialog.profile.CSF" width="*" height="*" halign="left" />
+				<node class="input" width="48" />
+			</node>
+
+			<node ihalign="center" margin="none" gap="8px">
+				<button label="$button.apply" class="action" />
+				<button label="$button.close" />
+			</node>
+
 		</node>
 	</template>
 
@@ -30,10 +50,3 @@
 	</template>
 
 </library>
-
-<!--<message class="error">-->
-<!--<image id="icon"/>-->
-<!--<node backgroundColor="green" width="*" height="12px" minHeight="*"/>-->
-<!--<label text="Can't access to file C:\Projects\Interface\Game\src\img\background.png" width="*" height="auto" minHeight="*" halign="left"/>-->
-<!--</message>-->
-<!--<image src="$(crutches)" position="50%" pivot="50%"/>-->

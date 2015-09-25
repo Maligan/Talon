@@ -34,7 +34,7 @@ button {
 	align: center;
 
 	height: 28px;
-	padding: 2px 32px;
+	padding: 4px 32px 0px;
 }
 
 button:hover { filter: brightness(0.05); }
@@ -44,11 +44,12 @@ button:active
 	paddingBottom: 4px;
 }
 
-button.disabled:hover { filter: none; cursor: auto; }
+button.disabled:hover { filter: none; }
 button.disabled
 {
 	backgroundImage: $('button-disabled');
 	fontColor: #FFFFFF;
+	cursor: auto;
 }
 
 image.warning

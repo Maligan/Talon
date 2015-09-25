@@ -1,47 +1,45 @@
 package browser
 {
-	import air.update.ApplicationUpdaterUI;
+    import air.update.ApplicationUpdaterUI;
 
-	import browser.commands.CloseDocumentCommand;
-	import browser.commands.OpenDocumentCommand;
-	import browser.document.Document;
-	import browser.document.log.DocumentMessage;
-	import browser.ui.AppUI;
-	import browser.utils.Console;
-	import browser.utils.DeviceProfile;
-	import browser.utils.EventDispatcherAdapter;
-	import browser.utils.OrientationMonitor;
-	import browser.utils.Storage;
-	import browser.utils.registerClassAlias;
+    import browser.commands.CloseDocumentCommand;
+    import browser.commands.OpenDocumentCommand;
+    import browser.document.Document;
+    import browser.document.log.DocumentMessage;
+    import browser.ui.AppUI;
+    import browser.utils.Console;
+    import browser.utils.DeviceProfile;
+    import browser.utils.EventDispatcherAdapter;
+    import browser.utils.IPlugin;
+    import browser.utils.OrientationMonitor;
+    import browser.utils.Storage;
+    import browser.utils.registerClassAlias;
 
-	import flash.desktop.ClipboardFormats;
-	import flash.desktop.NativeDragActions;
-	import flash.desktop.NativeDragManager;
-	import flash.display.DisplayObject;
-	import flash.display.InteractiveObject;
-	import flash.display.NativeWindow;
-	import flash.events.NativeDragEvent;
-	import flash.events.NativeWindowBoundsEvent;
-	import flash.filesystem.File;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
-	import flash.system.Capabilities;
-	import flash.utils.setTimeout;
+    import flash.desktop.ClipboardFormats;
+    import flash.desktop.NativeDragActions;
+    import flash.desktop.NativeDragManager;
+    import flash.display.DisplayObject;
+    import flash.display.InteractiveObject;
+    import flash.display.NativeWindow;
+    import flash.events.NativeDragEvent;
+    import flash.events.NativeWindowBoundsEvent;
+    import flash.filesystem.File;
+    import flash.geom.Point;
+    import flash.geom.Rectangle;
+    import flash.system.Capabilities;
 
-	import starling.core.Starling;
-	import starling.display.DisplayObjectContainer;
+    import starling.core.Starling;
+    import starling.display.DisplayObjectContainer;
+    import starling.display.Sprite;
+    import starling.events.Event;
+    import starling.events.EventDispatcher;
+    import starling.utils.formatString;
 
-	import starling.display.Sprite;
-	import starling.events.Event;
+    import talon.Attribute;
+    import talon.Node;
+    import talon.utils.ITalonElement;
 
-	import starling.events.EventDispatcher;
-	import starling.utils.formatString;
-
-	import talon.Attribute;
-	import talon.Node;
-	import talon.utils.ITalonElement;
-
-	public class AppController extends EventDispatcher
+    public class AppController extends EventDispatcher
 	{
 		public static const EVENT_DOCUMENT_CHANGE:String = "documentChange";
 		public static const EVENT_TEMPLATE_CHANGE:String = "templateChange";

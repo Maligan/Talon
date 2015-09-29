@@ -8,15 +8,26 @@ popup {
 	backgroundImage: $bg_dialog;
 	background9Scale: 18px;
 
-	padding: 24px;
+	/*padding: 24px;*/
+	padding: 17px;
 }
 
-.input {
+input {
 	backgroundImage: $input_normal;
 	background9Scale: 10px;
 
 	margin: -4px;
 	height: 35px;
+
+	cursor: ibeam;
+}
+
+input:error {
+	backgroundImage: $input_error;	
+}
+
+input:focus {
+	backgroundImage: $input_focus;	
 }
 
 button {

@@ -1,17 +1,19 @@
 package browser.document
 {
+	import browser.document.files.DocumentFileReferenceCollection;
 	import browser.document.files.types.AtlasAsset;
 	import browser.document.files.types.DirectoryAsset;
 	import browser.document.files.types.FontAsset;
 	import browser.document.files.types.LibraryAsset;
-import browser.document.files.types.PropertiesAsset;
-import browser.document.files.types.StyleSheetAsset;
+	import browser.document.files.types.PropertiesAsset;
+	import browser.document.files.types.StyleSheetAsset;
 	import browser.document.files.types.TemplateAsset;
 	import browser.document.files.types.TextureAsset;
-	import browser.document.files.DocumentFileReferenceCollection;
 	import browser.document.log.DocumentMessageCollection;
 	import browser.document.log.DocumentTaskTracker;
 	import browser.utils.Storage;
+	import browser.utils.TalonFeatherTextInput;
+	import browser.utils.TalonStageText;
 
 	import flash.filesystem.File;
 
@@ -38,6 +40,9 @@ import browser.document.files.types.StyleSheetAsset;
 			_tracker = new DocumentTaskTracker(onTasksEnd);
 			_messages = new DocumentMessageCollection();
 			_factory = new DocumentTalonFactory(this);
+
+			_factory.addTerminal("input");
+			_factory.setLinkage("input", TalonFeatherTextInput);
 
 			_files = new DocumentFileReferenceCollection(this);
 

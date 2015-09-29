@@ -231,19 +231,17 @@ package browser
 
 		private function onStageResize(e:*):void
 		{
-			// ADL can dispatch resize twice on app start
-			// Avoid profile reset
-			var noChanged:Boolean = true;
-			noChanged &&= _root.stage.stageWidth == _starling.stage.stageWidth;
-			noChanged &&= _root.stage.stageHeight == _starling.stage.stageHeight;
-			if (noChanged) return;
-
 			_starling.stage.stageWidth = _root.stage.stageWidth;
 			_starling.stage.stageHeight = _root.stage.stageHeight;
 			_starling.viewPort = new Rectangle(0, 0, _root.stage.stageWidth, _root.stage.stageHeight);
+
+//			_starling.stage.stageWidth = _root.stage.fullScreenWidth;
+//			_starling.stage.stageHeight = _root.stage.fullScreenHeight;
+//			_starling.viewPort = new Rectangle(0, 0, _root.stage.fullScreenWidth, _root.stage.fullScreenHeight);
+
 			_ui.resizeTo(_root.stage.stageWidth, _root.stage.stageHeight);
 
-			_profile.setSize(_starling.stage.stageWidth, _starling.stage.stageHeight);
+			_profile.setSize(_root.stage.stageWidth, _root.stage.stageHeight);
 		}
 
 		private function onResizing(e:NativeWindowBoundsEvent):void

@@ -77,18 +77,29 @@ package browser.utils
 		//
 		public function setSize(width:Number, height:Number):void
 		{
-			_width = width;
-			_height = height;
-			dispatchChange();
+			if (_width != width || _height != height)
+			{
+				_width = width;
+				_height = height;
+				dispatchChange();
+			}
 		}
 
-		public function copyFrom(profile:DeviceProfile):void
+		public function copyFrom(profile:DeviceProfile, preserveOrientation:Boolean = true):void
 		{
 			_suppressedEvent = false;
 			_suppress = true;
 
-			if (width > height) setSize(Math.max(profile.width, profile.height), Math.min(profile.width, profile.height));
-			else                setSize(Math.min(profile.width, profile.height), Math.max(profile.width, profile.height));
+			var needSmartSize:Boolean = preserveOrientation && width==width && height==height;
+			if (needSmartSize)
+			{
+				if (width > height) setSize(Math.max(profile.width, profile.height), Math.min(profile.width, profile.height));
+				else                setSize(Math.min(profile.width, profile.height), Math.max(profile.width, profile.height));
+			}
+			else
+			{
+				setSize(profile.width, profile.height);
+			}
 
 			csf = profile.csf;
 			dpi = profile.dpi;

@@ -8,36 +8,33 @@
 		</node>
 	</template>
 
-	<template id="UpdatePopup">
-		<popup>
-			<rewrite mode="content" ref="button" />
-		</popup>
-	</template>
+	<template id="ProfilePopup" type="popup">
+		<node type="popup" layout="flow" orientation="vertical"> 
 
-	<template id="PopupBase" type="popup">
-		<node type="popup" layout="flow" orientation="vertical" gap="8px"> 
+			<label text="$dialog.profile.title" width="*" padding="8px" />
 
-			<label text="$dialog.profile.title" />
+			<node orientation="vertical" gap="8px" padding="8px" width="*" backgroundColor="gray" backgroundAlpha="0.1">
+				<node width="100%" gap="8px">
+					<label text="$dialog.profile.size" width="*" height="*" halign="left" />
+					<input id="_width" width="48" />
+					<label text="x" height="*" margin="none -4px" />
+					<input id="_height" width="48" />
+				</node>
 
-			<node width="*" gap="8px">
-				<label text="$dialog.profile.size" width="*" height="*" halign="left" />
-				<node class="input" width="48" />
-				<node class="input" width="48" />
+				<node width="100%"> 
+					<label text="$dialog.profile.DPI" width="*" height="*" halign="left" />
+					<input id="_dpi" width="48" />
+				</node>
+
+				<node width="100%"> 
+					<label text="$dialog.profile.CSF" width="*" height="*" halign="left" />
+					<input id="_csf" width="48" />
+				</node>
 			</node>
 
-			<node width="*"> 
-				<label text="$dialog.profile.DPI" width="*" height="*" halign="left" />
-				<node class="input" width="48" />
-			</node>
-
-			<node width="*"> 
-				<label text="$dialog.profile.CSF" width="*" height="*" halign="left" />
-				<node class="input" width="48" />
-			</node>
-
-			<node ihalign="center" margin="none" gap="8px">
-				<button label="$button.apply" class="action" />
-				<button label="$button.close" />
+			<node ihalign="center" margin="none" gap="8px" padding="8px">
+				<button id="_accept" label="$button.accept" class="action" />
+				<button id="_cancel" label="$button.cancel" />
 			</node>
 
 		</node>
@@ -46,6 +43,11 @@
 	<template id="Button" type="button">
 		<node type="button" label="label">
 			<label text="@label" width="80px" height="32px" />
+		</node>
+	</template>
+
+	<template id="Checkbox" type="checkbox">
+		<node>
 		</node>
 	</template>
 

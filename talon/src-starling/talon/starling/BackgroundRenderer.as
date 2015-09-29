@@ -142,6 +142,12 @@ package talon.starling
 				var numColumns:int = Math.ceil(_width / textureWidth);
 				var numRows:int = Math.ceil(_height / textureHeight);
 
+				if (numColumns*numRows > QuadBatch.MAX_NUM_QUADS)
+				{
+					trace("[BackgroundRenderer]", "Exceeded maximum number of quads!");
+					return;
+				}
+
 				for (var x:int = 0; x < numColumns; x++)
 				{
 					for (var y:int = 0; y < numRows; y++)

@@ -2,8 +2,8 @@ package browser.ui.popups
 {
 	import starling.errors.AbstractMethodError;
 
-	import talon.utils.ITalonElement;
 	import talon.starling.TalonSprite;
+	import talon.utils.ITalonElement;
 
 	public class Popup extends TalonSprite implements ITalonElement
 	{
@@ -13,7 +13,7 @@ package browser.ui.popups
 			node.pivot.parse("50%");
 		}
 
-		public function initialize(manager:PopupManager):void
+		public function initialize(manager:PopupManager, data:Object = null):void
 		{
 			throw new AbstractMethodError();
 		}

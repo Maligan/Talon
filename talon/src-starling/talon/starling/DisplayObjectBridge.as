@@ -26,7 +26,7 @@ package talon.starling
 	import talon.utils.StringUtil;
 
 	/** Provide method for synchronize starling display tree and talon tree. */
-	internal class DisplayObjectBridge
+	public class DisplayObjectBridge
 	{
 		//
 		// Starling FragmentFilter factories

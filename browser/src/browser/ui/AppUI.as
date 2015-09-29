@@ -6,6 +6,7 @@ package browser.ui
 	import browser.ui.popups.Popup;
 	import browser.ui.popups.PopupManager;
 	import browser.utils.DeviceProfile;
+	import browser.utils.TalonFeatherTextInput;
 
 	import flash.display.Stage;
 
@@ -19,6 +20,8 @@ package browser.ui
 	import starling.display.Sprite3D;
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
+	import starling.events.TouchEvent;
+	import starling.events.TouchPhase;
 	import starling.filters.BlurFilter;
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
@@ -69,6 +72,8 @@ package browser.ui
 		public function initialize():void
 		{
 			_factory = new TalonFactoryStarling();
+			_factory.addTerminal("input");
+			_factory.setLinkage("input", TalonFeatherTextInput);
 			_factory.setLinkage("interface", TalonSpriteWithDrawCountReset);
 			_factory.addArchiveContentAsync(new INTERFACE() as ByteArray, onFactoryComplete);
 		}
@@ -98,13 +103,14 @@ package browser.ui
 			_errorPage.visible = false;
 
 			_isolatorContainer = _interface.getChildByName("container") as TalonSprite;
+			_isolatorContainer.addEventListener(TouchEvent.TOUCH, onIsolatorTouch);
 			_isolatorContainer.addChild(_isolator);
 
 			_controller.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, onBackgroundChange); onBackgroundChange(null);
 			_controller.settings.addPropertyListener(AppConstants.SETTING_STATS, onStatsChange); onStatsChange(null);
 			_controller.settings.addPropertyListener(AppConstants.SETTING_ZOOM, onZoomChange); onZoomChange(null);
 			_controller.settings.addPropertyListener(AppConstants.SETTING_ALWAYS_ON_TOP, onAlwaysOnTopChange); onAlwaysOnTopChange(null);
-			_controller.monitor.addEventListener(Event.CHANGE, refreshCurrentTemplate);
+//			_controller.monitor.addEventListener(Event.CHANGE, refreshCurrentTemplate);
 
 			resizeTo(_controller.root.stage.stageWidth, _controller.root.stage.stageHeight);
 
@@ -114,6 +120,15 @@ package browser.ui
 		private function onPopupManagerChange(e:Event):void
 		{
 			locked = _popups.hasOpenedPopup;
+		}
+
+		private function onIsolatorTouch(e:TouchEvent):void
+		{
+			if (e.getTouch(e.currentTarget as DisplayObject, TouchPhase.BEGAN) != null)
+			{
+				if (_popups.hasOpenedPopup)
+					_popups.notify();
+			}
 		}
 
 		private function onBackgroundChange(e:Event):void
@@ -174,7 +189,7 @@ package browser.ui
 			var profileName:String = profileEqual ? profileEqual.id : null;
 
 			// Profile preference
-			result.push("[" + profile.width + "x" + profile.height + ", CSF=" + profile.csf + ", DPI=" + profile.dpi + "]");
+			result.push("[" + profile.width + "x" + profile.height + ", DPI=" + profile.dpi + ", CSF=" + profile.csf + "]");
 			// Profile name (if exist)
 			if (profileName) result.push(profileName);
 			// Zoom (if non 100%)
@@ -253,7 +268,7 @@ package browser.ui
 				_locked = value;
 				_menu.locked = !value;
 				_isolatorContainer.filter = _locked ? new BlurFilter(1, 1) : null;
-				_isolatorContainer.touchable = !_locked;
+//				_isolatorContainer.touchable = !_locked;
 			}
 		}
 

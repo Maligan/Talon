@@ -60,7 +60,7 @@ package browser.ui
 			_menu.push("view/orientation/portrait",             AppConstants.T_MENU_VIEW_ORIENTATION_PORTRAIT,          new ChangeOrientationCommand(_controller, Orientation.VERTICAL), "p", [Keyboard.ALTERNATE]);
 			_menu.push("view/orientation/landscape",            AppConstants.T_MENU_VIEW_ORIENTATION_LANDSCAPE,         new ChangeOrientationCommand(_controller, Orientation.HORIZONTAL), "l", [Keyboard.ALTERNATE]);
 			_menu.push("view/profile",                          AppConstants.T_MENU_VIEW_PROFILE);
-			_menu.push("view/profile/custom",                   AppConstants.T_MENU_VIEW_PROFILE_CUSTOM,                new OpenPopupCommand(_controller, ProfilePopup));
+			_menu.push("view/profile/custom",                   AppConstants.T_MENU_VIEW_PROFILE_CUSTOM,                new OpenPopupCommand(_controller, ProfilePopup, controller.profile), "0", [Keyboard.ALTERNATE]);
 			_menu.push("view/profile/-");
 
 			var profiles:Vector.<DeviceProfile> = DeviceProfile.getProfiles();

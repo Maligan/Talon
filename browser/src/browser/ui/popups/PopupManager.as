@@ -2,6 +2,11 @@ package browser.ui.popups
 {
 	import flash.events.Event;
 
+	import starling.animation.Transitions;
+	import starling.animation.Tween;
+
+	import starling.core.Starling;
+
 	import starling.display.DisplayObjectContainer;
 	import starling.events.EventDispatcher;
 
@@ -13,6 +18,9 @@ package browser.ui.popups
 		private var _host:DisplayObjectContainer;
 		private var _factory:TalonFactoryStarling;
 
+		private var _notifying:Boolean;
+		private var _notifyProperties:Object;
+
 		public function initialize(host:DisplayObjectContainer, factory:TalonFactoryStarling):void
 		{
 			_popups = new <Popup>[];
@@ -20,7 +28,37 @@ package browser.ui.popups
 			_factory = factory;
 		}
 
-		public function open(popup:Popup):void
+		public function notify():void
+		{
+			if (_notifying) return;
+
+			var topmost:Popup = _popups.length ? _popups[0] : null;
+			if (topmost)
+			{
+				_notifying = true;
+
+				if (_notifyProperties == null)
+				{
+					_notifyProperties = {
+						scaleX: 1.1,
+						scaleY: 1.1,
+						repeatCount: 2,
+						reverse: true,
+						transition: Transitions.EASE_IN,
+						onComplete: notifyComplete
+					}
+				}
+
+				Starling.juggler.tween(topmost, 0.1, _notifyProperties) as Tween;
+			}
+		}
+
+		private function notifyComplete():void
+		{
+			_notifying = false;
+		}
+
+		public function open(popup:Popup, data:Object = null):void
 		{
 			if (_popups.indexOf(popup) == -1)
 			{
@@ -29,7 +67,7 @@ package browser.ui.popups
 
 				try
 				{
-					popup.initialize(this);
+					popup.initialize(this, data);
 				}
 				catch (e:Error)
 				{

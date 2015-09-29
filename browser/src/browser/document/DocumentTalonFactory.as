@@ -62,10 +62,10 @@ package browser.document
 			return node;
 		}
 
-		public function set csf(value:Number):void { _csf = value; dispatchChange(); }
+		public function set csf(value:Number):void { if (_csf != value) { _csf = value; dispatchChange(); } }
 		public function get csf():Number { return _csf; }
 
-		public function set dpi(value:Number):void { _dpi = value; dispatchChange(); }
+		public function set dpi(value:Number):void { if (_dpi != value) { _dpi = value; dispatchChange(); } }
 		public function get dpi():Number { return _dpi; }
 
 		//

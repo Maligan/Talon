@@ -1,12 +1,11 @@
 package browser.document.files
 {
+	import avmplus.finish;
+
 	import browser.document.Document;
-	import browser.document.log.DocumentMessage;
-	import browser.utils.Glob;
 	import browser.utils.byteArrayStartsWith;
 
-	import com.adobe.air.filesystem.FileMonitor;
-	import com.adobe.air.filesystem.events.FileMonitorEvent;
+	import browser.utils.FileMonitor;
 
 	import browser.AppConstants;
 
@@ -16,6 +15,7 @@ package browser.document.files
 	import flash.filesystem.FileStream;
 	import flash.system.System;
 	import flash.utils.ByteArray;
+	import flash.utils.getTimer;
 
 	import starling.events.EventDispatcher;
 
@@ -38,13 +38,11 @@ package browser.document.files
 			_document = document;
 			_target = target;
 			_monitor = new FileMonitor(_target);
-			_monitor.addEventListener(FileMonitorEvent.CHANGE, onFileChange);
-			_monitor.addEventListener(FileMonitorEvent.MOVE, onFileChange);
-			_monitor.addEventListener(FileMonitorEvent.CREATE, onFileChange);
+			_monitor.addEventListener(Event.CHANGE, onFileChange);
 			_monitor.watch();
 		}
 
-		private function onFileChange(e:FileMonitorEvent):void
+		private function onFileChange(e:*):void
 		{
 			_bytes && _bytes.clear();
 			_bytes = null;

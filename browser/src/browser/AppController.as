@@ -100,11 +100,14 @@ package browser
 
 		public function resizeWindowTo(stageWidth:int, stageHeight:int):void
 		{
-			var window:NativeWindow = root.stage.nativeWindow;
-			var deltaWidth:int = window.width - root.stage.stageWidth;
-			var deltaHeight:int = window.height - root.stage.stageHeight;
-			window.width = Math.max(stageWidth + deltaWidth, window.minSize.x);
-			window.height = Math.max(stageHeight + deltaHeight, window.minSize.y);
+			if (root.stage.stageWidth != stageWidth || root.stage.stageHeight != stageHeight)
+			{
+				var window:NativeWindow = root.stage.nativeWindow;
+				var deltaWidth:int = window.width - root.stage.stageWidth;
+				var deltaHeight:int = window.height - root.stage.stageHeight;
+				window.width = Math.max(stageWidth + deltaWidth, window.minSize.x);
+				window.height = Math.max(stageHeight + deltaHeight, window.minSize.y);
+			}
 		}
 
 		//
@@ -235,12 +238,7 @@ package browser
 			_starling.stage.stageHeight = _root.stage.stageHeight;
 			_starling.viewPort = new Rectangle(0, 0, _root.stage.stageWidth, _root.stage.stageHeight);
 
-//			_starling.stage.stageWidth = _root.stage.fullScreenWidth;
-//			_starling.stage.stageHeight = _root.stage.fullScreenHeight;
-//			_starling.viewPort = new Rectangle(0, 0, _root.stage.fullScreenWidth, _root.stage.fullScreenHeight);
-
 			_ui.resizeTo(_root.stage.stageWidth, _root.stage.stageHeight);
-
 			_profile.setSize(_root.stage.stageWidth, _root.stage.stageHeight);
 		}
 

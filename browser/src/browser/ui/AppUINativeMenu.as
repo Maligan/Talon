@@ -40,9 +40,6 @@ package browser.ui
 			_menu.push("file/closeBrowser",                     AppConstants.T_MENU_FILE_CLOSE_BROWSER,                 new CloseWindowCommand(_controller),    "w", [Keyboard.CONTROL, Keyboard.SHIFT]);
 			_menu.push("file/-");
 			_menu.push("file/preference",                       AppConstants.T_MENU_FILE_PREFERENCES);
-			_menu.push("file/preference/theme",                 AppConstants.T_MENU_FILE_PREFERENCES_BACKGROUND);
-			_menu.push("file/preference/theme/dark",            AppConstants.T_MENU_FILE_PREFERENCES_BACKGROUND_DARK,   new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
-			_menu.push("file/preference/theme/light",           AppConstants.T_MENU_FILE_PREFERENCES_BACKGROUND_LIGHT,  new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
 			_menu.push("file/preference/stats",                 AppConstants.T_MENU_FILE_PREFERENCES_STATS,             new ChangeSettingCommand(_controller, AppConstants.SETTING_STATS, true, false));
 			_menu.push("file/preference/resize",                AppConstants.T_MENU_FILE_PREFERENCES_LOCK_RESIZE,       new ChangeSettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
 			_menu.push("file/preference/alwaysOnTop",           AppConstants.T_MENU_FILE_PREFERENCES_ALWAYS_ON_TOP,     new ChangeSettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
@@ -56,11 +53,12 @@ package browser.ui
 			_menu.push("view/zoomIn",                           AppConstants.T_MENU_VIEW_ZOOM_IN,                       new ChangeZoomCommand(_controller, +25),   "=");
 			_menu.push("view/zoomOut",                          AppConstants.T_MENU_VIEW_ZOOM_OUT,                      new ChangeZoomCommand(_controller, -25),   "-");
 			_menu.push("view/-");
-			_menu.push("view/orientation",                      AppConstants.T_MENU_VIEW_ORIENTATION);
-			_menu.push("view/orientation/portrait",             AppConstants.T_MENU_VIEW_ORIENTATION_PORTRAIT,          new ChangeOrientationCommand(_controller, Orientation.VERTICAL), "p", [Keyboard.ALTERNATE]);
-			_menu.push("view/orientation/landscape",            AppConstants.T_MENU_VIEW_ORIENTATION_LANDSCAPE,         new ChangeOrientationCommand(_controller, Orientation.HORIZONTAL), "l", [Keyboard.ALTERNATE]);
+			_menu.push("view/rotate",                           AppConstants.T_MENU_VIEW_ROTATE,                        new RotateCommand(_controller), "r", [Keyboard.CONTROL]);
+			_menu.push("view/theme",                            AppConstants.T_MENU_VIEW_BACKGROUND);
+			_menu.push("view/theme/dark",                       AppConstants.T_MENU_VIEW_BACKGROUND_DARK,   new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
+			_menu.push("view/theme/light",                      AppConstants.T_MENU_VIEW_BACKGROUND_LIGHT,  new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
 			_menu.push("view/profile",                          AppConstants.T_MENU_VIEW_PROFILE);
-			_menu.push("view/profile/custom",                   AppConstants.T_MENU_VIEW_PROFILE_CUSTOM,                new OpenPopupCommand(_controller, ProfilePopup, controller.profile), "0", [Keyboard.ALTERNATE]);
+			_menu.push("view/profile/custom",                   AppConstants.T_MENU_VIEW_PROFILE_CUSTOM,                new OpenPopupCommand(_controller, ProfilePopup, controller.profile), "0", [Keyboard.CONTROL]);
 			_menu.push("view/profile/-");
 
 			var profiles:Vector.<DeviceProfile> = DeviceProfile.getProfiles();
@@ -68,7 +66,7 @@ package browser.ui
 			{
 				var profileNumber:String = (i+1).toString();
 				var profile:DeviceProfile = profiles[i];
-				_menu.push("view/profile/" + profile.id, null, new ChangeProfileCommand(_controller, profile), profileNumber, [Keyboard.ALTERNATE]);
+				_menu.push("view/profile/" + profile.id, null, new ChangeProfileCommand(_controller, profile), profileNumber, [Keyboard.CONTROL]);
 			}
 
 			// Navigate

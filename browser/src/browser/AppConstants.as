@@ -70,10 +70,9 @@ package browser
 		public static const T_MENU_NAVIGATE_SEARCH:String                   = "Go to Template";
 		public static const T_MENU_VIEW:String                              = "View";
 		public static const T_MENU_FILE_PREFERENCES:String                  = "Preferences";
-		public static const T_MENU_FILE_PREFERENCES_BACKGROUND:String       = "Background";
-		public static const T_MENU_FILE_PREFERENCES_BACKGROUND_LIGHT:String = "Light";
-		public static const T_MENU_FILE_PREFERENCES_BACKGROUND_DARK:String  = "Dark";
-		public static const T_MENU_FILE_PREFERENCES_BACKGROUND_CHESS:String = "Transparent";
+		public static const T_MENU_VIEW_BACKGROUND:String                   = "Background";
+		public static const T_MENU_VIEW_BACKGROUND_LIGHT:String             = "Light";
+		public static const T_MENU_VIEW_BACKGROUND_DARK:String              = "Dark";
 		public static const T_MENU_FILE_PREFERENCES_STATS:String            = "Show Stats";
 		public static const T_MENU_FILE_PREFERENCES_LOCK_RESIZE:String      = "Lock Window Size";
 		public static const T_MENU_FILE_PREFERENCES_ALWAYS_ON_TOP:String    = "Always On Top";
@@ -81,9 +80,7 @@ package browser
 		public static const T_MENU_FILE_PREFERENCES_AUTO_UPDATE:String      = "Check for Update on Startup";
 		public static const T_MENU_VIEW_ZOOM_IN:String                      = "Zoom In";
 		public static const T_MENU_VIEW_ZOOM_OUT:String                     = "Zoom Out";
-		public static const T_MENU_VIEW_ORIENTATION:String                  = "Orientation";
-		public static const T_MENU_VIEW_ORIENTATION_PORTRAIT:String         = "Portrait";
-		public static const T_MENU_VIEW_ORIENTATION_LANDSCAPE:String        = "Landscape";
+		public static const T_MENU_VIEW_ROTATE:String                       = "Rotate";
 		public static const T_MENU_VIEW_PROFILE:String                      = "Profile";
 		public static const T_MENU_VIEW_PROFILE_CUSTOM:String               = "Custom...";
 		public static const T_MENU_VIEW_CONSOLE:String                      = "Console";

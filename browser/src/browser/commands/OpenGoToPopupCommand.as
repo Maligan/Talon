@@ -1,6 +1,3 @@
-/**
- * Created by malig on 07.10.2015.
- */
 package browser.commands
 {
 	import browser.AppController;

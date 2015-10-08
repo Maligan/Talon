@@ -7,50 +7,17 @@ package browser.utils
 		{
 			query = query.toLowerCase();
 
-			var resultPriories:Object = {};
 			var result:Array = [];
 
 			for each (var item:String in items)
 			{
 				var itemLower:String = item.toLowerCase();
 				var itemMatch:Boolean = fuzzyMatch(query, itemLower);
-				if (itemMatch)
-				{
-					result[result.length] = item;
-					resultPriories[item] = getPriority(query, item);
-				}
+				if (itemMatch) result[result.length] = item;
 			}
 
-			result.sort(function(s1:String, s2:String):int
-			{
-				return resultPriories[s2] - resultPriories[s1];
-			});
-
+			result.sort();
 			return result;
-		}
-
-		private static function getPriority(query:String, item:String):int
-		{
-			var queryLower:String = query.toLowerCase();
-			var itemLower:String = item.toLowerCase();
-			var prescription:Array = getPrescription(queryLower, itemLower);
-
-			var priority:int = prescription.distance;
-
-			for (var i:int = 0; i < itemLower.length; i++)
-			{
-				var op:String = prescription[i];
-				if (op == "M")
-				{
-					var char:String = item.charAt(i);
-					var isUpperCase:Boolean = char == char.toUpperCase();
-
-					priority += isUpperCase ? 1 : 0;
-				}
-			}
-
-
-			return priority;
 		}
 
 

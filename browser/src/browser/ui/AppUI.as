@@ -110,7 +110,6 @@ package browser.ui
 			_controller.settings.addPropertyListener(AppConstants.SETTING_STATS, onStatsChange); onStatsChange(null);
 			_controller.settings.addPropertyListener(AppConstants.SETTING_ZOOM, onZoomChange); onZoomChange(null);
 			_controller.settings.addPropertyListener(AppConstants.SETTING_ALWAYS_ON_TOP, onAlwaysOnTopChange); onAlwaysOnTopChange(null);
-//			_controller.monitor.addEventListener(Event.CHANGE, refreshCurrentTemplate);
 
 			resizeTo(_controller.root.stage.stageWidth, _controller.root.stage.stageHeight);
 

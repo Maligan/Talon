@@ -81,6 +81,7 @@ package browser
 		public static const T_MENU_VIEW_ZOOM_IN:String                      = "Zoom In";
 		public static const T_MENU_VIEW_ZOOM_OUT:String                     = "Zoom Out";
 		public static const T_MENU_VIEW_ROTATE:String                       = "Rotate";
+		public static const T_MENU_VIEW_FULL_SCREEN:String                  = "Full Screen";
 		public static const T_MENU_VIEW_PROFILE:String                      = "Profile";
 		public static const T_MENU_VIEW_PROFILE_CUSTOM:String               = "Custom...";
 		public static const T_MENU_VIEW_CONSOLE:String                      = "Console";

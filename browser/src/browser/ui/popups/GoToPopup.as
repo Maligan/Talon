@@ -1,11 +1,11 @@
-/**
- * Created by malig on 01.10.2015.
- */
 package browser.ui.popups
 {
 	import browser.AppController;
 	import browser.utils.FuzzyUtil;
+	import browser.utils.MouseWheel;
 	import browser.utils.TalonFeatherTextInput;
+
+	import feathers.controls.Label;
 
 	import feathers.events.FeathersEventType;
 
@@ -25,28 +25,33 @@ package browser.ui.popups
 
 	public class GoToPopup extends Popup
 	{
-		private var _controller:AppController;
-
-		private var _query:String;
-		private var _selectedIndex:int;
+		// Data
 		private var _items:Array;
+		private var _query:String;
+		private var _queryItems:Array;
+		private var _cursor:int;
 
+		// View
 		private var _input:TalonFeatherTextInput;
 		private var _labels:Vector.<TalonTextField>;
+		private var _labelsShift:int;
 
-		override public function initialize(manager:PopupManager, data:Object = null):void
+		// Controller
+		private var _app:AppController;
+		private var _wheel:MouseWheel;
+
+		protected override function initialize():void
 		{
-			var popup:Popup = this;
-
 			var view:DisplayObjectContainer = manager.factory.produce("GoToPopup");
 			addChild(view);
 
-			_controller = data as AppController;
-			var source:Vector.<String> = _controller.document.factory.templateIds;
+			_app = data as AppController;
+			var source:Vector.<String> = _app.document.factory.templateIds;
 			_items = new Array();
 			for each (var template:String in source)
 				_items.push(template);
 
+			// ---------------------------------------------------------------------------
 			_labels = new <TalonTextField>[];
 
 			for (var i:int = 0; i < view.numChildren; i++)
@@ -59,21 +64,8 @@ package browser.ui.popups
 			for each (var field:TalonTextField in _labels)
 			{
 				field.isHtmlText = true;
-				field.addEventListener(TouchEvent.TOUCH, function(e:TouchEvent):void
-				{
-					if (e.getTouch(e.target as DisplayObject, TouchPhase.ENDED))
-					{
-						var templateId:String = TalonTextField(e.currentTarget).text;
-						if (templateId)
-						{
-							templateId = templateId.replace(/<.*?>/g, "");
-							_controller.templateId = templateId;
-							manager.close(popup);
-						}
-					}
-				})
+				field.addEventListener(TouchEvent.TOUCH, onLabelTouch);
 			}
-
 
 			_input.isEditable = true;
 			_input.restrict = null;
@@ -92,43 +84,150 @@ package browser.ui.popups
 				_input.setFocus();
 			});
 
+			addEventListener(KeyboardEvent.KEY_UP, function():void {
+				_input.text = _input.text.replace(/[^\w\d_]/g, "");
+			});
+			// ---------------------------------------------------------------------------
+
 			refresh();
 
-			Starling.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, function (e:KeyboardEvent):void
+			// Keyboard control
+			addKeyListener(Keyboard.UP, moveCursorToPrev);
+			addKeyListener(Keyboard.DOWN, moveCursorToNext);
+			addKeyListener(Keyboard.ENTER, onEnterPress);
+			addKeyListener(Keyboard.ESCAPE, close);
+
+			// Mouse wheel control
+			_wheel = new MouseWheel(this, _app.starling);
+			_wheel.addEventListener(Event.TRIGGERED, onMouseWheel);
+		}
+
+		public override function dispose():void
+		{
+			super.dispose();
+			_wheel.dispose();
+			_wheel = null;
+		}
+
+		//
+		// Handlers
+		//
+		private function onLabelTouch(e:TouchEvent):void
+		{
+			if (e.getTouch(e.target as DisplayObject, TouchPhase.ENDED))
 			{
-				if (e.keyCode == Keyboard.ESCAPE)
-				{
-					Starling.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, arguments.callee);
-					manager.close(popup);
-				}
-				if (e.keyCode == Keyboard.ENTER)
-				{
-					var result:Array = FuzzyUtil.fuzzyFilter(_query, _items);
-					if (result.length)
-					{
-						Starling.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, arguments.callee);
-						manager.close(popup);
-						_controller.templateId = result[0];
-					}
-					else manager.notify();
-				}
-			});
+				var labelIndex:int = _labels.indexOf(e.currentTarget as TalonTextField);
+				var itemIndex:int = _labelsShift + labelIndex;
+				var templateId:String = _queryItems[itemIndex];
+				if (templateId) commit(templateId);
+			}
+		}
+
+		private function onEnterPress():void
+		{
+			// Open selected query
+			if (_queryItems.length) commit(_queryItems[_cursor]);
+
+			// Notify user
+			else manager.notify();
+		}
+
+		private function onMouseWheel(e:Event):void
+		{
+			var delta:int = int(e.data);
+			if (delta<0) moveCursorToNext();
+			else if (delta>0) moveCursorToPrev();
+		}
+
+		//
+		// Misc
+		//
+		private function commit(templateId:String):void
+		{
+			close();
+			_app.templateId = templateId;
 		}
 
 		private function refresh():void
 		{
 			_query ||= "";
-
-			var matches:Array = FuzzyUtil.fuzzyFilter(_query, _items);
-			matches.length = _labels.length;
-
-
-			for (var i:int = 0; i < _labels.length; i++)
-			{
-				_labels[i].text = FuzzyUtil.fuzzyHighlight(_query, matches[i], "<font color='#00BFFF'>", "</font>");
-			}
+			_queryItems = FuzzyUtil.fuzzyFilter(_query, _items);
 
 			_input.text = _query;
+			cursorReset();
+			refreshListText();
+		}
+
+		//
+		// Cursor / List
+		//
+		private function refreshListText():void
+		{
+			for (var i:int = 0; i < _labels.length; i++)
+			{
+				var itemIndex:int = _labelsShift + i;
+				var item:String = _queryItems[itemIndex];
+				_labels[i].text = item ? FuzzyUtil.fuzzyHighlight(_query, item, "<font color='#00BFFF'>", "</font>") : "";
+			}
+		}
+
+		private function refreshListHighlight():void
+		{
+			for (var i:int = 0; i < _labels.length; i++)
+			{
+				if (_cursor == _labelsShift + i)
+					_labels[i].node.classes.add("selected");
+				else
+					_labels[i].node.classes.remove("selected");
+			}
+		}
+
+		private function cursorReset():void
+		{
+			_labelsShift = 0;
+			_cursor = _queryItems.length == 0 ? -1 : 0;
+			refreshListHighlight();
+		}
+
+		private function moveCursorToNext():void
+		{
+			if (_queryItems.length > 0)
+			{
+				_cursor = (_cursor + 1) % _queryItems.length;
+				moveShift();
+				refreshListHighlight();
+			}
+		}
+
+		private function moveCursorToPrev():void
+		{
+			if (_queryItems.length > 0)
+			{
+				if (_cursor == 0)
+					_cursor = _queryItems.length - 1;
+				else
+					_cursor = (_cursor - 1) % _queryItems.length;
+
+				moveShift();
+				refreshListHighlight();
+			}
+		}
+
+		private function moveShift():void
+		{
+			var labelBeginIndex:int = _labelsShift;
+			var labelEndIndex:int = _labelsShift + _labels.length - 1;
+
+			if (_cursor > labelEndIndex)
+			{
+				_labelsShift = _cursor - _labels.length + 1;
+				refreshListText();
+			}
+			else if (_cursor < labelBeginIndex)
+			{
+				_labelsShift = _cursor;
+				refreshListText();
+			}
 		}
 	}
 }

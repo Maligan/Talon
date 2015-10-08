@@ -11,6 +11,7 @@ package browser.ui
 	import flash.display.NativeMenuItem;
 
 	import flash.display.NativeWindow;
+	import flash.events.KeyboardEvent;
 	import flash.filesystem.File;
 	import flash.ui.Keyboard;
 
@@ -55,12 +56,13 @@ package browser.ui
 			_menu.push("view/zoomOut",                          AppConstants.T_MENU_VIEW_ZOOM_OUT,                      new ChangeZoomCommand(_controller, -25),   "-");
 			_menu.push("view/-");
 			_menu.push("view/rotate",                           AppConstants.T_MENU_VIEW_ROTATE,                        new RotateCommand(_controller), "r", [Keyboard.CONTROL]);
-			_menu.push("view/fullscreen",                       "Full Screen",                                          new ToggleFullScreenCommand(_controller), null, [Keyboard.F11]);
 			_menu.push("view/theme",                            AppConstants.T_MENU_VIEW_BACKGROUND);
 			_menu.push("view/theme/dark",                       AppConstants.T_MENU_VIEW_BACKGROUND_DARK,               new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
 			_menu.push("view/theme/light",                      AppConstants.T_MENU_VIEW_BACKGROUND_LIGHT,              new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
 			_menu.push("view/profile",                          AppConstants.T_MENU_VIEW_PROFILE);
 			_menu.push("view/profile/custom",                   AppConstants.T_MENU_VIEW_PROFILE_CUSTOM,                new OpenPopupCommand(_controller, ProfilePopup, controller.profile), "0", [Keyboard.CONTROL]);
+			_menu.push("view/-");
+			_menu.push("view/fullscreen",                       AppConstants.T_MENU_VIEW_FULL_SCREEN,                   new ToggleFullScreenCommand(_controller), "f");
 			_menu.push("view/profile/-");
 
 			var profiles:Vector.<DeviceProfile> = DeviceProfile.getProfiles();
@@ -68,7 +70,7 @@ package browser.ui
 			{
 				var profileNumber:String = (i+1).toString();
 				var profile:DeviceProfile = profiles[i];
-				_menu.push("view/profile/" + profile.id, null, new ChangeProfileCommand(_controller, profile), profileNumber, [Keyboard.CONTROL]);
+				_menu.push("view/profile/" + profile.id, null, new ChangeProfileCommand(_controller, profile), profileNumber, [Keyboard.ALTERNATE]);
 			}
 
 			// Navigate

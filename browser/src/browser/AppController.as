@@ -114,6 +114,7 @@ package browser
 		// Properties
 		//
 		public function get console():Console { return _console; }
+	    public function get starling():Starling { return _starling; }
 		public function get host():DisplayObjectContainer { return _starling.root as DisplayObjectContainer }
 		public function get ui():AppUI { return _ui; }
 		public function get settings():Storage { return _settings; }

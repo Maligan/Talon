@@ -67,7 +67,7 @@ package browser.ui.popups
 
 				try
 				{
-					popup.initialize(this, data);
+					popup.ctor(this, data);
 				}
 				catch (e:Error)
 				{

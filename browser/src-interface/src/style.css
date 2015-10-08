@@ -25,6 +25,11 @@
 }
 
 #goto label:hover {
+	/** NB! Color not from topcoat */
+	backgroundColor: #555859;
+}
+
+#goto label.selected {
 	backgroundColor: #406079;
 }
 

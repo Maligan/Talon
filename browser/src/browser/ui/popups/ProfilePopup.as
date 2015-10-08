@@ -6,6 +6,8 @@ package browser.ui.popups
 
 	import feathers.events.FeathersEventType;
 
+	import flash.ui.Keyboard;
+
 	import starling.display.DisplayObject;
 	import starling.events.Event;
 	import starling.events.TouchEvent;
@@ -15,17 +17,13 @@ package browser.ui.popups
 	{
 		private static const NUMBER:RegExp = /^\s*\d+([,.]\d+)?\s*$/;
 
-		private var _manager:PopupManager;
-
 		// Data
 		private var _profileSource:DeviceProfile;
 		private var _profileTemp:DeviceProfile;
 
-		public override function initialize(manager:PopupManager, data:Object = null):void
+		protected override function initialize():void
 		{
-			_manager = manager;
-
-			addChild(_manager.factory.produce("ProfilePopup"));
+			addChild(manager.factory.produce("ProfilePopup"));
 
 			_profileSource = DeviceProfile(data);
 			_profileTemp = new DeviceProfile();
@@ -38,6 +36,9 @@ package browser.ui.popups
 
 			bindClickHandler("_accept", onAccept);
 			bindClickHandler("_cancel", onCancel);
+
+			addKeyListener(Keyboard.ENTER, onAccept);
+			addKeyListener(Keyboard.ESCAPE, onCancel);
 		}
 
 		private function bindClickHandler(childName:String, listener:Function):void
@@ -54,7 +55,7 @@ package browser.ui.popups
 			});
 		}
 
-		private function writeInput(inputName:String, value:Number):void
+		private function writeInput(inputName:String, value:Number, nextName:String = null):void
 		{
 			var child:* =  DisplayTreeUtil.findChildByName(this, inputName);
 			if (child == null) return;
@@ -63,6 +64,8 @@ package browser.ui.popups
 			if (input != null)
 			{
 				input.text = value.toString();
+
+//				input.nextTabFocus = nextName != null ? DisplayTreeUtil.findChildByName(this, nextName) as IFocusDisplayObject : null;
 
 //				input.addEventListener(FeathersEventType.FOCUS_IN, function():void {
 //					input.selectRange(0, input.text.length);
@@ -108,7 +111,7 @@ package browser.ui.popups
 		//
 		private function onCancel(e:Event):void
 		{
-			_manager.close(this);
+			close();
 		}
 
 		private function onAccept(e:Event):void
@@ -128,12 +131,12 @@ package browser.ui.popups
 
 			if (isValidated)
 			{
-				_manager.close(this);
+				close();
 				commit();
 			}
 			else
 			{
-				_manager.notify();
+				manager.notify();
 			}
 		}
 	}

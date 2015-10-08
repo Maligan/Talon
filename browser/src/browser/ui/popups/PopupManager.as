@@ -60,7 +60,7 @@ package browser.ui.popups
 
 		public function open(popup:Popup, data:Object = null):void
 		{
-			if (_popups.indexOf(popup) == -1)
+			if (_popups.indexOf(popup) == -1 && !hasOpenedPopup)
 			{
 				_popups.push(popup);
 				_host.addChild(popup);

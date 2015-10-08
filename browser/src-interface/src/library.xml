@@ -8,8 +8,8 @@
 		</node>
 	</template>
 
-	<template id="ProfilePopup" type="popup">
-		<node type="popup" layout="flow" orientation="vertical"> 
+	<template id="ProfilePopup">
+		<node class="popup" layout="flow" orientation="vertical"> 
 
 			<label text="$dialog.profile.title" width="*" padding="8px" />
 
@@ -40,14 +40,49 @@
 		</node>
 	</template>
 
+	<template id="PreferencesPopup">
+		<node class="popup" layout="flow" orientation="vertical"> 
+
+			<label text="$dialog.preferences.title" width="*" padding="8px" />
+
+			<node orientation="vertical" gap="8px" padding="8px" width="*" backgroundColor="gray" backgroundAlpha="0.1">
+				<checkbox label="$dialog.preferences.showStats" />
+				<checkbox label="$dialog.preferences.alwaysOnTop" />
+				<checkbox label="$dialog.preferences.checkForUpdate" />
+				<checkbox label="$dialog.preferences.lockWindowSize" />
+				<checkbox label="$dialog.preferences.openLastDocument" />
+			</node>
+
+			<node ihalign="center" margin="none" gap="8px" padding="8px">
+				<button id="_accept" label="$button.accept" class="action" />
+				<button id="_cancel" label="$button.cancel" />
+			</node>
+
+		</node>
+	</template>
+
+	<template id="GoToPopup">
+		<node class="popup" id="goto" orientation="vertical"> 
+			<input width="300px" margin="4px"/>
+			<label />
+			<label />
+			<label />
+			<label />
+			<label />
+			<label />
+		</node>
+	</template>
+
 	<template id="Button" type="button">
-		<node type="button" label="label">
+		<node type="button" label="Button">
 			<label text="@label" width="80px" height="32px" />
 		</node>
 	</template>
 
 	<template id="Checkbox" type="checkbox">
-		<node>
+		<node type="checkbox" label="Checkbox">
+			<image id="flag" />
+			<label text="@label" halign="left" />
 		</node>
 	</template>
 

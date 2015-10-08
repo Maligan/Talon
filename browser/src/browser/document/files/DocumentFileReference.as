@@ -1,13 +1,9 @@
 package browser.document.files
 {
-	import avmplus.finish;
-
-	import browser.document.Document;
-	import browser.utils.byteArrayStartsWith;
-
-	import browser.utils.FileMonitor;
-
 	import browser.AppConstants;
+	import browser.document.Document;
+	import browser.utils.FileMonitor;
+	import browser.utils.byteArrayStartsWith;
 
 	import flash.events.Event;
 	import flash.filesystem.File;
@@ -15,7 +11,6 @@ package browser.document.files
 	import flash.filesystem.FileStream;
 	import flash.system.System;
 	import flash.utils.ByteArray;
-	import flash.utils.getTimer;
 
 	import starling.events.EventDispatcher;
 

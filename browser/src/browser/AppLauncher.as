@@ -1,5 +1,7 @@
 package browser
 {
+	import browser.utils.FuzzyUtil;
+
 	import flash.desktop.NativeApplication;
 	import flash.display.MovieClip;
 	import flash.events.InvokeEvent;

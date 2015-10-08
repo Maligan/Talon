@@ -1,4 +1,4 @@
-popup {
+.popup {
 	fontName: Source Sans Pro;
 	fontSize: 14px;
 	fontColor: white;
@@ -10,6 +10,22 @@ popup {
 
 	/*padding: 24px;*/
 	padding: 17px;
+}
+
+#goto label {
+	halign: left;
+	padding: 10px;
+	width: *;
+	height: 35px;
+	cursor: button;
+}
+
+#goto label:nth-child(2n) {
+	backgroundColor: #4e5051;
+}
+
+#goto label:hover {
+	backgroundColor: #406079;
 }
 
 input {
@@ -66,6 +82,20 @@ button.action:hover {
 button.action:active {
 	backgroundImage: $button_action_down;
 }
+
+checkbox label {
+	fontName: Source Sans Pro;
+	fontSize: 14px;
+	fontColor: #FFFFFF;
+	/*filter: drop-shadow(1, -90deg, black, 0.5, 0);*/
+}
+
+checkbox { 
+	cursor: button;
+}
+
+checkbox #flag { src: $checkbox_unckecked_normal; }
+checkbox:active #flag { src: $checkbox_unckecked_down; }
 
 #interface.dark #container  { backgroundImage: $('bg_dark'); }
 #interface.light #container { backgroundImage: $('bg_light'); }

@@ -3,6 +3,7 @@ package browser.ui
 	import browser.*;
 	import browser.commands.*;
 	import browser.document.DocumentEvent;
+	import browser.ui.popups.GoToPopup;
 	import browser.ui.popups.ProfilePopup;
 	import browser.utils.DeviceProfile;
 	import browser.utils.NativeMenuAdapter;
@@ -44,7 +45,7 @@ package browser.ui
 			_menu.push("file/preference/resize",                AppConstants.T_MENU_FILE_PREFERENCES_LOCK_RESIZE,       new ChangeSettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
 			_menu.push("file/preference/alwaysOnTop",           AppConstants.T_MENU_FILE_PREFERENCES_ALWAYS_ON_TOP,     new ChangeSettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
 			_menu.push("file/preference/autoReopen",            AppConstants.T_MENU_FILE_PREFERENCES_AUTO_REOPEN,       new ChangeSettingCommand(_controller, AppConstants.SETTING_AUTO_REOPEN, true, false));
-			_menu.push("file/preference/autoUpdate",            AppConstants.T_MENU_FILE_PREFERENCES_AUTO_UPDATE,      new ChangeSettingCommand(_controller, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, true, false));
+			_menu.push("file/preference/autoUpdate",            AppConstants.T_MENU_FILE_PREFERENCES_AUTO_UPDATE,       new ChangeSettingCommand(_controller, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, true, false));
 			_menu.push("file/-");
 			_menu.push("file/publish",                          AppConstants.T_MENU_FILE_PUBLISH_AS,                    new PublishCommand(_controller),        "s", [Keyboard.CONTROL, Keyboard.SHIFT]);
 
@@ -54,9 +55,10 @@ package browser.ui
 			_menu.push("view/zoomOut",                          AppConstants.T_MENU_VIEW_ZOOM_OUT,                      new ChangeZoomCommand(_controller, -25),   "-");
 			_menu.push("view/-");
 			_menu.push("view/rotate",                           AppConstants.T_MENU_VIEW_ROTATE,                        new RotateCommand(_controller), "r", [Keyboard.CONTROL]);
+			_menu.push("view/fullscreen",                       "Full Screen",                                          new ToggleFullScreenCommand(_controller), null, [Keyboard.F11]);
 			_menu.push("view/theme",                            AppConstants.T_MENU_VIEW_BACKGROUND);
-			_menu.push("view/theme/dark",                       AppConstants.T_MENU_VIEW_BACKGROUND_DARK,   new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
-			_menu.push("view/theme/light",                      AppConstants.T_MENU_VIEW_BACKGROUND_LIGHT,  new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
+			_menu.push("view/theme/dark",                       AppConstants.T_MENU_VIEW_BACKGROUND_DARK,               new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
+			_menu.push("view/theme/light",                      AppConstants.T_MENU_VIEW_BACKGROUND_LIGHT,              new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
 			_menu.push("view/profile",                          AppConstants.T_MENU_VIEW_PROFILE);
 			_menu.push("view/profile/custom",                   AppConstants.T_MENU_VIEW_PROFILE_CUSTOM,                new OpenPopupCommand(_controller, ProfilePopup, controller.profile), "0", [Keyboard.CONTROL]);
 			_menu.push("view/profile/-");
@@ -71,8 +73,8 @@ package browser.ui
 
 			// Navigate
 			_menu.push("navigate",                      AppConstants.T_MENU_NAVIGATE);
-			_menu.push("navigate/openProjectFolder",    AppConstants.T_MENU_NAVIGATE_OPEN_DOCUMENT_FOLDER, new OpenDocumentFolderCommand(_controller));
-			_menu.push("navigate/search",               AppConstants.T_MENU_NAVIGATE_SEARCH);
+			_menu.push("navigate/openProjectFolder",    AppConstants.T_MENU_NAVIGATE_OPEN_DOCUMENT_FOLDER,              new OpenDocumentFolderCommand(_controller));
+			_menu.push("navigate/searchPopup",          AppConstants.T_MENU_NAVIGATE_SEARCH,                            new OpenGoToPopupCommand(_controller), "p", [Keyboard.CONTROL]);
 
 			_controller.documentDispatcher.addEventListener(DocumentEvent.CHANGED, refreshDocumentTemplatesList);
 			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, refreshDocumentTemplatesList);
@@ -117,6 +119,7 @@ package browser.ui
 
 		private function refreshDocumentTemplatesList():void
 		{
+			/*
 			var templates:Vector.<String> = _controller.document ? _controller.document.factory.templateIds: new <String>[];
 			if (isEqual(templates, _prevTemplates)) return;
 			_prevTemplates = templates;
@@ -128,6 +131,7 @@ package browser.ui
 
 			for each (var prototypeId:String in templates)
 				submenu.push(prototypeId, null, new ChangeCurrentTemplateCommand(_controller, prototypeId));
+			*/
 		}
 
 		private static function isEqual(list1:*, list2:*):Boolean

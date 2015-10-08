@@ -94,7 +94,7 @@ package browser.utils
 		private function onFontColorChange():void { textFormat.color = StringUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
 		private function onTextChange():void { text = node.getAttributeCache(Attribute.TEXT); }
 
-		private function get textFormat():TextFormat
+		public function get textFormat():TextFormat
 		{
 			return TextFieldTextEditor(textEditor).textFormat
 		}

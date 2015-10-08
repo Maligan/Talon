@@ -13,7 +13,6 @@ package browser.document
 	import browser.document.log.DocumentTaskTracker;
 	import browser.utils.Storage;
 	import browser.utils.TalonFeatherTextInput;
-	import browser.utils.TalonStageText;
 
 	import flash.filesystem.File;
 

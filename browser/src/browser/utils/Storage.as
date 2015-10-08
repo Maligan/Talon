@@ -10,6 +10,8 @@ package browser.utils
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
+	import talon.utils.StringUtil;
+
 	public class Storage extends EventDispatcher
 	{
 		public static function fromSharedObject(sharedObjectName:String):Storage
@@ -26,7 +28,7 @@ package browser.utils
 			var storage:Storage = new Storage();
 			var bytes:ByteArray = readFile(file);
 			var string:String = bytes.toString();
-			storage._inner = parse(string);
+			storage._inner = StringUtil.parseProperties(string);
 			return storage;
 		}
 
@@ -43,27 +45,6 @@ package browser.utils
 			finally
 			{
 				stream.close();
-			}
-
-			return result;
-		}
-
-		/** Simple Properties file format parser. */
-		private static function parse(string:String):Object
-		{
-			var result:Object = new Object();
-			var values:Array = string.split(/[\n\r]/);
-			var pattern:RegExp = /\s*([\w\.]+)\s*\=\s*(.*)\s*$/;
-
-			for each (var line:String in values)
-			{
-				var property:Array = pattern.exec(line);
-				if (property)
-				{
-					var key:String = property[1];
-					var value:String = property[2];
-					result[key] = value;
-				}
 			}
 
 			return result;

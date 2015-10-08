@@ -2,6 +2,23 @@ package browser.utils
 {
 	public class Glob
 	{
+		public static function match(string:String, patterns:Array):Boolean
+		{
+			var result:Boolean = false;
+
+			for each (var pattern:String in patterns)
+			{
+				var glob:Glob = new Glob(pattern);
+				if (glob.match(string))
+				{
+					result = !glob.invert;
+					if (result == false) break;
+				}
+			}
+
+			return result;
+		}
+
 		private var _source:String;
 		private var _regexp:RegExp;
 		private var _invert:Boolean;
@@ -30,7 +47,7 @@ package browser.utils
 		//
 		private function parse(string:String):RegExp
 		{
-			return new RegExp(preg_quote(string).replace(/\\\*/g, '.*').replace(/\\\?/g, '.'), 'g');
+			return new RegExp("^" + preg_quote(string).replace(/\\\*/g, '.*').replace(/\\\?/g, '.') + "$", 'g');
 		}
 
 		private function preg_quote(string:String, delimiter:String = null):String

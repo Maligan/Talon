@@ -6,6 +6,7 @@ package browser.commands
 	import browser.document.files.IDocumentFileController;
 	import browser.document.files.types.Asset;
 	import browser.document.files.types.DirectoryAsset;
+	import browser.utils.Glob;
 
 	import deng.fzip.FZip;
 
@@ -88,26 +89,11 @@ package browser.commands
 			if (fileControllerClass == DirectoryAsset) return true;
 			if (fileControllerClass == Asset) return true;
 
-			return false;
+			var patternsString:String = controller.document.properties.getValueOrDefault(AppConstants.PROPERTY_EXPORT_IGNORE, String);
+			if (patternsString == null) return false;
 
-//			if (target.isDirectory) return false;
-//
-//			var result:Boolean = false;
-//			var property:String = document.properties.getValueOrDefault(AppConstants.PROPERTY_EXPORT_IGNORE, String);
-//			if (property == null) return false;
-//			var spilt:Array = property.split(/\s*,\s*/);
-//
-//			for each (var pattern:String in spilt)
-//			{
-// 				var glob:Glob = new Glob(pattern);
-//				if (glob.match(exportPath))
-//				{
-//					result = !glob.invert;
-//					if (result == false) break;
-//				}
-//			}
-//
-//			return result;
+			var patterns:Array = patternsString.replace(/[\n\r\s]/, "").split(",");
+			return Glob.match(file.exportPath, patterns);
 		}
 
 

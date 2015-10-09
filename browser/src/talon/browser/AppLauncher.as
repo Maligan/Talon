@@ -1,21 +1,18 @@
 package talon.browser
 {
-	import talon.browser.utils.FuzzyUtil;
+	import flash.display.Sprite;
 
 	import flash.desktop.NativeApplication;
 	import flash.display.MovieClip;
 	import flash.events.InvokeEvent;
 	import flash.geom.Point;
-	import flash.utils.getTimer;
 
 	import starling.events.Event;
-
-	import talon.utils.StringUtil;
 
 	[SWF(frameRate="60")]
 	public class AppLauncher extends MovieClip
 	{
-		private var _overlay:MovieClip;
+		private var _overlay:Sprite;
 		private var _controller:AppController;
 		private var _invoke:String;
 
@@ -36,13 +33,12 @@ package talon.browser
 			stage.addEventListener(Event.RESIZE, onResize);
 
 			// For native drag purpose
-			_overlay = new MovieClip();
+			_overlay = new Sprite();
 			addChild(_overlay);
 			onResize(null);
 
 			_controller = new AppController(this);
 			_controller.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, onBackgroundColorChanged);
-			onBackgroundColorChanged();
 		}
 
 		private function onBackgroundColorChanged():void

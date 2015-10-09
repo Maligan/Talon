@@ -46,10 +46,11 @@ package talon.browser.popups
 			addChild(view);
 
 			_app = data as AppController;
+			_app.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+
 			var source:Vector.<String> = _app.document.factory.templateIds;
 			_items = new Array();
-			for each (var template:String in source)
-				_items.push(template);
+			for each (var template:String in source) _items.push(template);
 
 			// ---------------------------------------------------------------------------
 			_labels = new <TalonTextField>[];
@@ -107,11 +108,19 @@ package talon.browser.popups
 			super.dispose();
 			_wheel.dispose();
 			_wheel = null;
+			_app.removeEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			_app = null;
 		}
 
 		//
 		// Handlers
 		//
+
+		private function onDocumentChange():void
+		{
+			close();
+		}
+
 		private function onLabelTouch(e:TouchEvent):void
 		{
 			if (e.getTouch(e.target as DisplayObject, TouchPhase.ENDED))
@@ -194,7 +203,7 @@ package talon.browser.popups
 			if (_queryItems.length > 0)
 			{
 				_cursor = (_cursor + 1) % _queryItems.length;
-				moveShift();
+				refreshLabelShift();
 				refreshListHighlight();
 			}
 		}
@@ -208,12 +217,12 @@ package talon.browser.popups
 				else
 					_cursor = (_cursor - 1) % _queryItems.length;
 
-				moveShift();
+				refreshLabelShift();
 				refreshListHighlight();
 			}
 		}
 
-		private function moveShift():void
+		private function refreshLabelShift():void
 		{
 			var labelBeginIndex:int = _labelsShift;
 			var labelEndIndex:int = _labelsShift + _labels.length - 1;

@@ -82,9 +82,14 @@ package talon.browser
 			_root.stage.addChild(_console);
 			_plugins = new PluginCollection(this);
 
+			// XXX: NOT work while starling initialing!
+			var colorName:String = _settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
+			var color:uint = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[colorName];
+			_root.stage.color = color;
+
 			initializeDragAndDrop();
 			initializeWindowMonitor();
-			setTimeout(initializeStarling, 1);
+			initializeStarling();
 
 			onProfileChange(null);
 		}

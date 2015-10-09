@@ -14,8 +14,8 @@ package talon.browser.plugins.tools
 	{
 		private var _app:AppController;
 
-		public function get id():String { return "talon.browser.tools.FileType"; }
-		public function get version():String { return "0.0.1"; }
+		public function get id():String         { return "talon.browser.tools.FileType"; }
+		public function get version():String    { return "0.0.1"; }
 		public function get versionAPI():String { return "0.1.0"; }
 
 		public function attach(app:AppController):void
@@ -34,14 +34,14 @@ package talon.browser.plugins.tools
 		{
 			if (_app.document != null)
 			{
-				registerChecker(checkXMLTemplate,   XMLTemplateAsset);
-				registerChecker(checkXMLLibrary,    XMLLibraryAsset);
-				registerChecker(checkXMLAtlas,      XMLAtlasAsset);
-				registerChecker(checkXMLFont,       XMLFontAsset);
 				registerChecker(checkProperties,    PropertiesAsset);
 				registerChecker(checkDirectory,     DirectoryAsset);
 				registerChecker(checkTexture,       TextureAsset);
 				registerChecker(checkCSS,           CSSAsset);
+				registerChecker(checkXMLTemplate,   XMLTemplateAsset);
+				registerChecker(checkXMLLibrary,    XMLLibraryAsset);
+				registerChecker(checkXMLAtlas,      XMLAtlasAsset);
+				registerChecker(checkXMLFont,       XMLFontAsset);
 			}
 		}
 

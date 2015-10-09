@@ -1,7 +1,7 @@
 package talon.browser.commands
 {
 	import talon.browser.AppController;
-	import talon.browser.ui.popups.GoToPopup;
+	import talon.browser.popups.GoToPopup;
 
 	import starling.events.Event;
 

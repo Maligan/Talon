@@ -1,7 +1,7 @@
 package talon.browser.commands
 {
 	import talon.browser.AppController;
-	import talon.browser.ui.popups.ProfilePopup;
+	import talon.browser.popups.ProfilePopup;
 	import talon.browser.utils.DeviceProfile;
 	import talon.browser.utils.DeviceProfile;
 

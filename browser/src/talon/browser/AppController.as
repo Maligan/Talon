@@ -2,13 +2,15 @@ package talon.browser
 {
     import air.update.ApplicationUpdaterUI;
 
-    import talon.browser.commands.CloseDocumentCommand;
+	import flash.utils.setTimeout;
+
+	import talon.browser.commands.CloseDocumentCommand;
     import talon.browser.commands.OpenDocumentCommand;
     import talon.browser.document.Document;
 	import talon.browser.plugins.PluginCollection;
 	import talon.browser.plugins.tools.ConsolePlugin;
 	import talon.browser.plugins.tools.FileTypePlugin;
-	import talon.browser.ui.AppUI;
+	import talon.browser.AppUI;
     import talon.browser.utils.Console;
     import talon.browser.utils.DeviceProfile;
     import talon.browser.utils.EventDispatcherAdapter;
@@ -81,8 +83,8 @@ package talon.browser
 			_plugins = new PluginCollection(this);
 
 			initializeDragAndDrop();
-			initializeStarling();
 			initializeWindowMonitor();
+			setTimeout(initializeStarling, 1);
 
 			onProfileChange(null);
 		}
@@ -265,11 +267,14 @@ package talon.browser
 			_settings.setValue(AppConstants.SETTING_PROFILE, _profile);
 		}
 
-		private function onStageResize(e:*):void
+		private function onStageResize(e:* = null):void
 		{
-			_starling.stage.stageWidth = _root.stage.stageWidth;
-			_starling.stage.stageHeight = _root.stage.stageHeight;
-			_starling.viewPort = new Rectangle(0, 0, _root.stage.stageWidth, _root.stage.stageHeight);
+			if (_starling)
+			{
+				_starling.stage.stageWidth = _root.stage.stageWidth;
+				_starling.stage.stageHeight = _root.stage.stageHeight;
+				_starling.viewPort = new Rectangle(0, 0, _root.stage.stageWidth, _root.stage.stageHeight);
+			}
 
 			_ui.resizeTo(_root.stage.stageWidth, _root.stage.stageHeight);
 			_profile.setSize(_root.stage.stageWidth, _root.stage.stageHeight);
@@ -301,6 +306,8 @@ package talon.browser
 			_starling = new Starling(Sprite, root.stage, null, null, "auto", "baseline");
 			_starling.addEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
 			_starling.start();
+
+			onStageResize();
 		}
 
 		private function onStarlingRootCreated(e:Event):void

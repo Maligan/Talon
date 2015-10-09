@@ -1,5 +1,6 @@
-package talon.browser.ui.popups
+package talon.browser.popups
 {
+	import talon.browser.ui.popups.*;
 	import flash.events.Event;
 
 	import starling.animation.Transitions;

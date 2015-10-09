@@ -1,4 +1,4 @@
-package talon.browser.ui.popups
+package talon.browser.popups
 {
 	import starling.errors.AbstractMethodError;
 	import starling.events.KeyboardEvent;

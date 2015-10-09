@@ -1,4 +1,4 @@
-package talon.browser.ui.popups
+package talon.browser.popups
 {
 	import talon.browser.AppController;
 	import talon.browser.utils.FuzzyUtil;

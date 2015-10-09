@@ -1,7 +1,7 @@
 package talon.browser.commands
 {
 	import talon.browser.AppController;
-	import talon.browser.ui.popups.Popup;
+	import talon.browser.popups.Popup;
 
 	public class OpenPopupCommand extends Command
 	{

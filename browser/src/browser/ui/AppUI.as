@@ -6,6 +6,7 @@ package browser.ui
 	import browser.ui.popups.Popup;
 	import browser.ui.popups.PopupManager;
 	import browser.utils.DeviceProfile;
+	import browser.utils.NativeMenuAdapter;
 	import browser.utils.TalonFeatherTextInput;
 
 	import flash.display.Stage;
@@ -52,6 +53,7 @@ package browser.ui
 		private var _template:DisplayObject;
 		private var _templateProduceMessage:DocumentMessage;
 		private var _locked:Boolean;
+		private var _completed:Boolean;
 
 		public function AppUI(controller:AppController)
 		{
@@ -59,7 +61,7 @@ package browser.ui
 			_controller.addEventListener(AppController.EVENT_TEMPLATE_CHANGE, refreshWindowTitle);
 			_controller.addEventListener(AppController.EVENT_TEMPLATE_CHANGE, refreshCurrentTemplate);
 			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, refreshCurrentTemplate);
-			_controller.documentDispatcher.addEventListener(DocumentEvent.CHANGED, refreshCurrentTemplate);
+			_controller.documentDispatcher.addEventListener(DocumentEvent.CHANGE, refreshCurrentTemplate);
 
 			_controller.profile.addEventListener(Event.CHANGE, refreshWindowTitle);
 
@@ -83,8 +85,9 @@ package browser.ui
 		//
 		private function onFactoryComplete():void
 		{
+			_completed = true;
 			_interface = _factory.produce("Interface") as TalonSprite;
-			_controller.host.addChild(_interface);
+			host.addChild(_interface);
 
 			_popups.initialize(_interface.getChildByName("popups") as DisplayObjectContainer, _factory);
 			_popups.addEventListener(Event.CHANGE, onPopupManagerChange);
@@ -256,6 +259,9 @@ package browser.ui
 		//
 		public function get popups():PopupManager { return _popups; }
 
+		public function get host():DisplayObjectContainer { return _controller.starling.root as DisplayObjectContainer }
+
+		public function get completed():Boolean { return _completed; }
 		public function get factory():TalonFactoryBase { return _factory; }
 		public function get template():DisplayObject { return _template; }
 
@@ -267,7 +273,6 @@ package browser.ui
 				_locked = value;
 				_menu.locked = !value;
 				_isolatorContainer.filter = _locked ? new BlurFilter(1, 1) : null;
-//				_isolatorContainer.touchable = !_locked;
 			}
 		}
 

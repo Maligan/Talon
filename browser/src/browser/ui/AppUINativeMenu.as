@@ -21,8 +21,6 @@ package browser.ui
 	{
 		private var _controller:AppController;
 		private var _menu:NativeMenuAdapter;
-
-		private var _prevTemplates:Vector.<String>;
 		private var _prevDocuments:Array;
 
 		public function AppUINativeMenu(controller:AppController)
@@ -31,63 +29,59 @@ package browser.ui
 			_menu = new NativeMenuAdapter();
 
 			// File
-			_menu.push("file",                                  AppConstants.T_MENU_FILE);
-			_menu.push("file/new",                              AppConstants.T_MENU_FILE_NEW_DOCUMENT,                  new CreateDocumentCommand(_controller), "n");
+			_menu.insert("file",                                  AppConstants.T_MENU_FILE);
+			_menu.insert("file/new",                              AppConstants.T_MENU_FILE_NEW_DOCUMENT,                  new CreateDocumentCommand(_controller), "n");
 //			_menu.push("file/instantiate",                      AppConstants.T_MENU_FILE_NEW_WINDOW,                    new CreateWindowCommand(),              "n", [Keyboard.CONTROL, Keyboard.SHIFT]);
-			_menu.push("file/-");
-			_menu.push("file/recent",                           AppConstants.T_MENU_FILE_RECENT);
-			_menu.push("file/open",                             AppConstants.T_MENU_FILE_OPEN,                          new OpenDocumentCommand(_controller),   "o");
-			_menu.push("file/-");
-			_menu.push("file/closeDocument",                    AppConstants.T_MENU_FILE_CLOSE_DOCUMENT,                new CloseDocumentCommand(_controller),  "w");
-			_menu.push("file/closeBrowser",                     AppConstants.T_MENU_FILE_CLOSE_BROWSER,                 new CloseWindowCommand(_controller),    "w", [Keyboard.CONTROL, Keyboard.SHIFT]);
-			_menu.push("file/-");
-			_menu.push("file/preference",                       AppConstants.T_MENU_FILE_PREFERENCES);
-			_menu.push("file/preference/stats",                 AppConstants.T_MENU_FILE_PREFERENCES_STATS,             new ChangeSettingCommand(_controller, AppConstants.SETTING_STATS, true, false));
-			_menu.push("file/preference/resize",                AppConstants.T_MENU_FILE_PREFERENCES_LOCK_RESIZE,       new ChangeSettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
-			_menu.push("file/preference/alwaysOnTop",           AppConstants.T_MENU_FILE_PREFERENCES_ALWAYS_ON_TOP,     new ChangeSettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
-			_menu.push("file/preference/autoReopen",            AppConstants.T_MENU_FILE_PREFERENCES_AUTO_REOPEN,       new ChangeSettingCommand(_controller, AppConstants.SETTING_AUTO_REOPEN, true, false));
-			_menu.push("file/preference/autoUpdate",            AppConstants.T_MENU_FILE_PREFERENCES_AUTO_UPDATE,       new ChangeSettingCommand(_controller, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, true, false));
-			_menu.push("file/-");
-			_menu.push("file/publish",                          AppConstants.T_MENU_FILE_PUBLISH_AS,                    new PublishCommand(_controller),        "s", [Keyboard.CONTROL, Keyboard.SHIFT]);
+			_menu.insert("file/-");
+			_menu.insert("file/recent",                           AppConstants.T_MENU_FILE_RECENT);
+			_menu.insert("file/open",                             AppConstants.T_MENU_FILE_OPEN,                          new OpenDocumentCommand(_controller),   "o");
+			_menu.insert("file/-");
+			_menu.insert("file/closeDocument",                    AppConstants.T_MENU_FILE_CLOSE_DOCUMENT,                new CloseDocumentCommand(_controller),  "w");
+			_menu.insert("file/closeBrowser",                     AppConstants.T_MENU_FILE_CLOSE_BROWSER,                 new CloseWindowCommand(_controller),    "w", [Keyboard.CONTROL, Keyboard.SHIFT]);
+			_menu.insert("file/-");
+			_menu.insert("file/preference",                       AppConstants.T_MENU_FILE_PREFERENCES);
+			_menu.insert("file/preference/stats",                 AppConstants.T_MENU_FILE_PREFERENCES_STATS,             new ChangeSettingCommand(_controller, AppConstants.SETTING_STATS, true, false));
+			_menu.insert("file/preference/resize",                AppConstants.T_MENU_FILE_PREFERENCES_LOCK_RESIZE,       new ChangeSettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
+			_menu.insert("file/preference/alwaysOnTop",           AppConstants.T_MENU_FILE_PREFERENCES_ALWAYS_ON_TOP,     new ChangeSettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
+			_menu.insert("file/preference/autoReopen",            AppConstants.T_MENU_FILE_PREFERENCES_AUTO_REOPEN,       new ChangeSettingCommand(_controller, AppConstants.SETTING_AUTO_REOPEN, true, false));
+			_menu.insert("file/preference/autoUpdate",            AppConstants.T_MENU_FILE_PREFERENCES_AUTO_UPDATE,       new ChangeSettingCommand(_controller, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, true, false));
+			_menu.insert("file/-");
+			_menu.insert("file/publish",                          AppConstants.T_MENU_FILE_PUBLISH_AS,                    new PublishCommand(_controller),        "s", [Keyboard.CONTROL, Keyboard.SHIFT]);
 
 			// View
-			_menu.push("view",                                  AppConstants.T_MENU_VIEW);
-			_menu.push("view/zoomIn",                           AppConstants.T_MENU_VIEW_ZOOM_IN,                       new ChangeZoomCommand(_controller, +25),   "=");
-			_menu.push("view/zoomOut",                          AppConstants.T_MENU_VIEW_ZOOM_OUT,                      new ChangeZoomCommand(_controller, -25),   "-");
-			_menu.push("view/-");
-			_menu.push("view/rotate",                           AppConstants.T_MENU_VIEW_ROTATE,                        new RotateCommand(_controller), "r", [Keyboard.CONTROL]);
-			_menu.push("view/theme",                            AppConstants.T_MENU_VIEW_BACKGROUND);
-			_menu.push("view/theme/dark",                       AppConstants.T_MENU_VIEW_BACKGROUND_DARK,               new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
-			_menu.push("view/theme/light",                      AppConstants.T_MENU_VIEW_BACKGROUND_LIGHT,              new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
-			_menu.push("view/profile",                          AppConstants.T_MENU_VIEW_PROFILE);
-			_menu.push("view/profile/custom",                   AppConstants.T_MENU_VIEW_PROFILE_CUSTOM,                new OpenPopupCommand(_controller, ProfilePopup, controller.profile), "0", [Keyboard.CONTROL]);
-			_menu.push("view/-");
-			_menu.push("view/fullscreen",                       AppConstants.T_MENU_VIEW_FULL_SCREEN,                   new ToggleFullScreenCommand(_controller), "f");
-			_menu.push("view/profile/-");
+			_menu.insert("view",                                  AppConstants.T_MENU_VIEW);
+			_menu.insert("view/zoomIn",                           AppConstants.T_MENU_VIEW_ZOOM_IN,                       new ChangeZoomCommand(_controller, +25),   "=");
+			_menu.insert("view/zoomOut",                          AppConstants.T_MENU_VIEW_ZOOM_OUT,                      new ChangeZoomCommand(_controller, -25),   "-");
+			_menu.insert("view/-");
+			_menu.insert("view/rotate",                           AppConstants.T_MENU_VIEW_ROTATE,                        new RotateCommand(_controller), "r", [Keyboard.CONTROL]);
+			_menu.insert("view/theme",                            AppConstants.T_MENU_VIEW_BACKGROUND);
+			_menu.insert("view/theme/dark",                       AppConstants.T_MENU_VIEW_BACKGROUND_DARK,               new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
+			_menu.insert("view/theme/light",                      AppConstants.T_MENU_VIEW_BACKGROUND_LIGHT,              new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
+			_menu.insert("view/profile",                          AppConstants.T_MENU_VIEW_PROFILE);
+			_menu.insert("view/profile/custom",                   AppConstants.T_MENU_VIEW_PROFILE_CUSTOM,                new OpenPopupCommand(_controller, ProfilePopup, controller.profile), "0", [Keyboard.CONTROL]);
+			_menu.insert("view/-");
+			_menu.insert("view/fullscreen",                       AppConstants.T_MENU_VIEW_FULL_SCREEN,                   new ToggleFullScreenCommand(_controller), "f");
+			_menu.insert("view/profile/-");
 
 			var profiles:Vector.<DeviceProfile> = DeviceProfile.getProfiles();
 			for (var i:int = 0; i < profiles.length; i++)
 			{
 				var profileNumber:String = (i+1).toString();
 				var profile:DeviceProfile = profiles[i];
-				_menu.push("view/profile/" + profile.id, null, new ChangeProfileCommand(_controller, profile), profileNumber, [Keyboard.ALTERNATE]);
+				_menu.insert("view/profile/" + profile.id, null, new ChangeProfileCommand(_controller, profile), profileNumber, [Keyboard.ALTERNATE]);
 			}
 
 			// Navigate
-			_menu.push("navigate",                      AppConstants.T_MENU_NAVIGATE);
-			_menu.push("navigate/openProjectFolder",    AppConstants.T_MENU_NAVIGATE_OPEN_DOCUMENT_FOLDER,              new OpenDocumentFolderCommand(_controller));
-			_menu.push("navigate/searchPopup",          AppConstants.T_MENU_NAVIGATE_SEARCH,                            new OpenGoToPopupCommand(_controller), "p", [Keyboard.CONTROL]);
-
-			_controller.documentDispatcher.addEventListener(DocumentEvent.CHANGED, refreshDocumentTemplatesList);
-			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, refreshDocumentTemplatesList);
-			refreshDocumentTemplatesList();
+			_menu.insert("navigate",                      AppConstants.T_MENU_NAVIGATE);
+			_menu.insert("navigate/openProjectFolder",    AppConstants.T_MENU_NAVIGATE_OPEN_DOCUMENT_FOLDER,              new OpenDocumentFolderCommand(_controller));
+			_menu.insert("navigate/searchPopup",          AppConstants.T_MENU_NAVIGATE_SEARCH,                            new OpenGoToPopupCommand(_controller), "p", [Keyboard.CONTROL]);
 
 			_controller.settings.addPropertyListener(AppConstants.SETTING_RECENT_DOCUMENTS, refreshRecentOpenedDocumentsList);
 			refreshRecentOpenedDocumentsList();
 
-			_menu.push("help",          AppConstants.T_MENU_HELP);
-			_menu.push("help/online",   AppConstants.T_MENU_HELP_ONLINE);
-			_menu.push("help/update",   AppConstants.T_MENU_HELP_UPDATE, new UpdateCommand(_controller));
+			_menu.insert("help",          AppConstants.T_MENU_HELP);
+			_menu.insert("help/online",   AppConstants.T_MENU_HELP_ONLINE);
+			_menu.insert("help/update",   AppConstants.T_MENU_HELP_UPDATE, new UpdateCommand(_controller));
 
 			if (NativeWindow.supportsMenu) controller.root.stage.nativeWindow.menu = _menu.nativeMenu;
 		}
@@ -106,10 +100,10 @@ package browser.ui
 			if (recent.length > 0)
 			{
 				for each (var path:String in recent)
-					recentMenu.push(path, null, new OpenDocumentCommand(_controller, new File(path)));
+					recentMenu.insert(path, null, new OpenDocumentCommand(_controller, new File(path)));
 
-				recentMenu.push("-");
-				recentMenu.push("clear", AppConstants.T_MENU_FILE_RECENT_CLEAR, new ChangeSettingCommand(_controller, AppConstants.SETTING_RECENT_DOCUMENTS, []));
+				recentMenu.insert("-");
+				recentMenu.insert("clear", AppConstants.T_MENU_FILE_RECENT_CLEAR, new ChangeSettingCommand(_controller, AppConstants.SETTING_RECENT_DOCUMENTS, []));
 			}
 		}
 
@@ -118,23 +112,6 @@ package browser.ui
             var file:File = new File(path);
             return file.exists;
         }
-
-		private function refreshDocumentTemplatesList():void
-		{
-			/*
-			var templates:Vector.<String> = _controller.document ? _controller.document.factory.templateIds: new <String>[];
-			if (isEqual(templates, _prevTemplates)) return;
-			_prevTemplates = templates;
-
-			var submenu:NativeMenuAdapter = _menu.getChildByPath("navigate/search");
-			submenu.removeChildren();
-			submenu.isEnabled = templates.length != 0;
-			submenu.isMenu = true;
-
-			for each (var prototypeId:String in templates)
-				submenu.push(prototypeId, null, new ChangeCurrentTemplateCommand(_controller, prototypeId));
-			*/
-		}
 
 		private static function isEqual(list1:*, list2:*):Boolean
 		{

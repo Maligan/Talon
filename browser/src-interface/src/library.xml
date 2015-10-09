@@ -73,6 +73,10 @@
 		</node>
 	</template>
 
+	<template id="Input" type="input">
+		<label type="input" />
+	</template>
+
 	<template id="Button" type="button">
 		<node type="button" label="Button">
 			<label text="@label" width="80px" height="32px" />

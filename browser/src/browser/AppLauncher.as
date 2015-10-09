@@ -30,12 +30,12 @@ package browser
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, initialize);
 
+			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
+			//NativeApplication.nativeApplication.setAsDefaultApplication(AppConstants.DESIGNER_FILE_EXTENSION);
+
 			stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[_backgroundColor.value];
 			stage.nativeWindow.minSize = new Point(200, 100);
 			stage.addEventListener(Event.RESIZE, onResize);
-
-//			NativeApplication.nativeApplication.setAsDefaultApplication(AppConstants.DESIGNER_FILE_EXTENSION);
-			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
 
 			// For native drag purpose
 			_overlay = new MovieClip();

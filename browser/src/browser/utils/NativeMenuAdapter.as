@@ -65,7 +65,7 @@ package browser.utils
 			_isEnabled = true;
 		}
 
-		public function push(path:String, label:String = null, command:Command = null, keyEquivalent:String = null, keyEquivalentModifiers:Array = null):NativeMenuAdapter
+		public function insert(path:String, label:String = null, command:Command = null, keyEquivalent:String = null, keyEquivalentModifiers:Array = null):NativeMenuAdapter
 		{
 			var isSeparator:Boolean = path.charAt(path.lastIndexOf("/") + 1) == "-";
 			var node:NativeMenuAdapter = addChildByPath(path, isSeparator);

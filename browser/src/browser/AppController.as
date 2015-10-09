@@ -6,11 +6,12 @@ package browser
     import browser.commands.OpenDocumentCommand;
     import browser.document.Document;
     import browser.document.log.DocumentMessage;
-    import browser.ui.AppUI;
+	import browser.plugins.PluginCollection;
+	import browser.ui.AppUI;
     import browser.utils.Console;
     import browser.utils.DeviceProfile;
     import browser.utils.EventDispatcherAdapter;
-    import browser.utils.IPlugin;
+    import browser.plugins.IPlugin;
     import browser.utils.OrientationMonitor;
     import browser.utils.Storage;
     import browser.utils.registerClassAlias;
@@ -29,7 +30,6 @@ package browser
     import flash.system.Capabilities;
 
     import starling.core.Starling;
-    import starling.display.DisplayObjectContainer;
     import starling.display.Sprite;
     import starling.events.Event;
     import starling.events.EventDispatcher;
@@ -50,6 +50,7 @@ package browser
 
 		private var _root:DisplayObject;
 		private var _console:Console;
+	    private var _plugins:PluginCollection;
 		private var _document:Document;
 		private var _templateId:String;
 		private var _ui:AppUI;
@@ -59,6 +60,9 @@ package browser
 		private var _documentDispatcher:EventDispatcherAdapter;
 		private var _starling:Starling;
 		private var _updater:ApplicationUpdaterUI;
+
+	    private var _invoke:String;
+	    private var _invokeTemplateId:String;
 
 		public function AppController(root:DisplayObject)
 		{
@@ -76,6 +80,7 @@ package browser
 			_updater.isCheckForUpdateVisible = false;
 			_updater.updateURL = AppConstants.APP_UPDATE_URL + "?rnd=" + int(Math.random() * int.MAX_VALUE);
 			_updater.initialize();
+			_plugins = new PluginCollection(this);
 
 			initializeConsole();
 			initializeDragAndDrop();
@@ -87,14 +92,23 @@ package browser
 
 		public function invoke(path:String):void
 		{
-			var file:File = new File(path);
-			if (file.exists)
+			if (_ui.completed)
 			{
-				var close:CloseDocumentCommand = new CloseDocumentCommand(this);
-				close.execute();
+				// Open
+				var file:File = new File(path);
+				if (file.exists)
+				{
+					var close:CloseDocumentCommand = new CloseDocumentCommand(this);
+					close.execute();
 
-				var open:OpenDocumentCommand = new OpenDocumentCommand(this, file);
-				open.execute();
+					var open:OpenDocumentCommand = new OpenDocumentCommand(this, file);
+					open.execute();
+				}
+			}
+			else
+			{
+				// Delay
+				_invoke = path;
 			}
 		}
 
@@ -113,18 +127,38 @@ package browser
 		//
 		// Properties
 		//
+	    /** @private Debug console (assist tool). */
 		public function get console():Console { return _console; }
+
+	    /** Current Starling instance (preferably use this accessor, browser may work in multi windowed mode). */
 	    public function get starling():Starling { return _starling; }
-		public function get host():DisplayObjectContainer { return _starling.root as DisplayObjectContainer }
-		public function get ui():AppUI { return _ui; }
+
+	    /** Application UI module. */
+	    public function get ui():AppUI { return _ui; }
+
+	    /** Application configuration file (for read AND write). */
 		public function get settings():Storage { return _settings; }
+
+	    /** Orientation monitor (assist tool). */
 		public function get monitor():OrientationMonitor { return _monitor; }
+
+	    /** Native Flash root DisplayObject (Document Root). */
 		public function get root():DisplayObject { return _root; }
+
+	    /** Device profile. */
 		public function get profile():DeviceProfile { return _profile; }
+
+	    /** Application plugin list (all: attached, detached, broken). */
+	    public function get plugins():PluginCollection { return _plugins; }
+
+	    /** @private Application updater. */
 		public function get updater():ApplicationUpdaterUI { return _updater; }
 
+	    /** @private */
 		public function get documentDispatcher():EventDispatcherAdapter { return _documentDispatcher }
-		public function get document():Document { return _document; }
+
+	    /** Current opened document or null. */
+	    public function get document():Document { return _document; }
 		public function set document(value:Document):void
 		{
 			if (_document != value)
@@ -144,6 +178,7 @@ package browser
 			}
 		}
 
+	    /** Current opened template id or null. */
 		public function get templateId():String { return _templateId; }
 		public function set templateId(value:String):void
 		{
@@ -282,8 +317,8 @@ package browser
 		{
 			// Document can be opened via invoke (click on document file)
 			// in this case need omit autoReopen feature
-			var isEnableReopen:Boolean = settings.getValueOrDefault(AppConstants.SETTING_AUTO_REOPEN, Boolean, false) && document == null;
-			if (isEnableReopen)
+			var isEnableReopen:Boolean = settings.getValueOrDefault(AppConstants.SETTING_AUTO_REOPEN, Boolean, false);
+			if (isEnableReopen && _invoke == null)
 			{
 				var template:String = settings.getValueOrDefault(AppConstants.SETTING_RECENT_TEMPLATE, String);
 				if (template != null)
@@ -292,11 +327,14 @@ package browser
 					var recentPath:String = recentArray && recentArray.length ? recentArray[0] : null;
 					if (recentPath)
 					{
-						invoke(recentPath);
-						if (template != null) templateId = template;
+						_invoke = recentPath;
+						_invokeTemplateId = template;
 					}
 				}
 			}
+
+			if (_invoke != null) invoke(_invoke);
+			if (_invokeTemplateId != null) templateId = _invokeTemplateId;
 
 			// Updater#checkNow() run only after delay, UI inited is a good, moment for this
 			var isEnableAutoUpdate:Boolean = _settings.getValueOrDefault(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, Boolean, true);

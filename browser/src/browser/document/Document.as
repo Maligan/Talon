@@ -18,10 +18,12 @@ package browser.document
 
 	import starling.events.EventDispatcher;
 
-	[Event(name="change", type="starling.events.Event")]
+	[Event(name="documentChanging", type="starling.events.Event")]
+	[Event(name="documentChange",   type="starling.events.Event")]
 	public class Document extends EventDispatcher
 	{
 		private var _project:File;
+
 		/** This is parsed _project file content. */
 		private var _properties:Storage;
 
@@ -40,11 +42,7 @@ package browser.document
 			_messages = new DocumentMessageCollection();
 			_factory = new DocumentTalonFactory(this);
 
-			_factory.addTerminal("input");
-			_factory.setLinkage("input", TalonFeatherTextInput);
-
 			_files = new DocumentFileReferenceCollection(this);
-
 			_files.registerController(DirectoryAsset,   DirectoryAsset.checker);
 			_files.registerController(TextureAsset,     TextureAsset.checker);
 			_files.registerController(TemplateAsset,    TemplateAsset.checker);
@@ -86,7 +84,7 @@ package browser.document
 				dispatchEventWith(DocumentEvent.CHANGING);
 
 				// After CHANGING, some file controllers may start new tasks
-				if (!tasks.isBusy) dispatchEventWith(DocumentEvent.CHANGED);
+				if (!tasks.isBusy) dispatchEventWith(DocumentEvent.CHANGE);
 
 				_trackerIgnore = false;
 			}

@@ -2,7 +2,7 @@ package browser.document
 {
 	public class DocumentEvent
 	{
-		public static const CHANGING:String = "changing";
-		public static const CHANGED:String = "changed";
+		public static const CHANGING:String = "documentChanging";
+		public static const CHANGE:String = "documentChange";
 	}
 }

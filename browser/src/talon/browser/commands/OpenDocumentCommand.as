@@ -48,6 +48,11 @@ package talon.browser.commands
 			var sourceRootReference:DocumentFileReference = new DocumentFileReference(controller.document, sourceRoot);
 			controller.document.files.addReference(sourceRootReference);
 
+			// Try open first template
+			var templates:Vector.<String> = controller.document.factory.templateIds;
+			var template:String = templates.shift();
+			if (template) controller.templateId = template;
+
 			// Add document to recent list
 			var recent:Array = controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);
 			var indexOf:int = recent.indexOf(source.nativePath);

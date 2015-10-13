@@ -7,7 +7,7 @@ package talon.browser
 	import talon.browser.commands.CloseDocumentCommand;
     import talon.browser.commands.OpenDocumentCommand;
     import talon.browser.document.Document;
-	import talon.browser.plugins.PluginCollection;
+	import talon.browser.plugins.PluginManager;
 	import talon.browser.plugins.tools.ConsolePlugin;
 	import talon.browser.plugins.tools.FileTypePlugin;
 	import talon.browser.AppUI;
@@ -48,7 +48,7 @@ package talon.browser
 
 		private var _root:DisplayObject;
 		private var _console:Console;
-	    private var _plugins:PluginCollection;
+	    private var _plugins:PluginManager;
 		private var _document:Document;
 		private var _templateId:String;
 		private var _ui:AppUI;
@@ -80,7 +80,7 @@ package talon.browser
 			_updater.initialize();
 			_console = new Console();
 			_root.stage.addChild(_console);
-			_plugins = new PluginCollection(this);
+			_plugins = new PluginManager(this);
 
 			// XXX: NOT work while starling initialing!
 			var colorName:String = _settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
@@ -143,9 +143,6 @@ package talon.browser
 	    /** Application configuration file (for read AND write). */
 		public function get settings():Storage { return _settings; }
 
-	    /** Orientation monitor (assist tool). */
-		public function get monitor():OrientationMonitor { return _monitor; }
-
 	    /** Native Flash root DisplayObject (Document Root). */
 		public function get root():DisplayObject { return _root; }
 
@@ -153,7 +150,10 @@ package talon.browser
 		public function get profile():DeviceProfile { return _profile; }
 
 	    /** Application plugin list (all: attached, detached, broken). */
-	    public function get plugins():PluginCollection { return _plugins; }
+	    public function get plugins():PluginManager { return _plugins; }
+
+	    /** @private Orientation monitor (assist tool). */
+	    public function get monitor():OrientationMonitor { return _monitor; }
 
 	    /** @private Application updater. */
 		public function get updater():ApplicationUpdaterUI { return _updater; }
@@ -167,6 +167,7 @@ package talon.browser
 		{
 			if (_document != value)
 			{
+				_templateId = null;
 				_document && _document.dispose();
 				_document = value;
 				_documentDispatcher.target = _document;
@@ -178,7 +179,6 @@ package talon.browser
 				}
 
 				dispatchEventWith(EVENT_DOCUMENT_CHANGE);
-				templateId = _document ? _document.factory.templateIds.shift() : null;
 			}
 		}
 

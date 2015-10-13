@@ -51,11 +51,12 @@ package talon.browser
 		{
 			_controller = controller;
 			_controller.addEventListener(AppController.EVENT_TEMPLATE_CHANGE, refreshWindowTitle);
+			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, refreshWindowTitle);
+			_controller.profile.addEventListener(Event.CHANGE, refreshWindowTitle);
+
 			_controller.addEventListener(AppController.EVENT_TEMPLATE_CHANGE, refreshCurrentTemplate);
 			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, refreshCurrentTemplate);
 			_controller.documentDispatcher.addEventListener(DocumentEvent.CHANGE, refreshCurrentTemplate);
-
-			_controller.profile.addEventListener(Event.CHANGE, refreshWindowTitle);
 
 			_isolator = new Sprite();
 			_menu = new AppUINativeMenu(_controller);

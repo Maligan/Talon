@@ -6,13 +6,13 @@ package talon.browser.plugins
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
-	public class PluginCollection extends EventDispatcher
+	public class PluginManager extends EventDispatcher
 	{
 		private var _app:AppController;
 		private var _plugins:Vector.<IPlugin>;
 		private var _pluginStatus:Dictionary;
 
-		public function PluginCollection(app:AppController)
+		public function PluginManager(app:AppController)
 		{
 			_app = app;
 			_plugins = new <IPlugin>[];

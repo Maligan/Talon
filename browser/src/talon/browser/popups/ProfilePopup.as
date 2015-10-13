@@ -1,6 +1,5 @@
 package talon.browser.popups
 {
-	import talon.browser.ui.popups.*;
 	import talon.browser.utils.DeviceProfile;
 	import talon.browser.utils.DisplayTreeUtil;
 	import talon.browser.utils.TalonFeatherTextInput;

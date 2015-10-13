@@ -126,3 +126,9 @@ checkbox:active #flag { src: $checkbox_unckecked_down; }
 	valign: center;
 	orientation: vertical;
 }
+
+
+#interface #drag.active {
+	backgroundImage: $drag;
+	background9Scale: 5px;
+}

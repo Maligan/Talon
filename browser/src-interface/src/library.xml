@@ -5,6 +5,7 @@
 			<node id="container" width="100%" height="100%" />
 			<node id="bsod" width="100%" height="100%"><label width="100%" height="100%" autoScale="true" text="¯\_(ツ)_/¯" /></node>
 			<node id="popups" width="100%" height="100%" layout="abs" halign="center" valign="center"/>
+			<node id="drag" width="100%" height="100%" />
 		</node>
 	</template>
 

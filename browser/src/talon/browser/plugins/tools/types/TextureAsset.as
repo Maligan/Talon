@@ -18,7 +18,7 @@ package talon.browser.plugins.tools.types
 		//
 		// Attach
 		//
-		override protected function initialize():void
+		override protected function activate():void
 		{
 			var bytes:ByteArray = readFileBytesOrReport();
 			if (bytes == null) return;
@@ -89,7 +89,7 @@ package talon.browser.plugins.tools.types
 		//
 		// Detach
 		//
-		override protected function dispose():void
+		override protected function deactivate():void
 		{
 			document.factory.removeResource(_id);
 			_id = null;

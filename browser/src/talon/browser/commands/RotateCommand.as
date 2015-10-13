@@ -20,9 +20,9 @@ package talon.browser.commands
 			var max:int = Math.max(controller.profile.height, controller.profile.width);
 			var min:int = Math.min(controller.profile.height, controller.profile.width);
 
-			controller.monitor.isPortrait
-				? controller.resizeWindowTo(max, min)
-				: controller.resizeWindowTo(min, max);
+			controller.orientation.isPortrait
+				? controller.profile.setSize(max, min)
+				: controller.profile.setSize(min, max);
 		}
 	}
 }

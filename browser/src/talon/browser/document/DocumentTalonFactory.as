@@ -1,14 +1,9 @@
 package talon.browser.document
 {
-	import talon.browser.AppConstants;
-	import talon.browser.utils.DeviceProfile;
-
 	import flash.events.TimerEvent;
-	import flash.system.Capabilities;
 	import flash.utils.Timer;
-	import starling.events.Event;
-	import talon.Node;
 
+	import talon.Node;
 	import talon.starling.TalonFactoryStarling;
 
 	/** Extended version of TalonFactory for browser purpose. */
@@ -45,7 +40,8 @@ package talon.browser.document
 		public override function produce(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
 		{
 			resources.reset();
-			_style = _styles.style;
+			_style = _styles.getMergedStyleSheet();
+
 			return super.produce(id, includeStyleSheet, includeResources);
 		}
 
@@ -62,11 +58,25 @@ package talon.browser.document
 			return node;
 		}
 
-		public function set csf(value:Number):void { if (_csf != value) { _csf = value; dispatchChange(); } }
 		public function get csf():Number { return _csf; }
+		public function set csf(value:Number):void
+		{
+			if (_csf != value)
+			{
+				_csf = value;
+				dispatchChange();
+			}
+		}
 
-		public function set dpi(value:Number):void { if (_dpi != value) { _dpi = value; dispatchChange(); } }
 		public function get dpi():Number { return _dpi; }
+		public function set dpi(value:Number):void
+		{
+			if (_dpi != value)
+			{
+				_dpi = value;
+				dispatchChange();
+			}
+		}
 
 		//
 		// Templates
@@ -138,7 +148,7 @@ package talon.browser.document
 
 		public function get missedResourceIds():Vector.<String>
 		{
-			return ObjectWithAccessLogger(_resources).missed;
+			return resources.missed;
 		}
 
 		public function removeResource(id:String):void
@@ -161,17 +171,21 @@ package talon.browser.document
 		//
 		// Styles
 		//
-		public function addStyleSheetWithId(key:String, css:String):void { styles.insert(key, css); dispatchChange(); }
-		public function removeStyleSheetWithId(key:String):void { styles.remove(key); dispatchChange(); }
-
 		public override function addStyleSheet(css:String):void
 		{
 			throw new Error("Use addStyleSheetWithId");
 		}
 
-		private function get styles():StyleSheetCollection
+		public function addStyleSheetWithId(key:String, css:String):void
 		{
-			return _styles;
+			_styles.insert(key, css);
+			dispatchChange();
+		}
+
+		public function removeStyleSheetWithId(key:String):void
+		{
+			_styles.remove(key);
+			dispatchChange();
 		}
 	}
 }
@@ -241,16 +255,15 @@ class ObjectWithAccessLogger extends Proxy
 
 class StyleSheetCollection
 {
-	private var _style:StyleSheet;
+	private var _cache:StyleSheet;
 	private var _sources:Dictionary = new Dictionary();
 	private var _keys:Vector.<String> = new <String>[];
-	private var _invalid:Boolean;
 
 	public function insert(key:String, css:String):void
 	{
 		if (_sources[key] == null) _keys.push(key);
 		_sources[key] = css;
-		_invalid = true;
+		_cache = null;
 	}
 
 	public function remove(key:String):void
@@ -259,24 +272,23 @@ class StyleSheetCollection
 		{
 			_keys.splice(_keys.indexOf(key), 1);
 			delete _sources[key];
-			_invalid = true;
+			_cache = null;
 		}
 	}
 
-	public function get style():StyleSheet
+	public function getMergedStyleSheet():StyleSheet
 	{
-		if (_style == null || _invalid)
+		if (_cache == null)
 		{
-			_invalid = false;
-			_style = new StyleSheet();
+			_cache = new StyleSheet();
 
 			for each (var key:String in _keys)
 			{
 				var source:String = _sources[key];
-				_style.parse(source);
+				_cache.parse(source);
 			}
 		}
 
-		return _style;
+		return _cache;
 	}
 }

@@ -60,23 +60,23 @@ package talon.browser.plugins.tools.types
 		public final function attach(reference:DocumentFileReference):void
 		{
 			_file = reference;
-			initialize();
+			activate();
 		}
 
 		public final function detach():void
 		{
-			dispose();
+			deactivate();
 			_file = null;
 			reportCleanup();
 		}
 
-		protected function initialize():void
+		protected function activate():void
 		{
 			var isXML:Boolean = file.checkFirstMeaningfulChar("<");
 			if (isXML && file.xml == null) reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_XML, file.url);
 		}
 
-		protected function dispose():void
+		protected function deactivate():void
 		{
 		}
 

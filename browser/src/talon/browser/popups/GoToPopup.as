@@ -154,7 +154,7 @@ package talon.browser.popups
 		private function commit(templateId:String):void
 		{
 			close();
-			_app.templateId = templateId;
+			_app.ui.templateId = templateId;
 		}
 
 		private function refresh():void

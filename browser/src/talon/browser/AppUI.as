@@ -42,6 +42,7 @@ package talon.browser
 		private var _isolator:DisplayObjectContainer;
 		private var _container:TalonSprite;
 
+		private var _templateId:String;
 		private var _template:DisplayObject;
 		private var _templateProduceMessage:DocumentMessage;
 		private var _locked:Boolean;
@@ -50,13 +51,11 @@ package talon.browser
 		public function AppUI(controller:AppController)
 		{
 			_controller = controller;
-			_controller.addEventListener(AppController.EVENT_TEMPLATE_CHANGE, refreshWindowTitle);
 			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, refreshWindowTitle);
 			_controller.profile.addEventListener(Event.CHANGE, refreshWindowTitle);
 
-			_controller.addEventListener(AppController.EVENT_TEMPLATE_CHANGE, refreshCurrentTemplate);
 			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, refreshCurrentTemplate);
-			_controller.documentDispatcher.addEventListener(DocumentEvent.CHANGE, refreshCurrentTemplate);
+			_controller.addEventListener(DocumentEvent.CHANGE, refreshCurrentTemplate);
 
 			_isolator = new Sprite();
 			_menu = new AppUINativeMenu(_controller);
@@ -175,7 +174,7 @@ package talon.browser
 			if (_controller.document)
 			{
 				var title:String = _controller.document.project.name.replace(/\.[^\.]*$/,"");
-				if (_controller.templateId) title += "/" + _controller.templateId;
+				if (_templateId) title += "/" + _templateId;
 				result.push(title);
 			}
 
@@ -199,10 +198,10 @@ package talon.browser
 		{
 			// Refresh current prototype
 			var canShow:Boolean = true;
-			canShow &&= _controller.templateId != null;
+			canShow &&= _templateId != null;
 			canShow &&= _controller.document != null;
 			canShow &&= _controller.document.tasks.isBusy == false;
-			canShow &&= _controller.document.factory.hasTemplate(_controller.templateId);
+			canShow &&= _controller.document.factory.hasTemplate(_templateId);
 
 			_errorPage.visible = false;
 			_container.removeChildren();
@@ -210,7 +209,7 @@ package talon.browser
 			_templateProduceMessage = null;
 
 			_template && _template.removeFromParent(true);
-			_template = canShow ? produce(_controller.templateId) : null;
+			_template = canShow ? produce(_templateId) : null;
 
 			// Show state
 			if (_controller.document && _controller.document.messages.numMessages != 0)
@@ -257,6 +256,17 @@ package talon.browser
 		public function get completed():Boolean { return _completed; }
 		public function get factory():TalonFactoryBase { return _factory; }
 		public function get template():DisplayObject { return _template; }
+
+		public function get templateId():String { return _templateId; }
+		public function set templateId(value:String):void
+		{
+			if (_templateId != value)
+			{
+				_templateId = value;
+				refreshCurrentTemplate();
+				refreshWindowTitle();
+			}
+		}
 
 		public function get locked():Boolean { return _locked; }
 		public function set locked(value:Boolean):void

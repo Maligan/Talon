@@ -1,61 +1,44 @@
 package talon.browser
 {
-    import air.update.ApplicationUpdaterUI;
+	import air.update.ApplicationUpdaterUI;
 
-	import flash.utils.setTimeout;
+	import flash.display.DisplayObject;
+	import flash.display.NativeWindow;
+	import flash.events.NativeWindowBoundsEvent;
+	import flash.filesystem.File;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	import flash.system.Capabilities;
 
-	import talon.browser.commands.CloseDocumentCommand;
-    import talon.browser.commands.OpenDocumentCommand;
-    import talon.browser.document.Document;
+	import starling.core.Starling;
+	import starling.display.Sprite;
+	import starling.events.Event;
+	import starling.events.EventDispatcher;
+
+	import talon.browser.commands.OpenDocumentCommand;
+	import talon.browser.document.Document;
+	import talon.browser.document.DocumentEvent;
+	import talon.browser.plugins.IPlugin;
 	import talon.browser.plugins.PluginManager;
 	import talon.browser.plugins.tools.ConsolePlugin;
+	import talon.browser.plugins.tools.DragAndDropPlugin;
 	import talon.browser.plugins.tools.FileTypePlugin;
-	import talon.browser.AppUI;
-    import talon.browser.utils.Console;
-    import talon.browser.utils.DeviceProfile;
-    import talon.browser.utils.EventDispatcherAdapter;
-    import talon.browser.plugins.IPlugin;
-    import talon.browser.utils.OrientationMonitor;
-    import talon.browser.utils.Storage;
-    import talon.browser.utils.registerClassAlias;
+	import talon.browser.utils.DeviceProfile;
+	import talon.browser.utils.OrientationMonitor;
+	import talon.browser.utils.Storage;
+	import talon.browser.utils.registerClassAlias;
 
-    import flash.desktop.ClipboardFormats;
-    import flash.desktop.NativeDragActions;
-    import flash.desktop.NativeDragManager;
-    import flash.display.DisplayObject;
-    import flash.display.InteractiveObject;
-    import flash.display.NativeWindow;
-    import flash.events.NativeDragEvent;
-    import flash.events.NativeWindowBoundsEvent;
-    import flash.filesystem.File;
-    import flash.geom.Point;
-    import flash.geom.Rectangle;
-    import flash.system.Capabilities;
-
-    import starling.core.Starling;
-    import starling.display.Sprite;
-    import starling.events.Event;
-    import starling.events.EventDispatcher;
-
-    public class AppController extends EventDispatcher
+	public class AppController extends EventDispatcher
 	{
 		public static const EVENT_DOCUMENT_CHANGE:String = "documentChange";
-		public static const EVENT_TEMPLATE_CHANGE:String = "templateChange";
-
-		public static const EVENT_DRAG_IN:String = "documentDragIn";
-		public static const EVENT_DRAG_OUT:String = "documentDragOut";
-		public static const EVENT_DRAG_DROP:String = "documentDrop";
 
 		private var _root:DisplayObject;
-		private var _console:Console;
 	    private var _plugins:PluginManager;
 		private var _document:Document;
-		private var _templateId:String;
 		private var _ui:AppUI;
 		private var _settings:Storage;
-		private var _monitor:OrientationMonitor;
+		private var _orientation:OrientationMonitor;
 		private var _profile:DeviceProfile;
-		private var _documentDispatcher:EventDispatcherAdapter;
 		private var _starling:Starling;
 		private var _updater:ApplicationUpdaterUI;
 
@@ -71,23 +54,19 @@ package talon.browser
 
 			_settings = Storage.fromSharedObject("settings");
 			_profile = _settings.getValueOrDefault(AppConstants.SETTING_PROFILE, DeviceProfile) || new DeviceProfile(_root.stage.stageWidth, root.stage.stageHeight, 1, Capabilities.screenDPI);
-			_monitor = new OrientationMonitor(_root.stage);
-			_documentDispatcher = new EventDispatcherAdapter();
+			_orientation = new OrientationMonitor(_root.stage);
 			_ui = new AppUI(this);
+			_plugins = new PluginManager(this);
 			_updater = new ApplicationUpdaterUI();
 			_updater.isCheckForUpdateVisible = false;
 			_updater.updateURL = AppConstants.APP_UPDATE_URL + "?rnd=" + int(Math.random() * int.MAX_VALUE);
 			_updater.initialize();
-			_console = new Console();
-			_root.stage.addChild(_console);
-			_plugins = new PluginManager(this);
 
 			// XXX: NOT work while starling initialing!
 			var colorName:String = _settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
 			var color:uint = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[colorName];
 			_root.stage.color = color;
 
-			initializeDragAndDrop();
 			initializeWindowMonitor();
 			initializeStarling();
 
@@ -102,9 +81,6 @@ package talon.browser
 				var file:File = new File(path);
 				if (file.exists)
 				{
-					var close:CloseDocumentCommand = new CloseDocumentCommand(this);
-					close.execute();
-
 					var open:OpenDocumentCommand = new OpenDocumentCommand(this, file);
 					open.execute();
 				}
@@ -116,7 +92,7 @@ package talon.browser
 			}
 		}
 
-		public function resizeWindowTo(stageWidth:int, stageHeight:int):void
+		private function resizeWindowTo(stageWidth:int, stageHeight:int):void
 		{
 			if (root.stage.stageWidth != stageWidth || root.stage.stageHeight != stageHeight)
 			{
@@ -131,8 +107,8 @@ package talon.browser
 		//
 		// Properties
 		//
-	    /** @private Debug console (assist tool). */
-		public function get console():Console { return _console; }
+		/** @private Application updater. */
+		public function get updater():ApplicationUpdaterUI { return _updater; }
 
 	    /** Current Starling instance (preferably use this accessor, browser may work in multi windowed mode). */
 	    public function get starling():Starling { return _starling; }
@@ -152,14 +128,8 @@ package talon.browser
 	    /** Application plugin list (all: attached, detached, broken). */
 	    public function get plugins():PluginManager { return _plugins; }
 
-	    /** @private Orientation monitor (assist tool). */
-	    public function get monitor():OrientationMonitor { return _monitor; }
-
-	    /** @private Application updater. */
-		public function get updater():ApplicationUpdaterUI { return _updater; }
-
-	    /** @private */
-		public function get documentDispatcher():EventDispatcherAdapter { return _documentDispatcher }
+	    /** Orientation monitor (assist tool). */
+	    public function get orientation():OrientationMonitor { return _orientation; }
 
 	    /** Current opened document or null. */
 	    public function get document():Document { return _document; }
@@ -167,10 +137,9 @@ package talon.browser
 		{
 			if (_document != value)
 			{
-				_templateId = null;
 				_document && _document.dispose();
 				_document = value;
-				_documentDispatcher.target = _document;
+				_document && _document.addEventListener(DocumentEvent.CHANGE, dispatchEvent);
 
 				if (_document)
 				{
@@ -180,60 +149,6 @@ package talon.browser
 
 				dispatchEventWith(EVENT_DOCUMENT_CHANGE);
 			}
-		}
-
-	    /** Current opened template id or null. */
-		public function get templateId():String { return _templateId; }
-		public function set templateId(value:String):void
-		{
-			if (_templateId != value)
-			{
-				_templateId = value;
-				_settings.setValue(AppConstants.SETTING_RECENT_TEMPLATE, _templateId);
-				dispatchEventWith(EVENT_TEMPLATE_CHANGE);
-			}
-		}
-
-		//
-		// [Events] Drag And Drop
-		//
-		private function initializeDragAndDrop():void
-		{
-			_root.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragIn);
-			_root.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragOut);
-			_root.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
-		}
-
-		private function onDragIn(e:NativeDragEvent):void
-		{
-			var hasFiles:Boolean = e.clipboard.hasFormat(ClipboardFormats.FILE_LIST_FORMAT);
-			if (hasFiles)
-			{
-				var files:Array = e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
-				if (files.length == 1)
-				{
-					var file:File = File(files[0]);
-					if (file.extension == AppConstants.BROWSER_DOCUMENT_EXTENSION)
-					{
-						NativeDragManager.acceptDragDrop(_root as InteractiveObject);
-						NativeDragManager.dropAction = NativeDragActions.MOVE;
-						dispatchEventWith(EVENT_DRAG_IN, files[0]);
-					}
-				}
-			}
-		}
-
-		private function onDragOut(e:NativeDragEvent):void
-		{
-			dispatchEventWith(EVENT_DRAG_OUT);
-		}
-
-		private function onDragDrop(e:NativeDragEvent):void
-		{
-			dispatchEventWith(EVENT_DRAG_DROP);
-			var files:Array = e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
-			var file:File = File(files[0]);
-			invoke(file.nativePath);
 		}
 
 		//
@@ -346,7 +261,7 @@ package talon.browser
 			}
 
 			if (_invoke != null) invoke(_invoke);
-			if (_invokeTemplateId != null) templateId = _invokeTemplateId;
+			if (_invokeTemplateId != null) _ui.templateId = _invokeTemplateId;
 
 			// Updater#checkNow() run only after delay, UI inited is a good, moment for this
 			var isEnableAutoUpdate:Boolean = _settings.getValueOrDefault(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, Boolean, true);
@@ -361,7 +276,11 @@ package talon.browser
 		//
 		private function initializePlugins():void
 		{
-			var list:Array = [new ConsolePlugin(), new FileTypePlugin()];
+			var list:Array = [
+				new ConsolePlugin(),
+				new FileTypePlugin(),
+				new DragAndDropPlugin()
+			];
 
 			for each (var plugin:IPlugin in list)
 			{

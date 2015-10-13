@@ -7,7 +7,7 @@ package talon.browser.plugins.tools.types
 
 	public class DirectoryAsset extends Asset
 	{
-		override protected function initialize():void
+		override protected function activate():void
 		{
 			document.tasks.begin();
 

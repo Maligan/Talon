@@ -8,11 +8,13 @@ package talon.browser.plugins.tools
 	import talon.browser.document.log.DocumentMessage;
 	import talon.browser.plugins.IPlugin;
 	import talon.browser.plugins.PluginStatus;
+	import talon.browser.utils.Console;
 	import talon.utils.ITalonElement;
 
 	public class ConsolePlugin implements IPlugin
 	{
 		private var _app:AppController;
+		private var _console:Console;
 
 		public function get id():String { return "talon.browser.tools.Console"; }
 		public function get version():String { return "0.0.1"; }
@@ -22,19 +24,22 @@ package talon.browser.plugins.tools
 		{
 			_app = app;
 
-			_app.console.addCommand("plugin", cmdPlugin, "Print current plugin list");
-			_app.console.addCommand("errors", cmdErrors, "Print current error list");
-			_app.console.addCommand("tree", cmdTree, "Print current template tree", "-a attributeName");
-			_app.console.addCommand("resources", cmdResourceSearch, "RegExp based search project resources", "regexp");
-			_app.console.addCommand("resources_miss", cmdResourceMiss, "Missing used resources");
+			_console = new Console();
+			_app.root.stage.addChild(_console);
+
+			_console.addCommand("plugin", cmdPlugin, "Print current plugin list");
+			_console.addCommand("errors", cmdErrors, "Print current error list");
+			_console.addCommand("tree", cmdTree, "Print current template tree", "-a attributeName");
+			_console.addCommand("resources", cmdResourceSearch, "RegExp based search project resources", "regexp");
+			_console.addCommand("resources_miss", cmdResourceMiss, "Missing used resources");
 		}
 
 		public function detach():void
 		{
-			_app.console.removeCommand("errors");
-			_app.console.removeCommand("tree");
-			_app.console.removeCommand("resources");
-			_app.console.removeCommand("resources_miss");
+			_console.removeCommand("errors");
+			_console.removeCommand("tree");
+			_console.removeCommand("resources");
+			_console.removeCommand("resources_miss");
 
 			_app = null;
 		}
@@ -47,12 +52,12 @@ package talon.browser.plugins.tools
 			var regexp:RegExp = query.length > 1 ? new RegExp(split[1]) : /.*/;
 			var resourceIds:Vector.<String> = _app.document.factory.resourceIds.filter(byRegExp(regexp));
 
-			if (resourceIds.length == 0) _app.console.println("Resources not found");
+			if (resourceIds.length == 0) _console.println("Resources not found");
 			else
 			{
 				for each (var resourceId:String in resourceIds)
 				{
-					_app.console.println("*", resourceId);
+					_console.println("*", resourceId);
 				}
 			}
 		}
@@ -68,11 +73,11 @@ package talon.browser.plugins.tools
 		private function cmdResourceMiss(query:String):void
 		{
 			if (_app.document == null) throw new Error("Document not opened");
-			if (_app.templateId == null) throw new Error("Prototype not selected");
+			if (_app.ui.templateId == null) throw new Error("Prototype not selected");
 
 			for each (var resourceId:String in _app.document.factory.missedResourceIds)
 			{
-				_app.console.println("*", resourceId);
+				_console.println("*", resourceId);
 			}
 		}
 
@@ -104,8 +109,8 @@ package talon.browser.plugins.tools
 				attributes.push(formatString("({0} | {1} | {2} => {3})", attribute.inited, attribute.styled, attribute.setted, attribute.value));
 			}
 
-			if (depth) _app.console.println(shift, name, attributes.join(", "));
-			else _app.console.println(name, attributes.join(", "));
+			if (depth) _console.println(shift, name, attributes.join(", "));
+			else _console.println(name, attributes.join(", "));
 
 			for (var i:int = 0; i < node.numChildren; i++) traceNode(node.getChildAt(i), depth + 1, attrs);
 		}
@@ -114,17 +119,17 @@ package talon.browser.plugins.tools
 		{
 			if (_app.document.messages.numMessages > 0)
 			{
-				_app.console.println("Document error list:");
+				_console.println("Document error list:");
 
 				for (var i:int = 0; i < _app.document.messages.numMessages; i++)
 				{
 					var message:DocumentMessage = _app.document.messages.getMessageAt(i);
-					_app.console.println((i+1) + ")", message.level==2?"Error":message.level==1?"Warning":"Info", "|", message.text);
+					_console.println((i+1) + ")", message.level==2?"Error":message.level==1?"Warning":"Info", "|", message.text);
 				}
 			}
 			else
 			{
-				_app.console.println("Document error list is empty");
+				_console.println("Document error list is empty");
 			}
 		}
 
@@ -154,7 +159,7 @@ package talon.browser.plugins.tools
 					case PluginStatus.DETACHED_FAIL:    statusKey = "F"; break;
 				}
 
-				_app.console.println(formatString(pattern, plugin.id, plugin.version, statusKey));
+				_console.println(formatString(pattern, plugin.id, plugin.version, statusKey));
 			}
 		}
 	}

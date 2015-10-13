@@ -9,7 +9,7 @@ package talon.browser.plugins.tools.types
 		private var _id:String;
 		private var _xml:XML;
 
-		override protected function initialize():void
+		override protected function activate():void
 		{
 			_xml = readFileXMLOrReport();
 			if (_xml == null) return;
@@ -25,7 +25,7 @@ package talon.browser.plugins.tools.types
 			}
 		}
 
-		override protected function dispose():void
+		override protected function deactivate():void
 		{
 			document.factory.removeTemplate(_id);
 			_id = null;

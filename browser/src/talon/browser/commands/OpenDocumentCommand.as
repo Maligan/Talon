@@ -51,7 +51,7 @@ package talon.browser.commands
 			// Try open first template
 			var templates:Vector.<String> = controller.document.factory.templateIds;
 			var template:String = templates.shift();
-			if (template) controller.templateId = template;
+			if (template) controller.ui.templateId = template;
 
 			// Add document to recent list
 			var recent:Array = controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);

@@ -21,16 +21,19 @@ package talon.browser.commands
 			return _controller;
 		}
 
+		/** Execute command. */
 		public function execute():void
 		{
 			throw new AbstractMethodError();
 		}
 
+		/** Cancel command executing (if command is async). */
 		public function cancel():void
 		{
 			throw new AbstractMethodError();
 		}
 
+		/** Dispose all inner resources, remove event listeners etc. */
 		public function dispose():void
 		{
 			throw new AbstractMethodError();

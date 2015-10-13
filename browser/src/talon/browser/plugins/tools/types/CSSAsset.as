@@ -20,7 +20,7 @@ package talon.browser.plugins.tools.types
 			}
 		}
 
-		override protected function initialize():void
+		override protected function activate():void
 		{
 			var source:String = readFileStringOrReport();
 			if (source == null) return;
@@ -31,7 +31,7 @@ package talon.browser.plugins.tools.types
 				reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_CSS, file.url);
 		}
 
-		override protected function dispose():void
+		override protected function deactivate():void
 		{
 			document.factory.removeStyleSheetWithId(file.url);
 		}

@@ -15,7 +15,7 @@ package talon.browser.plugins.tools.types
 		private var _texture:Texture;
 		private var _atlas:TextureAtlas;
 
-		override protected function initialize():void
+		override protected function activate():void
 		{
 			_xml = readFileXMLOrReport();
 			if (_xml == null) return;
@@ -24,7 +24,7 @@ package talon.browser.plugins.tools.types
 			onDocumentChanging(null);
 		}
 
-		override protected function dispose():void
+		override protected function deactivate():void
 		{
 			_texture = null;
 

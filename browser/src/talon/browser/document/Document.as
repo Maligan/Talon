@@ -59,6 +59,7 @@ package talon.browser.document
 
 		public function dispose():void
 		{
+			removeEventListeners();
 			files.dispose();
 		}
 

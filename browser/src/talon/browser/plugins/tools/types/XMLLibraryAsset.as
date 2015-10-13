@@ -11,7 +11,7 @@ package talon.browser.plugins.tools.types
 		private var _css:Vector.<String> = new Vector.<String>();
 		private var _templates:Vector.<String> = new Vector.<String>();
 
-		override protected function initialize():void
+		override protected function activate():void
 		{
 			_xml = readFileXMLOrReport();
 			if (_xml == null) return;
@@ -65,7 +65,7 @@ package talon.browser.plugins.tools.types
 			}
 		}
 
-		override protected function dispose():void
+		override protected function deactivate():void
 		{
 			_xml && System.disposeXML(_xml);
 			_xml = null;

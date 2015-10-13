@@ -11,6 +11,7 @@ package talon.browser.utils
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
+	[Event(name="triggered", type="starling.events.Event")]
 	public class MouseWheel extends EventDispatcher
 	{
 		private var _target:DisplayObject;

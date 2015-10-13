@@ -1,9 +1,5 @@
 package talon.browser.plugins.tools.types
 {
-	import talon.browser.AppConstants;
-	import talon.browser.document.files.DocumentFileReference;
-	import talon.browser.document.log.DocumentMessage;
-
 	import flash.display.Loader;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
@@ -11,6 +7,8 @@ package talon.browser.plugins.tools.types
 
 	import starling.textures.AtfData;
 	import starling.textures.Texture;
+
+	import talon.browser.document.log.DocumentMessage;
 
 	public class TextureAsset extends Asset
 	{
@@ -20,7 +18,7 @@ package talon.browser.plugins.tools.types
 		//
 		// Attach
 		//
-		public override function attach():void
+		override protected function initialize():void
 		{
 			var bytes:ByteArray = readFileBytesOrReport();
 			if (bytes == null) return;
@@ -91,10 +89,8 @@ package talon.browser.plugins.tools.types
 		//
 		// Detach
 		//
-		public override function detach():void
+		override protected function dispose():void
 		{
-			reportCleanup();
-
 			document.factory.removeResource(_id);
 			_id = null;
 

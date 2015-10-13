@@ -47,7 +47,7 @@ package talon.browser.plugins.tools
 
 		private function registerChecker(checker:Function, type:Class):void
 		{
-			_app.document.files.registerController(type, checker);
+			_app.document.files.registerController(checker, type);
 		}
 
 		//

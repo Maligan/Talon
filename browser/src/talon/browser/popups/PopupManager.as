@@ -49,7 +49,7 @@ package talon.browser.popups
 					}
 				}
 
-				Starling.juggler.tween(topmost, 0.1, _notifyProperties) as Tween;
+				Starling.juggler.tween(topmost, 0.1, _notifyProperties);
 			}
 		}
 

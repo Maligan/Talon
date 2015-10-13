@@ -1,9 +1,11 @@
 package talon.browser.document.files
 {
+	import flash.utils.Dictionary;
+
+	import starling.events.Event;
+
 	import talon.browser.document.Document;
 	import talon.browser.plugins.tools.types.Asset;
-	import flash.utils.Dictionary;
-	import starling.events.Event;
 
 	public class DocumentFileReferenceCollection
 	{
@@ -24,7 +26,7 @@ package talon.browser.document.files
 			_controllers = new Dictionary();
 		}
 
-		public function registerController(typeClass:Class, checker:Function = null):void
+		public function registerController(checker:Function, typeClass:Class):void
 		{
 			_checkers[_checkers.length] = checker;
 			_mappings[checker] = typeClass;
@@ -118,8 +120,7 @@ package talon.browser.document.files
 			}
 
 			var controller:IDocumentFileController = new controllerClass();
-			controller.setReference(reference);
-			controller.attach();
+			controller.attach(reference);
 
 			_controllers[reference.url] = controller;
 		}
@@ -131,7 +132,6 @@ package talon.browser.document.files
 
 			var controller:IDocumentFileController = _controllers[reference.url];
 			controller.detach();
-			controller.setReference(null);
 
 			delete _controllers[reference.url];
 		}

@@ -37,8 +37,8 @@ package talon.browser.popups
 			bindClickHandler("_accept", onAccept);
 			bindClickHandler("_cancel", onCancel);
 
-			addKeyListener(Keyboard.ENTER, onAccept);
-			addKeyListener(Keyboard.ESCAPE, onCancel);
+			addKeyboardListener(Keyboard.ENTER, onAccept);
+			addKeyboardListener(Keyboard.ESCAPE, onCancel);
 		}
 
 		private function bindClickHandler(childName:String, listener:Function):void

@@ -1,17 +1,16 @@
 package talon.browser.plugins.tools.types
 {
-	import talon.browser.document.Document;
-	import talon.browser.document.files.IDocumentFileController;
-	import talon.browser.document.files.DocumentFileReference;
-	import talon.browser.document.log.DocumentMessage;
 	import flash.utils.ByteArray;
+
+	import talon.browser.document.Document;
+	import talon.browser.document.files.DocumentFileReference;
+	import talon.browser.document.files.IDocumentFileController;
+	import talon.browser.document.log.DocumentMessage;
 
 	public class Asset implements IDocumentFileController
 	{
 		private var _file:DocumentFileReference;
 		private var _messages:Vector.<DocumentMessage> = new <DocumentMessage>[];
-
-		public function setReference(file:DocumentFileReference):void { _file = file; }
 
 		//
 		// Utils
@@ -58,13 +57,28 @@ package talon.browser.plugins.tools.types
 		//
 		// IDocumentFileController
 		//
-		public function attach():void
+		public final function attach(reference:DocumentFileReference):void
+		{
+			_file = reference;
+			initialize();
+		}
+
+		public final function detach():void
+		{
+			dispose();
+			_file = null;
+			reportCleanup();
+		}
+
+		protected function initialize():void
 		{
 			var isXML:Boolean = file.checkFirstMeaningfulChar("<");
 			if (isXML && file.xml == null) reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_XML, file.url);
 		}
 
-		public function detach():void { reportCleanup(); }
+		protected function dispose():void
+		{
+		}
 
 		//
 		// Properties

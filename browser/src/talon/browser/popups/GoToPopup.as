@@ -93,10 +93,10 @@ package talon.browser.popups
 			refresh();
 
 			// Keyboard control
-			addKeyListener(Keyboard.UP, moveCursorToPrev);
-			addKeyListener(Keyboard.DOWN, moveCursorToNext);
-			addKeyListener(Keyboard.ENTER, onEnterPress);
-			addKeyListener(Keyboard.ESCAPE, close);
+			addKeyboardListener(Keyboard.UP, moveCursorToPrev);
+			addKeyboardListener(Keyboard.DOWN, moveCursorToNext);
+			addKeyboardListener(Keyboard.ENTER, onEnterPress);
+			addKeyboardListener(Keyboard.ESCAPE, close);
 
 			// Mouse wheel control
 			_wheel = new MouseWheel(this, _app.starling);

@@ -1,10 +1,8 @@
 package talon.browser.plugins.tools.types
 {
-	import talon.browser.document.files.DocumentFileReference;
-	import talon.browser.document.log.DocumentMessage;
-
 	import flash.system.System;
 
+	import talon.browser.document.log.DocumentMessage;
 	import talon.utils.TalonFactoryBase;
 
 	public class XMLLibraryAsset extends Asset
@@ -13,7 +11,7 @@ package talon.browser.plugins.tools.types
 		private var _css:Vector.<String> = new Vector.<String>();
 		private var _templates:Vector.<String> = new Vector.<String>();
 
-		public override function attach():void
+		override protected function initialize():void
 		{
 			_xml = readFileXMLOrReport();
 			if (_xml == null) return;
@@ -67,10 +65,8 @@ package talon.browser.plugins.tools.types
 			}
 		}
 
-		public override function detach():void
+		override protected function dispose():void
 		{
-			reportCleanup();
-
 			_xml && System.disposeXML(_xml);
 			_xml = null;
 

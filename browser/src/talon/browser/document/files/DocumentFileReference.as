@@ -129,7 +129,6 @@ package talon.browser.document.files
 		//
 		private function readBytes():ByteArray
 		{
-//			if (!exists) throw new ArgumentError("File not exists: ", url);
 			if (!exists) new ByteArray();
 
 			var result:ByteArray = null;

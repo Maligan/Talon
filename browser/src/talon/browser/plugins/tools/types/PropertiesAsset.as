@@ -6,7 +6,7 @@ package talon.browser.plugins.tools.types
 	{
 		private var _properties:Object;
 
-		public override function attach():void
+		override protected function initialize():void
 		{
 			var string:String = readFileStringOrReport();
 			if (string == null) return;
@@ -17,10 +17,8 @@ package talon.browser.plugins.tools.types
 				document.factory.addResource(propertyName, _properties[propertyName]);
 		}
 
-		public override function detach():void
+		override protected function dispose():void
 		{
-			reportCleanup();
-
             if (_properties)
                 for (var propertyName:String in _properties)
                     document.factory.removeResource(propertyName);

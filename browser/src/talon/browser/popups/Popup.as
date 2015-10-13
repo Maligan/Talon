@@ -45,7 +45,7 @@ package talon.browser.popups
 			manager.close(this);
 		}
 
-		protected final function addKeyListener(keyCode:int, listener:Function, type:String = KeyboardEvent.KEY_DOWN):void
+		protected final function addKeyboardListener(keyCode:int, listener:Function, type:String = KeyboardEvent.KEY_DOWN):void
 		{
 			addEventListener(type, function(e:KeyboardEvent):void
 			{

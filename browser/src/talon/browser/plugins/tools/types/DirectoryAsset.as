@@ -7,7 +7,7 @@ package talon.browser.plugins.tools.types
 
 	public class DirectoryAsset extends Asset
 	{
-		public override function attach():void
+		override protected function initialize():void
 		{
 			document.tasks.begin();
 
@@ -38,11 +38,6 @@ package talon.browser.plugins.tools.types
 			{
 				return result;
 			}
-		}
-
-		public override function detach():void
-		{
-			reportCleanup();
 		}
 	}
 }

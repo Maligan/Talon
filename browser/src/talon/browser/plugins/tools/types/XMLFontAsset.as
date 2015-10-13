@@ -1,9 +1,5 @@
 package talon.browser.plugins.tools.types
 {
-	import talon.browser.document.DocumentEvent;
-	import talon.browser.document.files.DocumentFileReference;
-	import talon.browser.document.log.DocumentMessage;
-
 	import flash.system.System;
 
 	import starling.events.Event;
@@ -11,13 +7,16 @@ package talon.browser.plugins.tools.types
 	import starling.text.TextField;
 	import starling.textures.Texture;
 
+	import talon.browser.document.DocumentEvent;
+	import talon.browser.document.log.DocumentMessage;
+
 	public class XMLFontAsset extends Asset
 	{
 		private var _xml:XML;
 		private var _texture:Texture;
 		private var _font:BitmapFont;
 
-		override public function attach():void
+		override protected function initialize():void
 		{
 			_xml = readFileXMLOrReport();
 			if (_xml == null) return;
@@ -26,10 +25,8 @@ package talon.browser.plugins.tools.types
 			onDocumentChanging(null);
 		}
 
-		override public function detach():void
+		override protected function dispose():void
 		{
-			reportCleanup();
-
 			_xml && System.disposeXML(_xml);
 			_xml = null;
 

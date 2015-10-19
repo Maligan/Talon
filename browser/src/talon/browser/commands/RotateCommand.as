@@ -15,14 +15,12 @@ package talon.browser.commands
 
 		public override function execute():void
 		{
-			if (isActive) return;
-
 			var max:int = Math.max(controller.profile.height, controller.profile.width);
 			var min:int = Math.min(controller.profile.height, controller.profile.width);
 
-			controller.orientation.isPortrait
-				? controller.profile.setSize(max, min)
-				: controller.profile.setSize(min, max);
+			var isPortrait:Boolean = controller.stage.stageHeight > controller.stage.stageWidth;
+			if (isPortrait) controller.profile.setSize(max, min);
+			else controller.profile.setSize(min, max);
 		}
 	}
 }

@@ -4,6 +4,7 @@ package talon.browser
 
 	import flash.display.DisplayObject;
 	import flash.display.NativeWindow;
+	import flash.display.Stage;
 	import flash.events.NativeWindowBoundsEvent;
 	import flash.filesystem.File;
 	import flash.geom.Point;
@@ -20,9 +21,9 @@ package talon.browser
 	import talon.browser.document.DocumentEvent;
 	import talon.browser.plugins.IPlugin;
 	import talon.browser.plugins.PluginManager;
-	import talon.browser.plugins.tools.ConsolePlugin;
-	import talon.browser.plugins.tools.DragAndDropPlugin;
-	import talon.browser.plugins.tools.FileTypePlugin;
+	import talon.browser.plugins.tools.CorePluginConsole;
+	import talon.browser.plugins.tools.CorePluginDragAndDrop;
+	import talon.browser.plugins.tools.CorePluginFileType;
 	import talon.browser.utils.DeviceProfile;
 	import talon.browser.utils.OrientationMonitor;
 	import talon.browser.utils.Storage;
@@ -32,7 +33,7 @@ package talon.browser
 	{
 		public static const EVENT_DOCUMENT_CHANGE:String = "documentChange";
 
-		private var _root:DisplayObject;
+		private var _stage:Stage;
 	    private var _plugins:PluginManager;
 		private var _document:Document;
 		private var _ui:AppUI;
@@ -45,16 +46,16 @@ package talon.browser
 	    private var _invoke:String;
 	    private var _invokeTemplateId:String;
 
-		public function AppController(root:DisplayObject)
+		public function AppController(stage:Stage)
 		{
-			_root = root;
+			_stage = stage;
 
 			registerClassAlias(Point);
 			registerClassAlias(DeviceProfile);
 
 			_settings = Storage.fromSharedObject("settings");
-			_profile = _settings.getValueOrDefault(AppConstants.SETTING_PROFILE, DeviceProfile) || new DeviceProfile(_root.stage.stageWidth, root.stage.stageHeight, 1, Capabilities.screenDPI);
-			_orientation = new OrientationMonitor(_root.stage);
+			_profile = _settings.getValueOrDefault(AppConstants.SETTING_PROFILE, DeviceProfile) || new DeviceProfile(stage.stageWidth, stage.stageHeight, 1, Capabilities.screenDPI);
+			_orientation = new OrientationMonitor(stage);
 			_ui = new AppUI(this);
 			_plugins = new PluginManager(this);
 			_updater = new ApplicationUpdaterUI();
@@ -65,12 +66,10 @@ package talon.browser
 			// XXX: NOT work while starling initialing!
 			var colorName:String = _settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
 			var color:uint = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[colorName];
-			_root.stage.color = color;
+			stage.color = color;
 
 			initializeWindowMonitor();
 			initializeStarling();
-
-			onProfileChange(null);
 		}
 
 		public function invoke(path:String):void
@@ -94,11 +93,11 @@ package talon.browser
 
 		private function resizeWindowTo(stageWidth:int, stageHeight:int):void
 		{
-			if (root.stage.stageWidth != stageWidth || root.stage.stageHeight != stageHeight)
+			if (stage.stageWidth != stageWidth || stage.stageHeight != stageHeight)
 			{
-				var window:NativeWindow = root.stage.nativeWindow;
-				var deltaWidth:int = window.width - root.stage.stageWidth;
-				var deltaHeight:int = window.height - root.stage.stageHeight;
+				var window:NativeWindow = stage.nativeWindow;
+				var deltaWidth:int = window.width - stage.stageWidth;
+				var deltaHeight:int = window.height - stage.stageHeight;
 				window.width = Math.max(stageWidth + deltaWidth, window.minSize.x);
 				window.height = Math.max(stageHeight + deltaHeight, window.minSize.y);
 			}
@@ -119,17 +118,14 @@ package talon.browser
 	    /** Application configuration file (for read AND write). */
 		public function get settings():Storage { return _settings; }
 
-	    /** Native Flash root DisplayObject (Document Root). */
-		public function get root():DisplayObject { return _root; }
+	    /** Native Flash Stage. */
+		public function get stage():Stage { return _stage; }
 
 	    /** Device profile. */
 		public function get profile():DeviceProfile { return _profile; }
 
 	    /** Application plugin list (all: attached, detached, broken). */
 	    public function get plugins():PluginManager { return _plugins; }
-
-	    /** Orientation monitor (assist tool). */
-	    public function get orientation():OrientationMonitor { return _orientation; }
 
 	    /** Current opened document or null. */
 	    public function get document():Document { return _document; }
@@ -156,22 +152,34 @@ package talon.browser
 		//
 		private function initializeWindowMonitor():void
 		{
-			_root.stage.addEventListener(Event.RESIZE, onStageResize);
-			_root.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.MOVE, onMove);
-			_root.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.RESIZING, onResizing);
-			_root.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.RESIZE, onResize);
+			_stage.addEventListener(Event.RESIZE, onStageResize);
+			_stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.MOVE, onWindowMove);
+			_stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.RESIZING, onWindowResizing);
 			_profile.addEventListener(Event.CHANGE, onProfileChange);
-			restoreWindowPosition();
-		}
 
-		private function restoreWindowPosition():void
-		{
+			// Restore window position
 			var position:Point = settings.getValueOrDefault(AppConstants.SETTING_WINDOW_POSITION, Point);
 			if (position)
 			{
-				root.stage.nativeWindow.x = position.x;
-				root.stage.nativeWindow.y = position.y;
+				_stage.nativeWindow.x = position.x;
+				_stage.nativeWindow.y = position.y;
 			}
+
+			// Restore window size
+			onProfileChange(null);
+		}
+
+		private function onStageResize(e:* = null):void
+		{
+			if (_starling)
+			{
+				_starling.stage.stageWidth = _stage.stageWidth;
+				_starling.stage.stageHeight = _stage.stageHeight;
+				_starling.viewPort = new Rectangle(0, 0, _stage.stageWidth, _stage.stageHeight);
+			}
+
+			_ui.resizeTo(_stage.stageWidth, _stage.stageHeight);
+			_profile.setSize(_stage.stageWidth, _stage.stageHeight);
 		}
 
 		private function onProfileChange(e:*):void
@@ -187,33 +195,14 @@ package talon.browser
 			_settings.setValue(AppConstants.SETTING_PROFILE, _profile);
 		}
 
-		private function onStageResize(e:* = null):void
-		{
-			if (_starling)
-			{
-				_starling.stage.stageWidth = _root.stage.stageWidth;
-				_starling.stage.stageHeight = _root.stage.stageHeight;
-				_starling.viewPort = new Rectangle(0, 0, _root.stage.stageWidth, _root.stage.stageHeight);
-			}
-
-			_ui.resizeTo(_root.stage.stageWidth, _root.stage.stageHeight);
-			_profile.setSize(_root.stage.stageWidth, _root.stage.stageHeight);
-		}
-
-		private function onResizing(e:NativeWindowBoundsEvent):void
+		private function onWindowResizing(e:NativeWindowBoundsEvent):void
 		{
 			// NativeWindow#resizable is read only, this is fix:
 			var needPrevent:Boolean = settings.getValueOrDefault(AppConstants.SETTING_LOCK_RESIZE, Boolean, false);
-			if (needPrevent)
-				e.preventDefault();
+			if (needPrevent) e.preventDefault();
 		}
 
-		private function onResize(e:NativeWindowBoundsEvent):void
-		{
-			settings.setValue(AppConstants.SETTING_WINDOW_POSITION, e.afterBounds.topLeft);
-		}
-
-		private function onMove(e:NativeWindowBoundsEvent):void
+		private function onWindowMove(e:NativeWindowBoundsEvent):void
 		{
 			settings.setValue(AppConstants.SETTING_WINDOW_POSITION, e.afterBounds.topLeft);
 		}
@@ -223,11 +212,9 @@ package talon.browser
 		//
 		private function initializeStarling():void
 		{
-			_starling = new Starling(Sprite, root.stage, null, null, "auto", "baseline");
+			_starling = new Starling(Sprite, stage, null, null, "auto", "baseline");
 			_starling.addEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
 			_starling.start();
-
-			onStageResize();
 		}
 
 		private function onStarlingRootCreated(e:Event):void
@@ -277,9 +264,9 @@ package talon.browser
 		private function initializePlugins():void
 		{
 			var list:Array = [
-				new ConsolePlugin(),
-				new FileTypePlugin(),
-				new DragAndDropPlugin()
+				new CorePluginConsole(),
+				new CorePluginFileType(),
+				new CorePluginDragAndDrop()
 			];
 
 			for each (var plugin:IPlugin in list)

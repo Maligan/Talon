@@ -40,6 +40,7 @@ package talon.browser.plugins
 		public function attach(plugin:IPlugin):Boolean
 		{
 			if (_plugins.indexOf(plugin) == -1) return false;
+			if (_pluginStatus[plugin] != PluginStatus.DETACHED) return false;
 
 			try
 			{
@@ -59,6 +60,7 @@ package talon.browser.plugins
 		public function detach(plugin:IPlugin):Boolean
 		{
 			if (_plugins.indexOf(plugin) == -1) return false;
+			if (_pluginStatus[plugin] != PluginStatus.ATTACHED) return false;
 
 			try
 			{

@@ -10,11 +10,11 @@ package talon.browser.plugins.tools
 	import talon.browser.plugins.IPlugin;
 	import talon.utils.TalonFactoryBase;
 
-	public class FileTypePlugin implements IPlugin
+	public class CorePluginFileType implements IPlugin
 	{
 		private var _app:AppController;
 
-		public function get id():String         { return "talon.browser.tools.FileType"; }
+		public function get id():String         { return "talon.browser.plugin.core.FileType"; }
 		public function get version():String    { return "0.0.1"; }
 		public function get versionAPI():String { return "0.1.0"; }
 

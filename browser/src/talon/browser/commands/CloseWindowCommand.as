@@ -13,7 +13,7 @@ package talon.browser.commands
 
 		public override function execute():void
 		{
-			controller.root.stage.nativeWindow.close();
+			controller.stage.nativeWindow.close();
 		}
 	}
 }

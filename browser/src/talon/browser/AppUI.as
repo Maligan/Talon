@@ -106,7 +106,7 @@ package talon.browser
 			_controller.settings.addPropertyListener(AppConstants.SETTING_ZOOM, onZoomChange); onZoomChange(null);
 			_controller.settings.addPropertyListener(AppConstants.SETTING_ALWAYS_ON_TOP, onAlwaysOnTopChange); onAlwaysOnTopChange(null);
 
-			resizeTo(_controller.root.stage.stageWidth, _controller.root.stage.stageHeight);
+			resizeTo(_controller.stage.stageWidth, _controller.stage.stageHeight);
 
 			dispatchEventWith(Event.COMPLETE);
 		}
@@ -129,7 +129,7 @@ package talon.browser
 		{
 			var styleName:String = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
 			_interface.node.classes.parse(styleName);
-			_controller.root.stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[styleName];
+			_controller.stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[styleName];
 		}
 
 		private function onStatsChange(e:Event):void
@@ -145,7 +145,7 @@ package talon.browser
 
 		private function onAlwaysOnTopChange(e:Event):void
 		{
-			_controller.root.stage.nativeWindow.alwaysInFront = _controller.settings.getValueOrDefault(AppConstants.SETTING_ALWAYS_ON_TOP, Boolean, false);
+			_controller.stage.nativeWindow.alwaysInFront = _controller.settings.getValueOrDefault(AppConstants.SETTING_ALWAYS_ON_TOP, Boolean, false);
 		}
 
 		public function resizeTo(width:int, height:int):void
@@ -191,7 +191,7 @@ package talon.browser
 			// Application name + version
 			result.push(AppConstants.APP_NAME + " " + AppConstants.APP_VERSION.replace(/\.0$/, ""));
 
-			_controller.root.stage.nativeWindow.title = result.join(" - ");
+			_controller.stage.nativeWindow.title = result.join(" - ");
 		}
 
 		private function refreshCurrentTemplate(e:* = null):void
@@ -221,7 +221,7 @@ package talon.browser
 				_container.node.ppmm = ITalonElement(_template).node.ppmm;
 				_container.node.ppdp = ITalonElement(_template).node.ppdp;
 				_container.addChild(_template);
-				_controller.root.stage && resizeTo(_controller.root.stage.stageWidth, _controller.root.stage.stageHeight);
+				_controller.stage && resizeTo(_controller.stage.stageWidth, _controller.stage.stageHeight);
 			}
 		}
 
@@ -285,7 +285,7 @@ package talon.browser
 			if (zoom != value)
 			{
 				_isolator.scaleX = _isolator.scaleY = value;
-				resizeTo(_controller.root.stage.stageWidth, _controller.root.stage.stageHeight);
+				resizeTo(_controller.stage.stageWidth, _controller.stage.stageHeight);
 			}
 		}
 	}
@@ -381,7 +381,7 @@ class AppUINativeMenu
 		_menu.insert("help/online",   AppConstants.T_MENU_HELP_ONLINE);
 		_menu.insert("help/update",   AppConstants.T_MENU_HELP_UPDATE, new UpdateCommand(_controller));
 
-		if (NativeWindow.supportsMenu) controller.root.stage.nativeWindow.menu = _menu.nativeMenu;
+		if (NativeWindow.supportsMenu) controller.stage.nativeWindow.menu = _menu.nativeMenu;
 	}
 
 	private function refreshRecentOpenedDocumentsList():void

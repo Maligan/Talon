@@ -11,13 +11,13 @@ package talon.browser.plugins.tools
 	import talon.browser.utils.Console;
 	import talon.utils.ITalonElement;
 
-	public class ConsolePlugin implements IPlugin
+	public class CorePluginConsole implements IPlugin
 	{
 		private var _app:AppController;
 		private var _console:Console;
 
-		public function get id():String { return "talon.browser.tools.Console"; }
-		public function get version():String { return "0.0.1"; }
+		public function get id():String         { return "talon.browser.plugin.core.Console"; }
+		public function get version():String    { return "0.0.1"; }
 		public function get versionAPI():String { return "0.1.0"; }
 
 		public function attach(app:AppController):void
@@ -25,9 +25,12 @@ package talon.browser.plugins.tools
 			_app = app;
 
 			_console = new Console();
-			_app.root.stage.addChild(_console);
+			_app.stage.addChild(_console);
 
-			_console.addCommand("plugin", cmdPlugin, "Print current plugin list");
+			_console.addCommand("plugin_list", cmdPluginList, "Print current plugin list");
+			_console.addCommand("plugin_attach", cmdPluginAttach, "Attach plugin", "number");
+			_console.addCommand("plugin_detach", cmdPluginDetach, "Detach plugin", "number");
+
 			_console.addCommand("errors", cmdErrors, "Print current error list");
 			_console.addCommand("tree", cmdTree, "Print current template tree", "-a attributeName");
 			_console.addCommand("resources", cmdResourceSearch, "RegExp based search project resources", "regexp");
@@ -133,34 +136,52 @@ package talon.browser.plugins.tools
 			}
 		}
 
-		private function cmdPlugin(query:String):void
+		private function cmdPluginList(query:String):void
 		{
-			var pattern:String = "- [{2}] {0} v{1}";
+			var pattern:String = "{3}) [{2}] {0} v{1}";
 			var plugins:Vector.<IPlugin> = _app.plugins.toArray();
 
-			plugins.sort(function(p1:IPlugin, p2:IPlugin):int
-			{
-				if (p2.id>p1.id) return +1;
-				if (p2.id<p1.id) return -1;
-				return 0;
-			});
+//			plugins.sort(function(p1:IPlugin, p2:IPlugin):int
+//			{
+//				if (p2.id>p1.id) return +1;
+//				if (p2.id<p1.id) return -1;
+//				return 0;
+//			});
 
-			for each (var plugin:IPlugin in _app.plugins.toArray())
+			for (var i:int = 0; i < plugins.length; i++)
 			{
+				var plugin:IPlugin = plugins[i];
+
 				var status:String = _app.plugins.getPluginStatus(plugin);
 				var statusKey:String = null;
 
 				switch (status)
 				{
-					case PluginStatus.UNADDED:          statusKey = "U+"; break;
+					case PluginStatus.UNADDED:          statusKey = "U"; break;
 					case PluginStatus.ATTACHED:         statusKey = "A"; break;
 					case PluginStatus.ATTACHED_FAIL:    statusKey = "F"; break;
 					case PluginStatus.DETACHED:         statusKey = "D"; break;
 					case PluginStatus.DETACHED_FAIL:    statusKey = "F"; break;
 				}
 
-				_console.println(formatString(pattern, plugin.id, plugin.version, statusKey));
+				_console.println(formatString(pattern, plugin.id, plugin.version, statusKey, i+1));
 			}
+		}
+
+		private function cmdPluginAttach(query:String):void
+		{
+			var split:Array = query.split(" ");
+			var number:int = split[1];
+			var plugin:IPlugin = _app.plugins.toArray()[number - 1];
+			_app.plugins.attach(plugin);
+		}
+
+		private function cmdPluginDetach(query:String):void
+		{
+			var split:Array = query.split(" ");
+			var number:int = split[1];
+			var plugin:IPlugin = _app.plugins.toArray()[number - 1];
+			_app.plugins.detach(plugin);
 		}
 	}
 }

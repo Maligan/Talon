@@ -13,7 +13,7 @@ package talon.browser.commands
 		{
 			super(controller);
 
-			controller.root.stage.nativeWindow.addEventListener(NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGE, onNativeWindowDisplayStateChange);
+			controller.stage.nativeWindow.addEventListener(NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGE, onNativeWindowDisplayStateChange);
 		}
 
 		private function onNativeWindowDisplayStateChange(e:NativeWindowDisplayStateEvent):void
@@ -23,13 +23,13 @@ package talon.browser.commands
 
 		public override function execute():void
 		{
-			if (isActive) controller.root.stage.displayState = StageDisplayState.NORMAL;
-			else controller.root.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
+			if (isActive) controller.stage.displayState = StageDisplayState.NORMAL;
+			else controller.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
 		}
 
 		public override function get isActive():Boolean
 		{
-			return controller.root.stage.displayState != StageDisplayState.NORMAL;
+			return controller.stage.displayState != StageDisplayState.NORMAL;
 		}
 	}
 }

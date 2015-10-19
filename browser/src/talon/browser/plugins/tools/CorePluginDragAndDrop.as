@@ -12,7 +12,7 @@ package talon.browser.plugins.tools
 	import talon.browser.utils.DisplayTreeUtil;
 	import talon.starling.TalonSprite;
 
-	public class DragAndDropPlugin implements IPlugin
+	public class CorePluginDragAndDrop implements IPlugin
 	{
 		public static const EVENT_DRAG_IN:String = "documentDragIn";
 		public static const EVENT_DRAG_OUT:String = "documentDragOut";
@@ -20,7 +20,7 @@ package talon.browser.plugins.tools
 
 		private var _app:AppController;
 
-		public function get id():String { return "talon.browser.tools.DragAndDrop"; }
+		public function get id():String { return "talon.browser.plugin.core.DragAndDrop"; }
 		public function get version():String { return "0.0.1"; }
 		public function get versionAPI():String { return "0.1.0"; }
 
@@ -28,9 +28,9 @@ package talon.browser.plugins.tools
 		{
 			_app = app;
 
-			_app.root.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragIn);
-			_app.root.addEventListener(NativeDragEvent.NATIVE_DRAG_EXIT, onDragOut);
-			_app.root.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
+			_app.stage.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragIn);
+			_app.stage.addEventListener(NativeDragEvent.NATIVE_DRAG_EXIT, onDragOut);
+			_app.stage.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
 
 			_app.addEventListener(EVENT_DRAG_IN, activate);
 			_app.addEventListener(EVENT_DRAG_OUT, deactivate);
@@ -51,9 +51,9 @@ package talon.browser.plugins.tools
 
 		public function detach():void
 		{
-			_app.root.removeEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragIn);
-			_app.root.removeEventListener(NativeDragEvent.NATIVE_DRAG_EXIT, onDragOut);
-			_app.root.removeEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
+			_app.stage.removeEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragIn);
+			_app.stage.removeEventListener(NativeDragEvent.NATIVE_DRAG_EXIT, onDragOut);
+			_app.stage.removeEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
 		}
 
 		private function onDragIn(e:NativeDragEvent):void
@@ -67,7 +67,7 @@ package talon.browser.plugins.tools
 					var file:File = File(files[0]);
 					if (file.extension == AppConstants.BROWSER_DOCUMENT_EXTENSION)
 					{
-						NativeDragManager.acceptDragDrop(_app.root as InteractiveObject);
+						NativeDragManager.acceptDragDrop(_app.stage as InteractiveObject);
 						NativeDragManager.dropAction = NativeDragActions.MOVE;
 						_app.dispatchEventWith(EVENT_DRAG_IN, files[0]);
 					}

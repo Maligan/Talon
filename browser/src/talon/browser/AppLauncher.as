@@ -37,7 +37,7 @@ package talon.browser
 			addChild(_overlay);
 			onResize(null);
 
-			_controller = new AppController(this);
+			_controller = new AppController(stage);
 			_controller.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, onBackgroundColorChanged);
 		}
 

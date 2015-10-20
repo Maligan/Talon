@@ -1,6 +1,6 @@
 package talon.browser.commands
 {
-	import talon.browser.AppController;
+	import talon.browser.AppPlatform;
 	import talon.browser.popups.Popup;
 
 	public class OpenPopupCommand extends Command
@@ -8,7 +8,7 @@ package talon.browser.commands
 		private var _popupClass:Class;
 		private var _popupData:Object;
 
-		public function OpenPopupCommand(controller:AppController, popupClass:Class, popupData:Object)
+		public function OpenPopupCommand(controller:AppPlatform, popupClass:Class, popupData:Object)
 		{
 			super(controller);
 			_popupClass = popupClass;

@@ -1,6 +1,6 @@
 package talon.browser.commands
 {
-	import talon.browser.AppController;
+	import talon.browser.AppPlatform;
 
 	import starling.errors.AbstractMethodError;
 	import starling.events.EventDispatcher;
@@ -9,14 +9,14 @@ package talon.browser.commands
 	[Event(name="change", type="starling.events.Event")]
 	public class Command extends EventDispatcher
 	{
-		private var _controller:AppController;
+		private var _controller:AppPlatform;
 
-		public function Command(controller:AppController):void
+		public function Command(controller:AppPlatform):void
 		{
 			_controller = controller;
 		}
 
-		public final function get controller():AppController
+		public final function get controller():AppPlatform
 		{
 			return _controller;
 		}

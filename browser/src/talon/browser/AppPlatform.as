@@ -3,13 +3,17 @@ package talon.browser
 	import air.update.ApplicationUpdaterUI;
 
 	import flash.display.DisplayObject;
+	import flash.display.Loader;
 	import flash.display.NativeWindow;
 	import flash.display.Stage;
 	import flash.events.NativeWindowBoundsEvent;
 	import flash.filesystem.File;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.net.URLRequest;
+	import flash.system.ApplicationDomain;
 	import flash.system.Capabilities;
+	import flash.system.LoaderContext;
 
 	import starling.core.Starling;
 	import starling.display.Sprite;
@@ -29,7 +33,7 @@ package talon.browser
 	import talon.browser.utils.Storage;
 	import talon.browser.utils.registerClassAlias;
 
-	public class AppController extends EventDispatcher
+	public class AppPlatform extends EventDispatcher
 	{
 		public static const EVENT_DOCUMENT_CHANGE:String = "documentChange";
 
@@ -46,7 +50,7 @@ package talon.browser
 	    private var _invoke:String;
 	    private var _invokeTemplateId:String;
 
-		public function AppController(stage:Stage)
+		public function AppPlatform(stage:Stage)
 		{
 			_stage = stage;
 
@@ -69,6 +73,10 @@ package talon.browser
 			stage.color = color;
 
 			initializeWindowMonitor();
+		}
+
+		public function initialize():void
+		{
 			initializeStarling();
 		}
 
@@ -153,6 +161,7 @@ package talon.browser
 		private function initializeWindowMonitor():void
 		{
 			_stage.addEventListener(Event.RESIZE, onStageResize);
+			_stage.nativeWindow.minSize = new Point(200, 100);
 			_stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.MOVE, onWindowMove);
 			_stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.RESIZING, onWindowResizing);
 			_profile.addEventListener(Event.CHANGE, onProfileChange);
@@ -263,17 +272,10 @@ package talon.browser
 		//
 		private function initializePlugins():void
 		{
-			var list:Array = [
-				new CorePluginConsole(),
-				new CorePluginFileType(),
-				new CorePluginDragAndDrop()
-			];
-
-			for each (var plugin:IPlugin in list)
-			{
-				plugins.addPlugin(plugin);
-				plugins.attach(plugin);
-			}
+			CorePluginConsole;
+			CorePluginFileType;
+			CorePluginDragAndDrop;
+			plugins.addPluginsFromApplicationDomain(ApplicationDomain.currentDomain);
 		}
 	}
 }

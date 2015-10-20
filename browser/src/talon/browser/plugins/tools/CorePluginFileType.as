@@ -4,7 +4,7 @@ package talon.browser.plugins.tools
 
 	import talon.browser.AppConstants;
 
-	import talon.browser.AppController;
+	import talon.browser.AppPlatform;
 	import talon.browser.document.files.DocumentFileReference;
 	import talon.browser.plugins.tools.types.*;
 	import talon.browser.plugins.IPlugin;
@@ -12,27 +12,27 @@ package talon.browser.plugins.tools
 
 	public class CorePluginFileType implements IPlugin
 	{
-		private var _app:AppController;
+		private var _platform:AppPlatform;
 
 		public function get id():String         { return "talon.browser.plugin.core.FileType"; }
 		public function get version():String    { return "0.0.1"; }
 		public function get versionAPI():String { return "0.1.0"; }
 
-		public function attach(app:AppController):void
+		public function attach(platform:AppPlatform):void
 		{
-			_app = app;
-			_app.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			_platform = platform;
+			_platform.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
 		}
 
 		public function detach():void
 		{
-			_app.removeEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);
-			_app = null;
+			_platform.removeEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			_platform = null;
 		}
 
 		private function onDocumentChange(e:Event):void
 		{
-			if (_app.document != null)
+			if (_platform.document != null)
 			{
 				registerChecker(checkProperties,    PropertiesAsset);
 				registerChecker(checkDirectory,     DirectoryAsset);
@@ -47,7 +47,7 @@ package talon.browser.plugins.tools
 
 		private function registerChecker(checker:Function, type:Class):void
 		{
-			_app.document.files.registerController(checker, type);
+			_platform.document.files.registerController(checker, type);
 		}
 
 		//

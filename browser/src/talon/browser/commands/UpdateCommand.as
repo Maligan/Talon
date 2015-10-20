@@ -1,10 +1,10 @@
 package talon.browser.commands
 {
-	import talon.browser.AppController;
+	import talon.browser.AppPlatform;
 
 	public class UpdateCommand extends Command
 	{
-		public function UpdateCommand(controller:AppController)
+		public function UpdateCommand(controller:AppPlatform)
 		{
 			super(controller);
 		}

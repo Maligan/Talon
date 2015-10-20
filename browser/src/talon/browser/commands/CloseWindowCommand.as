@@ -1,12 +1,12 @@
 package talon.browser.commands
 {
-	import talon.browser.AppController;
+	import talon.browser.AppPlatform;
 
 	import flash.desktop.NativeApplication;
 
 	public class CloseWindowCommand extends Command
 	{
-		public function CloseWindowCommand(controller:AppController)
+		public function CloseWindowCommand(controller:AppPlatform)
 		{
 			super(controller);
 		}

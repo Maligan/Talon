@@ -1,6 +1,6 @@
 package talon.browser.commands
 {
-	import talon.browser.AppController;
+	import talon.browser.AppPlatform;
 	import flash.display.NativeWindow;
 	import flash.events.Event;
 
@@ -8,7 +8,7 @@ package talon.browser.commands
 
 	public class RotateCommand extends Command
 	{
-		public function RotateCommand(controller:AppController)
+		public function RotateCommand(controller:AppPlatform)
 		{
 			super(controller);
 		}

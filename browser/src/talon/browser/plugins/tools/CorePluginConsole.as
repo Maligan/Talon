@@ -4,7 +4,7 @@ package talon.browser.plugins.tools
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.browser.AppController;
+	import talon.browser.AppPlatform;
 	import talon.browser.document.log.DocumentMessage;
 	import talon.browser.plugins.IPlugin;
 	import talon.browser.plugins.PluginStatus;
@@ -13,19 +13,19 @@ package talon.browser.plugins.tools
 
 	public class CorePluginConsole implements IPlugin
 	{
-		private var _app:AppController;
+		private var _platform:AppPlatform;
 		private var _console:Console;
 
 		public function get id():String         { return "talon.browser.plugin.core.Console"; }
 		public function get version():String    { return "0.0.1"; }
 		public function get versionAPI():String { return "0.1.0"; }
 
-		public function attach(app:AppController):void
+		public function attach(platform:AppPlatform):void
 		{
-			_app = app;
+			_platform = platform;
 
 			_console = new Console();
-			_app.stage.addChild(_console);
+			_platform.stage.addChild(_console);
 
 			_console.addCommand("plugin_list", cmdPluginList, "Print current plugin list");
 			_console.addCommand("plugin_attach", cmdPluginAttach, "Attach plugin", "number");
@@ -44,16 +44,16 @@ package talon.browser.plugins.tools
 			_console.removeCommand("resources");
 			_console.removeCommand("resources_miss");
 
-			_app = null;
+			_platform = null;
 		}
 
 		private function cmdResourceSearch(query:String):void
 		{
-			if (_app.document == null) throw new Error("Document not opened");
+			if (_platform.document == null) throw new Error("Document not opened");
 
 			var split:Array = query.split(" ");
 			var regexp:RegExp = query.length > 1 ? new RegExp(split[1]) : /.*/;
-			var resourceIds:Vector.<String> = _app.document.factory.resourceIds.filter(byRegExp(regexp));
+			var resourceIds:Vector.<String> = _platform.document.factory.resourceIds.filter(byRegExp(regexp));
 
 			if (resourceIds.length == 0) _console.println("Resources not found");
 			else
@@ -75,10 +75,10 @@ package talon.browser.plugins.tools
 
 		private function cmdResourceMiss(query:String):void
 		{
-			if (_app.document == null) throw new Error("Document not opened");
-			if (_app.ui.templateId == null) throw new Error("Prototype not selected");
+			if (_platform.document == null) throw new Error("Document not opened");
+			if (_platform.ui.templateId == null) throw new Error("Prototype not selected");
 
-			for each (var resourceId:String in _app.document.factory.missedResourceIds)
+			for each (var resourceId:String in _platform.document.factory.missedResourceIds)
 			{
 				_console.println("*", resourceId);
 			}
@@ -90,7 +90,7 @@ package talon.browser.plugins.tools
 			var useAttrs:Boolean = split.length > 1 && split[1] == "-a";
 			var attrs:Array = useAttrs ? split[2].split(/\s*,\s*/) : [];
 
-			var template:ITalonElement = ITalonElement(_app.ui.template);
+			var template:ITalonElement = ITalonElement(_platform.ui.template);
 			var node:Node = template.node;
 			traceNode(node, 0, attrs);
 		}
@@ -120,13 +120,13 @@ package talon.browser.plugins.tools
 
 		private function cmdErrors(query:String):void
 		{
-			if (_app.document.messages.numMessages > 0)
+			if (_platform.document.messages.numMessages > 0)
 			{
 				_console.println("Document error list:");
 
-				for (var i:int = 0; i < _app.document.messages.numMessages; i++)
+				for (var i:int = 0; i < _platform.document.messages.numMessages; i++)
 				{
-					var message:DocumentMessage = _app.document.messages.getMessageAt(i);
+					var message:DocumentMessage = _platform.document.messages.getMessageAt(i);
 					_console.println((i+1) + ")", message.level==2?"Error":message.level==1?"Warning":"Info", "|", message.text);
 				}
 			}
@@ -139,7 +139,7 @@ package talon.browser.plugins.tools
 		private function cmdPluginList(query:String):void
 		{
 			var pattern:String = "{3}) [{2}] {0} v{1}";
-			var plugins:Vector.<IPlugin> = _app.plugins.toArray();
+			var plugins:Vector.<IPlugin> = _platform.plugins.getPlugins();
 
 //			plugins.sort(function(p1:IPlugin, p2:IPlugin):int
 //			{
@@ -152,7 +152,7 @@ package talon.browser.plugins.tools
 			{
 				var plugin:IPlugin = plugins[i];
 
-				var status:String = _app.plugins.getPluginStatus(plugin);
+				var status:String = _platform.plugins.getPluginStatus(plugin);
 				var statusKey:String = null;
 
 				switch (status)
@@ -172,16 +172,16 @@ package talon.browser.plugins.tools
 		{
 			var split:Array = query.split(" ");
 			var number:int = split[1];
-			var plugin:IPlugin = _app.plugins.toArray()[number - 1];
-			_app.plugins.attach(plugin);
+			var plugin:IPlugin = _platform.plugins.getPlugins()[number - 1];
+			_platform.plugins.activate(plugin);
 		}
 
 		private function cmdPluginDetach(query:String):void
 		{
 			var split:Array = query.split(" ");
 			var number:int = split[1];
-			var plugin:IPlugin = _app.plugins.toArray()[number - 1];
-			_app.plugins.detach(plugin);
+			var plugin:IPlugin = _platform.plugins.getPlugins()[number - 1];
+			_platform.plugins.deactivate(plugin);
 		}
 	}
 }

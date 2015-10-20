@@ -31,7 +31,7 @@ package talon.browser
 		[Embed(source="/../assets/interface.zip", mimeType="application/octet-stream")] private static const INTERFACE:Class;
 		[Embed(source="/../assets/SourceSansPro.otf", embedAsCFF="false", fontName="Source Sans Pro")] private static const INTERFACE_FONT:Class;
 
-		private var _controller:AppController;
+		private var _controller:AppPlatform;
 		private var _menu:AppUINativeMenu;
 		private var _popups:PopupManager;
 
@@ -48,13 +48,13 @@ package talon.browser
 		private var _locked:Boolean;
 		private var _completed:Boolean;
 
-		public function AppUI(controller:AppController)
+		public function AppUI(controller:AppPlatform)
 		{
 			_controller = controller;
-			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, refreshWindowTitle);
+			_controller.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, refreshWindowTitle);
 			_controller.profile.addEventListener(Event.CHANGE, refreshWindowTitle);
 
-			_controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, refreshCurrentTemplate);
+			_controller.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, refreshCurrentTemplate);
 			_controller.addEventListener(DocumentEvent.CHANGE, refreshCurrentTemplate);
 
 			_isolator = new Sprite();
@@ -293,7 +293,7 @@ package talon.browser
 
 import starling.core.RenderSupport;
 import talon.browser.AppConstants;
-import talon.browser.AppController;
+import talon.browser.AppPlatform;
 import talon.starling.TalonSprite;
 
 class TalonSpriteWithDrawCountReset extends TalonSprite
@@ -317,11 +317,11 @@ import talon.browser.utils.NativeMenuAdapter;
 
 class AppUINativeMenu
 {
-	private var _controller:AppController;
+	private var _controller:AppPlatform;
 	private var _menu:NativeMenuAdapter;
 	private var _prevDocuments:Array;
 
-	public function AppUINativeMenu(controller:AppController)
+	public function AppUINativeMenu(controller:AppPlatform)
 	{
 		_controller = controller;
 		_menu = new NativeMenuAdapter();

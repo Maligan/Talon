@@ -2,7 +2,7 @@ package talon.browser.commands
 {
 	import talon.browser.document.files.DocumentFileReference;
 	import talon.browser.AppConstants;
-	import talon.browser.AppController;
+	import talon.browser.AppPlatform;
 	import talon.browser.document.Document;
 
 	import flash.events.Event;
@@ -13,7 +13,7 @@ package talon.browser.commands
 	{
 		private var _source:File;
 
-		public function OpenDocumentCommand(controller:AppController, source:File = null)
+		public function OpenDocumentCommand(controller:AppPlatform, source:File = null)
 		{
 			super(controller);
 			_source = source;

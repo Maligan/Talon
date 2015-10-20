@@ -12,7 +12,7 @@ package talon.browser.commands
 
 	import talon.browser.AppConstants;
 
-	import talon.browser.AppController;
+	import talon.browser.AppPlatform;
 	import talon.browser.document.files.DocumentFileReference;
 
 	import flash.filesystem.File;
@@ -27,10 +27,10 @@ package talon.browser.commands
 	{
 		private var _target:File;
 
-		public function PublishCommand(controller:AppController, target:File = null)
+		public function PublishCommand(controller:AppPlatform, target:File = null)
 		{
 			super(controller);
-			controller.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			controller.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
 			_target = target;
 		}
 

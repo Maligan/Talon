@@ -19,8 +19,10 @@ package talon.browser
 
 		public static const BROWSER_DOCUMENT_EXTENSION:String = "talon";
 		public static const BROWSER_PUBLISH_EXTENSION:String = "zip";
+		public static const BROWSER_PLUGIN_EXTENSION:String = "swf";
 		public static const BROWSER_SUPPORTED_IMAGE_EXTENSIONS:Vector.<String> = new <String>["atf", "png", "jpg", "gif"];
 
+		public static const PLUGINS_DIR:String = "plugins";
 		public static const ZOOM_MIN:int = 25;
 		public static const ZOOM_MAX:int = 300;
 		public static const HISTORY_RECENT_MAX:int = 10;
@@ -46,6 +48,7 @@ package talon.browser
 		public static const SETTING_PROFILE:String = "profile";
 		public static const SETTING_CHECK_FOR_UPDATE_ON_STARTUP:String = "checkForUpdateOnStartup";
 		public static const SETTING_WINDOW_POSITION:String = "windowPosition";
+		public static const SETTING_DETACHED_PLUGINS:String = "detachedPlugins";
 
 		//
 		// Language

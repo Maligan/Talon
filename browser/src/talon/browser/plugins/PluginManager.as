@@ -1,6 +1,13 @@
 package talon.browser.plugins
 {
-	import talon.browser.AppController;
+	import avmplus.DescribeTypeJSON;
+	import avmplus.getQualifiedClassName;
+
+	import flash.system.ApplicationDomain;
+
+	import talon.browser.AppConstants;
+
+	import talon.browser.AppPlatform;
 
 	import flash.utils.Dictionary;
 	import starling.events.Event;
@@ -8,15 +15,38 @@ package talon.browser.plugins
 
 	public class PluginManager extends EventDispatcher
 	{
-		private var _app:AppController;
+		private var _platform:AppPlatform;
 		private var _plugins:Vector.<IPlugin>;
 		private var _pluginStatus:Dictionary;
 
-		public function PluginManager(app:AppController)
+		public function PluginManager(app:AppPlatform)
 		{
-			_app = app;
+			_platform = app;
 			_plugins = new <IPlugin>[];
 			_pluginStatus = new Dictionary();
+		}
+
+		public function addPluginsFromApplicationDomain(domain:ApplicationDomain):void
+		{
+			var required:String = getQualifiedClassName(IPlugin);
+			var names:Vector.<String> = domain.getQualifiedDefinitionNames();
+
+			for each (var name:String in names)
+			{
+				var definition:Class = domain.hasDefinition(name) ? domain.getDefinition(name) as Class : null;
+				if (definition != null)
+				{
+					var description:Object = DescribeTypeJSON.getInstanceDescription(definition);
+					var traits:Object = description["traits"];
+					var interfaces:Array = traits["interfaces"];
+					if (interfaces.indexOf(required) != -1)
+					{
+						// XXX: Error while constructor
+						var plugin:IPlugin = new definition();
+						addPlugin(plugin);
+					}
+				}
+			}
 		}
 
 		public function addPlugin(plugin:IPlugin):void
@@ -26,6 +56,9 @@ package talon.browser.plugins
 
 			_plugins.push(plugin);
 			_pluginStatus[plugin] = PluginStatus.DETACHED;
+
+			var detached:Array = _platform.settings.getValueOrDefault(AppConstants.SETTING_DETACHED_PLUGINS, Array, []);
+			if (detached.indexOf(plugin.id) == -1) activate(plugin);
 
 			dispatchEventWith(Event.CHANGE, false, plugin);
 		}
@@ -37,15 +70,23 @@ package talon.browser.plugins
 			return _pluginStatus[plugin];
 		}
 
-		public function attach(plugin:IPlugin):Boolean
+		public function activate(plugin:IPlugin):Boolean
 		{
 			if (_plugins.indexOf(plugin) == -1) return false;
-			if (_pluginStatus[plugin] != PluginStatus.DETACHED) return false;
 
 			try
 			{
-				plugin.attach(_app);
+				plugin.attach(_platform);
 				_pluginStatus[plugin] = PluginStatus.ATTACHED;
+
+				var detached:Array = _platform.settings.getValueOrDefault(AppConstants.SETTING_DETACHED_PLUGINS, Array, []);
+				var indexOf:int = detached.indexOf(plugin.id);
+				if (indexOf != -1)
+				{
+					detached.splice(indexOf, 1);
+					_platform.settings.setValue(AppConstants.SETTING_DETACHED_PLUGINS, detached);
+				}
+
 				dispatchEventWith(Event.CHANGE, false, plugin);
 				return true;
 			}
@@ -57,15 +98,23 @@ package talon.browser.plugins
 			}
 		}
 
-		public function detach(plugin:IPlugin):Boolean
+		public function deactivate(plugin:IPlugin):Boolean
 		{
 			if (_plugins.indexOf(plugin) == -1) return false;
-			if (_pluginStatus[plugin] != PluginStatus.ATTACHED) return false;
 
 			try
 			{
 				plugin.detach();
 				_pluginStatus[plugin] = PluginStatus.DETACHED;
+
+				var detached:Array = _platform.settings.getValueOrDefault(AppConstants.SETTING_DETACHED_PLUGINS, Array, []);
+				var indexOf:int = detached.indexOf(plugin.id);
+				if (indexOf == -1)
+				{
+					detached.push(plugin.id);
+					_platform.settings.setValue(AppConstants.SETTING_DETACHED_PLUGINS, detached);
+				}
+
 				dispatchEventWith(Event.CHANGE, false, plugin);
 				return true;
 			}
@@ -77,7 +126,7 @@ package talon.browser.plugins
 			}
 		}
 
-		public function toArray():Vector.<IPlugin>
+		public function getPlugins():Vector.<IPlugin>
 		{
 			return _plugins.slice();
 		}

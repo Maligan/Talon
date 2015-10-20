@@ -1,6 +1,6 @@
 package talon.browser.commands
 {
-	import talon.browser.AppController;
+	import talon.browser.AppPlatform;
 
 	public class ChangeSettingCommand extends Command
 	{
@@ -8,7 +8,7 @@ package talon.browser.commands
 		private var _value:*;
 		private var _alternate:*;
 
-		public function ChangeSettingCommand(controller:AppController, name:String, value:*, alternate:* = null)
+		public function ChangeSettingCommand(controller:AppPlatform, name:String, value:*, alternate:* = null)
 		{
 			super(controller);
 			controller.settings.addPropertyListener(name, dispatchEvent);

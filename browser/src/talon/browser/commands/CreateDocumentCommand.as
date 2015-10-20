@@ -1,6 +1,6 @@
 package talon.browser.commands
 {
-	import talon.browser.AppController;
+	import talon.browser.AppPlatform;
 	import talon.browser.AppConstants;
 	import flash.events.Event;
 	import flash.filesystem.File;
@@ -12,7 +12,7 @@ package talon.browser.commands
 		private var _project:File;
 		private var _projectRoot:File;
 
-		public function CreateDocumentCommand(controller:AppController)
+		public function CreateDocumentCommand(controller:AppPlatform)
 		{
 			super(controller);
 		}

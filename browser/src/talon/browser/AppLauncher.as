@@ -1,25 +1,28 @@
 package talon.browser
 {
+	import flash.display.Loader;
 	import flash.display.Sprite;
 
 	import flash.desktop.NativeApplication;
 	import flash.display.MovieClip;
 	import flash.events.InvokeEvent;
-	import flash.geom.Point;
+	import flash.filesystem.File;
+	import flash.net.URLRequest;
+	import flash.system.ApplicationDomain;
+	import flash.system.LoaderContext;
 
 	import starling.events.Event;
 
 	[SWF(frameRate="60")]
 	public class AppLauncher extends MovieClip
 	{
-		private var _overlay:Sprite;
-		private var _controller:AppController;
+		private var _controller:AppPlatform;
+		private var _plugins:int;
 		private var _invoke:String;
 
 		public function AppLauncher()
 		{
-			if (stage) initialize();
-			else addEventListener(Event.ADDED_TO_STAGE, initialize);
+			stage ? initialize() : addEventListener(Event.ADDED_TO_STAGE, initialize);
 		}
 
 		private function initialize(e:* = null):void
@@ -27,33 +30,44 @@ package talon.browser
 			removeEventListener(Event.ADDED_TO_STAGE, initialize);
 
 			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
-			//NativeApplication.nativeApplication.setAsDefaultApplication(AppConstants.DESIGNER_FILE_EXTENSION);
+			// NativeApplication.nativeApplication.setAsDefaultApplication(AppConstants.DESIGNER_FILE_EXTENSION);
 
-			stage.nativeWindow.minSize = new Point(200, 100);
-			stage.addEventListener(Event.RESIZE, onResize);
-
-			// For native drag purpose
-			_overlay = new Sprite();
-			addChild(_overlay);
-			onResize(null);
-
-			_controller = new AppController(stage);
+			// Create platform
+			_controller = new AppPlatform(stage);
 			_controller.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, onBackgroundColorChanged);
+
+			initializePlugins();
 		}
 
-		private function onBackgroundColorChanged():void
+		private function initializePlugins():void
 		{
-			var colorName:String = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
-			var color:uint = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[colorName];
-			stage.color = color;
+			var dir:File = File.applicationDirectory.resolvePath(AppConstants.PLUGINS_DIR);
+			if (dir.exists)
+			{
+				var files:Array = dir.getDirectoryListing();
+
+				for each (var file:File in files)
+				{
+					if (file.extension == AppConstants.BROWSER_PLUGIN_EXTENSION)
+					{
+						_plugins++;
+
+						var domain:ApplicationDomain = ApplicationDomain.currentDomain;
+						var request:URLRequest = new URLRequest(file.url);
+						var context:LoaderContext = new LoaderContext(false, domain);
+						var loader:Loader = new Loader();
+						loader.contentLoaderInfo.addEventListener(Event.COMPLETE, checkPlugins);
+						loader.contentLoaderInfo.addEventListener(Event.IO_ERROR, checkPlugins);
+						loader.contentLoaderInfo.addEventListener(Event.SECURITY_ERROR, checkPlugins);
+						loader.load(request, context);
+					}
+				}
+			}
 		}
 
-		private function onResize(e:*):void
+		private function checkPlugins(e:*):void
 		{
-			_overlay.graphics.clear();
-			_overlay.graphics.beginFill(0, 0);
-			_overlay.graphics.drawRect(0, 0, stage.stageWidth, stage.stageHeight);
-			_overlay.graphics.endFill();
+			if (--_plugins == 0) _controller.initialize();
 		}
 
 		private function onInvoke(e:InvokeEvent):void
@@ -63,6 +77,13 @@ package talon.browser
 				_invoke = e.arguments[0];
 				_controller && _controller.invoke(_invoke);
 			}
+		}
+
+		private function onBackgroundColorChanged():void
+		{
+			var colorName:String = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
+			var color:uint = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[colorName];
+			stage.color = color;
 		}
 	}
 }

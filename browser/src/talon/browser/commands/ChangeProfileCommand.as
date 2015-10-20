@@ -1,6 +1,6 @@
 package talon.browser.commands
 {
-	import talon.browser.AppController;
+	import talon.browser.AppPlatform;
 	import talon.browser.popups.ProfilePopup;
 	import talon.browser.utils.DeviceProfile;
 	import talon.browser.utils.DeviceProfile;
@@ -11,7 +11,7 @@ package talon.browser.commands
 	{
 		private var _profile:DeviceProfile;
 
-		public function ChangeProfileCommand(controller:AppController, profile:DeviceProfile)
+		public function ChangeProfileCommand(controller:AppPlatform, profile:DeviceProfile)
 		{
 			super(controller);
 			controller.profile.addEventListener(Event.CHANGE, onProfileChange);

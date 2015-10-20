@@ -1,6 +1,6 @@
 package talon.browser.plugins
 {
-	import talon.browser.AppController;
+	import talon.browser.AppPlatform;
 
 	public interface IPlugin
 	{
@@ -18,7 +18,7 @@ package talon.browser.plugins
 		// Implementation
 		//
 		/** Attach plugin to application. */
-		function attach(app:AppController):void;
+		function attach(platform:AppPlatform):void;
 		/** Detach plugin to application. */
 		function detach():void;
 	}

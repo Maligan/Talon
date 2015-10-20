@@ -1,6 +1,6 @@
 package talon.browser.popups
 {
-	import talon.browser.AppController;
+	import talon.browser.AppPlatform;
 	import talon.browser.utils.FuzzyUtil;
 	import talon.browser.utils.MouseWheel;
 	import talon.browser.utils.TalonFeatherTextInput;
@@ -37,7 +37,7 @@ package talon.browser.popups
 		private var _labelsShift:int;
 
 		// Controller
-		private var _app:AppController;
+		private var _app:AppPlatform;
 		private var _wheel:MouseWheel;
 
 		protected override function initialize():void
@@ -45,8 +45,8 @@ package talon.browser.popups
 			var view:DisplayObjectContainer = manager.factory.produce("GoToPopup");
 			addChild(view);
 
-			_app = data as AppController;
-			_app.addEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			_app = data as AppPlatform;
+			_app.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
 
 			var source:Vector.<String> = _app.document.factory.templateIds;
 			_items = new Array();
@@ -108,7 +108,7 @@ package talon.browser.popups
 			super.dispose();
 			_wheel.dispose();
 			_wheel = null;
-			_app.removeEventListener(AppController.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			_app.removeEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
 			_app = null;
 		}
 

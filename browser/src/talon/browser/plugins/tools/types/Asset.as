@@ -65,9 +65,9 @@ package talon.browser.plugins.tools.types
 
 		public final function detach():void
 		{
+			reportCleanup();
 			deactivate();
 			_file = null;
-			reportCleanup();
 		}
 
 		protected function activate():void

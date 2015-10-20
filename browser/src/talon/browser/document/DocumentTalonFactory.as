@@ -39,7 +39,7 @@ package talon.browser.document
 
 		public override function produce(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
 		{
-			resources.reset();
+			resources.resource_proxy::reset();
 			_style = _styles.getMergedStyleSheet();
 
 			return super.produce(id, includeStyleSheet, includeResources);
@@ -148,7 +148,7 @@ package talon.browser.document
 
 		public function get missedResourceIds():Vector.<String>
 		{
-			return resources.missed;
+			return resources.resource_proxy::missed;
 		}
 
 		public function removeResource(id:String):void
@@ -193,10 +193,9 @@ package talon.browser.document
 import flash.utils.Dictionary;
 import flash.utils.Proxy;
 import flash.utils.flash_proxy;
-
 import talon.StyleSheet;
 
-use namespace flash_proxy;
+namespace resource_proxy;
 
 class ObjectWithAccessLogger extends Proxy
 {
@@ -209,19 +208,19 @@ class ObjectWithAccessLogger extends Proxy
 		_used = new Object();
 	}
 
-	public function reset():void
+	resource_proxy function reset():void
 	{
 		_used = new Object();
 	}
 
-	public function get used():Vector.<String>
+	resource_proxy function get used():Vector.<String>
 	{
 		var result:Vector.<String> = new <String>[];
 		for each (var property:String in _used) result[result.length] = property;
 		return result;
 	}
 
-	public function get unused():Vector.<String>
+	resource_proxy function get unused():Vector.<String>
 	{
 		var result:Vector.<String> = new <String>[];
 
@@ -232,9 +231,9 @@ class ObjectWithAccessLogger extends Proxy
 		return result;
 	}
 
-	public function get missed():Vector.<String>
+	resource_proxy function get missed():Vector.<String>
 	{
-		return used.filter(notExists);
+		return resource_proxy::used.filter(notExists);
 	}
 
 	private function notExists(property:String, index:int, vector:Vector.<String>):Boolean
@@ -242,12 +241,12 @@ class ObjectWithAccessLogger extends Proxy
 		return _innerObject.hasOwnProperty(property) == false;
 	}
 
-	public function get inner():Object
+	resource_proxy function get inner():Object
 	{
 		return _innerObject;
 	}
 
-	flash_proxy override function getProperty(name:*):* { return hasProperty(name) ? _innerObject[name] : null; }
+	flash_proxy override function getProperty(name:*):* { return flash_proxy::hasProperty(name) ? _innerObject[name] : null; }
 	flash_proxy override function setProperty(name:*, value:*):void { _innerObject[name] = value; }
 	flash_proxy override function hasProperty(name:*):Boolean { _used[name] = name; return _innerObject.hasOwnProperty(name); }
 	flash_proxy override function deleteProperty(name:*):Boolean { return (delete _innerObject[name]); }

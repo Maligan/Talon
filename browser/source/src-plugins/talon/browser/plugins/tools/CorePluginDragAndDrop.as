@@ -3,7 +3,6 @@ package talon.browser.plugins.tools
 	import flash.desktop.ClipboardFormats;
 	import flash.desktop.NativeDragActions;
 	import flash.desktop.NativeDragManager;
-	import flash.display.InteractiveObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.NativeDragEvent;
@@ -16,9 +15,9 @@ package talon.browser.plugins.tools
 
 	public class CorePluginDragAndDrop implements IPlugin
 	{
-		public static const EVENT_DRAG_IN:String = "documentDragIn";
-		public static const EVENT_DRAG_OUT:String = "documentDragOut";
-		public static const EVENT_DRAG_DROP:String = "documentDrop";
+		public static const EVENT_DRAG_IN:String = "dragIn";
+		public static const EVENT_DRAG_OUT:String = "dragOut";
+		public static const EVENT_DRAG_DROP:String = "dragDrop";
 
 		private var _nativeDragLayer:Sprite;
 		private var _platform:AppPlatform;
@@ -93,7 +92,7 @@ package talon.browser.plugins.tools
 					var file:File = File(files[0]);
 					if (file.extension == AppConstants.BROWSER_DOCUMENT_EXTENSION)
 					{
-						NativeDragManager.acceptDragDrop(_platform.stage as InteractiveObject);
+						NativeDragManager.acceptDragDrop(_nativeDragLayer);
 						NativeDragManager.dropAction = NativeDragActions.MOVE;
 						_platform.dispatchEventWith(EVENT_DRAG_IN, files[0]);
 					}

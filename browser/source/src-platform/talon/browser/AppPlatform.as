@@ -47,7 +47,7 @@ package talon.browser
 		private var _starling:Starling;
 		private var _updater:ApplicationUpdaterUI;
 
-	    private var _invoke:String;
+	    private var _invoke:Array;
 	    private var _invokeTemplateId:String;
 
 		public function AppPlatform(stage:Stage)
@@ -75,27 +75,31 @@ package talon.browser
 			initializeWindowMonitor();
 		}
 
-		public function initialize():void
+		public function start():void
 		{
 			initializeStarling();
 		}
 
-		public function invoke(path:String):void
+		public function invoke(args:Array):void
 		{
 			if (_ui.completed)
 			{
-				// Open
-				var file:File = new File(path);
-				if (file.exists)
+				if (_invoke && _invoke.length > 0)
 				{
-					var open:OpenDocumentCommand = new OpenDocumentCommand(this, file);
-					open.execute();
+					// Open
+					var path:String = _invoke[0];
+					var file:File = new File(path);
+					if (file.exists)
+					{
+						var open:OpenDocumentCommand = new OpenDocumentCommand(this, file);
+						open.execute();
+					}
 				}
 			}
 			else
 			{
 				// Delay
-				_invoke = path;
+				_invoke = args;
 			}
 		}
 
@@ -120,7 +124,7 @@ package talon.browser
 	    /** Current Starling instance (preferably use this accessor, browser may work in multi windowed mode). */
 	    public function get starling():Starling { return _starling; }
 
-	    /** Application UI module. */
+	    /** @private Application UI module. */
 	    public function get ui():AppUI { return _ui; }
 
 	    /** Application configuration file (for read AND write). */
@@ -250,7 +254,7 @@ package talon.browser
 					var recentPath:String = recentArray && recentArray.length ? recentArray[0] : null;
 					if (recentPath)
 					{
-						_invoke = recentPath;
+						_invoke = [recentPath];
 						_invokeTemplateId = template;
 					}
 				}

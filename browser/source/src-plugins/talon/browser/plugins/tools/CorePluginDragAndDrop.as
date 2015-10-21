@@ -4,6 +4,8 @@ package talon.browser.plugins.tools
 	import flash.desktop.NativeDragActions;
 	import flash.desktop.NativeDragManager;
 	import flash.display.InteractiveObject;
+	import flash.display.Sprite;
+	import flash.events.Event;
 	import flash.events.NativeDragEvent;
 	import flash.filesystem.File;
 	import talon.browser.AppConstants;
@@ -18,6 +20,7 @@ package talon.browser.plugins.tools
 		public static const EVENT_DRAG_OUT:String = "documentDragOut";
 		public static const EVENT_DRAG_DROP:String = "documentDrop";
 
+		private var _nativeDragLayer:Sprite;
 		private var _platform:AppPlatform;
 
 		public function get id():String { return "talon.browser.plugin.core.DragAndDrop"; }
@@ -28,9 +31,14 @@ package talon.browser.plugins.tools
 		{
 			_platform = platform;
 
+			_platform.stage.addEventListener(Event.RESIZE, onStageResize);
 			_platform.stage.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragIn);
 			_platform.stage.addEventListener(NativeDragEvent.NATIVE_DRAG_EXIT, onDragOut);
 			_platform.stage.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
+
+			_nativeDragLayer = new Sprite();
+			_platform.stage.addChild(_nativeDragLayer);
+			onStageResize(null);
 
 			_platform.addEventListener(EVENT_DRAG_IN, activate);
 			_platform.addEventListener(EVENT_DRAG_OUT, deactivate);
@@ -51,9 +59,27 @@ package talon.browser.plugins.tools
 
 		public function detach():void
 		{
+			if (_nativeDragLayer.parent)
+				_nativeDragLayer.parent.removeChild(_nativeDragLayer);
+
+			_nativeDragLayer.graphics.clear();
+			_nativeDragLayer = null;
+
+			_platform.stage.removeEventListener(Event.RESIZE, onStageResize);
 			_platform.stage.removeEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragIn);
 			_platform.stage.removeEventListener(NativeDragEvent.NATIVE_DRAG_EXIT, onDragOut);
 			_platform.stage.removeEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
+		}
+
+		private function onStageResize(e:Event):void
+		{
+			with (_nativeDragLayer.graphics)
+			{
+				clear();
+				beginFill(0, 0);
+				drawRect(0, 0, _platform.stage.stageWidth, _platform.stage.stageHeight);
+				endFill();
+			}
 		}
 
 		private function onDragIn(e:NativeDragEvent):void
@@ -85,7 +111,7 @@ package talon.browser.plugins.tools
 			_platform.dispatchEventWith(EVENT_DRAG_DROP);
 			var files:Array = e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
 			var file:File = File(files[0]);
-			_platform.invoke(file.nativePath);
+			_platform.invoke([file.nativePath]);
 		}
 	}
 }

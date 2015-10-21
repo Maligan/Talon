@@ -1,10 +1,8 @@
 package talon.browser
 {
+	import flash.desktop.NativeApplication;
 	import flash.display.Loader;
 	import flash.display.Sprite;
-
-	import flash.desktop.NativeApplication;
-	import flash.display.MovieClip;
 	import flash.events.InvokeEvent;
 	import flash.filesystem.File;
 	import flash.net.URLRequest;
@@ -14,11 +12,10 @@ package talon.browser
 	import starling.events.Event;
 
 	[SWF(frameRate="60")]
-	public class AppLauncher extends MovieClip
+	public class AppLauncher extends Sprite
 	{
-		private var _controller:AppPlatform;
-		private var _plugins:int;
-		private var _invoke:String;
+		private var _platform:AppPlatform;
+		private var _numPlugins:int;
 
 		public function AppLauncher()
 		{
@@ -32,14 +29,14 @@ package talon.browser
 			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
 			// NativeApplication.nativeApplication.setAsDefaultApplication(AppConstants.DESIGNER_FILE_EXTENSION);
 
-			// Create platform
-			_controller = new AppPlatform(stage);
-			_controller.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, onBackgroundColorChanged);
+			// Create platform root class
+			_platform = new AppPlatform(stage);
 
-			initializePlugins();
+			// Search for modules, and start platform class
+			loadPluginsAndStart();
 		}
 
-		private function initializePlugins():void
+		private function loadPluginsAndStart():void
 		{
 			var dir:File = File.applicationDirectory.resolvePath(AppConstants.PLUGINS_DIR);
 			if (dir.exists)
@@ -47,43 +44,47 @@ package talon.browser
 				var files:Array = dir.getDirectoryListing();
 
 				for each (var file:File in files)
-				{
 					if (file.extension == AppConstants.BROWSER_PLUGIN_EXTENSION)
-					{
-						_plugins++;
-
-						var domain:ApplicationDomain = ApplicationDomain.currentDomain;
-						var request:URLRequest = new URLRequest(file.url);
-						var context:LoaderContext = new LoaderContext(false, domain);
-						var loader:Loader = new Loader();
-						loader.contentLoaderInfo.addEventListener(Event.COMPLETE, checkPlugins);
-						loader.contentLoaderInfo.addEventListener(Event.IO_ERROR, checkPlugins);
-						loader.contentLoaderInfo.addEventListener(Event.SECURITY_ERROR, checkPlugins);
-						loader.load(request, context);
-					}
-				}
+						loadPlugin(file.url);
 			}
+
+			startCheck();
 		}
 
-		private function checkPlugins(e:*):void
+		private function loadPlugin(url:String):void
 		{
-			if (--_plugins == 0) _controller.initialize();
+			_numPlugins++;
+
+			var domain:ApplicationDomain = ApplicationDomain.currentDomain;
+			var request:URLRequest = new URLRequest(url);
+			var context:LoaderContext = new LoaderContext(false, domain);
+			var loader:Loader = new Loader();
+			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onPluginLoaded);
+			loader.contentLoaderInfo.addEventListener(Event.IO_ERROR, onPluginLoaded);
+			loader.contentLoaderInfo.addEventListener(Event.SECURITY_ERROR, onPluginLoaded);
+			loader.load(request, context);
+		}
+
+		private function onPluginLoaded(e:*):void
+		{
+			_numPlugins--;
+
+			// Success load or not - it does not matter
+			startCheck();
+		}
+
+		private function startCheck():void
+		{
+			if (_numPlugins == 0)
+				_platform.start();
 		}
 
 		private function onInvoke(e:InvokeEvent):void
 		{
 			if (e.arguments.length > 0)
 			{
-				_invoke = e.arguments[0];
-				_controller && _controller.invoke(_invoke);
+				_platform.invoke(e.arguments);
 			}
-		}
-
-		private function onBackgroundColorChanged():void
-		{
-			var colorName:String = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
-			var color:uint = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[colorName];
-			stage.color = color;
 		}
 	}
 }

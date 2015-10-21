@@ -60,6 +60,8 @@ package talon.browser
 			_isolator = new Sprite();
 			_menu = new AppUINativeMenu(_controller);
 			_popups = new PopupManager();
+
+			refreshWindowTitle();
 		}
 
 		/** Call after starling initialize completed. */
@@ -140,7 +142,6 @@ package talon.browser
 		private function onZoomChange(e:Event):void
 		{
 			zoom = _controller.settings.getValueOrDefault(AppConstants.SETTING_ZOOM, int, 100) / 100;
-			refreshWindowTitle();
 		}
 
 		private function onAlwaysOnTopChange(e:Event):void
@@ -286,6 +287,7 @@ package talon.browser
 			{
 				_isolator.scaleX = _isolator.scaleY = value;
 				resizeTo(_controller.stage.stageWidth, _controller.stage.stageHeight);
+				refreshWindowTitle();
 			}
 		}
 	}

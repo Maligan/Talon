@@ -3,19 +3,20 @@ package talon.browser
 	import flash.desktop.NativeApplication;
 	import flash.display.Loader;
 	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
 	import flash.events.InvokeEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.filesystem.File;
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
 
-	import starling.events.Event;
-
 	[SWF(frameRate="60")]
 	public class AppLauncher extends Sprite
 	{
 		private var _platform:AppPlatform;
-		private var _numPlugins:int;
+		private var _numPluginLoaders:int;
 
 		public function AppLauncher()
 		{
@@ -53,29 +54,36 @@ package talon.browser
 
 		private function loadPlugin(url:String):void
 		{
-			_numPlugins++;
+			_numPluginLoaders++;
 
-			var domain:ApplicationDomain = ApplicationDomain.currentDomain;
+			var domain:ApplicationDomain = new ApplicationDomain(ApplicationDomain.currentDomain);
 			var request:URLRequest = new URLRequest(url);
 			var context:LoaderContext = new LoaderContext(false, domain);
 			var loader:Loader = new Loader();
 			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onPluginLoaded);
-			loader.contentLoaderInfo.addEventListener(Event.IO_ERROR, onPluginLoaded);
-			loader.contentLoaderInfo.addEventListener(Event.SECURITY_ERROR, onPluginLoaded);
+			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onPluginLoaded);
+			loader.contentLoaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onPluginLoaded);
 			loader.load(request, context);
-		}
 
-		private function onPluginLoaded(e:*):void
-		{
-			_numPlugins--;
+			function onPluginLoaded(e:Event):void
+			{
+				_numPluginLoaders--;
 
-			// Success load or not - it does not matter
-			startCheck();
+				// Import all classes from SWF which implements 'IPlugin' interface
+				_platform.plugins.addPluginsFromApplicationDomain(domain);
+
+				loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onPluginLoaded);
+				loader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onPluginLoaded);
+				loader.contentLoaderInfo.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onPluginLoaded);
+
+				// Success load or not - it does not matter
+				startCheck();
+			}
 		}
 
 		private function startCheck():void
 		{
-			if (_numPlugins == 0)
+			if (_numPluginLoaders == 0)
 				_platform.start();
 		}
 

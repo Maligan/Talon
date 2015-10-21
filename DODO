@@ -3,9 +3,9 @@
 #3 [[.]] <<19-03-15 11:57>> ((malig)) {{Create invalidation system}}
 #4 [[*]] <<19-03-15 11:58>> ((malig)) {{Finish FlowLayout}}
 #5 [[.]] <<19-03-15 13:12>> ((malig)) {{Add <libary>, <style>, <template> support to TML}}
-#6 [[+]] <<02-04-15 12:15>> ((malig)) {{Create 'Custom Profile' dialog}}
+#6 [[.]] <<02-04-15 12:15>> ((malig)) {{Create 'Custom Profile' dialog}}
 #7 [[.]] <<22-04-15 10:19>> ((malig)) {{Rewrite 9scale/tiles system}}
-#8 [[+]] <<19-05-15 06:17>> ((malig)) {{Rename src-as3 into src}}
-#9 [[+]] <<21-05-15 16:26>> ((malig)) {{Root node change <template> to <library>}}
+#8 [[.]] <<19-05-15 06:17>> ((malig)) {{Rename src-as3 into src}}
+#9 [[.]] <<21-05-15 16:26>> ((malig)) {{Root node change <template> to <library>}}
 #10 [[+]] <<22-05-15 09:28>> ((malig)) {{Move <template> to another file}}
-#11 [[+]] <<08-10-15 06:16>> ((malig)) {{Add popups: Messages, Export}}
+#11 [[#]] <<08-10-15 06:16>> ((malig)) {{Add popups: Messages, Export, Update, Plugin}}

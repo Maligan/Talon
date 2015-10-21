@@ -67,23 +67,29 @@ package talon.browser
 			_updater.updateURL = AppConstants.APP_UPDATE_URL + "?rnd=" + int(Math.random() * int.MAX_VALUE);
 			_updater.initialize();
 
-			// XXX: NOT work while starling initialing!
+			// XXX: NOT work after starling creating!
 			var colorName:String = _settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
 			var color:uint = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[colorName];
 			stage.color = color;
+			// --------------------------------------
+
+			_starling = new Starling(Sprite, stage);
+			_starling.addEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
 
 			initializeWindowMonitor();
 		}
 
 		public function start():void
 		{
-			initializeStarling();
+			_starling.start();
 		}
 
 		public function invoke(args:Array):void
 		{
 			if (_ui.completed)
 			{
+				_invoke = args || [];
+
 				if (_invoke && _invoke.length > 0)
 				{
 					// Open
@@ -100,18 +106,6 @@ package talon.browser
 			{
 				// Delay
 				_invoke = args;
-			}
-		}
-
-		private function resizeWindowTo(stageWidth:int, stageHeight:int):void
-		{
-			if (stage.stageWidth != stageWidth || stage.stageHeight != stageHeight)
-			{
-				var window:NativeWindow = stage.nativeWindow;
-				var deltaWidth:int = window.width - stage.stageWidth;
-				var deltaHeight:int = window.height - stage.stageHeight;
-				window.width = Math.max(stageWidth + deltaWidth, window.minSize.x);
-				window.height = Math.max(stageHeight + deltaHeight, window.minSize.y);
 			}
 		}
 
@@ -178,7 +172,7 @@ package talon.browser
 				_stage.nativeWindow.y = position.y;
 			}
 
-			// Restore window size
+			// Restore window size / DPI / CSF
 			onProfileChange(null);
 		}
 
@@ -208,6 +202,18 @@ package talon.browser
 			_settings.setValue(AppConstants.SETTING_PROFILE, _profile);
 		}
 
+		private function resizeWindowTo(stageWidth:int, stageHeight:int):void
+		{
+			if (stage.stageWidth != stageWidth || stage.stageHeight != stageHeight)
+			{
+				var window:NativeWindow = stage.nativeWindow;
+				var deltaWidth:int = window.width - stage.stageWidth;
+				var deltaHeight:int = window.height - stage.stageHeight;
+				window.width = Math.max(stageWidth + deltaWidth, window.minSize.x);
+				window.height = Math.max(stageHeight + deltaHeight, window.minSize.y);
+			}
+		}
+
 		private function onWindowResizing(e:NativeWindowBoundsEvent):void
 		{
 			// NativeWindow#resizable is read only, this is fix:
@@ -223,13 +229,6 @@ package talon.browser
 		//
 		// Starling
 		//
-		private function initializeStarling():void
-		{
-			_starling = new Starling(Sprite, stage, null, null, "auto", "baseline");
-			_starling.addEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
-			_starling.start();
-		}
-
 		private function onStarlingRootCreated(e:Event):void
 		{
 			_starling.removeEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
@@ -239,7 +238,7 @@ package talon.browser
 
 		private function onUIComplete(e:Event):void
 		{
-			// Before document open
+			// NB! Before document open (any invoke execution)
 			initializePlugins();
 
 			// Document can be opened via invoke (click on document file)
@@ -267,7 +266,6 @@ package talon.browser
 			var isEnableAutoUpdate:Boolean = _settings.getValueOrDefault(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, Boolean, true);
 			// XXX: Save for have default value != null
 			_settings.setValue(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, isEnableAutoUpdate);
-
 			if (isEnableAutoUpdate) _updater.checkNow();
 		}
 

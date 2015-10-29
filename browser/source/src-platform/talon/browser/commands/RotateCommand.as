@@ -8,19 +8,19 @@ package talon.browser.commands
 
 	public class RotateCommand extends Command
 	{
-		public function RotateCommand(controller:AppPlatform)
+		public function RotateCommand(platform:AppPlatform)
 		{
-			super(controller);
+			super(platform);
 		}
 
 		public override function execute():void
 		{
-			var max:int = Math.max(controller.profile.height, controller.profile.width);
-			var min:int = Math.min(controller.profile.height, controller.profile.width);
+			var max:int = Math.max(platform.profile.height, platform.profile.width);
+			var min:int = Math.min(platform.profile.height, platform.profile.width);
 
-			var isPortrait:Boolean = controller.stage.stageHeight > controller.stage.stageWidth;
-			if (isPortrait) controller.profile.setSize(max, min);
-			else controller.profile.setSize(min, max);
+			var isPortrait:Boolean = platform.stage.stageHeight > platform.stage.stageWidth;
+			if (isPortrait) platform.profile.setSize(max, min);
+			else platform.profile.setSize(min, max);
 		}
 	}
 }

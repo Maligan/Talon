@@ -9,16 +9,17 @@ package talon.browser.commands
 	[Event(name="change", type="starling.events.Event")]
 	public class Command extends EventDispatcher
 	{
-		private var _controller:AppPlatform;
+		private var _platform:AppPlatform;
 
-		public function Command(controller:AppPlatform):void
+		public function Command(platform:AppPlatform):void
 		{
-			_controller = controller;
+			_platform = platform;
 		}
 
-		public final function get controller():AppPlatform
+		/** Command context platform. */
+		public final function get platform():AppPlatform
 		{
-			return _controller;
+			return _platform;
 		}
 
 		/** Execute command. */
@@ -39,11 +40,13 @@ package talon.browser.commands
 			throw new AbstractMethodError();
 		}
 
+		/** Command can be executed. */
 		public function get isExecutable():Boolean
 		{
 			return true;
 		}
 
+		/** Command in 'active' state. */
 		public function get isActive():Boolean
 		{
 			return false;

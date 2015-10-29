@@ -57,10 +57,22 @@ package talon.browser.plugins
 			_plugins.push(plugin);
 			_pluginStatus[plugin] = PluginStatus.DETACHED;
 
-			var detached:Array = _platform.settings.getValueOrDefault(AppConstants.SETTING_DETACHED_PLUGINS, Array, []);
-			if (detached.indexOf(plugin.id) == -1) activate(plugin);
-
 			dispatchEventWith(Event.CHANGE, false, plugin);
+		}
+
+		/** Start all detached plugins, witch is not deactivated. */
+		public function start():void
+		{
+			var detached:Array = _platform.settings.getValueOrDefault(AppConstants.SETTING_DETACHED_PLUGINS, Array, []);
+
+			for each (var plugin:IPlugin in _plugins)
+			{
+				var status:String = getPluginStatus(plugin);
+				if (status == PluginStatus.DETACHED && detached.indexOf(plugin.id) == -1)
+				{
+					activate(plugin);
+				}
+			}
 		}
 
 		public function getPluginStatus(plugin:IPlugin):String

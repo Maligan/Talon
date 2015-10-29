@@ -4,17 +4,17 @@ package talon.browser.commands
 
 	public class UpdateCommand extends Command
 	{
-		public function UpdateCommand(controller:AppPlatform)
+		public function UpdateCommand(platform:AppPlatform)
 		{
-			super(controller);
+			super(platform);
 		}
 
 		public override function execute():void
 		{
-			controller.updater.isCheckForUpdateVisible = true;
-			controller.updater.isDownloadProgressVisible = true;
-			controller.updater.isDownloadUpdateVisible = true;
-			controller.updater.checkNow();
+			platform.updater.isCheckForUpdateVisible = true;
+			platform.updater.isDownloadProgressVisible = true;
+			platform.updater.isDownloadUpdateVisible = true;
+			platform.updater.checkNow();
 		}
 	}
 }

@@ -12,9 +12,9 @@ package talon.browser.commands
 		private var _project:File;
 		private var _projectRoot:File;
 
-		public function CreateDocumentCommand(controller:AppPlatform)
+		public function CreateDocumentCommand(platform:AppPlatform)
 		{
-			super(controller);
+			super(platform);
 		}
 
 		public override function execute():void
@@ -42,7 +42,7 @@ package talon.browser.commands
 
 			if (_project.exists)
 			{
-				var open:OpenDocumentCommand = new OpenDocumentCommand(controller, _project);
+				var open:OpenDocumentCommand = new OpenDocumentCommand(platform, _project);
 				open.execute();
 			}
 		}

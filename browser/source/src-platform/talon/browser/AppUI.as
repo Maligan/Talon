@@ -24,17 +24,20 @@ package talon.browser
 	import talon.starling.TalonFactoryStarling;
 	import talon.starling.TalonSprite;
 	import talon.utils.ITalonElement;
+	import talon.utils.StringUtil;
 	import talon.utils.TalonFactoryBase;
 
 	public class AppUI extends EventDispatcher
 	{
 		[Embed(source="/../assets/interface.zip", mimeType="application/octet-stream")] private static const INTERFACE:Class;
 		[Embed(source="/../assets/SourceSansPro.otf", embedAsCFF="false", fontName="Source Sans Pro")] private static const INTERFACE_FONT:Class;
+		[Embed(source="/../assets/locale/en_US.properties", mimeType="application/octet-stream")] private static const INTERFACE_LOCALE:Class;
 
-		private var _controller:AppPlatform;
+		private var _platform:AppPlatform;
 		private var _menu:AppUINativeMenu;
 		private var _popups:PopupManager;
 
+		private var _locale:Object;
 		private var _factory:TalonFactoryStarling;
 		private var _interface:TalonSprite;
 		private var _errorPage:TalonSprite;
@@ -50,15 +53,16 @@ package talon.browser
 
 		public function AppUI(controller:AppPlatform)
 		{
-			_controller = controller;
-			_controller.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, refreshWindowTitle);
-			_controller.profile.addEventListener(Event.CHANGE, refreshWindowTitle);
+			_platform = controller;
+			_platform.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, refreshWindowTitle);
+			_platform.profile.addEventListener(Event.CHANGE, refreshWindowTitle);
 
-			_controller.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, refreshCurrentTemplate);
-			_controller.addEventListener(DocumentEvent.CHANGE, refreshCurrentTemplate);
+			_platform.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, refreshCurrentTemplate);
+			_platform.addEventListener(DocumentEvent.CHANGE, refreshCurrentTemplate);
 
 			_isolator = new Sprite();
-			_menu = new AppUINativeMenu(_controller);
+			_locale = StringUtil.parseProperties(new INTERFACE_LOCALE());
+			_menu = new AppUINativeMenu(_platform, _locale);
 			_popups = new PopupManager();
 
 			refreshWindowTitle();
@@ -71,6 +75,7 @@ package talon.browser
 			_factory.addTerminal("input");
 			_factory.setLinkage("input", TalonFeatherTextInput);
 			_factory.setLinkage("interface", TalonSpriteWithDrawCountReset);
+			_factory.addResourcesFromObject(_locale);
 			_factory.addArchiveContentAsync(new INTERFACE() as ByteArray, onFactoryComplete);
 		}
 
@@ -103,12 +108,12 @@ package talon.browser
 			_isolatorContainer.addEventListener(TouchEvent.TOUCH, onIsolatorTouch);
 			_isolatorContainer.addChild(_isolator);
 
-			_controller.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, onBackgroundChange); onBackgroundChange(null);
-			_controller.settings.addPropertyListener(AppConstants.SETTING_STATS, onStatsChange); onStatsChange(null);
-			_controller.settings.addPropertyListener(AppConstants.SETTING_ZOOM, onZoomChange); onZoomChange(null);
-			_controller.settings.addPropertyListener(AppConstants.SETTING_ALWAYS_ON_TOP, onAlwaysOnTopChange); onAlwaysOnTopChange(null);
+			_platform.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, onBackgroundChange); onBackgroundChange(null);
+			_platform.settings.addPropertyListener(AppConstants.SETTING_STATS, onStatsChange); onStatsChange(null);
+			_platform.settings.addPropertyListener(AppConstants.SETTING_ZOOM, onZoomChange); onZoomChange(null);
+			_platform.settings.addPropertyListener(AppConstants.SETTING_ALWAYS_ON_TOP, onAlwaysOnTopChange); onAlwaysOnTopChange(null);
 
-			resizeTo(_controller.stage.stageWidth, _controller.stage.stageHeight);
+			resizeTo(_platform.profile.width, _platform.profile.height);
 
 			dispatchEventWith(Event.COMPLETE);
 		}
@@ -129,24 +134,24 @@ package talon.browser
 
 		private function onBackgroundChange(e:Event):void
 		{
-			var styleName:String = _controller.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
+			var styleName:String = _platform.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
 			_interface.node.classes.parse(styleName);
-			_controller.stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[styleName];
+			_platform.stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[styleName];
 		}
 
 		private function onStatsChange(e:Event):void
 		{
-			Starling.current.showStats = _controller.settings.getValueOrDefault(AppConstants.SETTING_STATS, Boolean, false);
+			Starling.current.showStats = _platform.settings.getValueOrDefault(AppConstants.SETTING_STATS, Boolean, false);
 		}
 
 		private function onZoomChange(e:Event):void
 		{
-			zoom = _controller.settings.getValueOrDefault(AppConstants.SETTING_ZOOM, int, 100) / 100;
+			zoom = _platform.settings.getValueOrDefault(AppConstants.SETTING_ZOOM, int, 100) / 100;
 		}
 
 		private function onAlwaysOnTopChange(e:Event):void
 		{
-			_controller.stage.nativeWindow.alwaysInFront = _controller.settings.getValueOrDefault(AppConstants.SETTING_ALWAYS_ON_TOP, Boolean, false);
+			_platform.stage.nativeWindow.alwaysInFront = _platform.settings.getValueOrDefault(AppConstants.SETTING_ALWAYS_ON_TOP, Boolean, false);
 		}
 
 		public function resizeTo(width:int, height:int):void
@@ -161,6 +166,9 @@ package talon.browser
 			{
 				_container.node.bounds.setTo(0, 0, width/zoom, height/zoom);
 				_container.node.invalidate();
+
+
+				trace("Resize", _container.node.bounds, width, height);
 			}
 		}
 
@@ -172,14 +180,14 @@ package talon.browser
 			var result:Array = [];
 
 			// Open document/template
-			if (_controller.document)
+			if (_platform.document)
 			{
-				var title:String = _controller.document.project.name.replace(/\.[^\.]*$/,"");
+				var title:String = _platform.document.project.name.replace(/\.[^\.]*$/,"");
 				if (_templateId) title += "/" + _templateId;
 				result.push(title);
 			}
 
-			var profile:DeviceProfile = _controller.profile;
+			var profile:DeviceProfile = _platform.profile;
 			var profileEqual:DeviceProfile = DeviceProfile.getEqual(profile);
 			var profileName:String = profileEqual ? profileEqual.id : null;
 
@@ -192,7 +200,7 @@ package talon.browser
 			// Application name + version
 			result.push(AppConstants.APP_NAME + " " + AppConstants.APP_VERSION.replace(/\.0$/, ""));
 
-			_controller.stage.nativeWindow.title = result.join(" - ");
+			_platform.stage.nativeWindow.title = result.join(" - ");
 		}
 
 		private function refreshCurrentTemplate(e:* = null):void
@@ -200,20 +208,20 @@ package talon.browser
 			// Refresh current prototype
 			var canShow:Boolean = true;
 			canShow &&= _templateId != null;
-			canShow &&= _controller.document != null;
-			canShow &&= _controller.document.tasks.isBusy == false;
-			canShow &&= _controller.document.factory.hasTemplate(_templateId);
+			canShow &&= _platform.document != null;
+			canShow &&= _platform.document.tasks.isBusy == false;
+			canShow &&= _platform.document.factory.hasTemplate(_templateId);
 
 			_errorPage.visible = false;
 			_container.removeChildren();
-			_controller.document && _controller.document.messages.removeMessage(_templateProduceMessage);
+			_platform.document && _platform.document.messages.removeMessage(_templateProduceMessage);
 			_templateProduceMessage = null;
 
 			_template && _template.removeFromParent(true);
 			_template = canShow ? produce(_templateId) : null;
 
 			// Show state
-			if (_controller.document && _controller.document.messages.numMessages != 0)
+			if (_platform.document && _platform.document.messages.numMessages != 0)
 			{
 				_errorPage.visible = true;
 			}
@@ -222,7 +230,7 @@ package talon.browser
 				_container.node.ppmm = ITalonElement(_template).node.ppmm;
 				_container.node.ppdp = ITalonElement(_template).node.ppdp;
 				_container.addChild(_template);
-				_controller.stage && resizeTo(_controller.stage.stageWidth, _controller.stage.stageHeight);
+				resizeTo(_platform.profile.width, _platform.profile.height);
 			}
 		}
 
@@ -232,12 +240,12 @@ package talon.browser
 
 			try
 			{
-				result = _controller.document.factory.produce(templateId);
+				result = _platform.document.factory.produce(templateId);
 			}
 			catch (e:Error)
 			{
 				_templateProduceMessage = new DocumentMessage(DocumentMessage.PRODUCE_ERROR, [templateId, e.getStackTrace()]);
-				_controller.document.messages.addMessage(_templateProduceMessage);
+				_platform.document.messages.addMessage(_templateProduceMessage);
 			}
 
 			return result;
@@ -252,7 +260,7 @@ package talon.browser
 		//
 		public function get popups():PopupManager { return _popups; }
 
-		public function get host():DisplayObjectContainer { return _controller.starling.root as DisplayObjectContainer }
+		public function get host():DisplayObjectContainer { return _platform.starling.root as DisplayObjectContainer }
 
 		public function get completed():Boolean { return _completed; }
 		public function get factory():TalonFactoryBase { return _factory; }
@@ -286,7 +294,7 @@ package talon.browser
 			if (zoom != value)
 			{
 				_isolator.scaleX = _isolator.scaleY = value;
-				resizeTo(_controller.stage.stageWidth, _controller.stage.stageHeight);
+				resizeTo(_platform.profile.width, _platform.profile.height);
 				refreshWindowTitle();
 			}
 		}
@@ -319,76 +327,97 @@ import talon.browser.utils.NativeMenuAdapter;
 
 class AppUINativeMenu
 {
-	private var _controller:AppPlatform;
+	private var _locale:Object;
+	private var _platform:AppPlatform;
 	private var _menu:NativeMenuAdapter;
 	private var _prevDocuments:Array;
 
-	public function AppUINativeMenu(controller:AppPlatform)
+	public function AppUINativeMenu(platform:AppPlatform, locale:Object)
 	{
-		_controller = controller;
+		_platform = platform;
+		_locale = locale;
 		_menu = new NativeMenuAdapter();
 
+		// new CreateWindowCommand(),              "n", [Keyboard.CONTROL, Keyboard.SHIFT]);
+
 		// File
-		_menu.insert("file",                                  AppConstants.T_MENU_FILE);
-		_menu.insert("file/new",                              AppConstants.T_MENU_FILE_NEW_DOCUMENT,                  new CreateDocumentCommand(_controller), "n");
-		//			_menu.push("file/instantiate",                        AppConstants.T_MENU_FILE_NEW_WINDOW,                    new CreateWindowCommand(),              "n", [Keyboard.CONTROL, Keyboard.SHIFT]);
-		_menu.insert("file/-");
-		_menu.insert("file/recent",                           AppConstants.T_MENU_FILE_RECENT);
-		_menu.insert("file/open",                             AppConstants.T_MENU_FILE_OPEN,                          new OpenDocumentCommand(_controller),   "o");
-		_menu.insert("file/-");
-		_menu.insert("file/closeDocument",                    AppConstants.T_MENU_FILE_CLOSE_DOCUMENT,                new CloseDocumentCommand(_controller),  "w");
-		_menu.insert("file/closeBrowser",                     AppConstants.T_MENU_FILE_CLOSE_BROWSER,                 new CloseWindowCommand(_controller),    "w", [Keyboard.CONTROL, Keyboard.SHIFT]);
-		_menu.insert("file/-");
-		_menu.insert("file/preference",                       AppConstants.T_MENU_FILE_PREFERENCES);
-		_menu.insert("file/preference/stats",                 AppConstants.T_MENU_FILE_PREFERENCES_STATS,             new ChangeSettingCommand(_controller, AppConstants.SETTING_STATS, true, false));
-		_menu.insert("file/preference/resize",                AppConstants.T_MENU_FILE_PREFERENCES_LOCK_RESIZE,       new ChangeSettingCommand(_controller, AppConstants.SETTING_LOCK_RESIZE, true, false));
-		_menu.insert("file/preference/alwaysOnTop",           AppConstants.T_MENU_FILE_PREFERENCES_ALWAYS_ON_TOP,     new ChangeSettingCommand(_controller, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
-		_menu.insert("file/preference/autoReopen",            AppConstants.T_MENU_FILE_PREFERENCES_AUTO_REOPEN,       new ChangeSettingCommand(_controller, AppConstants.SETTING_AUTO_REOPEN, true, false));
-		_menu.insert("file/preference/autoUpdate",            AppConstants.T_MENU_FILE_PREFERENCES_AUTO_UPDATE,       new ChangeSettingCommand(_controller, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, true, false));
-		_menu.insert("file/-");
-		_menu.insert("file/publish",                          AppConstants.T_MENU_FILE_PUBLISH_AS,                    new PublishCommand(_controller),        "s", [Keyboard.CONTROL, Keyboard.SHIFT]);
+		insert("file");
+		insert("file/newDocument",             new  CreateDocumentCommand(_platform), "ctrl-n");
+		insert("file/-");
+		insert("file/recent");
+		insert("file/openDocument",            new  OpenDocumentCommand(_platform), "ctrl-o");
+		insert("file/-");
+		insert("file/closeDocument",           new  CloseDocumentCommand(_platform), "ctrl-w");
+		insert("file/closeBrowser",            new  CloseWindowCommand(_platform), "shift-ctrl-w");
+		insert("file/-");
+		insert("file/preferences");
+		insert("file/preferences/stats",       new  ChangeSettingCommand(_platform, AppConstants.SETTING_STATS, true, false));
+		insert("file/preferences/lockResize",  new  ChangeSettingCommand(_platform, AppConstants.SETTING_LOCK_RESIZE, true, false));
+		insert("file/preferences/alwaysOnTop", new  ChangeSettingCommand(_platform, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
+		insert("file/preferences/autoReopen",  new  ChangeSettingCommand(_platform, AppConstants.SETTING_AUTO_REOPEN, true, false));
+		insert("file/preferences/autoUpdate",  new  ChangeSettingCommand(_platform, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, true, false));
+		insert("file/-");
+		insert("file/publishAs",               new  PublishCommand(_platform), "shift-ctrl-s");
 
 		// View
-		_menu.insert("view",                                  AppConstants.T_MENU_VIEW);
-		_menu.insert("view/zoomIn",                           AppConstants.T_MENU_VIEW_ZOOM_IN,                       new ChangeZoomCommand(_controller, +25),   "=");
-		_menu.insert("view/zoomOut",                          AppConstants.T_MENU_VIEW_ZOOM_OUT,                      new ChangeZoomCommand(_controller, -25),   "-");
-		_menu.insert("view/-");
-		_menu.insert("view/rotate",                           AppConstants.T_MENU_VIEW_ROTATE,                        new RotateCommand(_controller), "r", [Keyboard.CONTROL]);
-		_menu.insert("view/theme",                            AppConstants.T_MENU_VIEW_BACKGROUND);
-		_menu.insert("view/theme/dark",                       AppConstants.T_MENU_VIEW_BACKGROUND_DARK,               new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
-		_menu.insert("view/theme/light",                      AppConstants.T_MENU_VIEW_BACKGROUND_LIGHT,              new ChangeSettingCommand(_controller, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
-		_menu.insert("view/profile",                          AppConstants.T_MENU_VIEW_PROFILE);
-		_menu.insert("view/profile/custom",                   AppConstants.T_MENU_VIEW_PROFILE_CUSTOM,                new OpenPopupCommand(_controller, ProfilePopup, controller.profile), "0", [Keyboard.CONTROL]);
-		_menu.insert("view/-");
-		_menu.insert("view/fullscreen",                       AppConstants.T_MENU_VIEW_FULL_SCREEN,                   new ToggleFullScreenCommand(_controller), "f");
-		_menu.insert("view/profile/-");
+		insert("view");
+		insert("view/zoomIn",                  new  ChangeZoomCommand(_platform, +25), "=");
+		insert("view/zoomOut",                 new  ChangeZoomCommand(_platform, -25), "-");
+		insert("view/-");
+		insert("view/rotate",                  new  RotateCommand(_platform), "ctrl-r");
+		insert("view/theme");
+		insert("view/theme/dark",              new  ChangeSettingCommand(_platform, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
+		insert("view/theme/light",             new  ChangeSettingCommand(_platform, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
+		insert("view/profile");
+		insert("view/profile/custom",          new  OpenPopupCommand(_platform, ProfilePopup, platform.profile), "alt-0");
+		insert("view/profile/-");
 
 		var profiles:Vector.<DeviceProfile> = DeviceProfile.getProfiles();
 		for (var i:int = 0; i < profiles.length; i++)
 		{
 			var profileNumber:String = (i+1).toString();
 			var profile:DeviceProfile = profiles[i];
-			_menu.insert("view/profile/" + profile.id, null, new ChangeProfileCommand(_controller, profile), profileNumber, [Keyboard.ALTERNATE]);
+			insert("view/profile/" + profile.id, new ChangeProfileCommand(_platform, profile), "alt-" + profileNumber);
 		}
 
-		// Navigate
-		_menu.insert("navigate",                      AppConstants.T_MENU_NAVIGATE);
-		_menu.insert("navigate/openProjectFolder",    AppConstants.T_MENU_NAVIGATE_OPEN_DOCUMENT_FOLDER,              new OpenDocumentFolderCommand(_controller));
-		_menu.insert("navigate/searchPopup",          AppConstants.T_MENU_NAVIGATE_SEARCH,                            new OpenGoToPopupCommand(_controller), "p", [Keyboard.CONTROL]);
+		insert("view/-");
+		insert("view/fullScreen",             new  ToggleFullScreenCommand(_platform), "ctrl-f");
 
-		_controller.settings.addPropertyListener(AppConstants.SETTING_RECENT_DOCUMENTS, refreshRecentOpenedDocumentsList);
+		// Navigate
+		insert("navigate");
+		insert("navigate/gotoDir", new OpenDocumentFolderCommand(_platform));
+		insert("navigate/gotoTemplate", new OpenGoToPopupCommand(_platform), "ctrl-p");
+
+		_platform.settings.addPropertyListener(AppConstants.SETTING_RECENT_DOCUMENTS, refreshRecentOpenedDocumentsList);
 		refreshRecentOpenedDocumentsList();
 
-		_menu.insert("help",          AppConstants.T_MENU_HELP);
-		_menu.insert("help/online",   AppConstants.T_MENU_HELP_ONLINE);
-		_menu.insert("help/update",   AppConstants.T_MENU_HELP_UPDATE, new UpdateCommand(_controller));
+		insert("help");
+		insert("help/online");
+		insert("help/update", new UpdateCommand(_platform));
 
-		if (NativeWindow.supportsMenu) controller.stage.nativeWindow.menu = _menu.nativeMenu;
+		if (NativeWindow.supportsMenu) platform.stage.nativeWindow.menu = _menu.nativeMenu;
+	}
+
+	private function insert(path:String, command:Command = null, shortcut:String = null):void
+	{
+		var labelKey:String = "menu." + path.replace(/\//g, ".");
+		var label:String = labelKey in _locale ? _locale[labelKey] : path.split("/").pop();
+
+		var keyPattern:RegExp = /^(SHIFT-)?(CTRL-)?(ALT-)?(\w)$/;
+		var keySplit:Array = (shortcut ? keyPattern.exec(shortcut.toUpperCase()) : null) || [];
+		var keyModifiers:Array = [];
+		if (keySplit[1]) keyModifiers.push(Keyboard.SHIFT);
+		if (keySplit[2]) keyModifiers.push(Keyboard.CONTROL);
+		if (keySplit[3]) keyModifiers.push(Keyboard.ALTERNATE);
+		var key:String = null;
+		if (keySplit[4]) key = keySplit[4].toLowerCase();
+
+		_menu.insert(path, label, command, key, keyModifiers);
 	}
 
 	private function refreshRecentOpenedDocumentsList():void
 	{
-		var recent:Array = _controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []).filter(isFileByPathExist);
+		var recent:Array = _platform.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []).filter(isFileByPathExist);
 		if (isEqual(recent, _prevDocuments)) return;
 		_prevDocuments = recent;
 
@@ -400,10 +429,10 @@ class AppUINativeMenu
 		if (recent.length > 0)
 		{
 			for each (var path:String in recent)
-				recentMenu.insert(path, null, new OpenDocumentCommand(_controller, new File(path)));
+				recentMenu.insert(path, null, new OpenDocumentCommand(_platform, new File(path)));
 
 			recentMenu.insert("-");
-			recentMenu.insert("clear", AppConstants.T_MENU_FILE_RECENT_CLEAR, new ChangeSettingCommand(_controller, AppConstants.SETTING_RECENT_DOCUMENTS, []));
+			recentMenu.insert("clear", _locale["menu.file.recent.clear"], new ChangeSettingCommand(_platform, AppConstants.SETTING_RECENT_DOCUMENTS, []));
 		}
 	}
 

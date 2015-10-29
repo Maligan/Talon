@@ -7,10 +7,10 @@ package talon.browser.commands
 	{
 		private var _delta:int;
 
-		public function ChangeZoomCommand(controller:AppPlatform, delta:int)
+		public function ChangeZoomCommand(platform:AppPlatform, delta:int)
 		{
-			super(controller);
-			controller.settings.addPropertyListener(AppConstants.SETTING_ZOOM, dispatchEvent);
+			super(platform);
+			platform.settings.addPropertyListener(AppConstants.SETTING_ZOOM, dispatchEvent);
 			_delta = delta;
 		}
 
@@ -29,7 +29,7 @@ package talon.browser.commands
 			return true;
 		}
 
-		private function get zoom():int { return controller.settings.getValueOrDefault(AppConstants.SETTING_ZOOM, int, 100) }
-		private function set zoom(value:int):void { controller.settings.setValue(AppConstants.SETTING_ZOOM, value) }
+		private function get zoom():int { return platform.settings.getValueOrDefault(AppConstants.SETTING_ZOOM, int, 100) }
+		private function set zoom(value:int):void { platform.settings.setValue(AppConstants.SETTING_ZOOM, value) }
 	}
 }

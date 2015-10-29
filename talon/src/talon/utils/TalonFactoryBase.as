@@ -161,6 +161,13 @@ package talon.utils
 		/** Add resource (image, string, etc.) to global factory scope. */
 		public function addResource(id:String, resource:*):void { _resources[id] = resource; }
 
+		/** Add all key-value pairs from object. */
+		public function addResourcesFromObject(object:Object):void
+		{
+			for (var id:String in object)
+				addResource(id, object[id]);
+		}
+
 		/** Add css to global factory scope. */
 		public function addStyleSheet(css:String):void { _style.parse(css); }
 

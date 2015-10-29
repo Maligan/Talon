@@ -7,11 +7,11 @@ package talon.browser.commands
 
 	public class OpenGoToPopupCommand extends OpenPopupCommand
 	{
-		public function OpenGoToPopupCommand(controller:AppPlatform)
+		public function OpenGoToPopupCommand(platform:AppPlatform)
 		{
-			super(controller, GoToPopup, controller);
+			super(platform, GoToPopup, platform);
 
-			controller.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			platform.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
 		}
 
 		private function onDocumentChange(e:Event):void
@@ -21,7 +21,7 @@ package talon.browser.commands
 
 		public override function get isExecutable():Boolean
 		{
-			return controller.document != null;
+			return platform.document != null;
 		}
 	}
 }

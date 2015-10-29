@@ -13,9 +13,9 @@ package talon.browser.commands
 	{
 		private var _source:File;
 
-		public function OpenDocumentCommand(controller:AppPlatform, source:File = null)
+		public function OpenDocumentCommand(platform:AppPlatform, source:File = null)
 		{
-			super(controller);
+			super(platform);
 			_source = source;
 		}
 
@@ -30,7 +30,7 @@ package talon.browser.commands
 				var filter:FileFilter = new FileFilter(AppConstants.T_BROWSER_FILE_EXTENSION_NAME, "*." + AppConstants.BROWSER_DOCUMENT_EXTENSION);
 				var source:File = new File();
 				source.addEventListener(Event.SELECT, onOpenFileSelect);
-				source.browseForOpen(AppConstants.T_MENU_FILE_OPEN, [filter]);
+				source.browseForOpen(AppConstants.T_OPEN_TITLE, [filter]);
 			}
 		}
 
@@ -41,25 +41,25 @@ package talon.browser.commands
 
 		private function openDocument(source:File):void
 		{
-			controller.document = new Document(source);
+			platform.document = new Document(source);
 
 			// Add source root
-			var sourceRoot:File = getSourceRoot(controller.document);
-			var sourceRootReference:DocumentFileReference = new DocumentFileReference(controller.document, sourceRoot);
-			controller.document.files.addReference(sourceRootReference);
+			var sourceRoot:File = getSourceRoot(platform.document);
+			var sourceRootReference:DocumentFileReference = new DocumentFileReference(platform.document, sourceRoot);
+			platform.document.files.addReference(sourceRootReference);
 
 			// Try open first template
-			var templates:Vector.<String> = controller.document.factory.templateIds;
+			var templates:Vector.<String> = platform.document.factory.templateIds;
 			var template:String = templates.shift();
-			if (template) controller.ui.templateId = template;
+			if (template) platform.ui.templateId = template;
 
 			// Add document to recent list
-			var recent:Array = controller.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);
+			var recent:Array = platform.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);
 			var indexOf:int = recent.indexOf(source.nativePath);
 			if (indexOf != -1) recent.splice(indexOf, 1);
 			recent.unshift(source.nativePath);
 			recent = recent.slice(0, AppConstants.HISTORY_RECENT_MAX);
-			controller.settings.setValue(AppConstants.SETTING_RECENT_DOCUMENTS, recent);
+			platform.settings.setValue(AppConstants.SETTING_RECENT_DOCUMENTS, recent);
 		}
 
 		private function getSourceRoot(document:Document):File

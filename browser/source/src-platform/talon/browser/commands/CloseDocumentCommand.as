@@ -6,10 +6,10 @@ package talon.browser.commands
 
 	public class CloseDocumentCommand extends Command
 	{
-		public function CloseDocumentCommand(controller:AppPlatform):void
+		public function CloseDocumentCommand(platform:AppPlatform):void
 		{
-			super(controller);
-			controller.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			super(platform);
+			platform.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
 		}
 
 		private function onDocumentChange(e:Event):void
@@ -19,12 +19,12 @@ package talon.browser.commands
 
 		public override function execute():void
 		{
-			controller.document = null;
+			platform.document = null;
 		}
 
 		public override function get isExecutable():Boolean
 		{
-			return controller.document != null;
+			return platform.document != null;
 		}
 	}
 }

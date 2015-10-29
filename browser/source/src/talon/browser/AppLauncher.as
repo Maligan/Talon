@@ -12,6 +12,10 @@ package talon.browser
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
 
+	import talon.browser.plugins.tools.CorePluginConsole;
+	import talon.browser.plugins.tools.CorePluginDragAndDrop;
+	import talon.browser.plugins.tools.CorePluginFileType;
+
 	[SWF(frameRate="60")]
 	public class AppLauncher extends Sprite
 	{
@@ -34,11 +38,18 @@ package talon.browser
 			_platform = new AppPlatform(stage);
 
 			// Search for modules, and start platform class
-			loadPluginsAndStart();
+			loadPluginsAndStartPlatform();
 		}
 
-		private function loadPluginsAndStart():void
+		private function loadPluginsAndStartPlatform():void
 		{
+			// Register built-in plugins
+			CorePluginConsole;
+			CorePluginFileType;
+			CorePluginDragAndDrop;
+			_platform.plugins.addPluginsFromApplicationDomain(ApplicationDomain.currentDomain);
+
+			// Search plugins in application subdirectory
 			var dir:File = File.applicationDirectory.resolvePath(AppConstants.PLUGINS_DIR);
 			if (dir.exists)
 			{
@@ -49,7 +60,8 @@ package talon.browser
 						loadPlugin(file.url);
 			}
 
-			startCheck();
+			// Check plugin loading status
+			checkStart();
 		}
 
 		private function loadPlugin(url:String):void
@@ -77,11 +89,11 @@ package talon.browser
 				loader.contentLoaderInfo.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onPluginLoaded);
 
 				// Success load or not - it does not matter
-				startCheck();
+				checkStart();
 			}
 		}
 
-		private function startCheck():void
+		private function checkStart():void
 		{
 			if (_numPluginLoaders == 0)
 				_platform.start();

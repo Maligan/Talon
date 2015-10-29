@@ -6,14 +6,14 @@ package talon.browser.commands
 
 	public class CloseWindowCommand extends Command
 	{
-		public function CloseWindowCommand(controller:AppPlatform)
+		public function CloseWindowCommand(platform:AppPlatform)
 		{
-			super(controller);
+			super(platform);
 		}
 
 		public override function execute():void
 		{
-			controller.stage.nativeWindow.close();
+			platform.stage.nativeWindow.close();
 		}
 	}
 }

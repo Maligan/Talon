@@ -9,11 +9,11 @@ package talon.browser.commands
 
 	public class ToggleFullScreenCommand extends Command
 	{
-		public function ToggleFullScreenCommand(controller:AppPlatform)
+		public function ToggleFullScreenCommand(platform:AppPlatform)
 		{
-			super(controller);
+			super(platform);
 
-			controller.stage.nativeWindow.addEventListener(NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGE, onNativeWindowDisplayStateChange);
+			platform.stage.nativeWindow.addEventListener(NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGE, onNativeWindowDisplayStateChange);
 		}
 
 		private function onNativeWindowDisplayStateChange(e:NativeWindowDisplayStateEvent):void
@@ -23,13 +23,13 @@ package talon.browser.commands
 
 		public override function execute():void
 		{
-			if (isActive) controller.stage.displayState = StageDisplayState.NORMAL;
-			else controller.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
+			if (isActive) platform.stage.displayState = StageDisplayState.NORMAL;
+			else platform.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
 		}
 
 		public override function get isActive():Boolean
 		{
-			return controller.stage.displayState != StageDisplayState.NORMAL;
+			return platform.stage.displayState != StageDisplayState.NORMAL;
 		}
 	}
 }

@@ -53,43 +53,12 @@ package talon.browser
 		//
 		// Language
 		//
+		public static const T_OPEN_TITLE:String                             = "Open";
 		public static const T_EXPORT_TITLE:String                           = "Export";
 		public static const T_PROJECT_ROOT_TITLE:String                     = "Select Document root directory";
 		public static const T_PROJECT_FILE_TITLE:String                     = "Select Document file";
 		public static const T_PROJECT_FILE_DEFAULT_NAME:String              = "Untitled";
 		public static const T_BROWSER_FILE_EXTENSION_NAME:String            = "Talon Designer Document";
 		public static const T_BROWSER_EXPORT_FILE_EXTENSION_NAME:String     = "Zip Archive";
-		public static const T_MENU_FILE:String                              = "File";
-		public static const T_MENU_FILE_OPEN:String                         = "Open...";
-		public static const T_MENU_FILE_NEW_DOCUMENT:String                 = "New Document...";
-		public static const T_MENU_FILE_NEW_WINDOW:String                   = "New Window";
-		public static const T_MENU_FILE_RECENT:String                       = "Open Recent";
-		public static const T_MENU_FILE_RECENT_CLEAR:String                 = "Clear";
-		public static const T_MENU_FILE_PUBLISH_AS:String                   = "Publish As...";
-		public static const T_MENU_FILE_CLOSE_DOCUMENT:String               = "Close Document";
-		public static const T_MENU_FILE_CLOSE_BROWSER:String                = "Close Window";
-		public static const T_MENU_NAVIGATE:String                          = "Navigate";
-		public static const T_MENU_NAVIGATE_OPEN_DOCUMENT_FOLDER:String     = "Go to Document Folder";
-		public static const T_MENU_NAVIGATE_SEARCH:String                   = "Go to Template";
-		public static const T_MENU_VIEW:String                              = "View";
-		public static const T_MENU_FILE_PREFERENCES:String                  = "Preferences";
-		public static const T_MENU_VIEW_BACKGROUND:String                   = "Background";
-		public static const T_MENU_VIEW_BACKGROUND_LIGHT:String             = "Light";
-		public static const T_MENU_VIEW_BACKGROUND_DARK:String              = "Dark";
-		public static const T_MENU_FILE_PREFERENCES_STATS:String            = "Show Stats";
-		public static const T_MENU_FILE_PREFERENCES_LOCK_RESIZE:String      = "Lock Window Size";
-		public static const T_MENU_FILE_PREFERENCES_ALWAYS_ON_TOP:String    = "Always On Top";
-		public static const T_MENU_FILE_PREFERENCES_AUTO_REOPEN:String      = "Open Last Document on Startup";
-		public static const T_MENU_FILE_PREFERENCES_AUTO_UPDATE:String      = "Check for Update on Startup";
-		public static const T_MENU_VIEW_ZOOM_IN:String                      = "Zoom In";
-		public static const T_MENU_VIEW_ZOOM_OUT:String                     = "Zoom Out";
-		public static const T_MENU_VIEW_ROTATE:String                       = "Rotate";
-		public static const T_MENU_VIEW_FULL_SCREEN:String                  = "Full Screen";
-		public static const T_MENU_VIEW_PROFILE:String                      = "Profile";
-		public static const T_MENU_VIEW_PROFILE_CUSTOM:String               = "Custom...";
-		public static const T_MENU_VIEW_CONSOLE:String                      = "Console";
-		public static const T_MENU_HELP:String                              = "Help";
-		public static const T_MENU_HELP_ONLINE:String                       = "Online Documentation";
-		public static const T_MENU_HELP_UPDATE:String                       = "Check for Update...";
 	}
 }

@@ -11,10 +11,10 @@ package talon.browser.commands
 	{
 		private var _profile:DeviceProfile;
 
-		public function ChangeProfileCommand(controller:AppPlatform, profile:DeviceProfile)
+		public function ChangeProfileCommand(platform:AppPlatform, profile:DeviceProfile)
 		{
-			super(controller);
-			controller.profile.addEventListener(Event.CHANGE, onProfileChange);
+			super(platform);
+			platform.profile.addEventListener(Event.CHANGE, onProfileChange);
 			_profile = profile;
 		}
 
@@ -25,12 +25,12 @@ package talon.browser.commands
 
 		public override function execute():void
 		{
-			controller.profile.copyFrom(_profile);
+			platform.profile.copyFrom(_profile);
 		}
 
 		public override function get isActive():Boolean
 		{
-			return controller.profile.equals(_profile);
+			return platform.profile.equals(_profile);
 		}
 	}
 }

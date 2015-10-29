@@ -27,10 +27,10 @@ package talon.browser.commands
 	{
 		private var _target:File;
 
-		public function PublishCommand(controller:AppPlatform, target:File = null)
+		public function PublishCommand(platform:AppPlatform, target:File = null)
 		{
-			super(controller);
-			controller.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			super(platform);
+			platform.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
 			_target = target;
 		}
 
@@ -47,7 +47,7 @@ package talon.browser.commands
 			}
 			else
 			{
-				var targetPath:String = getDocumentExportPath(controller.document);
+				var targetPath:String = getDocumentExportPath(platform.document);
 				var target:File = new File(targetPath);
 				target.addEventListener(Event.SELECT, onExportFileSelect);
 				target.browseForSave(AppConstants.T_EXPORT_TITLE);
@@ -65,7 +65,7 @@ package talon.browser.commands
 			// Create archive
 			var zip:FZip = new FZip();
 
-			for each (var file:DocumentFileReference in controller.document.files.toArray())
+			for each (var file:DocumentFileReference in platform.document.files.toArray())
 			{
 				if (isIgnored(file)) continue;
 				var name:String = file.exportPath;
@@ -82,14 +82,14 @@ package talon.browser.commands
 		/** File is ignored for export. */
 		private function isIgnored(file:DocumentFileReference):Boolean
 		{
-			var fileController:IDocumentFileController = controller.document.files.getController(file.url);
+			var fileController:IDocumentFileController = platform.document.files.getController(file.url);
 			var fileControllerClassName:String = getQualifiedClassName(fileController);
 			var fileControllerClass:Class = getDefinitionByName(fileControllerClassName) as Class;
 
 			if (fileControllerClass == DirectoryAsset) return true;
 			if (fileControllerClass == Asset) return true;
 
-			var patternsString:String = controller.document.properties.getValueOrDefault(AppConstants.PROPERTY_EXPORT_IGNORE, String);
+			var patternsString:String = platform.document.properties.getValueOrDefault(AppConstants.PROPERTY_EXPORT_IGNORE, String);
 			if (patternsString == null) return false;
 
 			var patterns:Array = patternsString.replace(/[\n\r\s]/, "").split(",");
@@ -115,7 +115,7 @@ package talon.browser.commands
 
 		public override function get isExecutable():Boolean
 		{
-			return controller.document != null;
+			return platform.document != null;
 		}
 
 		//

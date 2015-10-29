@@ -8,9 +8,9 @@ package talon.browser.commands
 		private var _popupClass:Class;
 		private var _popupData:Object;
 
-		public function OpenPopupCommand(controller:AppPlatform, popupClass:Class, popupData:Object)
+		public function OpenPopupCommand(platform:AppPlatform, popupClass:Class, popupData:Object)
 		{
-			super(controller);
+			super(platform);
 			_popupClass = popupClass;
 			_popupData = popupData;
 		}
@@ -18,7 +18,7 @@ package talon.browser.commands
 		public override function execute():void
 		{
 			var popup:Popup = new _popupClass();
-			controller.ui.popups.open(popup, _popupData);
+			platform.ui.popups.open(popup, _popupData);
 		}
 	}
 }

@@ -6,10 +6,10 @@ package talon.browser.commands
 
 	public class OpenDocumentFolderCommand extends Command
 	{
-		public function OpenDocumentFolderCommand(controller:AppPlatform)
+		public function OpenDocumentFolderCommand(platform:AppPlatform)
 		{
-			super(controller);
-			controller.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			super(platform);
+			platform.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
 		}
 
 		private function onDocumentChange(e:Event):void
@@ -19,12 +19,12 @@ package talon.browser.commands
 
 		public override function execute():void
 		{
-			controller.document.project.parent.openWithDefaultApplication();
+			platform.document.project.parent.openWithDefaultApplication();
 		}
 
 		public override function get isExecutable():Boolean
 		{
-			return controller.document != null;
+			return platform.document != null;
 		}
 	}
 }

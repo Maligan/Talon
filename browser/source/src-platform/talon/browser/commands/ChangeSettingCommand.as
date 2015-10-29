@@ -8,10 +8,10 @@ package talon.browser.commands
 		private var _value:*;
 		private var _alternate:*;
 
-		public function ChangeSettingCommand(controller:AppPlatform, name:String, value:*, alternate:* = null)
+		public function ChangeSettingCommand(platform:AppPlatform, name:String, value:*, alternate:* = null)
 		{
-			super(controller);
-			controller.settings.addPropertyListener(name, dispatchEvent);
+			super(platform);
+			platform.settings.addPropertyListener(name, dispatchEvent);
 			_name = name;
 			_value = value;
 			_alternate = alternate;
@@ -19,12 +19,12 @@ package talon.browser.commands
 
 		public override function execute():void
 		{
-			controller.settings.setValue(_name, (isActive && _alternate!==null) ? _alternate : _value);
+			platform.settings.setValue(_name, (isActive && _alternate!==null) ? _alternate : _value);
 		}
 
 		public override function get isActive():Boolean
 		{
-			return controller.settings.getValueOrDefault(_name) == _value;
+			return platform.settings.getValueOrDefault(_name) == _value;
 		}
 	}
 }

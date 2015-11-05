@@ -166,9 +166,6 @@ package talon.browser
 			{
 				_container.node.bounds.setTo(0, 0, width/zoom, height/zoom);
 				_container.node.invalidate();
-
-
-				trace("Resize", _container.node.bounds, width, height);
 			}
 		}
 
@@ -358,6 +355,7 @@ class AppUINativeMenu
 		insert("file/preferences/autoUpdate",  new  ChangeSettingCommand(_platform, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, true, false));
 		insert("file/-");
 		insert("file/publishAs",               new  PublishCommand(_platform), "shift-ctrl-s");
+		insert("file/screenshot",              new  ScreenshotCommand(_platform), "shift-ctrl-a");
 
 		// View
 		insert("view");
@@ -403,7 +401,7 @@ class AppUINativeMenu
 		var labelKey:String = "menu." + path.replace(/\//g, ".");
 		var label:String = labelKey in _locale ? _locale[labelKey] : path.split("/").pop();
 
-		var keyPattern:RegExp = /^(SHIFT-)?(CTRL-)?(ALT-)?(\w)$/;
+		var keyPattern:RegExp = /^(SHIFT-)?(CTRL-)?(ALT-)?(.)$/;
 		var keySplit:Array = (shortcut ? keyPattern.exec(shortcut.toUpperCase()) : null) || [];
 		var keyModifiers:Array = [];
 		if (keySplit[1]) keyModifiers.push(Keyboard.SHIFT);

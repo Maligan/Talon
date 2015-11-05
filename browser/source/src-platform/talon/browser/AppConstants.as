@@ -20,6 +20,7 @@ package talon.browser
 		public static const BROWSER_DOCUMENT_EXTENSION:String = "talon";
 		public static const BROWSER_PUBLISH_EXTENSION:String = "zip";
 		public static const BROWSER_PLUGIN_EXTENSION:String = "swf";
+		public static const BROWSER_SCREENSHOT_EXTENSION:String = "png";
 		public static const BROWSER_SUPPORTED_IMAGE_EXTENSIONS:Vector.<String> = new <String>["atf", "png", "jpg", "gif"];
 
 		public static const PLUGINS_DIR:String = "plugins";

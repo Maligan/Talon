@@ -82,28 +82,30 @@ Resource Dictionary is simple key-value pair object. Resource key is always stri
 Resources can be attached to node, and after there is access to resource via node attribute. 
 In order to map resource to attribute `valueCache` you must use special syntax: `$key` or `$('key')` (if key has non alphanumeric characters)
 
-	var node:Node = new Node();
-	var resources:Object = {
-		"key1":           "string resource",
-		"key_2":          42,
-		"key with space": [1, 2, 3],
-		"\u2203\u262D":   Texture.empty(32, 32)
-	};
+```as3
+var node:Node = new Node();
+var resources:Object = {
+	"key1":           "string resource",
+	"key_2":          42,
+	"key with space": [1, 2, 3],
+	"\u2203\u262D":   Texture.empty(32, 32)
+};
 
-	// Attach resources to node
-	node.setResources(resources);
+// Attach resources to node
+node.setResources(resources);
 
-	// Set attributes 'setted' value
-	node.setAttribute("attr1", "$key1");
-	node.setAttribute("attr2", "$(key_2)");
-	node.setAttribute("attr3", "$('key with space')");
-	node.setAttribute("attr4", '$("\u2203\u262D")');
+// Set attributes 'setted' value
+node.setAttribute("attr1", "$key1");
+node.setAttribute("attr2", "$(key_2)");
+node.setAttribute("attr3", "$('key with space')");
+node.setAttribute("attr4", '$("\u2203\u262D")');
 
-	// Trace attributes 'valueCache' value
-	trace(node.getAttributeCache("attr1")); // string resource
-	trace(node.getAttributeCache("attr2")); // 42
-	trace(node.getAttributeCache("attr3")); // 1, 2, 3
-	trace(node.getAttributeCache("attr4")); // [object ConcreteTexture]
+// Trace attributes 'valueCache' value
+trace(node.getAttributeCache("attr1")); // string resource
+trace(node.getAttributeCache("attr2")); // 42
+trace(node.getAttributeCache("attr3")); // 1, 2, 3
+trace(node.getAttributeCache("attr4")); // [object ConcreteTexture]
+```
 
 All resources are inherit from parent to any children. In most case you may attach it only to root node. But child nodes may has attached resource dictionary too, and in this case can appear collisions: parent and child has resource with some key, in this case child resource have much priority than parent one.
 
@@ -111,32 +113,34 @@ All resources are inherit from parent to any children. In most case you may atta
 
 ![Node tree with resources attached to root and child node](img/img5.png)
 
-	// Source elements
-	var parent:Node = new Node();
-	var parentResources:Object = {
-		key1: "parentResource1",
-		key2: "parentResource2"
-	};
+```as3
+// Source elements
+var parent:Node = new Node();
+var parentResources:Object = {
+	key1: "parentResource1",
+	key2: "parentResource2"
+};
 
-	var child:Node = new Node();
-	var childResources:Object = {
-		key2: "childResource2",
-		key3: "childResource3"
-	};
+var child:Node = new Node();
+var childResources:Object = {
+	key2: "childResource2",
+	key3: "childResource3"
+};
 
-	// Add child to parent
-	parent.addChild(child);
+// Add child to parent
+parent.addChild(child);
 
-	// Attach resources to nodes
-	parent.setResources(parentResources);
-	child.setResources(childResources);
+// Attach resources to nodes
+parent.setResources(parentResources);
+child.setResources(childResources);
 
-	// Attach resource to child, and set attributes 'setted' value
-	child.setAttribute("attr1", "$key1");
-	child.setAttribute("attr2", "$key2");
-	parent.setAttribute("attr1", "$key3");
+// Attach resource to child, and set attributes 'setted' value
+child.setAttribute("attr1", "$key1");
+child.setAttribute("attr2", "$key2");
+parent.setAttribute("attr1", "$key3");
 
-	// Trace attributes 'valueCache' value
-	trace(child.getAttributeCache("attr1"));  // parentResource1 - used from parent resource dictionary
-	trace(child.getAttributeCache("attr2"));  // childResource2 - user from child resources dictionary
-	trace(parent.getAttributeCache("attr3")); // null - "$key3" doesn't exist in parent resource dictionary
+// Trace attributes 'valueCache' value
+trace(child.getAttributeCache("attr1"));  // parentResource1 - used from parent resource dictionary
+trace(child.getAttributeCache("attr2"));  // childResource2 - user from child resources dictionary
+trace(parent.getAttributeCache("attr3")); // null - "$key3" doesn't exist in parent resource dictionary
+```

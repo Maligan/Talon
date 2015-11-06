@@ -132,7 +132,7 @@ package talon
 			fromAttribute.trigger();
 			addBinding(fromAttribute);
 
-			var toAttribute:Binding = Binding.bind(source.change, source, "toString", attribute, "setted");
+			var toAttribute:Binding = Binding.bind(source.change, source, "toString", attribute, "styled");
 			addBinding(toAttribute);
 		}
 

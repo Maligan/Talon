@@ -9,6 +9,7 @@ package talon.browser
 	import flash.filesystem.File;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.html.__HTMLScriptObject;
 	import flash.system.Capabilities;
 
 	import starling.core.Starling;
@@ -136,10 +137,10 @@ package talon.browser
 			{
 				_document && _document.dispose();
 				_document = value;
-				_document && _document.addEventListener(DocumentEvent.CHANGE, dispatchEvent);
 
 				if (_document)
 				{
+					_document.addEventListener(DocumentEvent.CHANGE, dispatchEvent);
 					_document.factory.dpi = _profile.dpi;
 					_document.factory.csf = _profile.csf;
 				}
@@ -247,8 +248,8 @@ package talon.browser
 				var template:String = settings.getValueOrDefault(AppConstants.SETTING_RECENT_TEMPLATE, String);
 				if (template != null)
 				{
-					var recentArray:Array = settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);
-					var recentPath:String = recentArray.pop();
+					var recentArray:Array = settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array);
+					var recentPath:String = recentArray && recentArray.length ? recentArray[0] : null;
 					if (recentPath)
 					{
 						invArgs = [recentPath];

@@ -26,15 +26,17 @@ package talon.browser.document
 
 		private function dispatchChange():void
 		{
+			if (_timer.running == false)
+				_document.tasks.begin();
+
 			_timer.reset();
 			_timer.start();
 		}
 
 		private function onTimer(e:TimerEvent):void
 		{
-			_document.tasks.begin();
-			_document.tasks.end();
 			_timer.reset();
+			_document.tasks.end();
 		}
 
 		public override function produce(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
@@ -193,6 +195,7 @@ package talon.browser.document
 import flash.utils.Dictionary;
 import flash.utils.Proxy;
 import flash.utils.flash_proxy;
+
 import talon.StyleSheet;
 
 namespace resource_proxy;

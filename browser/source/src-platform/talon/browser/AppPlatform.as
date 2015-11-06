@@ -4,6 +4,7 @@ package talon.browser
 
 	import flash.display.NativeWindow;
 	import flash.display.Stage;
+	import flash.display3D.Context3DProfile;
 	import flash.events.NativeWindowBoundsEvent;
 	import flash.filesystem.File;
 	import flash.geom.Point;
@@ -64,7 +65,10 @@ package talon.browser
 			stage.color = color;
 			// --------------------------------------
 
-			_starling = new Starling(Sprite, stage);
+			// With "baselineConstrained" there are same issues:
+			// * stage.color while starling inited have misbehavior
+			// * take screenshot have no alpha
+			_starling = new Starling(Sprite, stage, null, null, "auto", Context3DProfile.BASELINE);
 			_starling.addEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
 
 			initializeWindowMonitor();
@@ -243,8 +247,8 @@ package talon.browser
 				var template:String = settings.getValueOrDefault(AppConstants.SETTING_RECENT_TEMPLATE, String);
 				if (template != null)
 				{
-					var recentArray:Array = settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array);
-					var recentPath:String = recentArray && recentArray.length ? recentArray[0] : null;
+					var recentArray:Array = settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);
+					var recentPath:String = recentArray.pop();
 					if (recentPath)
 					{
 						invArgs = [recentPath];
@@ -253,7 +257,8 @@ package talon.browser
 				}
 			}
 
-			if (invArgs != null) invoke(_invokeArgs);
+			// Do reopen
+			if (invArgs != null) invoke(invArgs);
 			if (invTemplate != null) _ui.templateId = invTemplate;
 
 			// Updater#checkNow() run only after delay, UI inited is a good, moment for this

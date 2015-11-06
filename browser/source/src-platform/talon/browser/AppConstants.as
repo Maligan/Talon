@@ -9,6 +9,7 @@ package talon.browser
 		//
 		public static const APP_NAME:String = "Talon Browser";
 		public static const APP_UPDATE_URL:String = "https://raw.githubusercontent.com/Maligan/Talon/master/browser/release/update.xml";
+		public static const APP_DOCUMENTATION_URL:String = "https://github.com/Maligan/Talon/blob/master/docs/index.md";
 		public static function get APP_VERSION():String
 		{
 			var xml:XML = NativeApplication.nativeApplication.applicationDescriptor;

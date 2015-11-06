@@ -1,6 +1,5 @@
 package talon.browser.commands
 {
-	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.events.Event;
 	import flash.filesystem.File;
@@ -13,17 +12,15 @@ package talon.browser.commands
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
 	import starling.display.Stage;
-	import starling.utils.Color;
 
 	import talon.browser.AppConstants;
-
 	import talon.browser.AppPlatform;
 
-	public class ScreenshotCommand extends Command
+	public class PublishScreenshotCommand extends Command
 	{
 		private var _output:File;
 
-		public function ScreenshotCommand(platform:AppPlatform, output:File = null)
+		public function PublishScreenshotCommand(platform:AppPlatform, output:File = null)
 		{
 			super(platform);
 			platform.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
@@ -76,17 +73,16 @@ package talon.browser.commands
 			if (e != null) _output = null;
 		}
 
-		public static function copyToBitmap(starling:Starling, displayObject:DisplayObject, scale:Number = 1.0):BitmapData
+		public static function copyToBitmap(starling:Starling, displayObject:DisplayObject):BitmapData
 		{
 			var bounds:Rectangle = new Rectangle();
 			displayObject.getBounds(displayObject, bounds);
 
-			var result:BitmapData = new BitmapData(bounds.width*scale, bounds.height*scale, false, Color.WHITE);
+			var result:BitmapData = new BitmapData(bounds.width, bounds.height, true);
 			var stage:Stage = starling.stage;
 			var support:RenderSupport = new RenderSupport();
 
-			support.clear(Color.WHITE, 1);
-			support.scaleMatrix(scale, scale);
+			support.clear(0, 0);
 			support.setProjectionMatrix(0, 0, stage.stageWidth, stage.stageHeight);
 			support.translateMatrix(-bounds.x, -bounds.y);
 			displayObject.render(support, 1.0);

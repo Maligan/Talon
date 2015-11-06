@@ -81,12 +81,12 @@ package talon.browser
 			{
 				_numPluginLoaders--;
 
-				// Import all classes from SWF which implements 'IPlugin' interface
-				_platform.plugins.addPluginsFromApplicationDomain(domain);
-
 				loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onPluginLoaded);
 				loader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onPluginLoaded);
 				loader.contentLoaderInfo.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onPluginLoaded);
+
+				// Import all classes from SWF which implements 'IPlugin' interface
+				_platform.plugins.addPluginsFromApplicationDomain(domain);
 
 				// Success load or not - it does not matter
 				checkStart();

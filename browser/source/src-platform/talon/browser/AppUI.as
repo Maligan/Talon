@@ -271,6 +271,7 @@ package talon.browser
 				_templateId = value;
 				refreshCurrentTemplate();
 				refreshWindowTitle();
+				_platform.settings.setValue(AppConstants.SETTING_RECENT_TEMPLATE, value);
 			}
 		}
 
@@ -355,7 +356,10 @@ class AppUINativeMenu
 		insert("file/preferences/autoUpdate",  new  ChangeSettingCommand(_platform, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, true, false));
 		insert("file/-");
 		insert("file/publishAs",               new  PublishCommand(_platform), "shift-ctrl-s");
-		insert("file/screenshot",              new  ScreenshotCommand(_platform), "shift-ctrl-a");
+		insert("file/screenshot",              new  PublishScreenshotCommand(_platform), "shift-ctrl-a");
+
+		_platform.settings.addPropertyListener(AppConstants.SETTING_RECENT_DOCUMENTS, refreshRecentOpenedDocumentsList);
+		refreshRecentOpenedDocumentsList();
 
 		// View
 		insert("view");
@@ -383,14 +387,12 @@ class AppUINativeMenu
 
 		// Navigate
 		insert("navigate");
-		insert("navigate/gotoDir", new OpenDocumentFolderCommand(_platform));
+		insert("navigate/gotoFolder", new OpenDocumentFolderCommand(_platform));
 		insert("navigate/gotoTemplate", new OpenGoToPopupCommand(_platform), "ctrl-p");
 
-		_platform.settings.addPropertyListener(AppConstants.SETTING_RECENT_DOCUMENTS, refreshRecentOpenedDocumentsList);
-		refreshRecentOpenedDocumentsList();
-
+		// Help
 		insert("help");
-		insert("help/online");
+		insert("help/online", new OpenOnlineDocumentationCommand(_platform));
 		insert("help/update", new UpdateCommand(_platform));
 
 		if (NativeWindow.supportsMenu) platform.stage.nativeWindow.menu = _menu.nativeMenu;

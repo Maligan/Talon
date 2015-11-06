@@ -363,8 +363,8 @@ class AppUINativeMenu
 
 		// View
 		insert("view");
-		insert("view/zoomIn",                  new  ChangeZoomCommand(_platform, +25), "=");
-		insert("view/zoomOut",                 new  ChangeZoomCommand(_platform, -25), "-");
+		insert("view/zoomIn",                  new  ChangeZoomCommand(_platform, +25), "ctrl-=");
+		insert("view/zoomOut",                 new  ChangeZoomCommand(_platform, -25), "ctrl--");
 		insert("view/-");
 		insert("view/rotate",                  new  RotateCommand(_platform), "ctrl-r");
 		insert("view/theme");

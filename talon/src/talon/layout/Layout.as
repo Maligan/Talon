@@ -63,7 +63,7 @@ package talon.layout
 			{
 				_initialized = true;
 				if (!_layout[ABSOLUTE]) registerLayoutAlias(ABSOLUTE, new AbsoluteLayout(), null, ["width", "height"]);
-				if (!_layout[FLOW]) registerLayoutAlias(FLOW, new FlowLayout(), null, ["width", "height"]);
+				if (!_layout[FLOW]) registerLayoutAlias(FLOW, new FlowLayout(), null, ["width", "maxWidth", "minWidth", "height", "maxHeight", "minHeight", "gap", "interline", "wrap", "orientation"]);
 				if (!_layout[GRID]) registerLayoutAlias(GRID, new GridLayout());
 			}
 		}

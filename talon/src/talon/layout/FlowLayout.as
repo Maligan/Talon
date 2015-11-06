@@ -142,7 +142,7 @@ package talon.layout
 		}
 
 		private function getWrap(node:Node):Boolean { return StringUtil.parseBoolean(node.getAttributeCache(Attribute.WRAP)); }
-		private function getAlign(node:Node, name:String):Number { return StringUtil.parseAlign(node.getAttributeCache(name)) }
+		private function getAlign(node:Node, name:String):Number { return StringUtil.parseAlign(node.getAttributeCache(name)); }
 		private function getGap(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.GAP), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0); }
 		private function getInterline(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.INTERLINE), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0); }
 	}
@@ -193,7 +193,7 @@ class Flow
 
 	private function getNewLine():FlowLine
 	{
-		var line:FlowLine = new FlowLine(_maxLength, _gap, _childIndex);
+		var line:FlowLine = new FlowLine(_maxLength - _lengthPaddingBegin - _lengthPaddingEnd, _gap, _childIndex);
 		_lines[_lines.length] = line;
 		return line;
 	}
@@ -313,7 +313,7 @@ class Flow
 	public function getThickness():Number
 	{
 		var result:Number = _thicknessPaddingBegin + _thicknessPaddingEnd;
-		if (_lines.length > 0) result += (_lines.length - 1) * _interline;
+		if (_lines.length > 1) result += (_lines.length - 1) * _interline;
 		for each (var line:FlowLine in _lines) result += line.thickness;
 		return result;
 	}

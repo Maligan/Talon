@@ -14,9 +14,14 @@ package talon.starling
 		{
 			super(TalonSprite);
 
-			setup("node",   TalonSprite);
-			setup("image",  TalonImage);
-			setup("label",  TalonTextField);
+			addTerminal("node");
+			setLinkage ("node", TalonSprite);
+
+			addTerminal("label");
+			setLinkage ("label", TalonTextField);
+
+			addTerminal("image");
+			setLinkage ("image", TalonImage);
 		}
 
 		protected override function addChild(parent:*, child:*):void

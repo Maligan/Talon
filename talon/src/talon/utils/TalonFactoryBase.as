@@ -7,11 +7,13 @@ package talon.utils
 	import talon.Attribute;
 	import talon.Node;
 	import talon.StyleSheet;
+	import talon.utils.StringUtil;
 
 	public class TalonFactoryBase
 	{
 		public static const TAG_LIBRARY:String = "library";
 		public static const TAG_TEMPLATE:String = "template";
+		public static const TAG_PROPERTIES:String = "properties";
 		public static const TAG_STYLE:String = "style";
 
 		public static const ATT_ID:String = "id";
@@ -37,12 +39,6 @@ package talon.utils
 			_parser = new TMLParser(null, null);
 			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
 			_parser.addEventListener(TMLParser.EVENT_END, onElementEnd);
-		}
-
-		protected function setup(symbol:String, type:Class):void
-		{
-			addTerminal(symbol);
-			setLinkage(symbol, type);
 		}
 
 		//
@@ -149,7 +145,7 @@ package talon.utils
 			throw new ArgumentError("Not implemented");
 		}
 
-		private function onElementEnd(e:Event):void
+		protected function onElementEnd(e:Event):void
 		{
 			_parserProduct = _parserProductStack.pop();
 
@@ -160,8 +156,8 @@ package talon.utils
 		//
 		// Linkage
 		//
-		/** Setup class which created for tag of type. */
-		public function setLinkage(tag:String, type:Class):void { _linkage[tag] = type; }
+		/** Setup class which created for type of type. */
+		public function setLinkage(type:String, typeClass:Class):void { _linkage[type] = typeClass; }
 
 		//
 		// Library
@@ -179,8 +175,8 @@ package talon.utils
 		/** Add css to global factory scope. */
 		public function addStyleSheet(css:String):void { _style.parse(css); }
 
-		/** Define symbol as terminal (see TML specification) */
-		public function addTerminal(symbol:String):void { _parser.terminals.push(symbol); }
+		/** Define type as terminal (see TML specification) */
+		public function addTerminal(type:String):void { _parser.terminals.push(type); }
 
 		/** Add all archive content to factory (images, templates, css, etc.). */
 		public function addArchiveContentAsync(bytes:ByteArray, complete:Function):void { throw new Error("Not implemented"); }
@@ -242,6 +238,9 @@ package talon.utils
 						break;
 					case TAG_STYLE:
 						addStyleSheet(child.text());
+						break;
+					case TAG_PROPERTIES:
+						addResourcesFromObject(StringUtil.parseProperties(child.text()));
 						break;
 					default:
 						logger("Ignore library part", "'" + subtype + "'", "unknown type");

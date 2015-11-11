@@ -3,6 +3,7 @@ package talon.browser.plugins.tools.types
 	import flash.system.System;
 
 	import talon.browser.document.log.DocumentMessage;
+	import talon.utils.StringUtil;
 	import talon.utils.TalonFactoryBase;
 
 	public class XMLLibraryAsset extends Asset
@@ -10,6 +11,7 @@ package talon.browser.plugins.tools.types
 		private var _xml:XML;
 		private var _css:Vector.<String> = new Vector.<String>();
 		private var _templates:Vector.<String> = new Vector.<String>();
+		private var _properties:Object = new Object();
 
 		override protected function activate():void
 		{
@@ -29,6 +31,9 @@ package talon.browser.plugins.tools.types
 					case TalonFactoryBase.TAG_TEMPLATE:
 						addTemplate(child);
 						break;
+
+					case TalonFactoryBase.TAG_PROPERTIES:
+						addProperties(child.text());
 
 					default:
 						reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_ELEMENT, file.url, childType);
@@ -65,6 +70,12 @@ package talon.browser.plugins.tools.types
 			}
 		}
 
+		private function addProperties(properties:String):void
+		{
+			StringUtil.parseProperties(properties, _properties);
+			document.factory.addResourcesFromObject(_properties);
+		}
+
 		override protected function deactivate():void
 		{
 			_xml && System.disposeXML(_xml);
@@ -75,6 +86,11 @@ package talon.browser.plugins.tools.types
 
 			while (_templates.length)
 				document.factory.removeTemplate(_templates.pop());
+
+			for (var property:String in _properties)
+				document.factory.removeResource(property);
+
+			_properties = {};
 		}
 	}
 }

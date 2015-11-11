@@ -1,6 +1,5 @@
 package talon.utils
 {
-	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 

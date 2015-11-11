@@ -1,7 +1,16 @@
 package talon.utils
 {
-	public final class TMLParser
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
+
+	[Event(type="flash.events.Event", name="elementBegin")]
+	[Event(type="flash.events.Event", name="elementEnd")]
+	public final class TMLParser extends EventDispatcher
 	{
+		public static const EVENT_BEGIN:String = "elementBegin";
+		public static const EVENT_END:String = "elementEnd";
+
 		// Special keyword-tags
 		private static const TAG_REWRITE:String = "rewrite";
 
@@ -26,20 +35,15 @@ package talon.utils
 		private var _templates:Object;
 		private var _terminals:Vector.<String>;
 		private var _stack:Vector.<String>;
-
-		private var _onBegin:Function;
-		private var _onEnd:Function;
+		private var _attributes:Object;
+		private var _type:String;
 
 		/** @private */
-		public function TMLParser(terminals:Vector.<String> = null, templates:Object = null, onElementBegin:Function = null, onElementEnd:Function = null)
+		public function TMLParser(terminals:Vector.<String> = null, templates:Object = null)
 		{
 			_terminals = terminals || new Vector.<String>();
 			_templates = templates || new Object();
 			_stack = new Vector.<String>();
-
-			// Do not use EventDispatcher: can't success 'try { } catch { }' if error occurs in listeners
-			_onBegin = onElementBegin;
-			_onEnd = onElementEnd;
 		}
 
 		public function parse(xml:XML):void
@@ -50,20 +54,21 @@ package talon.utils
 
 		private function parseInternal(xml:XML, attributes:Object, rewrites:XMLList):void
 		{
-			var type:String = xml.name();
+			_type = xml.name();
 
 			// If node can't be expanded - create node
-			var isTerminal:Boolean = _terminals.indexOf(type) != -1;
+			var isTerminal:Boolean = _terminals.indexOf(_type) != -1;
 			if (isTerminal)
 			{
-				var replacer:XML = rewriteReplace(xml, rewrites);
+				var replacer:XML = getRewritesReplace(xml, rewrites);
 				if (replacer == null)
 				{
-					attributes = mergeAttributes(fetchAttributes(xml), rewriteAttributes(xml, rewrites), attributes);
+					attributes = mergeAttributes(fetchAttributes(xml), getRewritesAttributes(xml, rewrites), attributes);
 					dispatchBegin(attributes);
-					for each (var child:XML in rewriteContent(xml, rewrites)) parseInternal(child, null, rewrites);
+					for each (var child:XML in getRewritesContentOrChildren(xml, rewrites)) parseInternal(child, null, rewrites);
 					dispatchEnd();
 				}
+				// If node must be replaced (by parent node rewrites) to another XML
 				else if (replacer != EMPTY_XML)
 				{
 					parseInternal(replacer, attributes, rewrites);
@@ -72,8 +77,8 @@ package talon.utils
 			// Else if node is template
 			else
 			{
-				push(type);
-				parseInternal(getTemplateOrDie(type), fetchAttributes(xml, attributes), fetchRewrites(xml, rewrites));
+				push(_type);
+				parseInternal(getTemplateOrDie(_type), fetchAttributes(xml, attributes), fetchRewrites(xml, rewrites));
 				pop();
 			}
 		}
@@ -143,7 +148,7 @@ package talon.utils
 		}
 
 		/** Get xml-replacer for current xml defined in rewrites. */
-		private static function rewriteReplace(xml:XML, rewrites:XMLList):XML
+		private static function getRewritesReplace(xml:XML, rewrites:XMLList):XML
 		{
 			var replacers:XMLList = getRewrites(xml, rewrites, VAL_REPLACE);
 			if (replacers.length() == 0) return null;
@@ -154,8 +159,8 @@ package talon.utils
 			return replacer.chidren[0] || EMPTY_XML;
 		}
 
-		/** Get xml-children for current xml defined in rewrites. */
-		private static function rewriteContent(xml:XML, rewrites:XMLList):XMLList
+		/** Get xml-children for current xml defined in rewrites. OR original children list if there is no content rewrites. */
+		private static function getRewritesContentOrChildren(xml:XML, rewrites:XMLList):XMLList
 		{
 			var contents:XMLList = getRewrites(xml, rewrites, VAL_CONTENT);
 			if (contents.length() == 0) return xml.children();
@@ -163,7 +168,7 @@ package talon.utils
 		}
 
 		/** Get xml-attributes for current xml defined in rewrites. */
-		private static function rewriteAttributes(xml:XML, rewrites:XMLList):Object
+		private static function getRewritesAttributes(xml:XML, rewrites:XMLList):Object
 		{
 			var attributes:XMLList = getRewrites(xml, rewrites, VAL_ATTRIBUTES);
 			if (attributes.length() == 0) return null;
@@ -195,12 +200,34 @@ package talon.utils
 		//
 		private function dispatchBegin(attributes:Object):void
 		{
-			_onBegin(attributes);
+			_attributes = attributes;
+			var event:Event = new Event(EVENT_BEGIN);
+			dispatchEvent(event);
 		}
 
 		private function dispatchEnd():void
 		{
-			_onEnd();
+			_attributes = null;
+			var event:Event = new Event(EVENT_END);
+			dispatchEvent(event);
+		}
+
+		/** Current parse process stack of elements types.  */
+		public function get cursorTagStack():Vector.<String>
+		{
+			return _stack;
+		}
+
+		/** Current element tag type e.g. <tag />, not value of type attribute <tag type="type" />. */
+		public function get cursorTag():String
+		{
+			return _type;
+		}
+
+		/** Current element attributes. */
+		public function get cursorAttributes():Object
+		{
+			return _attributes;
 		}
 
 		//

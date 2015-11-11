@@ -1,5 +1,6 @@
 package talon.utils
 {
+	import flash.events.Event;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 
@@ -30,9 +31,12 @@ package talon.utils
 		public function TalonFactoryBase(linkageByDefault:Class):void
 		{
 			_linkageByDefault = linkageByDefault;
-			_parser = new TMLParser(null, null, onElementBegin, onElementEnd);
 			_parserProductStack = new Array();
 			_parserProductStackNonTerminal = new Array();
+
+			_parser = new TMLParser(null, null);
+			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
+			_parser.addEventListener(TMLParser.EVENT_END, onElementEnd);
 		}
 
 		protected function setup(symbol:String, type:Class):void
@@ -65,14 +69,14 @@ package talon.utils
 			return result;
 		}
 
-		protected function onElementBegin(attributes:Object):void
+		protected function onElementBegin(e:Event):void
 		{
-			// Define element type
-			var type:String = attributes["type"];
-			var typeClass:Class = getLinkageClass(type);
+			var type:String = _parser.cursorTag;
+			var attributes:Object = _parser.cursorAttributes;
 
 			// Create new element
-			var element:* = new typeClass();
+			var elementClass:Class = getLinkageClass(_parser.cursorTag, _parser.cursorTagStack);
+			var element:* = new elementClass();
 			var elementNode:Node = getElementNode(element);
 
 			// Copy attributes to node
@@ -90,7 +94,7 @@ package talon.utils
 
 			_parserProductStack.push(element);
 
-			var isNonTerminal:Boolean = type in _parser.templates;
+			var isNonTerminal:Boolean = _parser.terminals.indexOf(type) == -1;
 			if (isNonTerminal) _parserProductStackNonTerminal.push(element);
 		}
 
@@ -99,14 +103,18 @@ package talon.utils
 			return element is ITalonElement ? ITalonElement(element).node : null;
 		}
 
-		protected function getLinkageClass(type:String):Class
+		protected function getLinkageClass(type:String, stack:Vector.<String>):Class
 		{
 			var result:Class = _linkage[type];
 			if (result) return result;
 
-			var superType:String = _parser.templates[type].name();
-			var superClass:Class = getLinkageClass(superType);
-			return superClass || _linkageByDefault;
+			for (var i:int = stack.length-1; i >= 0; i--)
+			{
+				result = _linkage[stack[i]];
+				if (result) return result;
+			}
+
+			return _linkageByDefault;
 		}
 
 		protected function setNodeAttribute(node:Node, attributeName:String, value:String):void
@@ -117,7 +125,7 @@ package talon.utils
 
 			if (bindSource)
 			{
-				var sourceElement:ITalonElement = _parserProductStackNonTerminal[_parserProductStackNonTerminal.length - 1] as ITalonElement;
+				var sourceElement:ITalonElement = (_parserProductStackNonTerminal.length ? _parserProductStackNonTerminal[_parserProductStackNonTerminal.length - 1] : _parserProductStack[0]) as ITalonElement;
 				var source:Attribute = sourceElement.node.getOrCreateAttribute(bindSource);
 				var target:Attribute = node.getOrCreateAttribute(attributeName);
 
@@ -141,7 +149,7 @@ package talon.utils
 			throw new ArgumentError("Not implemented");
 		}
 
-		private function onElementEnd():void
+		private function onElementEnd(e:Event):void
 		{
 			_parserProduct = _parserProductStack.pop();
 

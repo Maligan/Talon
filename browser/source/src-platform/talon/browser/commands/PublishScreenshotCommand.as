@@ -55,22 +55,25 @@ package talon.browser.commands
 
 		private function onOutputFileSelect(e:Event):void
 		{
-			var bitmap:BitmapData = copyToBitmap(platform.starling, platform.ui.template);
-			var bytes:ByteArray = PNGEncoder2.encode(bitmap);
-
-			try
+			if (_output != null)
 			{
-				var stream:FileStream = new FileStream();
-				stream.open(_output, FileMode.WRITE);
-				stream.writeBytes(bytes, 0, bytes.length);
-			}
-			finally
-			{
-				stream.close();
-				bytes.clear();
-			}
+				var bitmap:BitmapData = copyToBitmap(platform.starling, platform.ui.template);
+				var bytes:ByteArray = PNGEncoder2.encode(bitmap);
 
-			if (e != null) _output = null;
+				try
+				{
+					var stream:FileStream = new FileStream();
+					stream.open(_output, FileMode.WRITE);
+					stream.writeBytes(bytes, 0, bytes.length);
+				}
+				finally
+				{
+					stream.close();
+					bytes.clear();
+				}
+
+				if (e != null) _output = null;
+			}
 		}
 
 		public static function copyToBitmap(starling:Starling, displayObject:DisplayObject):BitmapData

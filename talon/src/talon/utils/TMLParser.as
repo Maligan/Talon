@@ -76,23 +76,12 @@ package talon.utils
 			// Else if node is template
 			else
 			{
-				push(_type);
-				parseInternal(getTemplateOrDie(_type), fetchAttributes(xml, attributes), fetchRewrites(xml, rewrites));
-				pop();
+				if (_stack.indexOf(_type) != -1) throw new Error("Template is recursive nested");
+
+				_stack.push(_type);
+				parseInternal(getTemplateOrDie(_type), mergeAttributes(fetchAttributes(xml), attributes), fetchRewrites(xml, rewrites));
+				_stack.pop();
 			}
-		}
-
-		private function push(id:String):void
-		{
-			if (_stack.indexOf(id) != -1)
-				throw new Error("Template is recursive nested");
-
-			_stack.push(id);
-		}
-
-		private function pop():void
-		{
-			_stack.pop();
 		}
 
 		//
@@ -109,7 +98,7 @@ package talon.utils
 		// Attributes (Static Methods)
 		//
 		/** Fetch attributes from XML to key-value pairs. */
-		private static function fetchAttributes(xml:XML, force:Object = null):Object
+		private static function fetchAttributes(xml:XML):Object
 		{
 			var result:Object = new Object();
 
@@ -123,7 +112,7 @@ package talon.utils
 				result[name] = value;
 			}
 
-			return mergeAttributes(result, force);
+			return result;
 		}
 
 		private static function mergeAttributes(...sources):Object

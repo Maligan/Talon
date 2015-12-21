@@ -70,3 +70,16 @@ break               | `auto`                        | `auto`, `before`, `after`,
 autoScale           | `false`                       | `true`, `false`
 src                 | `none`                        | Resource or `none`
 text                | `null`                        | Text
+
+### Types
+Gauge - measurment value in format `NUMBER[UNIT]`, example: `10px, 50%, 3*`,
+
+- Unit is optional field, by default it is equals to `px`
+- Next units is implemented: 
+	- none ?
+	- px
+	- dp
+	- mm
+	- em
+	- %
+	- *

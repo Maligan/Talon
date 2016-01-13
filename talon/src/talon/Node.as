@@ -267,7 +267,7 @@ package talon
 			return _invalidated;
 		}
 
-		/** Raise isInvalidated flag. */
+		/** Raise (only!) isInvalidated flag. */
 		public function invalidate():void
 		{
 			if (_invalidated === false)
@@ -277,7 +277,7 @@ package talon
 			}
 		}
 
-		/** Commint node bounds (and validate node layout):
+		/** Commit node bounds (and validate node layout):
 		 *
 		 *  - Apply 'bounds' via dispatch RESIZE event.
 		 *  - Arrange children with layout algorithm.
@@ -323,13 +323,13 @@ package talon
 			return Gauge.toPixels(attribute.basic, ppmm, inherit, ppdp, inherit, 0, 0, 0);
 		}
 
-		/** This is 'auto' callback for gauges: width, minWidth, maxWidth. */
+		/** This is default 'auto' callback for gauges: width, minWidth, maxWidth. */
 		private function measureAutoWidth(height:Number):Number
 		{
 			return layout.measureAutoWidth(this, height);
 		}
 
-		/** This is 'auto' callback for gauges: height, minHeight, maxHeight. */
+		/** This is default 'auto' callback for gauges: height, minHeight, maxHeight. */
 		private function measureAutoHeight(width:Number):Number
 		{
 			return layout.measureAutoHeight(this, width);

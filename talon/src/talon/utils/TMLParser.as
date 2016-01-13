@@ -200,37 +200,22 @@ package talon.utils
 			dispatchEvent(event);
 		}
 
-		/** Current parse process stack of elements types.  */
-		public function get cursorTagStack():Vector.<String>
-		{
-			return _stack;
-		}
+		/** Current parse process stack of elements types. */
+		public function get cursorTagStack():Vector.<String> { return _stack; }
 
 		/** Current element tag type e.g. <tag />, not value of type attribute <tag type="type" />. */
-		public function get cursorTag():String
-		{
-			return _type;
-		}
+		public function get cursorTag():String { return _type; }
 
 		/** Current element attributes. */
-		public function get cursorAttributes():Object
-		{
-			return _attributes;
-		}
+		public function get cursorAttributes():Object { return _attributes; }
 
 		//
 		// Properties
 		//
 		/** Set of non terminal symbols (key - string, value - xml) */
-		public function get templates():Object
-		{
-			return _templates;
-		}
+		public function get templates():Object { return _templates; }
 
 		/** Set of terminal symbols */
-		public function get terminals():Vector.<String>
-		{
-			return _terminals;
-		}
+		public function get terminals():Vector.<String> { return _terminals; }
 	}
 }

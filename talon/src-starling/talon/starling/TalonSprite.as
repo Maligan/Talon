@@ -3,20 +3,23 @@ package talon.starling
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 
-	import starling.core.RenderSupport;
 	import starling.display.DisplayObject;
+	import starling.display.Quad;
 	import starling.display.Sprite;
 	import starling.events.Event;
+	import starling.rendering.Painter;
+	import starling.utils.Color;
 
 	import talon.Attribute;
 	import talon.Node;
 	import talon.utils.ITalonElement;
-	import talon.utils.StringUtil;
 
 	public class TalonSprite extends Sprite implements ITalonElement
 	{
 		private var _node:Node;
 		private var _bridge:DisplayObjectBridge;
+
+		private var _quad:Quad;
 
 		public function TalonSprite()
 		{
@@ -88,6 +91,7 @@ package talon.starling
 
 		private function refreshClipping():void
 		{
+			/*
 			var clippingString:String = _node.getAttributeCache(Attribute.CLIPPING);
 			var clipping:Boolean = StringUtil.parseBoolean(clippingString);
 
@@ -97,28 +101,24 @@ package talon.starling
 				clipRect = new Rectangle(0, 0, node.bounds.width, node.bounds.height);
 			else
 				clipRect = null;
+			*/
 		}
 
 		//
 		// Background customization
 		//
-		public override function render(support:RenderSupport, parentAlpha:Number):void
+		public override function render(painter:Painter):void
 		{
 			// Background render
-			_bridge.renderBackground(support, parentAlpha * this.alpha);
+			_bridge.renderBackground(painter);
 
 			// Children render
-			super.render(support, parentAlpha);
+			super.render(painter);
 		}
 
 		public override function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
 		{
 			return _bridge.getBoundsCustom(super.getBounds, targetSpace, resultRect);
-		}
-
-		public override function hitTest(localPoint:Point, forTouch:Boolean = false):DisplayObject
-		{
-			return _bridge.hitTestCustom(super.hitTest, localPoint, forTouch);
 		}
 
 		public override function dispose():void

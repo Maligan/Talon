@@ -1,8 +1,8 @@
 package talon.starling
 {
-	import starling.core.RenderSupport;
 	import starling.display.Image;
 	import starling.events.Event;
+	import starling.rendering.Painter;
 	import starling.textures.Texture;
 
 	import talon.Attribute;
@@ -64,13 +64,13 @@ package talon.starling
 		//
 		// Background customization
 		//
-		public override function render(support:RenderSupport, parentAlpha:Number):void
+		public override function render(painter:Painter):void
 		{
 			// Background render
-			_bridge.renderBackground(support, parentAlpha * this.alpha);
+			_bridge.renderBackground(painter);
 
 			// Self image render
-			super.render(support, parentAlpha);
+			super.render(painter);
 		}
 
 		public override function dispose():void

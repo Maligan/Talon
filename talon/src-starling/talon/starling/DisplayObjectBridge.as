@@ -6,7 +6,6 @@ package talon.starling
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
 
-	import starling.core.RenderSupport;
 	import starling.display.DisplayObject;
 	import starling.events.EnterFrameEvent;
 	import starling.events.Touch;
@@ -16,6 +15,7 @@ package talon.starling
 	import starling.filters.ColorMatrixFilter;
 	import starling.filters.FragmentFilter;
 	import starling.filters.FragmentFilterMode;
+	import starling.rendering.Painter;
 	import starling.textures.Texture;
 	import starling.utils.Color;
 	import starling.utils.MatrixUtil;
@@ -161,7 +161,6 @@ package talon.starling
 		private const MATRIX:Matrix = new Matrix();
 		private const POINT:Point = new Point();
 		private const GRID:GaugeQuad = new GaugeQuad();
-		private const RECTANGLE:Rectangle = new Rectangle();
 
 		private var _target:DisplayObject;
 		private var _node:Node;
@@ -329,6 +328,7 @@ package talon.starling
 		//
 		public function onEnterFrame(e:EnterFrameEvent):void
 		{
+			// FIXME: Вынести пересчёт построчно
 			if (_node.isInvalidated && (_node.parent == null || !_node.parent.isInvalidated))
 			{
 				_node.commit();
@@ -338,9 +338,9 @@ package talon.starling
 		//
 		// Public methods witch must be used in target DisplayObject
 		//
-		public function renderBackground(support:RenderSupport, parentAlpha:Number):void
+		public function renderBackground(support:Painter):void
 		{
-			_filler.render(support, parentAlpha);
+			_filler.render(support);
 		}
 
 		public function getBoundsCustom(base:Function, targetSpace:DisplayObject, resultRect:Rectangle):Rectangle
@@ -362,32 +362,6 @@ package talon.starling
 			}
 
 			return resultRect;
-		}
-
-		public function hitTestCustom(base:Function, localPoint:Point, forTouch:Boolean):DisplayObject
-		{
-			var localX:int = localPoint.x;
-			var localY:int = localPoint.y;
-			var result:DisplayObject = base(localPoint, forTouch);
-			localPoint.setTo(localX, localY);
-
-			// NB! copy from DisplayObject#hitTest() method
-			if (result == null)
-			{
-				// on a touch test, invisible or untouchable objects cause the test to fail
-				if (forTouch && (!_target.visible || !_target.touchable)) return null;
-
-				// if we've got a mask and the hit occurs outside, fail
-				if (_target.mask && !_target.hitTestMask(localPoint)) return null;
-
-				// otherwise, check bounding box
-				var bounds:Rectangle = _target.getBounds(_target, RECTANGLE);
-				if (bounds.contains(localX, localY))
-					result = _target;
-			}
-			// --------------------------------------------
-
-			return result;
 		}
 
 		public function resize(width:Number, height:Number):void

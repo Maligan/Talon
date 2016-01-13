@@ -1,10 +1,7 @@
 package talon.starling
 {
-	import starling.core.RenderSupport;
-	import starling.display.BlendMode;
 	import starling.display.Quad;
-	import starling.display.QuadBatch;
-	import starling.errors.AbstractMethodError;
+	import starling.rendering.Painter;
 	import starling.textures.Texture;
 	import starling.textures.TextureSmoothing;
 
@@ -26,18 +23,20 @@ package talon.starling
 		private var _fillMode:String;
 		private var _offsets:Scale9Offsets;
 
-		private var _mesh:Vector.<QuadData>;
-		private var _batch:QuadBatch;
+		private var _meshData:Vector.<QuadData>;
+		private var _mesh:Quad;
 		private var _requestRedraw:Boolean;
 
+		// Starling recommend use batchable if batch has less when 16 quads
+		// TODO: Read about new recommendation
 		public function BackgroundRenderer():void
 		{
 			POOL = new <QuadData>[];
 			HELPER = new QuadWithUnsafeAccess();
 
 			_requestRedraw = true;
-			_mesh = new <QuadData>[];
-			_batch = new QuadBatch();
+			_meshData = new <QuadData>[];
+			_mesh = new Quad(10, 10, 0xFF0000); //new Mesh(new VertexData(), new IndexData());
 			_width = 0;
 			_height = 0;
 			_color = 0xFFFFFF;
@@ -49,21 +48,24 @@ package talon.starling
 			_transparent = true;
 		}
 
-		public function render(support:RenderSupport, parentAlpha:Number):void
+		public function render(painter:Painter):void
 		{
-			if (_batch.alpha == 0 || _texture == null && _transparent) return;
+			if (_mesh.alpha == 0 || _texture == null && _transparent) return;
 
-			if (_requestRedraw)
-			{
-				createMesh();
-				createQuadBatch();
-
-				// Starling recommend use batchable if batch has less when 16 quads
-				_batch.batchable = _batch.numQuads <= 16;
+//			if (_requestRedraw)
+//			{
+//				createMesh();
+//				createQuadBatch();
+//
 				_requestRedraw = false;
-			}
 
-			_batch.render(support, parentAlpha);
+				_mesh.color = int(Math.random() * 0xFFFFFF);
+				_mesh.width = width;
+				_mesh.height = height;
+				_mesh.readjustSize();
+//			}
+
+			_mesh.render(painter);
 		}
 
 		//
@@ -72,16 +74,16 @@ package talon.starling
 		private function createMesh():void
 		{
 			// Release prev quads list
-			while (_mesh.length > 0) POOL[POOL.length] = _mesh.pop();
+			while (_meshData.length > 0) POOL[POOL.length] = _meshData.pop();
 
-			// Define _mesh for render
+			// Define _meshData for render
 			if (_texture)
 			{
 				switch (_fillMode)
 				{
 					case FillMode.SCALE:    remeshScale();  break;
 					case FillMode.REPEAT:   remeshRepeat(); break;
-					case FillMode.CLIP:     remeshClip();   break;
+					case FillMode.NONE:     remeshClip();   break;
 					default: throw new Error("Unknown fillMode: " + _fillMode);
 				}
 			}
@@ -95,7 +97,7 @@ package talon.starling
 		{
 			var quad:QuadData = getQuadData();
 			quad.setPositions(0, 0, _width, _height);
-			_mesh[_mesh.length] = quad;
+			_meshData[_meshData.length] = quad;
 		}
 
 		private function remeshScale():void
@@ -115,7 +117,7 @@ package talon.starling
 					var quad:QuadData = getQuadData();
 					quad.setPositions(hp[x], vp[y], hp[x+1], vp[y+1]);
 					quad.setTexCoords(ht[x], vt[y], ht[x+1], vt[y+1]);
-					_mesh[_mesh.length] = quad;
+					_meshData[_meshData.length] = quad;
 				}
 			}
 		}
@@ -137,6 +139,7 @@ package talon.starling
 			var textureWidth:int = _texture.width;
 			var textureHeight:int = _texture.height;
 
+			/*
 			if (_texture.repeat === false)
 			{
 				var numColumns:int = Math.ceil(_width / textureWidth);
@@ -161,7 +164,7 @@ package talon.starling
 
 						quad.setPositions(quadX, quadY, quadX + quadWidth, quadY + quadHeight);
 						quad.setTexCoords(0, 0, quadWidth/textureWidth, quadHeight/textureHeight);
-						_mesh[_mesh.length] = quad;
+						_meshData[_meshData.length] = quad;
 					}
 				}
 			}
@@ -170,8 +173,9 @@ package talon.starling
 				quad = getQuadData();
 				quad.setPositions(0, 0, _width, _height);
 				quad.setTexCoords(0, 0, _width/textureWidth, _height/textureHeight);
-				_mesh[_mesh.length] = quad;
+				_meshData[_meshData.length] = quad;
 			}
+			*/
 		}
 
 		private function remeshClip():void
@@ -181,23 +185,23 @@ package talon.starling
 			var quad:QuadData = getQuadData();
 			quad.setPositions(0, 0, width, height);
 			quad.setTexCoords(0, 0, width/texture.width, height/texture.height);
-			_mesh[_mesh.length] = quad;
+			_meshData[_meshData.length] = quad;
 		}
 
 		//
 		// Assembling QuadBatch
 		//
-		/** Compose BatchQuad use _mesh list. */
+		/** Compose BatchQuad use _meshData list. */
 		private function createQuadBatch():void
 		{
-			_batch.reset();
+//			_mesh.reset();
 
-			var numQuads:int = _mesh.length;
+			var numQuads:int = _meshData.length;
 			var data:QuadData = null;
 
 			for (var i:int = 0; i < numQuads; i++)
 			{
-				data = _mesh[i];
+				data = _meshData[i];
 
 				// Position
 				HELPER.setVertexPosition(0, data.x1, data.y1);
@@ -220,7 +224,7 @@ package talon.starling
 
 					HELPER.adjustByTexture(texture);
 
-					_batch.addQuad(HELPER, _alpha, _texture, _smoothing);
+//					_mesh.addQuad(HELPER, _alpha, _texture, _smoothing);
 				}
 				else
 				{
@@ -230,7 +234,7 @@ package talon.starling
 					HELPER.setVertexColor(2, _color);
 					HELPER.setVertexColor(3, _color);
 
-					_batch.addQuad(HELPER, _alpha);
+//					_mesh.addQuad(HELPER, _alpha);
 				}
 			}
 		}
@@ -331,15 +335,15 @@ package talon.starling
 		public function get alpha():Number { return _alpha; }
 		public function set alpha(value:Number):void
 		{
-			if (_batch.alpha != value)
-				_batch.alpha = value;
+			if (_mesh.alpha != value)
+				_mesh.alpha = value;
 		}
 
-		public function get blendMode():String { return _batch.blendMode; }
+		public function get blendMode():String { return _mesh.blendMode; }
 		public function set blendMode(value:String):void
 		{
-			if (_batch.blendMode != value)
-				_batch.blendMode = value;
+			if (_mesh.blendMode != value)
+				_mesh.blendMode = value;
 		}
 
 		public function get fillMode():String { return _fillMode; }
@@ -366,17 +370,17 @@ class QuadWithUnsafeAccess extends Quad
 
 	public function setVertexPosition(vertexID:int, x:Number, y:Number):void
 	{
-		mVertexData.setPosition(vertexID, x, y);
+//		mVertexData.setPosition(vertexID, x, y);
 	}
 
 	public function setVertexTexCoords(vertexID:int, u:Number, y:Number):void
 	{
-		mVertexData.setTexCoords(vertexID, u, y);
+//		mVertexData.setTexCoords(vertexID, u, y);
 	}
 
 	public function adjustByTexture(texture:Texture):void
 	{
-		texture.adjustVertexData(mVertexData, 0, 4);
+//		texture.adjustVertexData(mVertexData, 0, 4);
 	}
 }
 

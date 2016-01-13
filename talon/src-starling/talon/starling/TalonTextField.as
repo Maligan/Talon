@@ -6,9 +6,9 @@ package talon.starling
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 
-	import starling.core.RenderSupport;
 	import starling.display.DisplayObject;
 	import starling.events.Event;
+	import starling.rendering.Painter;
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
 	import starling.text.TextFieldAutoSize;
@@ -53,13 +53,6 @@ package talon.starling
             super.text = prev;
 		}
 
-		protected override function formatText(textField:flash.text.TextField, textFormat:TextFormat):void
-		{
-			super.formatText(textField, textFormat);
-			textField.sharpness = (parseFloat(_node.getAttributeCache(Attribute.FONT_SHARPNESS)) || 0) * 400;
-			textField.gridFitType = GridFitType.NONE;
-		}
-
 		//
 		// Measure size
 		//
@@ -78,7 +71,7 @@ package talon.starling
 			// Starling have strange behavior for text with autoSize
 			// * ignore halign/valign properties
 			// * recalculate mHitArea without after offset (with bitmap font)
-			if (getBitmapFont(fontName) != null)
+			if (getBitmapFont(format.font) != null)
 			{
 				if (availableWidth == Infinity)
 					result.width += textBounds.x;
@@ -116,10 +109,9 @@ package talon.starling
 			_bridge.resize(_node.bounds.width, _node.bounds.height);
 		}
 
-		public override function redraw():void
+		// FIXME: Реализовать
+		public function redraw():void
 		{
-			super.redraw();
-
 			if (numChildren > 0)
 			{
                 // NB! Used first children (border is DISABLED)
@@ -132,34 +124,29 @@ package talon.starling
 
 				var childPaddingLeft:Number = node.padding.left.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 				var childPaddingRight:Number = node.padding.right.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-				child.x = Layout.pad(0, 0, childPaddingLeft, childPaddingRight, StringUtil.parseAlign(hAlign));
+//				child.x = Layout.pad(0, 0, childPaddingLeft, childPaddingRight, StringUtil.parseAlign(hAlign));
 
 				var childPaddingTop:Number = node.padding.top.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 				var childPaddingBottom:Number = node.padding.bottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-				child.y = Layout.pad(0, 0, childPaddingTop, childPaddingBottom, StringUtil.parseAlign(vAlign));
+//				child.y = Layout.pad(0, 0, childPaddingTop, childPaddingBottom, StringUtil.parseAlign(vAlign));
 			}
 		}
 
 		//
 		// Background customization
 		//
-		public override function render(support:RenderSupport, parentAlpha:Number):void
+		public override function render(painter:Painter):void
 		{
 			// Render background
-			_bridge.renderBackground(support, parentAlpha * this.alpha);
+			_bridge.renderBackground(painter);
 
 			// Render glyphs
-			super.render(support, parentAlpha);
+			super.render(painter);
 		}
 
 		public override function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
 		{
 			return _bridge.getBoundsCustom(super.getBounds, targetSpace, resultRect);
-		}
-
-		public override function hitTest(localPoint:Point, forTouch:Boolean = false):DisplayObject
-		{
-			return _bridge.hitTestCustom(super.hitTest, localPoint, forTouch);
 		}
 
 		public override function dispose():void
@@ -171,26 +158,18 @@ package talon.starling
 		//
 		// Properties Delegating
 		//
-		public override function set color(value:uint):void { node.setAttribute(Attribute.FONT_COLOR, StringUtil.toHexRBG(value)) }
-		private function onFontColorChange():void { super.color = StringUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
 
-		public override function set fontSize(value:Number):void { node.setAttribute(Attribute.FONT_SIZE, value.toString()) }
-		private function onFontSizeChange():void { super.fontSize = node.ppem }
+		// FIXME: Обратные изменения от TextFormat в узел
+		// Вынести sharpness, gridFitType
+		private function onFontColorChange():void { format.color = StringUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
+		private function onFontSizeChange():void { format.size = node.ppem }
+		private function onFontNameChange():void { format.font = node.getAttributeCache(Attribute.FONT_NAME) || BitmapFont.MINI }
+		private function onHAlignChange():void { format.horizontalAlign = _node.getAttributeCache(Attribute.HALIGN) }
+		private function onVAlignChange():void { format.verticalAlign = _node.getAttributeCache(Attribute.VALIGN) }
 
-		public override function set fontName(value:String):void { node && node.setAttribute(Attribute.FONT_NAME, value) || (super.fontName = value) }
-		private function onFontNameChange():void { super.fontName = node.getAttributeCache(Attribute.FONT_NAME) || BitmapFont.MINI }
-
-		public override function set hAlign(value:String):void { if (super.hAlign != value) node.setAttribute(Attribute.HALIGN, value) }
-		private function onHAlignChange():void { super.hAlign = _node.getAttributeCache(Attribute.HALIGN) }
-
-		public override function set vAlign(value:String):void { if (super.vAlign != value) node.setAttribute(Attribute.VALIGN, value) }
-		private function onVAlignChange():void { super.vAlign = _node.getAttributeCache(Attribute.VALIGN) }
-
-		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
 		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); }
-
-		public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.AUTO_SCALE, StringUtil.toBoolean(value)); }
 		private function onAutoScaleChange():void { super.autoScale = StringUtil.parseBoolean(_node.getAttributeCache(Attribute.AUTO_SCALE)); }
+
 
 		//
 		// Properties
@@ -199,6 +178,9 @@ package talon.starling
 		{
 			return _node;
 		}
+
+		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
+		public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.AUTO_SCALE, StringUtil.toBoolean(value)); }
 
 		public override function get autoSize():String { return getAutoSize(node.width.isNone, node.height.isNone); }
 		public override function set autoSize(value:String):void

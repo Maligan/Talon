@@ -1,11 +1,14 @@
 package talon.starling
 {
+	import flash.geom.Point;
+
 	import starling.display.Mesh;
 	import starling.rendering.IndexData;
 	import starling.rendering.MeshStyle;
 	import starling.rendering.Painter;
 	import starling.rendering.VertexData;
 	import starling.utils.Align;
+	import starling.utils.Pool;
 
 	import talon.enums.FillMode;
 
@@ -118,72 +121,85 @@ package talon.starling
 		{
 			if (_requiresRecomposition)
 			{
-				var result:Vector.<Vertex> = new <Vertex>[];
+				// Calculate horizontal and vertical rulers
 
-				fillRepeat(result, width, horizontalAlign, true);
-				fillRepeat(result, height, verticalAlign, false);
-
-				// ... sort
-				// ... reverse
-
-				while (result.length)
+				// ... horizontal
+				var byX:Vector.<Point> = new <Point>[];
+				switch (fillModeX)
 				{
-					var vertex:Vertex = result.pop();
-					// ... write to VertexData
-					Vertex.putVertex(vertex);
+					case FillMode.SCALE:
+						fillScale(width, texture.width, _scale9Offsets[3], _scale9Offsets[1], byX);
+						break;
+					case FillMode.REPEAT:
+						fillRepeat(width, texture.width, horizontalAlign, byX);
+						break;
+					case FillMode.NONE:
+						fillClip(width, texture.width, horizontalAlign, byX);
 				}
+
+				// .. vertical
+				var byY:Vector.<Point> = new <Point>[];
+				switch (fillModeY)
+				{
+					case FillMode.SCALE:
+						fillScale(height, texture.height, _scale9Offsets[0], _scale9Offsets[2], byY);
+						break;
+					case FillMode.REPEAT:
+						fillRepeat(height, texture.height, verticalAlign, byY);
+						break;
+					case FillMode.NONE:
+						fillClip(height, texture.height, verticalAlign, byY);
+				}
+
+				// Compose vertices from rulers
+				vertexData.numVertices = byX.length * byY.length;
+				var vertexIndex:int = 0;
+
+				for each (var h:Point in byX)
+				{
+					for each (var v:Point in byY)
+					{
+						vertexData.setPoint(vertexIndex, "position", h.x, v.x);
+						vertexData.setPoint(vertexIndex, "texCoords", h.y, v.y);
+						vertexIndex++;
+					}
+				}
+
+				// Return points to starling pool
+				while (byX.length) Pool.putPoint(byX.pop());
+				while (byY.length) Pool.putPoint(byY.pop());
 
 				_requiresRecomposition = false;
 			}
 		}
 
-		private function fillRepeat(result:Vector.<Vertex>, size:int, align:*, horizontal:Boolean):void
+		private function fillRepeat(size:Number, tsize:Number, align:Number, result:Vector.<Point>):Vector.<Point>
 		{
-			if (result.length == 0)
+
+		}
+
+		private function fillScale(size:Number, tsize:Number, offset1:Number, offset2:Number, result:Vector.<Point>):Vector.<Point>
+		{
+			var sumOffset:Number = offset1 + offset2;
+			if (sumOffset == 0 || size == tsize || sumOffset >= size)
 			{
-
+				result[0] = Pool.getPoint(0, 0);
+				result[1] = Pool.getPoint(size, 1);
 			}
+			else
+			{
+				result[0] = Pool.getPoint(0,            0);
+				result[1] = Pool.getPoint(offset1,      offset1/tsize);
+				result[2] = Pool.getPoint(size-offset2, 1-offset2/tsize);
+				result[3] = Pool.getPoint(size,         1);
+			}
+
+			return result;
 		}
-	}
-}
 
-class Vertex
-{
-	private static const  _pool:Vector.<Vertex> = new <Vertex>[];
-
-	public static function getVertex(x:Number = 0, y:Number = 0, u:Number = 0, v:Number = 0):Vertex { return (_pool.pop() || new Vertex()).reset(x, y, u ,v); }
-	public static function putVertex(vertex:Vertex):void { _pool.push(vertex); }
-
-	public var x:Number;
-	public var y:Number;
-	public var u:Number;
-	public var v:Number;
-
-	public function setValues(p:Number, t:Number, horizontal:Boolean):void
-	{
-		if (horizontal)
+		private function fillClip(size:Number, tsize:Number, align:Number, result:Vector.<Point>):Vector.<Point>
 		{
-			x = p;
-			u = t;
+			result[0] = Pool.getPoint()
 		}
-		else
-		{
-			y = p;
-			v = t;
-		}
-	}
-
-	public function clone():Vertex
-	{
-		return getVertex(x, y, u, v);
-	}
-
-	private function reset(x:Number, y:Number, u:Number, v:Number):Vertex
-	{
-		this.x = x;
-		this.y = y;
-		this.u = u;
-		this.v = v;
-		return this;
 	}
 }

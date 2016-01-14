@@ -14,32 +14,33 @@ package talon.starling
 
 	public class FillModeMesh extends Mesh
 	{
-		private var _fillModeX:String;
-		private var _fillModeY:String;
+		private var _horizontalFillMode:String;
+		private var _verticalFillMode:String;
 		private var _horizontalAlign:String;
 		private var _verticalAlign:String;
 		private var _scale9Offsets:Vector.<Number>;
+
+		private var _width:Number;
+		private var _height:Number;
 
 		private var _requiresRecomposition:Boolean;
 
 		public function FillModeMesh()
 		{
 			var vertexData:VertexData = new VertexData(MeshStyle.VERTEX_FORMAT, 4);
-			vertexData.setPoint(0, "position", 0,  0);
-			vertexData.setPoint(1, "position", 100, 0);
-			vertexData.setPoint(2, "position", 0,  100);
-			vertexData.setPoint(3, "position", 100, 100);
-
 			var indexData:IndexData = new IndexData(6);
-			indexData.appendQuad(0, 1, 2, 3);
 
 			super(vertexData, indexData, style);
 
 			_scale9Offsets = new Vector.<Number>(4, true);
 			_scale9Offsets[0] = _scale9Offsets[1] = _scale9Offsets[2] = _scale9Offsets[3] = 0;
-			_fillModeX = _fillModeY = FillMode.SCALE;
+			_horizontalFillMode = _verticalFillMode = FillMode.STRETCH;
 			_horizontalAlign = Align.LEFT;
 			_verticalAlign = Align.TOP;
+
+			_width = 0;
+			_height = 0;
+			_requiresRecomposition = true;
 		}
 
 		/** @inherit */
@@ -49,7 +50,6 @@ package talon.starling
 			super.render(painter);
 		}
 
-		/** @inherit */
 		private function setRequiresRecomposition():void
 		{
 			_requiresRecomposition = true;
@@ -60,24 +60,46 @@ package talon.starling
 		// Properties
 		//
 
-		/** Define algorithm of filling background area by texture via x-axis. */
-		public function get fillModeX():String { return _fillModeX; }
-		public function set fillModeX(value:String):void
+		/** @inherit */
+		public override function get width():Number { return _width; }
+		public override function set width(value:Number):void
 		{
-			if (_fillModeX != value)
+			if (_width != value)
 			{
-				_fillModeX = value;
+				_width = value;
+				setRequiresRecomposition();
+			}
+		}
+
+		/** @inherit */
+		public override function get height():Number { return _height; }
+		public override function set height(value:Number):void
+		{
+			if (_height != value)
+			{
+				_height = value;
+				setRequiresRecomposition();
+			}
+		}
+
+		/** Define algorithm of filling background area by texture via x-axis. */
+		public function get horizontalFillMode():String { return _horizontalFillMode; }
+		public function set horizontalFillMode(value:String):void
+		{
+			if (_horizontalFillMode != value)
+			{
+				_horizontalFillMode = value;
 				setRequiresRecomposition();
 			}
 		}
 
 		/** Define algorithm of filling background area by texture via y-axis. */
-		public function get fillModeY():String { return _fillModeX; }
-		public function set fillModeY(value:String):void
+		public function get verticalFillMode():String { return _verticalFillMode; }
+		public function set verticalFillMode(value:String):void
 		{
-			if (_fillModeY != value)
+			if (_verticalFillMode != value)
 			{
-				_fillModeY = value;
+				_verticalFillMode = value;
 				setRequiresRecomposition();
 			}
 		}
@@ -102,7 +124,7 @@ package talon.starling
 			}
 		}
 
-		/** Define FillMode.SCALE 9-scale grid for texture filling. */
+		/** Define FillMode.STRETCH 9-scale grid for texture filling. */
 		public function setScale9Offsets(top:Number, right:Number, bottom:Number, left:Number):void
 		{
 			_scale9Offsets[0] = top;
@@ -125,43 +147,42 @@ package talon.starling
 
 				// ... horizontal
 				var byX:Vector.<Point> = new <Point>[];
-				switch (fillModeX)
+				switch (horizontalFillMode)
 				{
-					case FillMode.SCALE:
-						fillScale(width, texture.width, _scale9Offsets[3], _scale9Offsets[1], byX);
-						break;
-					case FillMode.REPEAT:
-						fillRepeat(width, texture.width, horizontalAlign, byX);
-						break;
-					case FillMode.NONE:
-						fillClip(width, texture.width, horizontalAlign, byX);
+					case FillMode.STRETCH:  fillStretch(width, 25, _scale9Offsets[3], _scale9Offsets[1], byX); break;
+					case FillMode.REPEAT:   fillRepeat(width, 25, horizontalAlign, byX); break;
+					case FillMode.NONE:     fillNone(width, 25, horizontalAlign, byX); break;
 				}
 
 				// .. vertical
 				var byY:Vector.<Point> = new <Point>[];
-				switch (fillModeY)
+				switch (verticalFillMode)
 				{
-					case FillMode.SCALE:
-						fillScale(height, texture.height, _scale9Offsets[0], _scale9Offsets[2], byY);
-						break;
-					case FillMode.REPEAT:
-						fillRepeat(height, texture.height, verticalAlign, byY);
-						break;
-					case FillMode.NONE:
-						fillClip(height, texture.height, verticalAlign, byY);
+					case FillMode.STRETCH:  fillStretch(height, 25, _scale9Offsets[0], _scale9Offsets[2], byY); break;
+					case FillMode.REPEAT:   fillRepeat(height, 25, verticalAlign, byY); break;
+					case FillMode.NONE:     fillNone(height, 25, verticalAlign, byY); break;
 				}
 
 				// Compose vertices from rulers
-				vertexData.numVertices = byX.length * byY.length;
-				var vertexIndex:int = 0;
+				vertexData.clear();
+				indexData.clear();
 
-				for each (var h:Point in byX)
+				var quadIndex:int = 0;
+
+				for (var h:int = 0; h < byX.length-1; h++)
 				{
-					for each (var v:Point in byY)
+					for (var v:int = 0; v < byY.length-1; v++)
 					{
-						vertexData.setPoint(vertexIndex, "position", h.x, v.x);
-						vertexData.setPoint(vertexIndex, "texCoords", h.y, v.y);
-						vertexIndex++;
+						var n:int = quadIndex * 4;
+
+						_col = int(Math.random() * 0xFFFFFF);
+						setVertex(n,   byX[h],   byY[v]);
+						setVertex(n+1, byX[h+1], byY[v]);
+						setVertex(n+2, byX[h],   byY[v+1]);
+						setVertex(n+3, byX[h+1], byY[v+1]);
+
+						indexData.appendQuad(n, n+1, n+2, n+3);
+						quadIndex++;
 					}
 				}
 
@@ -173,33 +194,61 @@ package talon.starling
 			}
 		}
 
-		private function fillRepeat(size:Number, tsize:Number, align:Number, result:Vector.<Point>):Vector.<Point>
-		{
+		private var _col:uint;
 
+		private function setVertex(index:int, h:Point, v:Point):void
+		{
+			// flash.geom.Point usage: in 'x' - vertex position, in 'y' - texture position
+			vertexData.setPoint(index, "position", h.x, v.x);
+			vertexData.setPoint(index, "texCoords", h.y, v.y);
+			vertexData.setColor(index, "color", _col);
 		}
 
-		private function fillScale(size:Number, tsize:Number, offset1:Number, offset2:Number, result:Vector.<Point>):Vector.<Point>
+		private function fillRepeat(size:Number, tsize:Number, align:*, result:Vector.<Point>):void
 		{
-			var sumOffset:Number = offset1 + offset2;
-			if (sumOffset == 0 || size == tsize || sumOffset >= size)
+			var offset:Number = 0;
+			while (offset < size)
 			{
-				result[0] = Pool.getPoint(0, 0);
-				result[1] = Pool.getPoint(size, 1);
-			}
-			else
-			{
-				result[0] = Pool.getPoint(0,            0);
-				result[1] = Pool.getPoint(offset1,      offset1/tsize);
-				result[2] = Pool.getPoint(size-offset2, 1-offset2/tsize);
-				result[3] = Pool.getPoint(size,         1);
+				result[result.length] = Pool.getPoint(offset, 0); // ? what add texture position
+				offset += tsize;
 			}
 
-			return result;
+			result[result.length] = Pool.getPoint(size);
 		}
 
-		private function fillClip(size:Number, tsize:Number, align:Number, result:Vector.<Point>):Vector.<Point>
+		private function fillStretch(size:Number, tsize:Number, offset1:Number, offset2:Number, result:Vector.<Point>):void
 		{
-			result[0] = Pool.getPoint()
+			// Begin point
+			result.push(Pool.getPoint(0, 0));
+
+			var hasValid9Scale:Boolean = (size > offset1+offset2) && (size > tsize);
+			if (hasValid9Scale)
+			{
+				// Unscalable section #1
+				if (offset1 != 0) result.push(Pool.getPoint(offset1, offset1/tsize));
+
+				// Unscalable section #2
+				if (offset2 != 0) result.push(Pool.getPoint(size-offset2, 1-offset2/tsize));
+			}
+
+			// End point
+			result.push(Pool.getPoint(size, 1));
+		}
+
+		private function fillNone(size:Number, tsize:Number, align:*, result:Vector.<Point>):void
+		{
+			// Nope
 		}
 	}
+}
+
+class Ruler
+{
+	private static const _pool:Vector.<Ruler> = new <Ruler>[];
+	public static function getRuler(pos:Number, texBefore:Number, texAfter:Number):Ruler { return _pool.pop() || new Ruler(); }
+	public static function putRuler(ruler:Ruler):void { _pool.push(ruler); }
+
+	public var pos:Number;
+	public var texBefore:Number;
+	public var texAfter:Number;
 }

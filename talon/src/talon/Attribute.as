@@ -60,7 +60,7 @@ package talon
 		public static const BACKGROUND_COLOR:String     = registerAttributeDefaults("backgroundColor",     NONE);
 		public static const BACKGROUND_ALPHA:String     = registerAttributeDefaults("backgroundAlpha",     ONE);
 		public static const BACKGROUND_BLEND_MODE:String= registerAttributeDefaults("backgroundBlendMode", AUTO);
-		public static const BACKGROUND_FILL_MODE:String = registerAttributeDefaults("backgroundFillMode",  FillMode.SCALE);
+		public static const BACKGROUND_FILL_MODE:String = registerAttributeDefaults("backgroundFillMode",  FillMode.STRETCH);
 
 		public static const FONT_COLOR:String           = registerAttributeDefaults("fontColor",           INHERIT,                  true);
 		public static const FONT_NAME:String            = registerAttributeDefaults("fontName",            INHERIT,                  true);

@@ -7,7 +7,10 @@ package talon
 	import starling.display.Mesh;
 	import starling.display.Sprite;
 	import starling.events.Event;
+	import starling.textures.Texture;
 	import starling.utils.Color;
+
+	import talon.enums.FillMode;
 
 	import talon.layout.Layout;
 	import talon.starling.FillModeMesh;
@@ -42,9 +45,13 @@ package talon
 			var root:Sprite = _starling.root as Sprite;
 
 			var background:FillModeMesh = new FillModeMesh();
+			background.setScale9Offsets(10, 20, 20, 10);
+			background.verticalFillMode = FillMode.STRETCH;
+			background.horizontalFillMode = FillMode.REPEAT;
 			background.color = Color.RED;
 			background.width = 100;
 			background.height = 100;
+//			background.texture = Texture.fromColor(25, 25, 0xFF0000);
 
 			root.addChild(background);
 

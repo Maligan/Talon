@@ -44,7 +44,7 @@ package talon.starling
 			_alpha = 1;
 			_smoothing = TextureSmoothing.BILINEAR;
 			_offsets = new Scale9Offsets();
-			_fillMode = FillMode.SCALE;
+			_fillMode = FillMode.STRETCH;
 			_transparent = true;
 		}
 
@@ -81,7 +81,7 @@ package talon.starling
 			{
 				switch (_fillMode)
 				{
-					case FillMode.SCALE:    remeshScale();  break;
+					case FillMode.STRETCH:    remeshScale();  break;
 					case FillMode.REPEAT:   remeshRepeat(); break;
 					case FillMode.NONE:     remeshClip();   break;
 					default: throw new Error("Unknown fillMode: " + _fillMode);

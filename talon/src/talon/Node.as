@@ -6,7 +6,7 @@ package talon
 	import flash.events.Event;
 
 	import talon.layout.Layout;
-	import talon.utils.Binding;
+	import talon.utils.TriggerBinding;
 	import talon.utils.Gauge;
 	import talon.utils.GaugePair;
 	import talon.utils.GaugeQuad;
@@ -128,11 +128,11 @@ package talon
 		{
 			var attribute:Attribute = getOrCreateAttribute(name);
 
-			var fromAttribute:Binding = Binding.bind(attribute.change, attribute, "value", source, "parse");
+			var fromAttribute:TriggerBinding = TriggerBinding.bind(attribute.change, attribute, "value", source, "parse");
 			fromAttribute.trigger();
 			addBinding(fromAttribute);
 
-			var toAttribute:Binding = Binding.bind(source.change, source, "toString", attribute, "styled");
+			var toAttribute:TriggerBinding = TriggerBinding.bind(source.change, source, "toString", attribute, "styled");
 			addBinding(toAttribute);
 		}
 
@@ -140,13 +140,13 @@ package talon
 		// Bindings
 		//
 		/** Add attached binding (for dispose with node). */
-		public function addBinding(binding:Binding):void
+		public function addBinding(binding:TriggerBinding):void
 		{
 			_bindings[binding] = binding;
 		}
 
 		/** Remove attached binding. */
-		public function removeBinding(binding:Binding, dispose:Boolean = false):void
+		public function removeBinding(binding:TriggerBinding, dispose:Boolean = false):void
 		{
 			if (_bindings[binding] != null)
 			{
@@ -455,7 +455,7 @@ package talon
 			for each (var attribute:Attribute in _attributes)
 				attribute.dispose();
 
-			for each (var binding:Binding in _bindings)
+			for each (var binding:TriggerBinding in _bindings)
 				binding.dispose();
 		}
 	}

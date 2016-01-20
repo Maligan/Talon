@@ -125,9 +125,9 @@ package talon.utils
 				var source:Attribute = sourceElement.node.getOrCreateAttribute(bindSource);
 				var target:Attribute = node.getOrCreateAttribute(attributeName);
 
-				var toTarget:Binding = Binding.bind(source.change, source, "value", target, "setted");
+				var toTarget:TriggerBinding = TriggerBinding.bind(source.change, source, "value", target, "setted");
 				toTarget.trigger();
-				var toSource:Binding = Binding.bind(target.change, target, "value", source, "setted");
+				var toSource:TriggerBinding = TriggerBinding.bind(target.change, target, "value", source, "setted");
 
 				sourceElement.node.addBinding(toTarget);
 				sourceElement.node.addBinding(toSource);

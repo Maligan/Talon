@@ -1,9 +1,9 @@
 package talon.utils
 {
 	[ExcludeClass]
-	public class Binding
+	public class TriggerBinding
 	{
-		public static function bind(fromTrigger:Trigger, from:Object, fromProperty:String, to:Object, toProperty:String):Binding
+		public static function bind(fromTrigger:Trigger, from:Object, fromProperty:String, to:Object, toProperty:String):TriggerBinding
 		{
 			var fromPropertyValue:* = getProperty(from, fromProperty);
 			var toPropertyValue:* = getProperty(to, toProperty);
@@ -13,7 +13,7 @@ package talon.utils
 			var setter:Function = toPropertyValue is Function ? toPropertyValue : setProperty;
 			var setterArgs:Array = toPropertyValue is Function ? null : [to, toProperty];
 
-			return new Binding
+			return new TriggerBinding
 			(
 				fromTrigger,
 				getter, getterArgs,
@@ -43,7 +43,7 @@ package talon.utils
 		private var _setter:Function;
 		private var _setterArgs:Array;
 
-		public function Binding(trigger:Trigger, getter:Function, getterArgs:Array, setter:Function, setterArgs:Array)
+		public function TriggerBinding(trigger:Trigger, getter:Function, getterArgs:Array, setter:Function, setterArgs:Array)
 		{
 			_trigger = trigger;
 			_trigger.addListener(onTrigger);

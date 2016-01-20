@@ -1,27 +1,29 @@
 package talon.starling
 {
-	import flash.geom.Point;
-
 	import starling.display.Mesh;
 	import starling.rendering.IndexData;
 	import starling.rendering.MeshStyle;
 	import starling.rendering.Painter;
 	import starling.rendering.VertexData;
 	import starling.utils.Align;
-	import starling.utils.Pool;
 
 	import talon.enums.FillMode;
+	import talon.utils.StringUtil;
 
 	public class FillModeMesh extends Mesh
 	{
+		private static var _byX:Vector.<Ruler>;
+		private static var _byY:Vector.<Ruler>;
+
+		private var _width:Number;
+		private var _height:Number;
+		private var _color:uint;
+
 		private var _horizontalFillMode:String;
 		private var _verticalFillMode:String;
 		private var _horizontalAlign:String;
 		private var _verticalAlign:String;
 		private var _scale9Offsets:Vector.<Number>;
-
-		private var _width:Number;
-		private var _height:Number;
 
 		private var _requiresRecomposition:Boolean;
 
@@ -82,7 +84,18 @@ package talon.starling
 			}
 		}
 
-		/** Define algorithm of filling background area by texture via x-axis. */
+		/** @inherit */
+		public override function get color():uint { return _color; }
+		public override function set color(value:uint):void
+		{
+			if (_color != value)
+			{
+				_color = value;
+				setRequiresRecomposition();
+			}
+		}
+
+		/** Define algorithm of filling background area with texture via x-axis. */
 		public function get horizontalFillMode():String { return _horizontalFillMode; }
 		public function set horizontalFillMode(value:String):void
 		{
@@ -93,7 +106,7 @@ package talon.starling
 			}
 		}
 
-		/** Define algorithm of filling background area by texture via y-axis. */
+		/** Define algorithm of filling background area with texture via y-axis. */
 		public function get verticalFillMode():String { return _verticalFillMode; }
 		public function set verticalFillMode(value:String):void
 		{
@@ -144,24 +157,9 @@ package talon.starling
 			if (_requiresRecomposition)
 			{
 				// Calculate horizontal and vertical rulers
-
-				// ... horizontal
-				var byX:Vector.<Point> = new <Point>[];
-				switch (horizontalFillMode)
-				{
-					case FillMode.STRETCH:  fillStretch(width, 25, _scale9Offsets[3], _scale9Offsets[1], byX); break;
-					case FillMode.REPEAT:   fillRepeat(width, 25, horizontalAlign, byX); break;
-					case FillMode.NONE:     fillNone(width, 25, horizontalAlign, byX); break;
-				}
-
-				// .. vertical
-				var byY:Vector.<Point> = new <Point>[];
-				switch (verticalFillMode)
-				{
-					case FillMode.STRETCH:  fillStretch(height, 25, _scale9Offsets[0], _scale9Offsets[2], byY); break;
-					case FillMode.REPEAT:   fillRepeat(height, 25, verticalAlign, byY); break;
-					case FillMode.NONE:     fillNone(height, 25, verticalAlign, byY); break;
-				}
+				_byX ||= new <Ruler>[];
+				_byY ||= new <Ruler>[];
+				recomposeRulers(_byX, _byY);
 
 				// Compose vertices from rulers
 				vertexData.clear();
@@ -169,75 +167,117 @@ package talon.starling
 
 				var quadIndex:int = 0;
 
-				for (var h:int = 0; h < byX.length-1; h++)
+				for (var h:int = 0; h < _byX.length-1; h++)
 				{
-					for (var v:int = 0; v < byY.length-1; v++)
+					for (var v:int = 0; v < _byY.length-1; v++)
 					{
 						var n:int = quadIndex * 4;
 
-						_col = int(Math.random() * 0xFFFFFF);
-						setVertex(n,   byX[h],   byY[v]);
-						setVertex(n+1, byX[h+1], byY[v]);
-						setVertex(n+2, byX[h],   byY[v+1]);
-						setVertex(n+3, byX[h+1], byY[v+1]);
+						// Init quad with starling 'quad layout'
+						setVertex(n, 0, _byX[h],   _byY[v]);
+						setVertex(n, 1, _byX[h+1], _byY[v]);
+						setVertex(n, 2, _byX[h],   _byY[v+1]);
+						setVertex(n, 3, _byX[h+1], _byY[v+1]);
 
 						indexData.appendQuad(n, n+1, n+2, n+3);
 						quadIndex++;
 					}
 				}
 
-				// Return points to starling pool
-				while (byX.length) Pool.putPoint(byX.pop());
-				while (byY.length) Pool.putPoint(byY.pop());
+				// Return rulers to pool
+				while (_byX.length) Ruler.putRuler(_byX.pop());
+				while (_byY.length) Ruler.putRuler(_byY.pop());
 
 				_requiresRecomposition = false;
 			}
 		}
 
-		private var _col:uint;
-
-		private function setVertex(index:int, h:Point, v:Point):void
+		private function recomposeRulers(horizontal:Vector.<Ruler>, vertical:Vector.<Ruler>):void
 		{
-			// flash.geom.Point usage: in 'x' - vertex position, in 'y' - texture position
-			vertexData.setPoint(index, "position", h.x, v.x);
-			vertexData.setPoint(index, "texCoords", h.y, v.y);
-			vertexData.setColor(index, "color", _col);
+			if (texture)
+			{
+				switch (horizontalFillMode)
+				{
+					case FillMode.STRETCH:  fillStretch(width, texture.width, _scale9Offsets[3], _scale9Offsets[1], horizontal); break;
+					case FillMode.REPEAT:   fillRepeat(width, texture.width, StringUtil.parseAlign(horizontalAlign), horizontal); break;
+					case FillMode.NONE:     fillNone(width, texture.width, StringUtil.parseAlign(horizontalAlign), horizontal); break;
+				}
+
+				switch (verticalFillMode)
+				{
+					case FillMode.STRETCH:  fillStretch(height, texture.height, _scale9Offsets[0], _scale9Offsets[2], vertical); break;
+					case FillMode.REPEAT:   fillRepeat(height, texture.height, StringUtil.parseAlign(verticalAlign), vertical); break;
+					case FillMode.NONE:     fillNone(height, texture.height, StringUtil.parseAlign(verticalAlign), vertical); break;
+				}
+			}
 		}
 
-		private function fillRepeat(size:Number, tsize:Number, align:*, result:Vector.<Point>):void
+		private function setVertex(indexBase:int, indexShift:int, h:Ruler, v:Ruler):void
 		{
-			var offset:Number = 0;
-			while (offset < size)
+			var index:int = indexBase + indexShift;
+			var tx:Number = (indexShift==0 || indexShift==2) ? h.texAtBegin : h.texAtEnd;
+			var ty:Number = (indexShift==0 || indexShift==1) ? v.texAtBegin : v.texAtEnd;
+
+			vertexData.setPoint(index, "position", h.pos, v.pos);
+			vertexData.setPoint(index, "texCoords", tx, ty);
+			vertexData.setColor(index, "color", color);
+		}
+
+		private function fillRepeat(size:Number, tsize:Number, align:Number, result:Vector.<Ruler>):void
+		{
+			var fullRepsCount:int = size/tsize;
+			var fullRepsSize:int = fullRepsCount*tsize;
+			var offset:Number = (size - fullRepsSize) * align;
+
+			// Begin partial tile
+			if (offset > 0) result[result.length] = Ruler.getRuler(0, 1 - offset/tsize, NaN);
+
+			// Full repeat tile(s)
+			if (fullRepsCount > 0 || int(align) == align)
 			{
-				result[result.length] = Pool.getPoint(offset, 0); // ? what add texture position
-				offset += tsize;
+				for (; offset <= size; offset += tsize)
+					result[result.length] = Ruler.getRuler(offset, 0, 1);
+
+				offset -= tsize;
 			}
 
-			result[result.length] = Pool.getPoint(size);
+			// End partial tile
+			if (offset < size) result[result.length] = Ruler.getRuler(size, NaN, (size-offset) / tsize);
 		}
 
-		private function fillStretch(size:Number, tsize:Number, offset1:Number, offset2:Number, result:Vector.<Point>):void
+		private function fillStretch(size:Number, tsize:Number, offset1:Number, offset2:Number, result:Vector.<Ruler>):void
 		{
 			// Begin point
-			result.push(Pool.getPoint(0, 0));
+			result.push(Ruler.getRuler(0, 0, NaN));
 
-			var hasValid9Scale:Boolean = (size > offset1+offset2) && (size > tsize);
-			if (hasValid9Scale)
+			var hasUnstretchable:Boolean = (size > offset1+offset2) && (size > tsize);
+			if (hasUnstretchable)
 			{
-				// Unscalable section #1
-				if (offset1 != 0) result.push(Pool.getPoint(offset1, offset1/tsize));
+				// Unstretchable section #1
+				if (offset1 != 0) result.push(Ruler.getRuler(offset1, offset1/tsize, offset1/tsize));
 
-				// Unscalable section #2
-				if (offset2 != 0) result.push(Pool.getPoint(size-offset2, 1-offset2/tsize));
+				// Unstretchable section #2
+				if (offset2 != 0) result.push(Ruler.getRuler(size-offset2, 1-offset2/tsize, 1-offset2/tsize));
 			}
 
 			// End point
-			result.push(Pool.getPoint(size, 1));
+			result.push(Ruler.getRuler(size, NaN, 1));
 		}
 
-		private function fillNone(size:Number, tsize:Number, align:*, result:Vector.<Point>):void
+		private function fillNone(size:Number, tsize:Number, align:Number, result:Vector.<Ruler>):void
 		{
-			// Nope
+			if (size > tsize)
+			{
+				var posOffset:Number = (size - tsize) * align;
+				result.push(Ruler.getRuler(posOffset,         0,   NaN));
+				result.push(Ruler.getRuler(posOffset + tsize, NaN, 1));
+			}
+			else
+			{
+				var texOffset:Number = (tsize-size)/tsize * align;
+				result.push(Ruler.getRuler(0,    texOffset, NaN));
+				result.push(Ruler.getRuler(size, NaN,       texOffset + size/tsize));
+			}
 		}
 	}
 }
@@ -245,10 +285,20 @@ package talon.starling
 class Ruler
 {
 	private static const _pool:Vector.<Ruler> = new <Ruler>[];
-	public static function getRuler(pos:Number, texBefore:Number, texAfter:Number):Ruler { return _pool.pop() || new Ruler(); }
+
+	public static function getRuler(pos:Number, texAtBegin:Number, texAtEnd:Number):Ruler { return (_pool.pop() || new Ruler()).reset(pos, texAtBegin, texAtEnd); }
 	public static function putRuler(ruler:Ruler):void { _pool.push(ruler); }
 
 	public var pos:Number;
-	public var texBefore:Number;
-	public var texAfter:Number;
+	public var texAtBegin:Number;
+	public var texAtEnd:Number;
+
+	private function reset(pos:Number, texAtBegin:Number, texAtEnd:Number):Ruler
+	{
+		this.pos = pos;
+		this.texAtBegin = texAtBegin;
+		this.texAtEnd = texAtEnd;
+
+		return this;
+	}
 }

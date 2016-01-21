@@ -6,6 +6,7 @@ package talon.starling
 	import starling.rendering.Painter;
 	import starling.rendering.VertexData;
 	import starling.utils.Align;
+	import starling.utils.Color;
 
 	import talon.enums.FillMode;
 	import talon.utils.StringUtil;
@@ -19,11 +20,12 @@ package talon.starling
 		private var _height:Number;
 		private var _color:uint;
 
+		private var _transparent:Boolean;
 		private var _horizontalFillMode:String;
 		private var _verticalFillMode:String;
 		private var _horizontalAlign:String;
 		private var _verticalAlign:String;
-		private var _scale9Offsets:Vector.<Number>;
+		private var _stretchOffsets:Vector.<Number>;
 
 		private var _requiresRecomposition:Boolean;
 
@@ -34,12 +36,14 @@ package talon.starling
 
 			super(vertexData, indexData, style);
 
-			_scale9Offsets = new Vector.<Number>(4, true);
-			_scale9Offsets[0] = _scale9Offsets[1] = _scale9Offsets[2] = _scale9Offsets[3] = 0;
+			_stretchOffsets = new Vector.<Number>(4, true);
+			_stretchOffsets[0] = _stretchOffsets[1] = _stretchOffsets[2] = _stretchOffsets[3] = 0;
 			_horizontalFillMode = _verticalFillMode = FillMode.STRETCH;
 			_horizontalAlign = Align.LEFT;
 			_verticalAlign = Align.TOP;
 
+			_transparent = true;
+			_color = Color.WHITE;
 			_width = 0;
 			_height = 0;
 			_requiresRecomposition = true;
@@ -95,6 +99,16 @@ package talon.starling
 			}
 		}
 
+		public function get transparent():Boolean { return _transparent; }
+		public function set transparent(value:Boolean):void
+		{
+			if (_transparent != value)
+			{
+				_transparent = value;
+				setRequiresRecomposition();
+			}
+		}
+
 		/** Define algorithm of filling background area with texture via x-axis. */
 		public function get horizontalFillMode():String { return _horizontalFillMode; }
 		public function set horizontalFillMode(value:String):void
@@ -138,12 +152,12 @@ package talon.starling
 		}
 
 		/** Define FillMode.STRETCH 9-scale grid for texture filling. */
-		public function setScale9Offsets(top:Number, right:Number, bottom:Number, left:Number):void
+		public function setStretchOffsets(top:Number, right:Number, bottom:Number, left:Number):void
 		{
-			_scale9Offsets[0] = top;
-			_scale9Offsets[1] = right;
-			_scale9Offsets[2] = bottom;
-			_scale9Offsets[3] = left;
+			_stretchOffsets[0] = top;
+			_stretchOffsets[1] = right;
+			_stretchOffsets[2] = bottom;
+			_stretchOffsets[3] = left;
 
 			setRequiresRecomposition();
 		}
@@ -198,17 +212,25 @@ package talon.starling
 			{
 				switch (horizontalFillMode)
 				{
-					case FillMode.STRETCH:  fillStretch(width, texture.width, _scale9Offsets[3], _scale9Offsets[1], horizontal); break;
+					case FillMode.STRETCH:  fillStretch(width, texture.width, _stretchOffsets[3], _stretchOffsets[1], horizontal); break;
 					case FillMode.REPEAT:   fillRepeat(width, texture.width, StringUtil.parseAlign(horizontalAlign), horizontal); break;
 					case FillMode.NONE:     fillNone(width, texture.width, StringUtil.parseAlign(horizontalAlign), horizontal); break;
 				}
 
 				switch (verticalFillMode)
 				{
-					case FillMode.STRETCH:  fillStretch(height, texture.height, _scale9Offsets[0], _scale9Offsets[2], vertical); break;
+					case FillMode.STRETCH:  fillStretch(height, texture.height, _stretchOffsets[0], _stretchOffsets[2], vertical); break;
 					case FillMode.REPEAT:   fillRepeat(height, texture.height, StringUtil.parseAlign(verticalAlign), vertical); break;
 					case FillMode.NONE:     fillNone(height, texture.height, StringUtil.parseAlign(verticalAlign), vertical); break;
 				}
+			}
+			else if (!transparent)
+			{
+				horizontal.push(Ruler.getRuler(0, 0, 1));
+				horizontal.push(Ruler.getRuler(width, 0, 1));
+
+				vertical.push(Ruler.getRuler(0, 0, 1));
+				vertical.push(Ruler.getRuler(height, 0, 1));
 			}
 		}
 
@@ -221,6 +243,7 @@ package talon.starling
 			vertexData.setPoint(index, "position", h.pos, v.pos);
 			vertexData.setPoint(index, "texCoords", tx, ty);
 			vertexData.setColor(index, "color", color);
+			vertexData.setAlpha(index, "color", alpha);
 		}
 
 		private function fillRepeat(size:Number, tsize:Number, align:Number, result:Vector.<Ruler>):void

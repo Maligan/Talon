@@ -9,8 +9,8 @@ package talon.browser.utils
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 
-	import starling.core.RenderSupport;
 	import starling.events.Event;
+	import starling.rendering.Painter;
 
 	import talon.Attribute;
 	import talon.Node;
@@ -73,8 +73,6 @@ package talon.browser.utils
 			y = node.bounds.y;
 			width = node.bounds.width;
 			height = node.bounds.height;
-
-			_bridge.resize(node.bounds.width, node.bounds.height);
 		}
 
 		private function onFontNameChange():void
@@ -99,11 +97,11 @@ package talon.browser.utils
 			return TextFieldTextEditor(textEditor).textFormat
 		}
 
-		public override function render(support:RenderSupport, parentAlpha:Number):void
+		public override function render(painter:Painter):void
 		{
-			_bridge.renderBackground(support, parentAlpha);
+			_bridge.renderBackground(painter);
 
-			super.render(support, parentAlpha);
+			super.render(painter);
 		}
 
 		public function get node():Node

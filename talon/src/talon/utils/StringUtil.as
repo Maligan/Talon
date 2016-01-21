@@ -121,21 +121,6 @@ package talon.utils
 		}
 
 		//
-		// To string
-		//
-		public static function toHexRBG(color:uint):String
-		{
-			var string:String = color.toString(16);
-			while (string.length < 6) string = "0" + string;
-			return "#" + string;
-		}
-
-		public static function toBoolean(boolean:Boolean):String
-		{
-			return boolean ? "true" : "false";
-		}
-
-		//
 		// From AS3Commons StringUtils class
 		//
 
@@ -150,48 +135,6 @@ package talon.utils
 
 		/** The characters that have to be escaped. */
 		private static var PROPERTIES_ESCAPE_MAP:Array = ["\\t", "\t", "\\n", "\n", "\\r", "\r", "\\\"", "\"", "\\\\", "\\", "\\'", "\'", "\\f", "\f"];
-
-		/**
-		 * Replaces keys defined in a keymap.
-		 *
-		 * <p>This method helps if you need to escape characters in a string. But it
-		 * can be basically used for any kind of keys to be replaced.</p>
-		 *
-		 * <p>To be expected as keymap is a map like:
-		 * <code>
-		 *   ["keyToReplace1", "replacedTo1", "keyToReplace2", "replacedTo2", ... ]
-		 * </code></p>
-		 *
-		 * @param string String that contains content to be removed.
-		 * @param keyMap Map that contains all keys. (DEFAULT_ESCAPE_MAP will be used if no keyMap gets passed.
-		 * @param ignoreUnicode Pass "true" to ignore automatic parsing of unicode escaped characters.
-		 * @return Escaped string.
-		 */
-		public static function escape(string:String, keyMap:Array=null, ignoreUnicode:Boolean=true):String {
-			if (string == null) {
-				return string;
-			}
-			if (!keyMap) {
-				keyMap = DEFAULT_ESCAPE_MAP;
-			}
-			var i:Number = 0;
-			var l:Number = keyMap.length;
-			while (i < l) {
-				string = string.split(keyMap[i]).join(keyMap[i + 1]);
-				i += 2;
-			}
-			if (!ignoreUnicode) {
-				i = 0;
-				l = string.length;
-				while (i < l) {
-					if (string.substring(i, i + 2) == "\\u") {
-						string = string.substring(0, i) + String.fromCharCode(parseInt(string.substring(i + 2, i + 6), 16)) + string.substring(i + 6);
-					}
-					i++;
-				}
-			}
-			return string;
-		}
 
 		/**
 		 * Parses the given <p>source</p> and creates a <p>Properties</p> instance from it.
@@ -270,6 +213,48 @@ package talon.utils
 		}
 
 		/**
+		 * Replaces keys defined in a keymap.
+		 *
+		 * <p>This method helps if you need to escape characters in a string. But it
+		 * can be basically used for any kind of keys to be replaced.</p>
+		 *
+		 * <p>To be expected as keymap is a map like:
+		 * <code>
+		 *   ["keyToReplace1", "replacedTo1", "keyToReplace2", "replacedTo2", ... ]
+		 * </code></p>
+		 *
+		 * @param string String that contains content to be removed.
+		 * @param keyMap Map that contains all keys. (DEFAULT_ESCAPE_MAP will be used if no keyMap gets passed.
+		 * @param ignoreUnicode Pass "true" to ignore automatic parsing of unicode escaped characters.
+		 * @return Escaped string.
+		 */
+		private static function escape(string:String, keyMap:Array=null, ignoreUnicode:Boolean=true):String {
+			if (string == null) {
+				return string;
+			}
+			if (!keyMap) {
+				keyMap = DEFAULT_ESCAPE_MAP;
+			}
+			var i:Number = 0;
+			var l:Number = keyMap.length;
+			while (i < l) {
+				string = string.split(keyMap[i]).join(keyMap[i + 1]);
+				i += 2;
+			}
+			if (!ignoreUnicode) {
+				i = 0;
+				l = string.length;
+				while (i < l) {
+					if (string.substring(i, i + 2) == "\\u") {
+						string = string.substring(0, i) + String.fromCharCode(parseInt(string.substring(i + 2, i + 6), 16)) + string.substring(i + 6);
+					}
+					i++;
+				}
+			}
+			return string;
+		}
+
+		/**
 		 * <p>Removes control characters(char &lt;= 32) from both
 		 * ends of this String, handling <code>null</code> by returning
 		 * <code>null</code>.</p>
@@ -291,7 +276,7 @@ package talon.utils
 		 * @param str  the String to be trimmed, may be null
 		 * @return the trimmed string, <code>null</code> if null String input
 		 */
-		public static function trim(str:String, left:Boolean = true, right:Boolean = true):String
+		private static function trim(str:String, left:Boolean = true, right:Boolean = true):String
 		{
 			if (!str) return str;
 

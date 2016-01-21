@@ -28,7 +28,7 @@ package talon.browser.utils
 		{
 			var globalNativePoint:Point = new Point(e.localX, e.localY);
 			var globalStarlingPoint:Point = transformViewportToStage(globalNativePoint);
-			var hitTestTarget:DisplayObject = _starling.stage.hitTest(globalStarlingPoint, true);
+			var hitTestTarget:DisplayObject = _starling.stage.hitTest(globalStarlingPoint);
 
 			var isWheeled:Boolean = false;
 

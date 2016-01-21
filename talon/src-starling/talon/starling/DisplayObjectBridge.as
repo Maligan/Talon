@@ -8,6 +8,7 @@ package talon.starling
 
 	import starling.display.DisplayObject;
 	import starling.events.EnterFrameEvent;
+	import starling.events.Event;
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
@@ -164,7 +165,7 @@ package talon.starling
 
 		private var _target:DisplayObject;
 		private var _node:Node;
-		private var _filler:BackgroundRenderer;
+		private var _background:FillModeMesh;
 
 		public function DisplayObjectBridge(target:DisplayObject, node:Node):void
 		{
@@ -173,14 +174,16 @@ package talon.starling
 			_target.addEventListener(EnterFrameEvent.ENTER_FRAME, onEnterFrame);
 
 			_node = node;
-			_filler = new BackgroundRenderer();
+			_node.addListener(Event.RESIZE, onNodeResize);
+
+			_background = new FillModeMesh();
 
 			// Background
 			addAttributeChangeListener(Attribute.BACKGROUND_9SCALE,     onBackground9ScaleChange);
 			addAttributeChangeListener(Attribute.BACKGROUND_COLOR,      onBackgroundColorChange);
 			addAttributeChangeListener(Attribute.BACKGROUND_FILL_MODE,  onBackgroundFillModeChange);
 			addAttributeChangeListener(Attribute.BACKGROUND_IMAGE,      onBackgroundImageChange);
-			addAttributeChangeListener(Attribute.BACKGROUND_TINT,       onBackgroundTintChange);
+//			addAttributeChangeListener(Attribute.BACKGROUND_TINT,       onBackgroundTintChange);
 			addAttributeChangeListener(Attribute.BACKGROUND_ALPHA,      onBackgroundAlphaChange);
 			addAttributeChangeListener(Attribute.BACKGROUND_BLEND_MODE, onBackgroundBlendModeChange);
 
@@ -198,31 +201,37 @@ package talon.starling
 			_node.getOrCreateAttribute(attribute).change.addListener(listener);
 		}
 
+		private function onNodeResize():void
+		{
+			_background.width = _node.bounds.width;
+			_background.height = _node.bounds.height;
+		}
+
 		//
 		// Listeners: Background
 		//
-		private function onBackgroundImageChange():void { _filler.texture = _node.getAttributeCache(Attribute.BACKGROUND_IMAGE) as Texture; }
-		private function onBackgroundTintChange():void { _filler.tint = StringUtil.parseColor(_node.getAttributeCache(Attribute.BACKGROUND_COLOR), Color.WHITE); }
-		private function onBackgroundFillModeChange():void { _filler.fillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE); }
-		private function onBackgroundBlendModeChange():void { _filler.blendMode = _node.getAttributeCache(Attribute.BACKGROUND_BLEND_MODE); }
-		private function onBackgroundAlphaChange():void { _filler.alpha = parseFloat(_node.getAttributeCache(Attribute.BACKGROUND_ALPHA)); }
+		private function onBackgroundImageChange():void { _background.texture = _node.getAttributeCache(Attribute.BACKGROUND_IMAGE) as Texture; }
+//		private function onBackgroundTintChange():void { _background.tint = StringUtil.parseColor(_node.getAttributeCache(Attribute.BACKGROUND_COLOR), Color.WHITE); }
+		private function onBackgroundFillModeChange():void { _background.horizontalFillMode = _background.verticalFillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE); }
+		private function onBackgroundBlendModeChange():void { _background.blendMode = _node.getAttributeCache(Attribute.BACKGROUND_BLEND_MODE); }
+		private function onBackgroundAlphaChange():void { _background.alpha = parseFloat(_node.getAttributeCache(Attribute.BACKGROUND_ALPHA)); }
 
 		private function onBackgroundColorChange():void
 		{
 			var value:String = _node.getAttributeCache(Attribute.BACKGROUND_COLOR);
-			_filler.transparent = value == Attribute.NONE;
-			_filler.color = StringUtil.parseColor(value, Color.WHITE);
+			_background.transparent = value == Attribute.NONE;
+			_background.color = StringUtil.parseColor(value, Color.WHITE);
 		}
 
 		private function onBackground9ScaleChange():void
 		{
-			var textureWidth:int = _filler.texture ? _filler.texture.width : 0;
-			var textureHeight:int = _filler.texture ? _filler.texture.height : 0;
+			var textureWidth:int = _background.texture ? _background.texture.width : 0;
+			var textureHeight:int = _background.texture ? _background.texture.height : 0;
 
 			var backgroundScale9Grid:String = _node.getAttributeCache(Attribute.BACKGROUND_9SCALE);
 			GRID.parse(backgroundScale9Grid);
 
-			_filler.set9ScaleOffsets
+			_background.setStretchOffsets
 			(
 				GRID.top.toPixels(_node.ppmm, _node.ppem, _node.ppdp, textureHeight),
 				GRID.right.toPixels(_node.ppmm, _node.ppem, _node.ppdp, textureWidth),
@@ -338,9 +347,10 @@ package talon.starling
 		//
 		// Public methods witch must be used in target DisplayObject
 		//
-		public function renderBackground(support:Painter):void
+		public function renderBackground(painter:Painter):void
 		{
-			_filler.render(support);
+			if (_background.visible)
+				_background.render(painter);
 		}
 
 		public function getBoundsCustom(base:Function, targetSpace:DisplayObject, resultRect:Rectangle):Rectangle
@@ -348,7 +358,7 @@ package talon.starling
 			resultRect = base(targetSpace, resultRect);
 
 			// Expand resultRect with background bounds
-			if (_filler.texture || !_filler.transparent)
+			if (_background.texture/* || !_background.transparent*/)
 			{
 				_target.getTransformationMatrix(targetSpace, MATRIX);
 
@@ -356,18 +366,12 @@ package talon.starling
 				if (resultRect.left > topLeft.x) resultRect.left = topLeft.x;
 				if (resultRect.top > topLeft.y) resultRect.top = topLeft.y;
 
-				var bottomRight:Point = MatrixUtil.transformCoords(MATRIX, _filler.width, _filler.height, POINT);
+				var bottomRight:Point = MatrixUtil.transformCoords(MATRIX, _background.width, _background.height, POINT);
 				if (resultRect.right < bottomRight.x) resultRect.right = bottomRight.x;
 				if (resultRect.bottom < bottomRight.y) resultRect.bottom = bottomRight.y;
 			}
 
 			return resultRect;
-		}
-
-		public function resize(width:Number, height:Number):void
-		{
-			_filler.width = width;
-			_filler.height = height;
 		}
 	}
 }

@@ -8,10 +8,10 @@ package talon.browser.commands
 	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 
-	import starling.core.RenderSupport;
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
 	import starling.display.Stage;
+	import starling.rendering.Painter;
 
 	import talon.browser.AppConstants;
 	import talon.browser.AppPlatform;
@@ -83,14 +83,14 @@ package talon.browser.commands
 
 			var result:BitmapData = new BitmapData(bounds.width, bounds.height, true);
 			var stage:Stage = starling.stage;
-			var support:RenderSupport = new RenderSupport();
+			var painter:Painter = new Painter(starling.stage3D);
 
-			support.clear(0, 0);
-			support.setProjectionMatrix(0, 0, stage.stageWidth, stage.stageHeight);
-			support.translateMatrix(-bounds.x, -bounds.y);
-			displayObject.render(support, 1.0);
-			support.finishQuadBatch();
-			support.dispose();
+			painter.clear(0, 0);
+//			painter.setProjectionMatrix(0, 0, stage.stageWidth, stage.stageHeight);
+//			painter.translateMatrix(-bounds.x, -bounds.y);
+			displayObject.render(painter);
+//			painter.finishQuadBatch();
+			painter.dispose();
 
 			starling.context.drawToBitmapData(result);
 			starling.context.present();

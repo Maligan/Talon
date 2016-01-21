@@ -1,6 +1,6 @@
 package talon.browser.plugins.tools
 {
-	import starling.utils.formatString;
+	import starling.utils.StringUtil;
 
 	import talon.Attribute;
 	import talon.Node;
@@ -109,7 +109,7 @@ package talon.browser.plugins.tools
 			for each (var attributeName:String in attrs)
 			{
 				var attribute:Attribute = node.getOrCreateAttribute(attributeName);
-				attributes.push(formatString("({0} | {1} | {2} => {3})", attribute.inited, attribute.styled, attribute.setted, attribute.value));
+				attributes.push(StringUtil.format("({0} | {1} | {2} => {3})", attribute.inited, attribute.styled, attribute.setted, attribute.value));
 			}
 
 			if (depth) _console.println(shift, name, attributes.join(", "));
@@ -164,7 +164,7 @@ package talon.browser.plugins.tools
 					case PluginStatus.DETACHED_FAIL:    statusKey = "F"; break;
 				}
 
-				_console.println(formatString(pattern, plugin.id, plugin.version, statusKey, i+1));
+				_console.println(StringUtil.format(pattern, plugin.id, plugin.version, statusKey, i+1));
 			}
 		}
 

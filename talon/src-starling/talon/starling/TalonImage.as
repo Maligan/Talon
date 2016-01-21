@@ -53,12 +53,10 @@ package talon.starling
 
 		private function onNodeResize():void
 		{
-			x = Math.round(node.bounds.x);
-			y = Math.round(node.bounds.y);
-			width = Math.round(node.bounds.width);
-			height = Math.round(node.bounds.height);
-
-			_bridge.resize(node.bounds.width/scaleX, node.bounds.height/scaleY);
+			x = node.bounds.x;
+			y = node.bounds.y;
+			width = node.bounds.width;
+			height = node.bounds.height;
 		}
 
 		//

@@ -29,10 +29,10 @@ package talon.browser.popups
 			_profileTemp = new DeviceProfile();
 			_profileTemp.copyFrom(_profileSource);
 
-			writeInput("_width",     _profileTemp.width);
-			writeInput("_height",    _profileTemp.height);
-			writeInput("_dpi",       _profileTemp.dpi);
-			writeInput("_csf",       _profileTemp.csf);
+			addTextInput("_width",     _profileTemp.width);
+			addTextInput("_height",    _profileTemp.height);
+			addTextInput("_dpi",       _profileTemp.dpi);
+			addTextInput("_csf",       _profileTemp.csf);
 
 			bindClickHandler("_accept", onAccept);
 			bindClickHandler("_cancel", onCancel);
@@ -55,7 +55,7 @@ package talon.browser.popups
 			});
 		}
 
-		private function writeInput(inputName:String, value:Number, nextName:String = null):void
+		private function addTextInput(inputName:String, value:Number, nextName:String = null):void
 		{
 			var child:* =  DisplayTreeUtil.findChildByName(this, inputName);
 			if (child == null) return;

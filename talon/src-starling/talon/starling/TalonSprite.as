@@ -74,10 +74,10 @@ package talon.starling
 		//
 		private function onNodeResize():void
 		{
-			node.bounds.left = Math.round(node.bounds.left);
-			node.bounds.right = Math.round(node.bounds.right);
-			node.bounds.top = Math.round(node.bounds.top);
-			node.bounds.bottom = Math.round(node.bounds.bottom);
+			node.bounds.left = node.bounds.left;
+			node.bounds.right = node.bounds.right;
+			node.bounds.top = node.bounds.top;
+			node.bounds.bottom = node.bounds.bottom;
 
 			pivotX = int(node.pivot.x.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width));
 			pivotY = int(node.pivot.y.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.height));
@@ -85,7 +85,6 @@ package talon.starling
 			x = node.bounds.x + pivotX;
 			y = node.bounds.y + pivotY;
 
-			_bridge.resize(node.bounds.width, node.bounds.height);
 			refreshClipping();
 		}
 

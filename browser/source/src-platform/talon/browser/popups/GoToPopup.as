@@ -5,15 +5,10 @@ package talon.browser.popups
 	import talon.browser.utils.MouseWheel;
 	import talon.browser.utils.TalonFeatherTextInput;
 
-	import feathers.controls.Label;
-
 	import feathers.events.FeathersEventType;
-
 	import flash.text.TextFormatAlign;
-
 	import flash.ui.Keyboard;
 
-	import starling.core.Starling;
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
 	import starling.events.Event;

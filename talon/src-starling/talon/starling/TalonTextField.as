@@ -98,15 +98,10 @@ package talon.starling
 
 		private function onNodeResize():void
 		{
-			x = Math.round(_node.bounds.x);
-			y = Math.round(_node.bounds.y);
-
-			// NB! Up to ceil: bitmap font rendering omit lines with height < lineHeight
-			// with float values easy forget this feature
-			width = Math.ceil(_node.bounds.width);
-			height = Math.ceil(_node.bounds.height);
-
-			_bridge.resize(_node.bounds.width, _node.bounds.height);
+			x = _node.bounds.x;
+			y = _node.bounds.y;
+			width = _node.bounds.width;
+			height = _node.bounds.height;
 		}
 
 		// FIXME: Реализовать
@@ -180,7 +175,7 @@ package talon.starling
 		}
 
 		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
-		public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.AUTO_SCALE, StringUtil.toBoolean(value)); }
+		public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.AUTO_SCALE, value.toString()); }
 
 		public override function get autoSize():String { return getAutoSize(node.width.isNone, node.height.isNone); }
 		public override function set autoSize(value:String):void

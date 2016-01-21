@@ -13,8 +13,8 @@ package talon
 
         private static const AUTO:String         = "auto";
         private static const WHITE:String        = "white";
-        private static const FALSE:String        = StringUtil.toBoolean(false);
-        private static const TRUE:String         = StringUtil.toBoolean(true);
+        private static const FALSE:String        = "false";
+        private static const TRUE:String         = "true";
         private static const ZERO:String         = "0px";
         private static const ONE:String          = "1";
         private static const LEFT:String         = "left";

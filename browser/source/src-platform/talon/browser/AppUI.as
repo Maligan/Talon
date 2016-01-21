@@ -11,8 +11,7 @@ package talon.browser
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.filters.BlurFilter;
-	import starling.utils.HAlign;
-	import starling.utils.VAlign;
+	import starling.utils.Align;
 
 	import talon.Attribute;
 	import talon.browser.document.DocumentEvent;
@@ -93,8 +92,8 @@ package talon.browser
 
 			_container = new TalonSprite();
 			_container.node.setAttribute(Attribute.LAYOUT, Layout.FLOW);
-			_container.node.setAttribute(Attribute.VALIGN, VAlign.CENTER);
-			_container.node.setAttribute(Attribute.HALIGN, HAlign.CENTER);
+			_container.node.setAttribute(Attribute.VALIGN, Align.CENTER);
+			_container.node.setAttribute(Attribute.HALIGN, Align.CENTER);
 			_container.node.setAttribute(Attribute.ID, "IsolatedContainer");
 
 			_isolator.alignPivot();
@@ -299,17 +298,18 @@ package talon.browser
 	}
 }
 
-import starling.core.RenderSupport;
+import starling.rendering.Painter;
+
 import talon.browser.AppConstants;
 import talon.browser.AppPlatform;
 import talon.starling.TalonSprite;
 
 class TalonSpriteWithDrawCountReset extends TalonSprite
 {
-	public override function render(support:RenderSupport, parentAlpha:Number):void
+	public override function render(painter:Painter):void
 	{
-		super.render(support, parentAlpha);
-		support.raiseDrawCount(-1);
+		super.render(painter);
+		painter.drawCount -= 1;
 	}
 }
 

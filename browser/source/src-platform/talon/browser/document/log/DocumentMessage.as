@@ -1,8 +1,8 @@
 package talon.browser.document.log
 {
-	import talon.browser.AppConstants;
+	import starling.utils.StringUtil;
 
-	import starling.utils.formatString;
+	import talon.browser.AppConstants;
 
 	public class DocumentMessage
 	{
@@ -40,7 +40,7 @@ package talon.browser.document.log
 
 			_level = (split[1]=="E") ? 2 : (split[1]=="W") ? 1 : 0;
 			_number = parseInt(split[2]);
-			_text = formatString.apply(this, args);
+			_text = StringUtil.format.apply(this, args);
 		}
 
 		public function get number():int { return _number }

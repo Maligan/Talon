@@ -1,0 +1,3 @@
+[submodule "talon/libs/starling"]
+	path = talon/libs/starling
+	url = https://github.com/Gamua/Starling-Framework.git

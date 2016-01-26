@@ -23,7 +23,7 @@ package talon.browser
 	import talon.starling.TalonFactoryStarling;
 	import talon.starling.TalonSprite;
 	import talon.utils.ITalonElement;
-	import talon.utils.StringUtil;
+	import talon.utils.StringParseUtil;
 	import talon.utils.TalonFactoryBase;
 
 	public class AppUI extends EventDispatcher
@@ -60,7 +60,7 @@ package talon.browser
 			_platform.addEventListener(DocumentEvent.CHANGE, refreshCurrentTemplate);
 
 			_isolator = new Sprite();
-			_locale = StringUtil.parseProperties(new INTERFACE_LOCALE());
+			_locale = StringParseUtil.parseProperties(new INTERFACE_LOCALE());
 			_menu = new AppUINativeMenu(_platform, _locale);
 			_popups = new PopupManager();
 

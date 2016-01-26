@@ -24,7 +24,7 @@ package talon.starling
 		public function TalonSprite()
 		{
 			_node = new Node();
-			_node.addListener(Event.RESIZE, onNodeResize);
+			_node.addTriggerListener(Event.RESIZE, onNodeResize);
 			_bridge = new DisplayObjectBridge(this, node);
 			_bridge.addAttributeChangeListener(Attribute.CLIPPING, refreshClipping);
 		}
@@ -92,7 +92,7 @@ package talon.starling
 		{
 			/*
 			var clippingString:String = _node.getAttributeCache(Attribute.CLIPPING);
-			var clipping:Boolean = StringUtil.parseBoolean(clippingString);
+			var clipping:Boolean = StringParseUtil.parseBoolean(clippingString);
 
 			if (clipping && clipRect)
 				clipRect.setTo(0, 0, node.bounds.width, node.bounds.height);

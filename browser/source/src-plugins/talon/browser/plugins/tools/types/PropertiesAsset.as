@@ -1,6 +1,6 @@
 package talon.browser.plugins.tools.types
 {
-	import talon.utils.StringUtil;
+	import talon.utils.StringParseUtil;
 
 	public class PropertiesAsset extends Asset
 	{
@@ -11,7 +11,7 @@ package talon.browser.plugins.tools.types
 			var string:String = readFileStringOrReport();
 			if (string == null) return;
 
-			_properties = StringUtil.parseProperties(string);
+			_properties = StringParseUtil.parseProperties(string);
 
 			for (var propertyName:String in _properties)
 				document.factory.addResource(propertyName, _properties[propertyName]);

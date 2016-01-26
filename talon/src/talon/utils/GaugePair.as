@@ -1,11 +1,6 @@
 package talon.utils
 {
-	import starling.events.Event;
-	import starling.events.EventDispatcher;
-
-	import talon.utils.Trigger;
-
-	/** Group of 2 gauge. Used for strong typed definition of coordinate/size. */
+	/** @private Group of 2 gauge. Used for strong typed definition of coordinate/size. */
 	public class GaugePair
 	{
 		/** On change broadcaster, called when value of gauge pair was changed. */

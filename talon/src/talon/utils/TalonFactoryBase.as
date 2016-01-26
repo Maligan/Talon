@@ -7,7 +7,7 @@ package talon.utils
 	import talon.Attribute;
 	import talon.Node;
 	import talon.StyleSheet;
-	import talon.utils.StringUtil;
+	import talon.utils.StringParseUtil;
 
 	public class TalonFactoryBase
 	{
@@ -240,7 +240,7 @@ package talon.utils
 						addStyleSheet(child.text());
 						break;
 					case TAG_PROPERTIES:
-						addResourcesFromObject(StringUtil.parseProperties(child.text()));
+						addResourcesFromObject(StringParseUtil.parseProperties(child.text()));
 						break;
 					default:
 						logger("Ignore library part", "'" + subtype + "'", "unknown type");

@@ -75,7 +75,7 @@ package talon.browser.popups
 
 					var valid:Boolean = NUMBER.test(input.text);
 					if (valid) input.node.states.remove("error");
-					else input.node.states.add("error");
+					else input.node.states.insert("error");
 
 				});
 			}

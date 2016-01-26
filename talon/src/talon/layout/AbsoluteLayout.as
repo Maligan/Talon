@@ -3,7 +3,7 @@ package talon.layout
 	import talon.Attribute;
 	import talon.Node;
 	import talon.utils.Gauge;
-	import talon.utils.StringUtil;
+	import talon.utils.StringParseUtil;
 
 	public class AbsoluteLayout extends Layout
 	{
@@ -25,7 +25,7 @@ package talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				if (!StringUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBLE))) continue;
+				if (!StringParseUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBLE))) continue;
 
 				// Child margin
 				var marginTop:Number = toPixelsSugar(child.margin.top, node, height);
@@ -103,7 +103,7 @@ package talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				if (!StringUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBLE))) continue;
+				if (!StringParseUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBLE))) continue;
 
 				var childWidth:int = toPixelsSugar(child.width, child, 0, Infinity, availableHeight, 0, 0, child.minWidth, child.maxWidth);
 				childWidth += toPixelsSugar(child.margin.left, child);
@@ -122,7 +122,7 @@ package talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				if (!StringUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBLE))) continue;
+				if (!StringParseUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBLE))) continue;
 
 				var childHeight:int = toPixelsSugar(child.height, child, 0, availableWidth, Infinity, 0, 0, child.minHeight, child.maxHeight);
 				childHeight += toPixelsSugar(child.margin.top, child);

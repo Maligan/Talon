@@ -7,6 +7,7 @@ package talon.starling
 	import flash.ui.MouseCursor;
 
 	import starling.display.DisplayObject;
+	import starling.display.DisplayObjectTraitor;
 	import starling.events.EnterFrameEvent;
 	import starling.events.Event;
 	import starling.events.Touch;
@@ -24,7 +25,7 @@ package talon.starling
 	import talon.Attribute;
 	import talon.Node;
 	import talon.utils.GaugeQuad;
-	import talon.utils.StringUtil;
+	import talon.utils.StringParseUtil;
 
 	/** Provide method for synchronize starling display tree and talon tree. */
 	public class DisplayObjectBridge
@@ -85,7 +86,7 @@ package talon.starling
 
 		registerFilterParser("tint", function (prev:FragmentFilter, args:Array):FragmentFilter
 		{
-			var color:Number = StringUtil.parseColor(args[0], Color.WHITE);
+			var color:Number = StringParseUtil.parseColor(args[0], Color.WHITE);
 			var amount:Number = parseNumber(args[1], 1);
 
 			var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
@@ -110,8 +111,8 @@ package talon.starling
 		registerFilterParser("drop-shadow", function(prev:FragmentFilter, args:Array):FragmentFilter
 		{
 			var distance:Number = parseNumber(args[0], 0);
-			var angle:Number    = StringUtil.parseAngle(args[1], 0.785);
-			var color:Number    = StringUtil.parseColor(args[2], 0x000000);
+			var angle:Number    = StringParseUtil.parseAngle(args[1], 0.785);
+			var color:Number    = StringParseUtil.parseColor(args[2], 0x000000);
 			var alpha:Number    = parseNumber(args[3], 0.5);
 			var blur:Number     = parseNumber(args[4], 1.0);
 
@@ -127,7 +128,7 @@ package talon.starling
 
 		registerFilterParser("glow", function(prev:FragmentFilter, args:Array):FragmentFilter
 		{
-			var color:Number    = StringUtil.parseColor(args[0], 0xffffff);
+			var color:Number    = StringParseUtil.parseColor(args[0], 0xffffff);
 			var alpha:Number    = parseNumber(args[1], 0.5);
 			var blur:Number     = parseNumber(args[2], 1.0);
 
@@ -174,7 +175,7 @@ package talon.starling
 			_target.addEventListener(EnterFrameEvent.ENTER_FRAME, onEnterFrame);
 
 			_node = node;
-			_node.addListener(Event.RESIZE, onNodeResize);
+			_node.addTriggerListener(Event.RESIZE, onNodeResize);
 
 			_background = new FillModeMesh();
 
@@ -211,7 +212,7 @@ package talon.starling
 		// Listeners: Background
 		//
 		private function onBackgroundImageChange():void { _background.texture = _node.getAttributeCache(Attribute.BACKGROUND_IMAGE) as Texture; }
-//		private function onBackgroundTintChange():void { _background.tint = StringUtil.parseColor(_node.getAttributeCache(Attribute.BACKGROUND_COLOR), Color.WHITE); }
+//		private function onBackgroundTintChange():void { _background.tint = StringParseUtil.parseColor(_node.getAttributeCache(Attribute.BACKGROUND_COLOR), Color.WHITE); }
 		private function onBackgroundFillModeChange():void { _background.horizontalFillMode = _background.verticalFillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE); }
 		private function onBackgroundBlendModeChange():void { _background.blendMode = _node.getAttributeCache(Attribute.BACKGROUND_BLEND_MODE); }
 		private function onBackgroundAlphaChange():void { _background.alpha = parseFloat(_node.getAttributeCache(Attribute.BACKGROUND_ALPHA)); }
@@ -220,7 +221,7 @@ package talon.starling
 		{
 			var value:String = _node.getAttributeCache(Attribute.BACKGROUND_COLOR);
 			_background.transparent = value == Attribute.NONE;
-			_background.color = StringUtil.parseColor(value, Color.WHITE);
+			_background.color = StringParseUtil.parseColor(value, Color.WHITE);
 		}
 
 		private function onBackground9ScaleChange():void
@@ -244,7 +245,7 @@ package talon.starling
 		// Listeners: Common
 		//
 		private function onIDChange():void { _target.name = _node.getAttributeCache(Attribute.ID); }
-		private function onVisibleChange():void { _target.visible = StringUtil.parseBoolean(_node.getAttributeCache(Attribute.VISIBLE)); }
+		private function onVisibleChange():void { _target.visible = StringParseUtil.parseBoolean(_node.getAttributeCache(Attribute.VISIBLE)); }
 		private function onAlphaChange():void { _target.alpha = parseFloat(_node.getAttributeCache(Attribute.ALPHA)); }
 		private function onBlendModeChange():void { _target.blendMode = _node.getAttributeCache(Attribute.BLEND_MODE); }
 
@@ -254,7 +255,7 @@ package talon.starling
 			var nextFilter:FragmentFilter = null;
 
 			var func:String = _node.getAttributeCache(Attribute.FILTER);
-			var funcSplit:Array = StringUtil.parseFunction(func);
+			var funcSplit:Array = StringParseUtil.parseFunction(func);
 			if (funcSplit)
 			{
 				var funcName:String = funcSplit.shift();
@@ -299,11 +300,11 @@ package talon.starling
 			}
 			else if (touch.phase == TouchPhase.HOVER)
 			{
-				_node.states.add("hover");
+				_node.states.insert("hover");
 			}
 			else if (touch.phase == TouchPhase.BEGAN && !_node.states.contains("active"))
 			{
-				_node.states.add("active");
+				_node.states.insert("active");
 			}
 			else if (touch.phase == TouchPhase.MOVED)
 			{
@@ -316,8 +317,8 @@ package talon.starling
 				}
 				else if (!_node.states.contains("active") && isWithinBounds)
 				{
-					_node.states.add("hover");
-					_node.states.add("active");
+					_node.states.insert("hover");
+					_node.states.insert("active");
 				}
 			}
 			else if (touch.phase == TouchPhase.ENDED)
@@ -351,6 +352,11 @@ package talon.starling
 		{
 			if (_background.visible)
 				_background.render(painter);
+		}
+
+		public function renderChildrenWithZIndex(painter:Painter):void
+		{
+			DisplayObjectTraitor;
 		}
 
 		public function getBoundsCustom(base:Function, targetSpace:DisplayObject, resultRect:Rectangle):Rectangle

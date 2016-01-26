@@ -3,7 +3,7 @@ package talon.browser.plugins.tools.types
 	import flash.system.System;
 
 	import talon.browser.document.log.DocumentMessage;
-	import talon.utils.StringUtil;
+	import talon.utils.StringParseUtil;
 	import talon.utils.TalonFactoryBase;
 
 	public class XMLLibraryAsset extends Asset
@@ -72,7 +72,7 @@ package talon.browser.plugins.tools.types
 
 		private function addProperties(properties:String):void
 		{
-			StringUtil.parseProperties(properties, _properties);
+			StringParseUtil.parseProperties(properties, _properties);
 			document.factory.addResourcesFromObject(_properties);
 		}
 

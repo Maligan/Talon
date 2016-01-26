@@ -3,7 +3,7 @@ package talon.utils
 	import starling.utils.Color;
 
 	/** This is utility method to work with strings in different formats and notation. */
-	public final class StringUtil
+	public final class StringParseUtil
 	{
 		/**
 		 * Parse color strings:
@@ -106,6 +106,7 @@ package talon.utils
 				case "top":
 					return 0.0;
 				case "center":
+				case "middle":
 					return 0.5;
 				case "right":
 				case "bottom":

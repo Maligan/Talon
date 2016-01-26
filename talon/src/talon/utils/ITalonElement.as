@@ -1,6 +1,6 @@
 package talon.utils
 {
-	import talon.*;
+	import talon.Node;
 
 	/** Interface created only for ITalonElement can identify other ITalonElement.*/
 	public interface ITalonElement

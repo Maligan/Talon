@@ -16,7 +16,7 @@ package talon.browser.utils
 	import talon.Node;
 	import talon.starling.DisplayObjectBridge;
 	import talon.utils.ITalonElement;
-	import talon.utils.StringUtil;
+	import talon.utils.StringParseUtil;
 
 	public class TalonFeatherTextInput extends TextInput implements ITalonElement
 	{
@@ -28,7 +28,7 @@ package talon.browser.utils
 		public function TalonFeatherTextInput()
 		{
 			_node = new Node();
-			_node.addListener(Event.RESIZE, onResize);
+			_node.addTriggerListener(Event.RESIZE, onResize);
 
 			_bridge = new DisplayObjectBridge(this, _node);
 			_bridge.addAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange);
@@ -50,7 +50,7 @@ package talon.browser.utils
 
 		private function onFocusIn(e:Event):void
 		{
-			node.states.add(STATE_FOCUS);
+			node.states.insert(STATE_FOCUS);
 		}
 
 		private function onFocusOut(e:Event):void
@@ -89,7 +89,7 @@ package talon.browser.utils
 		}
 
 		private function onFontSizeChange():void { textFormat.size = parseFloat(node.getAttributeCache(Attribute.FONT_SIZE)); }
-		private function onFontColorChange():void { textFormat.color = StringUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
+		private function onFontColorChange():void { textFormat.color = StringParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
 		private function onTextChange():void { text = node.getAttributeCache(Attribute.TEXT); }
 
 		public function get textFormat():TextFormat

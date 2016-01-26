@@ -1,48 +1,54 @@
 package talon
 {
+	import flash.events.Event;
 	import flash.geom.Rectangle;
 	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
-	import flash.events.Event;
 
 	import talon.layout.Layout;
-	import talon.utils.TriggerBinding;
 	import talon.utils.Gauge;
 	import talon.utils.GaugePair;
 	import talon.utils.GaugeQuad;
-	import talon.utils.StringSet;
+	import talon.utils.StringUniqueSet;
 	import talon.utils.Trigger;
+	import talon.utils.TriggerBinding;
 
+	/** Any attribute changed. */
 	[Event(name="change")]
+	/** Property 'bounds' changed. */
 	[Event(name="resize")]
+	/** Added to parent node. */
 	[Event(name="added")]
+	/** Removed from parent node. */
 	[Event(name="removed")]
+
 	public final class Node
 	{
 		//
 		// Strong typed attributes accessors
+		// For fast access from Layout algorithms
 		//
-		public const width:Gauge = new Gauge();
-		public const minWidth:Gauge = new Gauge();
-		public const maxWidth:Gauge = new Gauge();
+		/** @private */ public const width:Gauge = new Gauge();
+		/** @private */ public const minWidth:Gauge = new Gauge();
+		/** @private */ public const maxWidth:Gauge = new Gauge();
 
-		public const height:Gauge = new Gauge();
-		public const minHeight:Gauge = new Gauge();
-		public const maxHeight:Gauge = new Gauge();
+		/** @private */ public const height:Gauge = new Gauge();
+		/** @private */ public const minHeight:Gauge = new Gauge();
+		/** @private */ public const maxHeight:Gauge = new Gauge();
 
-		public const margin:GaugeQuad = new GaugeQuad();
-		public const padding:GaugeQuad = new GaugeQuad();
-		public const anchor:GaugeQuad = new GaugeQuad();
+		/** @private */ public const margin:GaugeQuad = new GaugeQuad();
+		/** @private */ public const padding:GaugeQuad = new GaugeQuad();
+		/** @private */ public const anchor:GaugeQuad = new GaugeQuad();
 
-		public const position:GaugePair = new GaugePair();
-		public const origin:GaugePair = new GaugePair();
-		public const pivot:GaugePair = new GaugePair();
+		/** @private */ public const position:GaugePair = new GaugePair();
+		/** @private */ public const origin:GaugePair = new GaugePair();
+		/** @private */ public const pivot:GaugePair = new GaugePair();
 
 		/** CCS classes which determine node style. */
-		public const classes:StringSet = new StringSet();
+		/** @private */ public const classes:StringUniqueSet = new StringUniqueSet();
 
 		/** Current active states (aka CSS pseudoClasses: hover, active, checked etc.). */
-		public const states:StringSet = new StringSet();
+		/** @private */ public const states:StringUniqueSet = new StringUniqueSet();
 
 		//
 		// Private properties
@@ -76,7 +82,7 @@ package talon
 			for each (var attributeName:String in inheritable) getOrCreateAttribute(attributeName);
 
 			// Listen attribute change
-			addListener(Event.CHANGE, onSelfAttributeChange);
+			addTriggerListener(Event.CHANGE, onSelfAttributeChange);
 
 			_ppdp = 1;
 			_ppmm = Capabilities.screenDPI / 25.4; // 25.4mm in 1 inch
@@ -139,13 +145,13 @@ package talon
 		//
 		// Bindings
 		//
-		/** Add attached binding (for dispose with node). */
+		/** @private Add attached binding (for dispose with node). */
 		public function addBinding(binding:TriggerBinding):void
 		{
 			_bindings[binding] = binding;
 		}
 
-		/** Remove attached binding. */
+		/** @private Remove attached binding. */
 		public function removeBinding(binding:TriggerBinding, dispose:Boolean = false):void
 		{
 			if (_bindings[binding] != null)
@@ -359,7 +365,7 @@ package talon
 		}
 
 		//
-		// Complex
+		// Complex pattern
 		//
 		/** The node that contains this node. */
 		public function get parent():Node { return _parent; }
@@ -367,19 +373,14 @@ package talon
 		/** The number of children of this node. */
 		public function get numChildren():int { return _children.length; }
 
-		/** Adds a child to the container. It will be at the frontmost position. */
-		public function addChild(child:Node, refresh:Boolean = false):void
+		/** Adds a child to the container. */
+		public function addChild(child:Node):void
 		{
 			_children[_children.length] = child;
 			child._parent = this;
-
-            if (refresh)
-            {
-                child.restyle();
-                child.resource();
-            }
-
-			child.addListener(Event.CHANGE, onChildAttributeChange);
+            child.restyle();
+            child.resource();
+			child.addTriggerListener(Event.CHANGE, onChildAttributeChange);
 			child.dispatch(Event.ADDED);
             invalidate();
 		}
@@ -390,7 +391,7 @@ package talon
 			var indexOf:int = _children.indexOf(child);
 			if (indexOf == -1) throw new ArgumentError("Supplied node must be a child of the caller");
 			_children.splice(indexOf, 1);
-			child.removeListener(Event.CHANGE, onChildAttributeChange);
+			child.removeTriggerListener(Event.CHANGE, onChildAttributeChange);
 			child.dispatch(Event.REMOVED);
 			child._parent = null;
 			child.restyle();
@@ -413,9 +414,9 @@ package talon
 		}
 
 		//
-		// Dispatcher
+		// Dispatcher pattern
 		//
-		public function addListener(type:String, listener:Function):void
+		public function addTriggerListener(type:String, listener:Function):void
 		{
 			var trigger:Trigger = _triggers[type];
 			if (trigger == null)
@@ -424,7 +425,7 @@ package talon
 			trigger.addListener(listener);
 		}
 
-		public function removeListener(type:String, listener:Function):void
+		public function removeTriggerListener(type:String, listener:Function):void
 		{
 			var trigger:Trigger = _triggers[type];
 			if (trigger != null)

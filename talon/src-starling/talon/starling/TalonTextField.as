@@ -17,7 +17,7 @@ package talon.starling
 	import talon.Node;
 	import talon.layout.Layout;
 	import talon.utils.ITalonElement;
-	import talon.utils.StringUtil;
+	import talon.utils.StringParseUtil;
 
 	public class TalonTextField extends starling.text.TextField implements ITalonElement
 	{
@@ -29,7 +29,7 @@ package talon.starling
 			super(0, 0, null);
 
 			_node = new Node();
-			_node.addListener(Event.RESIZE, onNodeResize);
+			_node.addTriggerListener(Event.RESIZE, onNodeResize);
 			_node.width.auto = measureWidth;
 			_node.height.auto = measureHeight;
 
@@ -119,11 +119,11 @@ package talon.starling
 
 				var childPaddingLeft:Number = node.padding.left.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 				var childPaddingRight:Number = node.padding.right.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-//				child.x = Layout.pad(0, 0, childPaddingLeft, childPaddingRight, StringUtil.parseAlign(hAlign));
+//				child.x = Layout.pad(0, 0, childPaddingLeft, childPaddingRight, StringParseUtil.parseAlign(hAlign));
 
 				var childPaddingTop:Number = node.padding.top.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 				var childPaddingBottom:Number = node.padding.bottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-//				child.y = Layout.pad(0, 0, childPaddingTop, childPaddingBottom, StringUtil.parseAlign(vAlign));
+//				child.y = Layout.pad(0, 0, childPaddingTop, childPaddingBottom, StringParseUtil.parseAlign(vAlign));
 			}
 		}
 
@@ -156,14 +156,14 @@ package talon.starling
 
 		// FIXME: Обратные изменения от TextFormat в узел
 		// Вынести sharpness, gridFitType
-		private function onFontColorChange():void { format.color = StringUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
+		private function onFontColorChange():void { format.color = StringParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
 		private function onFontSizeChange():void { format.size = node.ppem }
 		private function onFontNameChange():void { format.font = node.getAttributeCache(Attribute.FONT_NAME) || BitmapFont.MINI }
 		private function onHAlignChange():void { format.horizontalAlign = _node.getAttributeCache(Attribute.HALIGN) }
 		private function onVAlignChange():void { format.verticalAlign = _node.getAttributeCache(Attribute.VALIGN) }
 
 		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); }
-		private function onAutoScaleChange():void { super.autoScale = StringUtil.parseBoolean(_node.getAttributeCache(Attribute.AUTO_SCALE)); }
+		private function onAutoScaleChange():void { super.autoScale = StringParseUtil.parseBoolean(_node.getAttributeCache(Attribute.AUTO_SCALE)); }
 
 
 		//

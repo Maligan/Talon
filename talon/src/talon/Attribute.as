@@ -214,7 +214,7 @@ package talon
                 // XXX: Stack overflow (loops)
 				while (_valueCache is String)
 				{
-					var key:String = StringUtil.parseResource(_valueCache);
+					var key:String = StringParseUtil.parseResource(_valueCache);
 					if (key == null) break;
 
 					_valueCache = node.getResource(key);
@@ -241,14 +241,14 @@ package talon
 
 				if (value)
 				{
-					node.addListener(Event.ADDED,       onNodeAddedToParent);
-					node.addListener(Event.REMOVED,     onNodeRemovedFromParent);
+					node.addTriggerListener(Event.ADDED,       onNodeAddedToParent);
+					node.addTriggerListener(Event.REMOVED,     onNodeRemovedFromParent);
 					if (node.parent) onNodeAddedToParent();
 				}
 				else
 				{
-					node.removeListener(Event.ADDED,    onNodeAddedToParent);
-					node.removeListener(Event.REMOVED,  onNodeRemovedFromParent);
+					node.removeTriggerListener(Event.ADDED,    onNodeAddedToParent);
+					node.removeTriggerListener(Event.REMOVED,  onNodeRemovedFromParent);
 					onNodeRemovedFromParent();
 				}
 			}
@@ -268,7 +268,7 @@ package talon
 		public function get isInherit():Boolean { return _value.isInherit; }
 
 		/** Attribute value is mapped to resource. */
-		public function get isResource():Boolean { return StringUtil.parseResource(value) != null; }
+		public function get isResource():Boolean { return StringParseUtil.parseResource(value) != null; }
 
 		//
 		// Misc

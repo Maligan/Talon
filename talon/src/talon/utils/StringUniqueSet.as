@@ -1,9 +1,9 @@
 package talon.utils
 {
-	[ExcludeClass]
-	public class StringSet
+	/** @private */
+	public class StringUniqueSet
 	{
-		private static const DELIM:String = ",";
+		private static const DELIMITER:String = " ";
 		private static const ARRAY:Array = [];
 
 		private var _container:Object = new Object();
@@ -16,9 +16,9 @@ package talon.utils
 			return _container[string] != null;
 		}
 
-		public function add(string:String):void
+		public function insert(string:String):void
 		{
-			if (contains(string) === false)
+			if (!contains(string))
 			{
 				_container[string] = string;
 				dispatchChange();
@@ -27,7 +27,7 @@ package talon.utils
 
 		public function remove(string:String):void
 		{
-			if (contains(string) === true)
+			if (contains(string))
 			{
 				delete _container[string];
 				dispatchChange();
@@ -50,13 +50,26 @@ package talon.utils
 			}
 		}
 
+		public function get change():Trigger
+		{
+			return _change;
+		}
+
+		private function dispatchChange():void
+		{
+			if (_locked)
+				_changed = true;
+			else
+				_change.dispatch();
+		}
+
 		public function parse(string:String):void
 		{
 			_container = new Object();
 
 			if (string)
 			{
-				var split:Array = string.split(DELIM);
+				var split:Array = string.split(DELIMITER);
 				for each (var element:String in split)
 					_container[element] = element;
 			}
@@ -66,30 +79,12 @@ package talon.utils
 
 		public function toString():String
 		{
+			ARRAY.length = 0;
+
 			for each (var element:String in _container)
 				ARRAY[ARRAY.length] = element;
 
-			var result:String = ARRAY.join(DELIM);
-			ARRAY.length = 0;
-			return result;
-		}
-
-		/** @private */
-		public function get change():Trigger
-		{
-			return _change;
-		}
-
-		private function dispatchChange():void
-		{
-			if (_locked)
-			{
-				_changed = true;
-			}
-			else
-			{
-				_change.dispatch();
-			}
+			return ARRAY.join(DELIMITER);
 		}
 	}
 }

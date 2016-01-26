@@ -1,6 +1,6 @@
 package talon.utils
 {
-	/** Group of 4 gauge. Used for strong typed definition of rectangle sides. */
+	/** @private Group of 4 gauge. Used for strong typed definition of rectangle sides. */
 	public final class GaugeQuad
 	{
 		/** On change broadcaster, called when value of gauge pair was changed. */

@@ -1,6 +1,6 @@
 package talon.utils
 {
-	/** Measured size. Defined by 'units' and 'amount'. */
+	/** @private Measured size. Defined by 'units' and 'amount'. */
 	public final class Gauge
 	{
 		/** Value is not set. This is <code>null</code> analog. */

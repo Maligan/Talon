@@ -6,8 +6,8 @@ package talon.layout
 	import talon.Node;
 	import talon.enums.Orientation;
 	import talon.utils.Gauge;
-	import talon.utils.StringUtil;
-	import talon.utils.StringUtil;
+	import talon.utils.StringParseUtil;
+	import talon.utils.StringParseUtil;
 
 	public class FlowLayout extends Layout
 	{
@@ -141,8 +141,8 @@ package talon.layout
 			return flow;
 		}
 
-		private function getWrap(node:Node):Boolean { return StringUtil.parseBoolean(node.getAttributeCache(Attribute.WRAP)); }
-		private function getAlign(node:Node, name:String):Number { return StringUtil.parseAlign(node.getAttributeCache(name)); }
+		private function getWrap(node:Node):Boolean { return StringParseUtil.parseBoolean(node.getAttributeCache(Attribute.WRAP)); }
+		private function getAlign(node:Node, name:String):Number { return StringParseUtil.parseAlign(node.getAttributeCache(name)); }
 		private function getGap(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.GAP), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0); }
 		private function getInterline(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.INTERLINE), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0); }
 	}

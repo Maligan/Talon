@@ -104,7 +104,7 @@ import starling.events.Event;
 import starling.utils.AssetManager;
 import starling.utils.SystemUtil;
 
-import talon.utils.StringUtil;
+import talon.utils.StringParseUtil;
 
 class AssetManagerExtended extends AssetManager
 {
@@ -204,7 +204,7 @@ class AssetManagerExtended extends AssetManager
 					}
 					else if (asset in mPropertiesGuess)
 					{
-						addProperties(mPropertiesGuess[asset],  StringUtil.parseProperties(asset.toString()));
+						addProperties(mPropertiesGuess[asset],  StringParseUtil.parseProperties(asset.toString()));
 						delete mPropertiesGuess[asset];
 						original(null);
 					}

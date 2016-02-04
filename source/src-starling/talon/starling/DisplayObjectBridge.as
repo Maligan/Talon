@@ -13,10 +13,7 @@ package talon.starling
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
-	import starling.filters.BlurFilter;
-	import starling.filters.ColorMatrixFilter;
 	import starling.filters.FragmentFilter;
-	import starling.filters.FragmentFilterMode;
 	import starling.rendering.Painter;
 	import starling.textures.Texture;
 	import starling.utils.Color;
@@ -30,136 +27,6 @@ package talon.starling
 	/** Provide method for synchronize starling display tree and talon tree. */
 	public class DisplayObjectBridge
 	{
-		//
-		// Starling FragmentFilter factories
-		//
-		private static const _filterParsers:Object = new Object();
-
-		public static function registerFilterParser(name:String, parser:Function):void
-		{
-			_filterParsers[name] = parser;
-		}
-
-		registerFilterParser("brightness", function (prev:FragmentFilter, args:Array):FragmentFilter
-		{
-			var brightness:Number =  parseNumber(args[0], 0);
-
-			var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
-			colorMatrixFilter.reset();
-			colorMatrixFilter.adjustBrightness(brightness);
-
-			return colorMatrixFilter;
-		});
-
-		registerFilterParser("contrast", function (prev:FragmentFilter, args:Array):FragmentFilter
-		{
-			var contrast:Number = parseNumber(args[0], 0);
-
-			var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
-			colorMatrixFilter.reset();
-			colorMatrixFilter.adjustContrast(contrast);
-
-			return colorMatrixFilter;
-		});
-
-		registerFilterParser("hue", function (prev:FragmentFilter, args:Array):FragmentFilter
-		{
-			var hue:Number = parseNumber(args[0], 0);
-
-			var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
-			colorMatrixFilter.reset();
-			colorMatrixFilter.adjustHue(hue);
-
-			return colorMatrixFilter;
-		});
-
-		registerFilterParser("saturation", function (prev:FragmentFilter, args:Array):FragmentFilter
-		{
-			var saturation:Number = parseNumber(args[0], 0);
-
-			var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
-			colorMatrixFilter.reset();
-			colorMatrixFilter.adjustSaturation(saturation);
-
-			return colorMatrixFilter;
-		});
-
-		registerFilterParser("tint", function (prev:FragmentFilter, args:Array):FragmentFilter
-		{
-			var color:Number = StringParseUtil.parseColor(args[0], Color.WHITE);
-			var amount:Number = parseNumber(args[1], 1);
-
-			var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
-			colorMatrixFilter.reset();
-			colorMatrixFilter.tint(color, amount);
-
-			return colorMatrixFilter;
-		});
-
-		registerFilterParser("blur", function (prev:FragmentFilter, args:Array):FragmentFilter
-		{
-			var blurX:Number = parseNumber(args[0], 0);
-			var blurY:Number = (args.length > 1 ? parseFloat(args[1]) : blurX) || 0;
-
-			var blurFilter:BlurFilter = getCleanBlurFilter(prev as BlurFilter);
-			blurFilter.blurX = blurX;
-			blurFilter.blurY = blurY;
-
-			return blurFilter;
-		});
-
-		registerFilterParser("drop-shadow", function(prev:FragmentFilter, args:Array):FragmentFilter
-		{
-			var distance:Number = parseNumber(args[0], 0);
-			var angle:Number    = StringParseUtil.parseAngle(args[1], 0.785);
-			var color:Number    = StringParseUtil.parseColor(args[2], 0x000000);
-			var alpha:Number    = parseNumber(args[3], 0.5);
-			var blur:Number     = parseNumber(args[4], 1.0);
-
-			var dropShadowFilter:BlurFilter = getCleanBlurFilter(prev as BlurFilter);
-			dropShadowFilter.blurX = dropShadowFilter.blurY = blur;
-			dropShadowFilter.offsetX = Math.cos(angle) * distance;
-			dropShadowFilter.offsetY = Math.sin(angle) * distance;
-			dropShadowFilter.mode = FragmentFilterMode.BELOW;
-			dropShadowFilter.setUniformColor(true, color, alpha);
-
-			return dropShadowFilter;
-		});
-
-		registerFilterParser("glow", function(prev:FragmentFilter, args:Array):FragmentFilter
-		{
-			var color:Number    = StringParseUtil.parseColor(args[0], 0xffffff);
-			var alpha:Number    = parseNumber(args[1], 0.5);
-			var blur:Number     = parseNumber(args[2], 1.0);
-
-			var glowFilter:BlurFilter = getCleanBlurFilter(prev as BlurFilter);
-			glowFilter.blurX = glowFilter.blurY = blur;
-			glowFilter.mode = FragmentFilterMode.BELOW;
-			glowFilter.setUniformColor(true, color, alpha);
-
-			return glowFilter;
-		});
-
-		private static function getCleanBlurFilter(result:BlurFilter):BlurFilter
-		{
-			result ||= new BlurFilter();
-			result.blurX = result.blurY = 0;
-			result.offsetX = result.offsetY = 0;
-			result.mode = FragmentFilterMode.REPLACE;
-			result.setUniformColor(false);
-			return result;
-		}
-
-		private static function parseNumber(value:*, ifNaN:Number):Number
-		{
-			var result:Number = parseFloat(value);
-			if (result != result) result = ifNaN;
-			return result;
-		}
-
-		//
-		// Bridge
-		//
 		private const MATRIX:Matrix = new Matrix();
 		private const POINT:Point = new Point();
 		private const GRID:GaugeQuad = new GaugeQuad();
@@ -180,21 +47,18 @@ package talon.starling
 			_background = new FillModeMesh();
 
 			// Background
-			addAttributeChangeListener(Attribute.BACKGROUND_9SCALE,     onBackground9ScaleChange);
-			addAttributeChangeListener(Attribute.BACKGROUND_COLOR,      onBackgroundColorChange);
-			addAttributeChangeListener(Attribute.BACKGROUND_FILL_MODE,  onBackgroundFillModeChange);
-			addAttributeChangeListener(Attribute.BACKGROUND_IMAGE,      onBackgroundImageChange);
-//			addAttributeChangeListener(Attribute.BACKGROUND_TINT,       onBackgroundTintChange);
-			addAttributeChangeListener(Attribute.BACKGROUND_ALPHA,      onBackgroundAlphaChange);
-			addAttributeChangeListener(Attribute.BACKGROUND_BLEND_MODE, onBackgroundBlendModeChange);
+			addAttributeChangeListener(Attribute.BACKGROUND_FILL,           onBackgroundFillChange);
+			addAttributeChangeListener(Attribute.BACKGROUND_FILL_MODE,      onBackgroundFillModeChange);
+			addAttributeChangeListener(Attribute.BACKGROUND_STRETCH_GRID,   onBackgroundStretchGridChange);
+			addAttributeChangeListener(Attribute.BACKGROUND_ALPHA,          onBackgroundAlphaChange);
 
 			// Common options
-			addAttributeChangeListener(Attribute.ID,                    onIDChange);
-			addAttributeChangeListener(Attribute.VISIBLE,               onVisibleChange);
-			addAttributeChangeListener(Attribute.FILTER,                onFilterChange);
-			addAttributeChangeListener(Attribute.ALPHA,                 onAlphaChange);
-			addAttributeChangeListener(Attribute.CURSOR,                onCursorChange);
-			addAttributeChangeListener(Attribute.BLEND_MODE,            onBlendModeChange);
+			addAttributeChangeListener(Attribute.ID,                        onIDChange);
+			addAttributeChangeListener(Attribute.VISIBLE,                   onVisibleChange);
+			addAttributeChangeListener(Attribute.FILTER,                    onFilterChange);
+			addAttributeChangeListener(Attribute.ALPHA,                     onAlphaChange);
+			addAttributeChangeListener(Attribute.CURSOR,                    onCursorChange);
+			addAttributeChangeListener(Attribute.BLEND_MODE,                onBlendModeChange);
 		}
 
 		public function addAttributeChangeListener(attribute:String, listener:Function):void
@@ -211,25 +75,40 @@ package talon.starling
 		//
 		// Listeners: Background
 		//
-		private function onBackgroundImageChange():void { _background.texture = _node.getAttributeCache(Attribute.BACKGROUND_IMAGE) as Texture; }
-//		private function onBackgroundTintChange():void { _background.tint = StringParseUtil.parseColor(_node.getAttributeCache(Attribute.BACKGROUND_COLOR), Color.WHITE); }
-		private function onBackgroundFillModeChange():void { _background.horizontalFillMode = _background.verticalFillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE); }
-		private function onBackgroundBlendModeChange():void { _background.blendMode = _node.getAttributeCache(Attribute.BACKGROUND_BLEND_MODE); }
-		private function onBackgroundAlphaChange():void { _background.alpha = parseFloat(_node.getAttributeCache(Attribute.BACKGROUND_ALPHA)); }
-
-		private function onBackgroundColorChange():void
+		private function onBackgroundFillChange():void
 		{
-			var value:String = _node.getAttributeCache(Attribute.BACKGROUND_COLOR);
-			_background.transparent = value == Attribute.NONE;
-			_background.color = StringParseUtil.parseColor(value, Color.WHITE);
+			var value:* = _node.getAttributeCache(Attribute.BACKGROUND_FILL);
+			if (value is Texture)
+			{
+				_background.texture = value;
+				_background.color = Color.WHITE;
+				_background.transparent = false;
+			}
+			else
+			{
+				_background.texture = null;
+				_background.color = StringParseUtil.parseColor(value, Color.WHITE);
+				_background.transparent = value == Attribute.NONE;
+			}
 		}
 
-		private function onBackground9ScaleChange():void
+		private function onBackgroundFillModeChange():void
+		{
+			_background.horizontalFillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE);
+			_background.verticalFillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE);
+		}
+
+		private function onBackgroundAlphaChange():void
+		{
+			_background.alpha = parseFloat(_node.getAttributeCache(Attribute.BACKGROUND_ALPHA));
+		}
+
+		private function onBackgroundStretchGridChange():void
 		{
 			var textureWidth:int = _background.texture ? _background.texture.width : 0;
 			var textureHeight:int = _background.texture ? _background.texture.height : 0;
 
-			var backgroundScale9Grid:String = _node.getAttributeCache(Attribute.BACKGROUND_9SCALE);
+			var backgroundScale9Grid:String = _node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID);
 			GRID.parse(backgroundScale9Grid);
 
 			_background.setStretchOffsets
@@ -251,6 +130,9 @@ package talon.starling
 
 		private function onFilterChange():void
 		{
+			trace("[DisplayObjectBridge]", "Filters are disabled in Starling 2.0");
+			return;
+
 			var prevFilter:FragmentFilter = _target.filter;
 			var nextFilter:FragmentFilter = null;
 
@@ -259,7 +141,7 @@ package talon.starling
 			if (funcSplit)
 			{
 				var funcName:String = funcSplit.shift();
-				var filterParser:Function = _filterParsers[funcName];
+				var filterParser:Function = null; // _filterParsers[funcName];
 				if (filterParser != null)
 					nextFilter = filterParser(prevFilter, funcSplit);
 			}
@@ -350,8 +232,7 @@ package talon.starling
 		//
 		public function renderBackground(painter:Painter):void
 		{
-			if (_background.visible)
-				_background.render(painter);
+			_background.render(painter);
 		}
 
 		public function renderChildrenWithZIndex(painter:Painter):void
@@ -381,3 +262,130 @@ package talon.starling
 		}
 	}
 }
+
+//
+// Starling FragmentFilter factories
+//
+//private static const _filterParsers:Object = new Object();
+//
+//public static function registerFilterParser(name:String, parser:Function):void
+//{
+//	_filterParsers[name] = parser;
+//}
+//
+//registerFilterParser("brightness", function (prev:FragmentFilter, args:Array):FragmentFilter
+//{
+//	var brightness:Number =  parseNumber(args[0], 0);
+//
+//	var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
+//	colorMatrixFilter.reset();
+//	colorMatrixFilter.adjustBrightness(brightness);
+//
+//	return colorMatrixFilter;
+//});
+//
+//registerFilterParser("contrast", function (prev:FragmentFilter, args:Array):FragmentFilter
+//{
+//	var contrast:Number = parseNumber(args[0], 0);
+//
+//	var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
+//	colorMatrixFilter.reset();
+//	colorMatrixFilter.adjustContrast(contrast);
+//
+//	return colorMatrixFilter;
+//});
+//
+//registerFilterParser("hue", function (prev:FragmentFilter, args:Array):FragmentFilter
+//{
+//	var hue:Number = parseNumber(args[0], 0);
+//
+//	var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
+//	colorMatrixFilter.reset();
+//	colorMatrixFilter.adjustHue(hue);
+//
+//	return colorMatrixFilter;
+//});
+//
+//registerFilterParser("saturation", function (prev:FragmentFilter, args:Array):FragmentFilter
+//{
+//	var saturation:Number = parseNumber(args[0], 0);
+//
+//	var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
+//	colorMatrixFilter.reset();
+//	colorMatrixFilter.adjustSaturation(saturation);
+//
+//	return colorMatrixFilter;
+//});
+//
+//registerFilterParser("tint", function (prev:FragmentFilter, args:Array):FragmentFilter
+//{
+//	var color:Number = StringParseUtil.parseColor(args[0], Color.WHITE);
+//	var amount:Number = parseNumber(args[1], 1);
+//
+//	var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
+//	colorMatrixFilter.reset();
+//	colorMatrixFilter.tint(color, amount);
+//
+//	return colorMatrixFilter;
+//});
+//
+//registerFilterParser("blur", function (prev:FragmentFilter, args:Array):FragmentFilter
+//{
+//	var blurX:Number = parseNumber(args[0], 0);
+//	var blurY:Number = (args.length > 1 ? parseFloat(args[1]) : blurX) || 0;
+//
+//	var blurFilter:BlurFilter = getCleanBlurFilter(prev as BlurFilter);
+//	blurFilter.blurX = blurX;
+//	blurFilter.blurY = blurY;
+//
+//	return blurFilter;
+//});
+//
+//registerFilterParser("drop-shadow", function(prev:FragmentFilter, args:Array):FragmentFilter
+//{
+//	var distance:Number = parseNumber(args[0], 0);
+//	var angle:Number    = StringParseUtil.parseAngle(args[1], 0.785);
+//	var color:Number    = StringParseUtil.parseColor(args[2], 0x000000);
+//	var alpha:Number    = parseNumber(args[3], 0.5);
+//	var blur:Number     = parseNumber(args[4], 1.0);
+//
+//	var dropShadowFilter:BlurFilter = getCleanBlurFilter(prev as BlurFilter);
+//	dropShadowFilter.blurX = dropShadowFilter.blurY = blur;
+//	dropShadowFilter.offsetX = Math.cos(angle) * distance;
+//	dropShadowFilter.offsetY = Math.sin(angle) * distance;
+//	dropShadowFilter.mode = FragmentFilterMode.BELOW;
+//	dropShadowFilter.setUniformColor(true, color, alpha);
+//
+//	return dropShadowFilter;
+//});
+//
+//registerFilterParser("glow", function(prev:FragmentFilter, args:Array):FragmentFilter
+//{
+//	var color:Number    = StringParseUtil.parseColor(args[0], 0xffffff);
+//	var alpha:Number    = parseNumber(args[1], 0.5);
+//	var blur:Number     = parseNumber(args[2], 1.0);
+//
+//	var glowFilter:BlurFilter = getCleanBlurFilter(prev as BlurFilter);
+//	glowFilter.blurX = glowFilter.blurY = blur;
+//	glowFilter.mode = FragmentFilterMode.BELOW;
+//	glowFilter.setUniformColor(true, color, alpha);
+//
+//	return glowFilter;
+//});
+//
+//private static function getCleanBlurFilter(result:BlurFilter):BlurFilter
+//{
+//	result ||= new BlurFilter();
+//	result.blurX = result.blurY = 0;
+//	result.offsetX = result.offsetY = 0;
+//	result.mode = FragmentFilterMode.REPLACE;
+//	result.setUniformColor(false);
+//	return result;
+//}
+//
+//private static function parseNumber(value:*, ifNaN:Number):Number
+//{
+//	var result:Number = parseFloat(value);
+//	if (result != result) result = ifNaN;
+//	return result;
+//}

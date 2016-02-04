@@ -4,6 +4,7 @@ package
 
 	import talon.Attribute;
 	import talon.Node;
+	import talon.Node;
 	import talon.utils.Gauge;
 
 	public class AttributeTest
@@ -48,16 +49,6 @@ package
 
 			attribute.setted = "setted";
 			Assert.assertEquals(attribute.setted, attribute.value);
-		}
-
-		[Test]
-		public function testIsStyleable():void
-		{
-			attribute.inited = "inited";
-			attribute.styled = "styled";
-			attribute.isStyleable = false;
-
-			Assert.assertEquals(attribute.inited, attribute.value);
 		}
 
 		[Test]
@@ -127,20 +118,33 @@ package
 		}
 
 		[Test]
-		public function testBindingToGauge():void
+		public function testCompositeAttribute():void
 		{
-			var node:Node = attribute.node;
+			assertPadding("1",        "1", "1", "1", "1");
+			assertPadding("1 2",      "1", "2", "1", "2");
+			assertPadding("1 2 3",    "1", "2", "3", "2");
+			assertPadding("1 2 3 4",  "1", "2", "3", "4");
+		}
 
-			var widthGauge:Gauge = node.width;
-			var widthAttribute:Attribute = node.getOrCreateAttribute(Attribute.WIDTH);
+		private function assertPadding(padding:String, top:String, right:String, bottom:String, left:String):void
+		{
+			var node:Node;
 
-			Assert.assertEquals(widthAttribute.value, widthGauge.toString());
+			// Direct
+			node = new Node();
+			node.setAttribute(Attribute.PADDING, padding);
+			Assert.assertEquals(top, node.getAttributeCache(Attribute.PADDING_TOP));
+			Assert.assertEquals(right, node.getAttributeCache(Attribute.PADDING_RIGHT));
+			Assert.assertEquals(bottom, node.getAttributeCache(Attribute.PADDING_BOTTOM));
+			Assert.assertEquals(left, node.getAttributeCache(Attribute.PADDING_LEFT));
 
-			widthGauge.parse("99px");
-			Assert.assertEquals(widthAttribute.value, widthGauge.toString());
-
-			widthAttribute.setted = "10%";
-			Assert.assertEquals(widthAttribute.value, widthGauge.toString());
+			// Reverse
+			node = new Node();
+			node.setAttribute(Attribute.PADDING_TOP, top);
+			node.setAttribute(Attribute.PADDING_RIGHT, right);
+			node.setAttribute(Attribute.PADDING_BOTTOM, bottom);
+			node.setAttribute(Attribute.PADDING_LEFT, left);
+			Assert.assertEquals(padding, node.getAttributeCache(Attribute.PADDING));
 		}
 	}
 }

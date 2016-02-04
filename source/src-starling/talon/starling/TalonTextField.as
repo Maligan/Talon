@@ -36,7 +36,7 @@ package talon.starling
 			// Bridge
 			_bridge = new DisplayObjectBridge(this, node);
 			_bridge.addAttributeChangeListener(Attribute.TEXT, onTextChange);
-			_bridge.addAttributeChangeListener(Attribute.AUTO_SCALE, onAutoScaleChange);
+			_bridge.addAttributeChangeListener(Attribute.FONT_AUTO_SCALE, onAutoScaleChange);
 			_bridge.addAttributeChangeListener(Attribute.HALIGN, onHAlignChange);
 			_bridge.addAttributeChangeListener(Attribute.VALIGN, onVAlignChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange);
@@ -163,7 +163,7 @@ package talon.starling
 		private function onVAlignChange():void { format.verticalAlign = _node.getAttributeCache(Attribute.VALIGN) }
 
 		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); }
-		private function onAutoScaleChange():void { super.autoScale = StringParseUtil.parseBoolean(_node.getAttributeCache(Attribute.AUTO_SCALE)); }
+		private function onAutoScaleChange():void { super.autoScale = StringParseUtil.parseBoolean(_node.getAttributeCache(Attribute.FONT_AUTO_SCALE)); }
 
 
 		//
@@ -175,7 +175,7 @@ package talon.starling
 		}
 
 		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
-		public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.AUTO_SCALE, value.toString()); }
+		public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.FONT_AUTO_SCALE, value.toString()); }
 
 		public override function get autoSize():String { return getAutoSize(node.width.isNone, node.height.isNone); }
 		public override function set autoSize(value:String):void

@@ -19,8 +19,6 @@ package talon.starling
 		private var _node:Node;
 		private var _bridge:DisplayObjectBridge;
 
-		private var _quad:Quad;
-
 		public function TalonSprite()
 		{
 			_node = new Node();

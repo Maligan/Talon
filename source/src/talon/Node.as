@@ -75,11 +75,10 @@ package talon
 			states.change.addListener(restyle);
 			classes.change.addListener(restyle);
 
-			initializeBindings();
-
-			// Initialize all inheritable attributes (for inherit listeners)
-			var inheritable:Vector.<String> = Attribute.getInheritableAttributeNames();
-			for each (var attributeName:String in inheritable) getOrCreateAttribute(attributeName);
+			// Initialize all inheritable & composite attributes (initialize theirs listeners)
+			var attributeName:String;
+			for each (attributeName in Attribute.getInheritableAttributeNames()) getOrCreateAttribute(attributeName);
+			for each (attributeName in Attribute.getCompositeAttributeNames())   getOrCreateAttribute(attributeName);
 
 			// Listen attribute change
 			addTriggerListener(Event.CHANGE, onSelfAttributeChange);
@@ -107,7 +106,7 @@ package talon
 			bindQuad(anchor, Attribute.ANCHOR, Attribute.ANCHOR_TOP, Attribute.ANCHOR_RIGHT, Attribute.ANCHOR_BOTTOM, Attribute.ANCHOR_LEFT);
 
 			bindPair(position, Attribute.POSITION, Attribute.X, Attribute.Y);
-			bindPair(origin, Attribute.ORIGIN, Attribute.ORIGIN_X, Attribute.ORIGIN_Y);
+//			bindPair(origin, Attribute.ORIGIN, Attribute.ORIGIN_X, Attribute.ORIGIN_Y);
 			bindPair(pivot, Attribute.PIVOT, Attribute.PIVOT_X, Attribute.PIVOT_Y);
 
 			bind(classes, Attribute.CLASS);

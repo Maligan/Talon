@@ -6,7 +6,7 @@ package talon.browser.popups
 	import talon.starling.TalonSprite;
 	import talon.utils.ITalonElement;
 
-	public class Popup extends TalonSprite implements ITalonElement
+	public class Popup extends TalonSprite
 	{
 		private var _manager:PopupManager;
 		private var _data:Object;

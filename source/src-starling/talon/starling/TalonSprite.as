@@ -77,8 +77,8 @@ package talon.starling
 			node.bounds.top = node.bounds.top;
 			node.bounds.bottom = node.bounds.bottom;
 
-			pivotX = int(node.pivot.x.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width));
-			pivotY = int(node.pivot.y.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.height));
+			pivotX = int(node.accessor.pivotX.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width));
+			pivotY = int(node.accessor.pivotY.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.height));
 
 			x = node.bounds.x + pivotX;
 			y = node.bounds.y + pivotY;

@@ -26,7 +26,7 @@ package talon.utils
 
 		protected var _linkageByDefault:Class;
 		protected var _linkage:Dictionary = new Dictionary();
-		protected var _resources:Object = new Dictionary();
+		public var _resources:Object = new Dictionary();
 		protected var _templates:Object = new Dictionary();
 		protected var _style:StyleSheet = new StyleSheet();
 
@@ -121,18 +121,20 @@ package talon.utils
 
 			if (bindSource)
 			{
-				var sourceElement:ITalonElement = (_parserProductStackNonTerminal.length ? _parserProductStackNonTerminal[_parserProductStackNonTerminal.length - 1] : _parserProductStack[0]) as ITalonElement;
-				var source:Attribute = sourceElement.node.getOrCreateAttribute(bindSource);
-				var target:Attribute = node.getOrCreateAttribute(attributeName);
+				throw new Error("Unsupported");
 
-				var toTarget:TriggerBinding = TriggerBinding.bind(source.change, source, "value", target, "setted");
-				toTarget.trigger();
-				var toSource:TriggerBinding = TriggerBinding.bind(target.change, target, "value", source, "setted");
-
-				sourceElement.node.addBinding(toTarget);
-				sourceElement.node.addBinding(toSource);
-				node.addBinding(toTarget);
-				node.addBinding(toSource);
+//				var sourceElement:ITalonElement = (_parserProductStackNonTerminal.length ? _parserProductStackNonTerminal[_parserProductStackNonTerminal.length - 1] : _parserProductStack[0]) as ITalonElement;
+//				var source:Attribute = sourceElement.node.getOrCreateAttribute(bindSource);
+//				var target:Attribute = node.getOrCreateAttribute(attributeName);
+//
+//				var toTarget:TriggerBinding = TriggerBinding.bind(source.change, source, "value", target, "setted");
+//				toTarget.trigger();
+//				var toSource:TriggerBinding = TriggerBinding.bind(target.change, target, "value", source, "setted");
+//
+//				sourceElement.node.addBinding(toTarget);
+//				sourceElement.node.addBinding(toSource);
+//				node.addBinding(toTarget);
+//				node.addBinding(toSource);
 			}
 			else
 			{

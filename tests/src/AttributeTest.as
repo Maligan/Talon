@@ -5,7 +5,8 @@ package
 	import talon.Attribute;
 	import talon.Node;
 	import talon.Node;
-	import talon.utils.Gauge;
+	import talon.utils.AccessorGauge;
+	import talon.utils.GaugeQuad;
 
 	public class AttributeTest
 	{
@@ -49,6 +50,16 @@ package
 
 			attribute.setted = "setted";
 			Assert.assertEquals(attribute.setted, attribute.value);
+		}
+
+		[Test]
+		public function testIsStyleable():void
+		{
+			attribute.inited = "inited";
+			attribute.styled = "styled";
+
+			attribute.isStyleable = false;
+			Assert.assertEquals(attribute.inited, attribute.value);
 		}
 
 		[Test]
@@ -124,6 +135,13 @@ package
 			assertPadding("1 2",      "1", "2", "1", "2");
 			assertPadding("1 2 3",    "1", "2", "3", "2");
 			assertPadding("1 2 3 4",  "1", "2", "3", "4");
+
+			assertPosition("1",       "1", "1");
+			assertPosition("1 2",     "1", "2");
+
+			assertFillMode("repeat", "repeat", "repeat");
+			assertFillMode("stretch", "stretch", "stretch");
+			assertFillMode("stretch repeat", "stretch", "repeat");
 		}
 
 		private function assertPadding(padding:String, top:String, right:String, bottom:String, left:String):void
@@ -145,6 +163,40 @@ package
 			node.setAttribute(Attribute.PADDING_BOTTOM, bottom);
 			node.setAttribute(Attribute.PADDING_LEFT, left);
 			Assert.assertEquals(padding, node.getAttributeCache(Attribute.PADDING));
+		}
+
+		private function assertPosition(position:String, x:String, y:String):void
+		{
+			var node:Node;
+
+			// Direct
+			node = new Node();
+			node.setAttribute(Attribute.POSITION, position);
+			Assert.assertEquals(x, node.getAttributeCache(Attribute.X));
+			Assert.assertEquals(y, node.getAttributeCache(Attribute.Y));
+
+			// Reverse
+			node = new Node();
+			node.setAttribute(Attribute.X, x);
+			node.setAttribute(Attribute.Y, y);
+			Assert.assertEquals(position, node.getAttributeCache(Attribute.POSITION));
+		}
+
+		private function assertFillMode(fillMode:String, horizontal:String, vertical:String):void
+		{
+			var node:Node;
+
+			// Direct
+			node = new Node();
+			node.setAttribute(Attribute.BACKGROUND_FILL_MODE, fillMode);
+			Assert.assertEquals(horizontal, node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE_HORIZONTAL));
+			Assert.assertEquals(vertical, node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE_VERTICAL));
+
+			// Reverse
+			node = new Node();
+			node.setAttribute(Attribute.BACKGROUND_FILL_MODE_HORIZONTAL, horizontal);
+			node.setAttribute(Attribute.BACKGROUND_FILL_MODE_VERTICAL, vertical);
+			Assert.assertEquals(fillMode, node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE));
 		}
 	}
 }

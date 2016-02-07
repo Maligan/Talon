@@ -1,15 +1,29 @@
 package talon.utils
 {
+	import talon.Attribute;
+
 	/** @private */
-	public class StringUniqueSet
+	public class AccessorStringSet
 	{
 		private static const DELIMITER:String = " ";
 		private static const ARRAY:Array = [];
 
+		private var _attribute:Attribute;
 		private var _container:Object = new Object();
 		private var _change:Trigger = new Trigger();
 		private var _locked:Boolean;
 		private var _changed:Boolean;
+
+		public function AccessorStringSet(attribute:Attribute)
+		{
+			_attribute = attribute;
+			_attribute.change.addListener(onChange)
+		}
+
+		private function onChange():void
+		{
+			parse(_attribute.valueCache);
+		}
 
 		public function contains(string:String):Boolean
 		{

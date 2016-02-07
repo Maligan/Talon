@@ -12,6 +12,7 @@ package talon.starling
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
 	import starling.text.TextFieldAutoSize;
+	import starling.utils.Align;
 
 	import talon.Attribute;
 	import talon.Node;
@@ -30,8 +31,8 @@ package talon.starling
 
 			_node = new Node();
 			_node.addTriggerListener(Event.RESIZE, onNodeResize);
-			_node.width.auto = measureWidth;
-			_node.height.auto = measureHeight;
+			_node.accessor.width.auto = measureWidth;
+			_node.accessor.height.auto = measureHeight;
 
 			// Bridge
 			_bridge = new DisplayObjectBridge(this, node);
@@ -71,20 +72,20 @@ package talon.starling
 			// Starling have strange behavior for text with autoSize
 			// * ignore halign/valign properties
 			// * recalculate mHitArea without after offset (with bitmap font)
-			if (getBitmapFont(format.font) != null)
-			{
-				if (availableWidth == Infinity)
-					result.width += textBounds.x;
-
-				if (availableHeight == Infinity)
-					result.height += textBounds.y;
-			}
+//			if (getBitmapFont(format.font) != null)
+//			{
+//				if (availableWidth == Infinity)
+//					result.width += textBounds.x;
+//
+//				if (availableHeight == Infinity)
+//					result.height += textBounds.y;
+//			}
 
 			// Add paddings
-			result.width  += node.padding.left.toPixels(node.ppem, node.ppem, node.ppdp, 0) + node.padding.right.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-			result.height += node.padding.top.toPixels(node.ppem, node.ppem, node.ppdp, 0)  + node.padding.bottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+			result.width  += node.accessor.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp, 0) + node.accessor.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+			result.height += node.accessor.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0)  + node.accessor.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 
-			super.autoSize = TextFieldAutoSize.NONE;
+//			super.autoSize = TextFieldAutoSize.NONE;
 			return result;
 		}
 
@@ -100,9 +101,14 @@ package talon.starling
 		{
 			x = _node.bounds.x;
 			y = _node.bounds.y;
+
 			width = _node.bounds.width;
 			height = _node.bounds.height;
+
+			_invalid = true;
 		}
+
+		private var _invalid:Boolean = false;
 
 		// FIXME: Реализовать
 		public function redraw():void
@@ -117,13 +123,13 @@ package talon.starling
 				// already arrange text within self bounds.
 				// This code only add 'padding' distance.
 
-				var childPaddingLeft:Number = node.padding.left.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-				var childPaddingRight:Number = node.padding.right.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-//				child.x = Layout.pad(0, 0, childPaddingLeft, childPaddingRight, StringParseUtil.parseAlign(hAlign));
+				var childPaddingLeft:Number = node.accessor.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				var childPaddingRight:Number = node.accessor.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				child.x += Layout.pad(0, 0, childPaddingLeft, childPaddingRight, StringParseUtil.parseAlign(format.horizontalAlign));
 
-				var childPaddingTop:Number = node.padding.top.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-				var childPaddingBottom:Number = node.padding.bottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-//				child.y = Layout.pad(0, 0, childPaddingTop, childPaddingBottom, StringParseUtil.parseAlign(vAlign));
+				var childPaddingTop:Number = node.accessor.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				var childPaddingBottom:Number = node.accessor.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				child.y += Layout.pad(0, 0, childPaddingTop, childPaddingBottom, StringParseUtil.parseAlign(format.verticalAlign));
 			}
 		}
 
@@ -137,6 +143,13 @@ package talon.starling
 
 			// Render glyphs
 			super.render(painter);
+
+			if (_invalid)
+			{
+				redraw();
+
+				_invalid = false;
+			}
 		}
 
 		public override function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
@@ -177,7 +190,7 @@ package talon.starling
 		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
 		public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.FONT_AUTO_SCALE, value.toString()); }
 
-		public override function get autoSize():String { return getAutoSize(node.width.isNone, node.height.isNone); }
+		public override function get autoSize():String { return getAutoSize(node.accessor.width.isNone, node.accessor.height.isNone); }
 		public override function set autoSize(value:String):void
 		{
 			trace("[TalonTextFiled]", "Ignore autoSize value, this value defined via node width/height == 'none'");

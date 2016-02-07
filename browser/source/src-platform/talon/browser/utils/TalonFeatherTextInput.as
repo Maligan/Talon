@@ -50,12 +50,12 @@ package talon.browser.utils
 
 		private function onFocusIn(e:Event):void
 		{
-			node.states.insert(STATE_FOCUS);
+			node.accessor.states.insert(STATE_FOCUS);
 		}
 
 		private function onFocusOut(e:Event):void
 		{
-			node.states.remove(STATE_FOCUS);
+			node.accessor.states.remove(STATE_FOCUS);
 		}
 
 		private function buildTextEditor():ITextEditor

@@ -243,6 +243,7 @@ package talon.starling
 			vertexData.setPoint(index, "position", h.pos, v.pos);
 			vertexData.setPoint(index, "texCoords", tx, ty);
 			vertexData.setColor(index, "color", color);
+			vertexData.setAlpha(index, "color", alpha);
 		}
 
 		private function fillRepeat(size:Number, tsize:Number, align:Number, result:Vector.<Ruler>):void

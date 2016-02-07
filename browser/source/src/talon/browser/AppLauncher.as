@@ -29,6 +29,7 @@ package talon.browser
 
 		private function initialize(e:* = null):void
 		{
+			stage.stageWidth = stage.stageHeight = 200;
 			removeEventListener(Event.ADDED_TO_STAGE, initialize);
 
 			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);

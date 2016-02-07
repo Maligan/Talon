@@ -74,8 +74,8 @@ package talon.browser.popups
 				input.addEventListener(FeathersEventType.FOCUS_OUT, function():void {
 
 					var valid:Boolean = NUMBER.test(input.text);
-					if (valid) input.node.states.remove("error");
-					else input.node.states.insert("error");
+					if (valid) input.node.accessor.states.remove("error");
+					else input.node.accessor.states.insert("error");
 
 				});
 			}

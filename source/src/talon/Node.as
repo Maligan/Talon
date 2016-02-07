@@ -6,12 +6,9 @@ package talon
 	import flash.utils.Dictionary;
 
 	import talon.layout.Layout;
-	import talon.utils.Gauge;
-	import talon.utils.GaugePair;
-	import talon.utils.GaugeQuad;
-	import talon.utils.StringUniqueSet;
+	import talon.utils.Accessor;
+	import talon.utils.AccessorGauge;
 	import talon.utils.Trigger;
-	import talon.utils.TriggerBinding;
 
 	/** Any attribute changed. */
 	[Event(name="change")]
@@ -25,42 +22,16 @@ package talon
 	public final class Node
 	{
 		//
-		// Strong typed attributes accessors
-		// For fast access from Layout algorithms
-		//
-		/** @private */ public const width:Gauge = new Gauge();
-		/** @private */ public const minWidth:Gauge = new Gauge();
-		/** @private */ public const maxWidth:Gauge = new Gauge();
-
-		/** @private */ public const height:Gauge = new Gauge();
-		/** @private */ public const minHeight:Gauge = new Gauge();
-		/** @private */ public const maxHeight:Gauge = new Gauge();
-
-		/** @private */ public const margin:GaugeQuad = new GaugeQuad();
-		/** @private */ public const padding:GaugeQuad = new GaugeQuad();
-		/** @private */ public const anchor:GaugeQuad = new GaugeQuad();
-
-		/** @private */ public const position:GaugePair = new GaugePair();
-		/** @private */ public const origin:GaugePair = new GaugePair();
-		/** @private */ public const pivot:GaugePair = new GaugePair();
-
-		/** CCS classes which determine node style. */
-		/** @private */ public const classes:StringUniqueSet = new StringUniqueSet();
-
-		/** Current active states (aka CSS pseudoClasses: hover, active, checked etc.). */
-		/** @private */ public const states:StringUniqueSet = new StringUniqueSet();
-
-		//
 		// Private properties
 		//
 		private var _attributes:Dictionary = new Dictionary();
+		private var _accessor:Accessor;
 		private var _style:StyleSheet;
 		private var _resources:Object;
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
 		private var _bounds:Rectangle = new Rectangle();
 		private var _triggers:Dictionary = new Dictionary();
-		private var _bindings:Dictionary = new Dictionary();
 		private var _ppdp:Number;
 		private var _ppmm:Number;
 		private var _invalidated:Boolean;
@@ -68,12 +39,9 @@ package talon
 		/** @private */
 		public function Node():void
 		{
-			// Setup width/height layout callbacks
-			width.auto = measureAutoWidth;
-			height.auto = measureAutoHeight;
-
-			states.change.addListener(restyle);
-			classes.change.addListener(restyle);
+			_ppdp = 1;
+			_ppmm = Capabilities.screenDPI / 25.4; // 25.4mm in 1 inch
+			_invalidated = true;
 
 			// Initialize all inheritable & composite attributes (initialize theirs listeners)
 			var attributeName:String;
@@ -83,86 +51,20 @@ package talon
 			// Listen attribute change
 			addTriggerListener(Event.CHANGE, onSelfAttributeChange);
 
-			_ppdp = 1;
-			_ppmm = Capabilities.screenDPI / 25.4; // 25.4mm in 1 inch
-			_invalidated = true;
-		}
-
-		//
-		// Bindings initialization
-		//
-		private function initializeBindings():void
-		{
-			bind(width, Attribute.WIDTH);
-			bind(minWidth, Attribute.MIN_WIDTH);
-			bind(maxWidth, Attribute.MAX_WIDTH);
-
-			bind(height, Attribute.HEIGHT);
-			bind(minHeight, Attribute.MIN_HEIGHT);
-			bind(maxHeight, Attribute.MAX_HEIGHT);
-
-			bindQuad(margin, Attribute.MARGIN, Attribute.MARGIN_TOP, Attribute.MARGIN_RIGHT, Attribute.MARGIN_BOTTOM, Attribute.MARGIN_LEFT);
-			bindQuad(padding, Attribute.PADDING, Attribute.PADDING_TOP, Attribute.PADDING_RIGHT, Attribute.PADDING_BOTTOM, Attribute.PADDING_LEFT);
-			bindQuad(anchor, Attribute.ANCHOR, Attribute.ANCHOR_TOP, Attribute.ANCHOR_RIGHT, Attribute.ANCHOR_BOTTOM, Attribute.ANCHOR_LEFT);
-
-			bindPair(position, Attribute.POSITION, Attribute.X, Attribute.Y);
-//			bindPair(origin, Attribute.ORIGIN, Attribute.ORIGIN_X, Attribute.ORIGIN_Y);
-			bindPair(pivot, Attribute.PIVOT, Attribute.PIVOT_X, Attribute.PIVOT_Y);
-
-			bind(classes, Attribute.CLASS);
-			bind(states, Attribute.STATE);
-		}
-
-		private function bindPair(pair:GaugePair, name:String, x:String, y:String):void
-		{
-			bind(pair, name);
-			bind(pair.x, x);
-			bind(pair.y, y);
-		}
-
-		private function bindQuad(quad:GaugeQuad, name:String, top:String, right:String, bottom:String, left:String):void
-		{
-			bind(quad, name);
-			bind(quad.top, top);
-			bind(quad.right, right);
-			bind(quad.bottom, bottom);
-			bind(quad.left, left);
-		}
-
-		private function bind(source:*, name:String):void
-		{
-			var attribute:Attribute = getOrCreateAttribute(name);
-
-			var fromAttribute:TriggerBinding = TriggerBinding.bind(attribute.change, attribute, "value", source, "parse");
-			fromAttribute.trigger();
-			addBinding(fromAttribute);
-
-			var toAttribute:TriggerBinding = TriggerBinding.bind(source.change, source, "toString", attribute, "styled");
-			addBinding(toAttribute);
-		}
-
-		//
-		// Bindings
-		//
-		/** @private Add attached binding (for dispose with node). */
-		public function addBinding(binding:TriggerBinding):void
-		{
-			_bindings[binding] = binding;
-		}
-
-		/** @private Remove attached binding. */
-		public function removeBinding(binding:TriggerBinding, dispose:Boolean = false):void
-		{
-			if (_bindings[binding] != null)
-			{
-				if (dispose) binding.dispose();
-				delete _bindings[binding];
-			}
+			// Setup width/height layout callbacks
+			_accessor = new Accessor(this);
+			_accessor.width.auto = measureAutoWidth;
+			_accessor.height.auto = measureAutoHeight;
+			_accessor.states.change.addListener(restyle);
+			_accessor.classes.change.addListener(restyle);
 		}
 
 		//
 		// Attributes
 		//
+		/** Set of often used strong-typed attributes accessors. */
+		public function get accessor():Accessor { return _accessor; }
+
 		/** Get attribute <strong>cached</strong> value. */
 		public function getAttributeCache(name:String):* { return getOrCreateAttribute(name).valueCache; }
 
@@ -325,7 +227,7 @@ package talon
 			var inherit:Number = parent ? parent.ppem : base;
 			var attribute:Attribute = getOrCreateAttribute(Attribute.FONT_SIZE);
 			if (attribute.isInheritable && attribute.basic == Attribute.INHERIT) return inherit;
-			return Gauge.toPixels(attribute.basic, ppmm, inherit, ppdp, inherit, 0, 0, 0);
+			return AccessorGauge.toPixels(attribute.basic, ppmm, inherit, ppdp, inherit, 0, 0, 0);
 		}
 
 		/** This is default 'auto' callback for gauges: width, minWidth, maxWidth. */
@@ -454,9 +356,6 @@ package talon
 
 			for each (var attribute:Attribute in _attributes)
 				attribute.dispose();
-
-			for each (var binding:TriggerBinding in _bindings)
-				binding.dispose();
 		}
 	}
 }

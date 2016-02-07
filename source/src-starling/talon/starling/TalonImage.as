@@ -24,8 +24,8 @@ package talon.starling
 			super(EMPTY);
 
 			_node = new Node();
-			_node.width.auto = measureWidth;
-			_node.height.auto = measureHeight;
+			_node.accessor.width.auto = measureWidth;
+			_node.accessor.height.auto = measureHeight;
 			_node.addTriggerListener(Event.RESIZE, onNodeResize);
 
 			_bridge = new DisplayObjectBridge(this, node);

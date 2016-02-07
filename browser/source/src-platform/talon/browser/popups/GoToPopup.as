@@ -180,9 +180,9 @@ package talon.browser.popups
 			for (var i:int = 0; i < _labels.length; i++)
 			{
 				if (_cursor == _labelsShift + i)
-					_labels[i].node.classes.insert("selected");
+					_labels[i].node.accessor.classes.insert("selected");
 				else
-					_labels[i].node.classes.remove("selected");
+					_labels[i].node.accessor.classes.remove("selected");
 			}
 		}
 

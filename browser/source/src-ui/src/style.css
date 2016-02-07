@@ -4,9 +4,8 @@
 	fontColor: white;
 	fontSharpness: -1;
 
-	backgroundColor: #484B4C;
-	backgroundImage: $bg_dialog;
-	background9Scale: 18px;
+	backgroundFill: $bg_dialog;
+	backgroundStretchGrid: 18px;
 
 	/*padding: 24px;*/
 	padding: 17px;
@@ -15,27 +14,29 @@
 #goto label {
 	halign: left;
 	padding: 10px;
+	/*padding: 10px;*/
 	width: *;
 	height: 35px;
 	cursor: button;
+	text: Hello My Dear friends my name is Sasha! And;
 }
 
 #goto label:nth-child(2n) {
-	backgroundColor: #4e5051;
+	backgroundFill: #4e5051;
 }
 
 #goto label:hover {
 	/** NB! Color not from topcoat */
-	backgroundColor: #555859;
+	backgroundFill: #555859;
 }
 
 #goto label.selected {
-	backgroundColor: #406079;
+	backgroundFill: #406079;
 }
 
 input {
-	backgroundImage: $input_normal;
-	background9Scale: 10px;
+	backgroundFill: $input_normal;
+	backgroundStretchGrid: 10px;
 
 	margin: -4px;
 	height: 35px;
@@ -44,16 +45,16 @@ input {
 }
 
 input:error {
-	backgroundImage: $input_error;	
+	backgroundFill: $input_error;	
 }
 
 input:focus {
-	backgroundImage: $input_focus;	
+	backgroundFill: $input_focus;	
 }
 
 button {
-	backgroundImage: $button_normal;
-	background9Scale: 4px;
+	backgroundFill: $button_normal;
+	backgroundStretchGrid: 4px;
 	cursor: button;
 
 	minWidth: 23px;
@@ -61,11 +62,11 @@ button {
 }
 
 button:hover {
-	backgroundImage: $button_over;
+	backgroundFill: $button_over;
 }
 
 button:active {
-	backgroundImage: $button_down;
+	backgroundFill: $button_down;
 }
 
 button label {
@@ -76,16 +77,16 @@ button label {
 }
 
 button.action {
-	backgroundImage: $button_action_normal;
+	backgroundFill: $button_action_normal;
 	fontColor: #FFFFFF;
 }
 
 button.action:hover {
-	backgroundImage: $button_action_over;
+	backgroundFill: $button_action_over;
 }
 
 button.action:active {
-	backgroundImage: $button_action_down;
+	backgroundFill: $button_action_down;
 }
 
 checkbox label {
@@ -102,8 +103,8 @@ checkbox {
 checkbox #flag { src: $checkbox_unckecked_normal; }
 checkbox:active #flag { src: $checkbox_unckecked_down; }
 
-#interface.dark #container  { backgroundImage: $('bg_dark'); }
-#interface.light #container { backgroundImage: $('bg_light'); }
+#interface.dark #container  { backgroundFill: $('bg_dark'); }
+#interface.light #container { backgroundFill: $('bg_light'); }
 #interface #container {
 	width: 100%;
 	height: 100%;
@@ -114,8 +115,8 @@ checkbox:active #flag { src: $checkbox_unckecked_down; }
 #interface.dark #bsod  { fontColor: white; }
 #interface.white #bsod { fontColor: black; }
 #interface #bsod {
-	backgroundColor: #ff0000;
-	alpha: 0.1;
+	backgroundFill: #ff0000;
+	alpha: 0.0;
 
 	fontName: Consolas;
 	fontSize: 128px;
@@ -129,6 +130,6 @@ checkbox:active #flag { src: $checkbox_unckecked_down; }
 
 
 #interface #drag.active {
-	backgroundImage: $drag;
-	background9Scale: 5px;
+	backgroundFill: $drag;
+	backgroundStretchGrid: 5px;
 }

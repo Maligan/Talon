@@ -1,7 +1,9 @@
 package talon.utils
 {
+	import talon.Attribute;
+
 	/** @private Measured size. Defined by 'units' and 'amount'. */
-	public final class Gauge
+	public final class AccessorGauge
 	{
 		/** Value is not set. This is <code>null</code> analog. */
 		public static const NONE:String = "none";
@@ -19,27 +21,28 @@ package talon.utils
 		public static const STAR:String = "*";
 
 		private static const PATTERN:RegExp = /^(-?\d*\.?\d+)(px|dp|mm|em|%|\*|)$/;
-		private static const HELPER:Gauge = new Gauge();
 
  		/** @private */
-		public static function toPixels(string:String, ppmm:Number, ppem:Number, ppdt:Number, pp100p:Number, aa:Number, ppts:Number, ts:int):Number
+		public static function toPixels(string:String, ppmm:Number, ppem:Number, ppdt:Number, pp100p:Number, aa:Number = 0, ppts:Number = 0, ts:int = 0):Number
 		{
-			HELPER.parse(string);
-			return HELPER.toPixels(ppmm, ppem, ppdt, pp100p, aa, ppts, ts);
+			return 0;
 		}
 
-		/** On change broadcaster, called when value of gauge was changed. */
-		public const change:Trigger = new Trigger(this);
+		private var _attribute:Attribute;
 
 		private var _unit:String = NONE;
 		private var _amount:Number = 0;
 		private var _auto:Function = null;
 
-		/** Read string and parse it value, throw ArgumentError if string has not valid format. */
-		public function parse(string:String):void
+		public function AccessorGauge(attribute:Attribute)
 		{
-			const prevUnit:String = _unit;
-			const prevAmount:Number = _amount;
+			_attribute = attribute;
+			_attribute.change.addListener(onChange);
+		}
+
+		private function onChange():void
+		{
+			var string:String = _attribute.valueCache;
 
 			if (string == NONE)
 			{
@@ -57,23 +60,6 @@ package talon.utils
 				if (match == null) throw ArgumentError("Input string is not valid gauge: " + string);
 				_amount = parseFloat(match[1]);
 				_unit = match[2] || PX;
-			}
-
-			if (prevUnit != _unit || prevAmount != _amount)
-			{
-				change.dispatch();
-			}
-		}
-
-		/** Strong typed values setup. */
-		public function setTo(amount:Number, unit:String):void
-		{
-			if (_amount != amount || _unit != unit)
-			{
-				_amount = amount;
-				_unit = unit;
-
-				change.dispatch();
 			}
 		}
 
@@ -107,45 +93,16 @@ package talon.utils
 
 		/** Unit of measurement. */
 		public function get unit():String { return _unit }
-		public function set unit(value:String):void
-		{
-			if (_unit != value)
-			{
-				_unit = value;
-				change.dispatch();
-			}
-		}
 
 		/** Amount of measurement. */
 		public function get amount():Number { return _amount }
-		public function set amount(value:Number):void
-		{
-			if (_amount != value)
-			{
-				_amount = value;
-				change.dispatch();
-			}
-		}
 
 		/** Callback used for transform gauge to pixels (instead using <code>amount</code> property). */
 		public function get auto():Function { return _auto }
 		public function set auto(value:Function):void
 		{
 			if (_auto != value)
-			{
 				_auto = value;
-				// Do not dispatch change
-				// This cause change in binded Attribute.
-			}
-		}
-
-		/** Compares with another gauge and return <code>true</code> if they are equal. */
-		public function equals(gauge:Gauge):Boolean
-		{
-			if (gauge == null) throw new ArgumentError("Parameter gauge must be non-null");
-
-			return gauge.unit == unit
-				&& gauge.amount == amount;
 		}
 
 		/** unit == NONE. */

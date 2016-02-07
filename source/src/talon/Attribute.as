@@ -2,10 +2,8 @@ package talon
 {
 	import flash.events.Event;
 
-	import talon.Attribute;
-
-	import talon.layout.Layout;
 	import talon.enums.*;
+	import talon.layout.Layout;
 	import talon.utils.*;
 
 	public final class Attribute
@@ -57,7 +55,11 @@ package talon
 		public static const ANCHOR:String               = registerAttributeDefaults("anchor",              NONE,                     false,  true, [ANCHOR_TOP, ANCHOR_RIGHT, ANCHOR_BOTTOM, ANCHOR_LEFT]);
 
 		public static const BACKGROUND_FILL:String                  = registerAttributeDefaults("backgroundFill",               NONE);
-		public static const BACKGROUND_STRETCH_GRID:String          = registerAttributeDefaults("backgroundStretchGrid",        NONE);
+		public static const BACKGROUND_STRETCH_GRID_TOP:String          = registerAttributeDefaults("backgroundStretchGridTop",        NONE);
+		public static const BACKGROUND_STRETCH_GRID_RIGHT:String          = registerAttributeDefaults("backgroundStretchGridRight",        NONE);
+		public static const BACKGROUND_STRETCH_GRID_BOTTOM:String          = registerAttributeDefaults("backgroundStretchGridBottom",        NONE);
+		public static const BACKGROUND_STRETCH_GRID_LEFT:String          = registerAttributeDefaults("backgroundStretchGridLeft",        NONE);
+		public static const BACKGROUND_STRETCH_GRID:String          = registerAttributeDefaults("backgroundStretchGrid",        NONE, false, true, [BACKGROUND_STRETCH_GRID_TOP, BACKGROUND_STRETCH_GRID_RIGHT, BACKGROUND_STRETCH_GRID_BOTTOM, BACKGROUND_STRETCH_GRID_LEFT]);
 		public static const BACKGROUND_ALPHA:String                 = registerAttributeDefaults("backgroundAlpha",              ONE);
 		public static const BACKGROUND_FILL_MODE_HORIZONTAL:String  = registerAttributeDefaults("backgroundFillModeHorizontal", FillMode.STRETCH);
 		public static const BACKGROUND_FILL_MODE_VERTICAL:String    = registerAttributeDefaults("backgroundFillModeVertical",   FillMode.STRETCH);
@@ -86,9 +88,9 @@ package talon
 		public static const PIVOT_Y:String              = registerAttributeDefaults("pivotY",              ZERO);
 		public static const PIVOT:String                = registerAttributeDefaults("pivot",               ZERO,                     false,  true, [PIVOT_X, PIVOT_Y]);
 
-		public static const HALIGN:String               = registerAttributeDefaults("halign",              ZERO_PERCENTS);
-		public static const VALIGN:String               = registerAttributeDefaults("valign",              ZERO_PERCENTS);
-		public static const ALIGN:String                = registerAttributeDefaults("align",               ZERO_PERCENTS,            false,  true, [HALIGN, VALIGN]);
+		public static const HALIGN:String               = registerAttributeDefaults("halign",              LEFT);
+		public static const VALIGN:String               = registerAttributeDefaults("valign",              TOP);
+		public static const ALIGN:String                = registerAttributeDefaults("align",               LEFT + " " + TOP,            false,  true, [HALIGN, VALIGN]);
 
 		public static const ORIENTATION:String          = registerAttributeDefaults("orientation",         Orientation.HORIZONTAL);
 		public static const IHALIGN:String              = registerAttributeDefaults("ihalign",             LEFT);
@@ -167,18 +169,19 @@ package talon
 			_name = name;
 			_change = new Trigger(this);
 
-			_inited = createValue(node, name, "inited");
-			_styled = createValue(node, name, "styled");
-			_setted = createValue(node, name, "setted");
-			_basic = isStyleable ? new ComplexValue(_inited, _styled, _setted) : new ComplexValue(_inited, _setted);
+			_inited = newValue(node, name, "inited");
+			_styled = newValue(node, name, "styled");
+			_setted = newValue(node, name, "setted");
+			_basic = new ComplexValue(_inited, _styled, _setted);
 			_value = new InheritValue(_basic);
 			_value.change.addListener(dispatchChange);
 
 			inited = getAttributeDefault(name, "inited", null);
-			isInheritable = getAttributeDefault(name, "isInheritable", false);   // init listeners
+			isStyleable = getAttributeDefault(name, "isStyleable", true);
+			isInheritable = getAttributeDefault(name, "isInheritable", false);
 		}
 
-		private function createValue(node:Node, name:String, type:String):IValue
+		private function newValue(node:Node, name:String, type:String):IValue
 		{
 			var format:Array = _defaults[name] ? _defaults[name].format : null;
 			if (format == null) return new SimpleValue();
@@ -251,6 +254,10 @@ package talon
 		// Props
 		//
 
+		/** Use styled property when calculating attribute value. */
+		public function get isStyleable():Boolean { return _basic.ignore == _styled; }
+		public function set isStyleable(value:Boolean):void { _basic.ignore = value ? null : _styled; }
+
 		/** If attribute value == 'inherit' concrete value must be taken from parent node. */
 		public function get isInheritable():Boolean { return _value.isInheritable; }
 		public function set isInheritable(value:Boolean):void
@@ -289,9 +296,6 @@ package talon
 
 		/** Attribute value is mapped to resource. */
 		public function get isResource():Boolean { return StringParseUtil.parseResource(value) != null; }
-
-		/** Use styled property when calculating attribute value. */
-		public function get isStyleable():Boolean { return getAttributeDefault(name, "isStyleable", true); }
 
 		//
 		// Misc
@@ -353,6 +357,7 @@ class ComplexValue implements IValue
 	private var _change:Trigger;
 	private var _values:Vector.<IValue>;
 	private var _cursor:IValue;
+	private var _ignore:IValue;
 
 	public function ComplexValue(...values):void
 	{
@@ -377,15 +382,19 @@ class ComplexValue implements IValue
 	}
 
 	public function get change():Trigger { return _change; }
+
+	public function get ignore():IValue { return _ignore; }
+	public function set ignore(value:IValue):void { _ignore = value; onValueChange(_ignore); }
+
 	public function get string():String { return _cursor.string; }
 	public function set string(value:String):void { throw new Error("Unsupported"); }
 
 	private function getCursor():IValue
 	{
-		for (var i:int = _values.length - 1; i >= 0; i--)
+		for (var i:int = _values.length - 1; i >= 1; i--)
 		{
 			var value:IValue = _values[i];
-			if (value.string) return value;
+			if (value.string && value != _ignore) return value;
 		}
 
 		return _values[0];
@@ -450,9 +459,12 @@ class InheritValue implements IValue
  */
 class BindedValue implements IValue
 {
+	private static const _builder:Array = [];
+
 	private var _change:Trigger;
 	private var _string:String;
 	private var _values:Vector.<IValue>;
+	private var _format:Array;
 	private var _enable:Boolean;
 	private var _suppress:Boolean;
 
@@ -461,6 +473,7 @@ class BindedValue implements IValue
 		_change = new Trigger(this);
 		_values = values;
 		_enable = true;
+		_format = getFormat(_values);
 
 		for each (var value:IValue in _values)
 			value.change.addListener(onValueChange);
@@ -468,53 +481,51 @@ class BindedValue implements IValue
 		onValueChange();
 	}
 
-	public function get enable():Boolean
+	private function getFormat(v:Vector.<IValue>):Array
 	{
-		return false;
-	}
+		if (v.length == 4)
+		{
+			return [
+				[ [v[0], v[1], v[2], v[3]] ],
+				[ [v[0], v[2]], [v[1], v[3]] ],
+				[ [v[0]], [v[1], v[3]], [v[2]] ],
+				[ [v[0]], [v[1]], [v[2]], [v[3]] ]
+			]
+		}
+		else if (v.length == 2)
+		{
+			return [
+				[ [v[0], v[1]] ],
+				[ [v[0]], [v[1]] ]
+			]
+		}
 
-	public function set enable(value:Boolean):void
-	{
+		return null;
 	}
 
 	private function onValueChange():void
 	{
 		if (_suppress === false)
 		{
-			if (_values.length == 2)
+			// Search matched pattern
+			enumeration:
+			for each (var format:Array in _format)
 			{
-				if (_values[0].string == _values[1].string)
-				{
-					_string = _values[0].string;
-				}
-				else
-				{
-					_string = _values[0].string + " " + _values[1].string;
-				}
+				for each (var group:Array in format)
+					for (var i:int = 0; i < group.length; i++)
+						if (group[i].string != group[0].string)
+							continue enumeration;
+
+				break;
 			}
-			else if (_values.length == 4)
-			{
-				if (_values[0].string == _values[1].string
-				 && _values[0].string == _values[2].string
-				 && _values[0].string == _values[3].string)
-				{
-					_string = _values[0].string;
-				}
-				else if (_values[0].string == _values[2].string
-					  && _values[1].string == _values[3].string)
-				{
-					_string = _values[0].string + " " + _values[1].string;
-				}
-				else if (_values[0].string != _values[2].string
-					  && _values[1].string == _values[3].string)
-				{
-					_string = _values[0].string + " " + _values[1].string + " " + _values[2].string;
-				}
-				else
-				{
-					_string = _values[0].string + " " + _values[1].string + " " + _values[2].string + " " + _values[3].string;
-				}
-			}
+
+			// Build string
+			_builder.length = 0;
+
+			for each (group in format)
+				_builder[_builder.length] = group[0].string;
+
+			_string = _builder.join(" ");
 
 			change.dispatch();
 		}
@@ -531,50 +542,11 @@ class BindedValue implements IValue
 		_string = value;
 		_suppress = true;
 
-		if (_values.length == 2)
-		{
-			switch (split.length)
-			{
-				case 1:
-					_values[0].string = split[0];
-					_values[1].string = split[0];
-					break;
-				case 2:
-					_values[0].string = split[0];
-					_values[1].string = split[1];
-					break;
-			}
-		}
-		else if (_values.length == 4)
-		{
-			switch (split.length)
-			{
-				case 1:
-					_values[0].string = split[0];
-					_values[1].string = split[0];
-					_values[2].string = split[0];
-					_values[3].string = split[0];
-					break;
-				case 2:
-					_values[0].string = split[0];
-					_values[1].string = split[1];
-					_values[2].string = split[0];
-					_values[3].string = split[1];
-					break;
-				case 3:
-					_values[0].string = split[0];
-					_values[1].string = split[1];
-					_values[2].string = split[2];
-					_values[3].string = split[1];
-					break;
-				case 4:
-					_values[0].string = split[0];
-					_values[1].string = split[1];
-					_values[2].string = split[2];
-					_values[3].string = split[3];
-					break;
-			}
-		}
+		var format:Array = _format[split.length - 1];
+
+		for (var i:int = 0; i < format.length; i++)
+			for each (var v:IValue in format[i])
+				v.string = split[i];
 
 		_suppress = false;
 	}

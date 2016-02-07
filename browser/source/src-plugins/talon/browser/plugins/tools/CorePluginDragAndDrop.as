@@ -47,13 +47,13 @@ package talon.browser.plugins.tools
 		private function activate():void
 		{
 			var overlay:TalonSprite = DisplayTreeUtil.findChildByName(_platform.ui.host, "drag") as TalonSprite;
-			if (overlay) overlay.node.classes.insert("active");
+			if (overlay) overlay.node.accessor.classes.insert("active");
 		}
 
 		private function deactivate():void
 		{
 			var overlay:TalonSprite = DisplayTreeUtil.findChildByName(_platform.ui.host, "drag") as TalonSprite;
-			if (overlay) overlay.node.classes.remove("active");
+			if (overlay) overlay.node.accessor.classes.remove("active");
 		}
 
 		public function detach():void

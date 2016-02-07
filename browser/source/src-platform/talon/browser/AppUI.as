@@ -5,12 +5,14 @@ package talon.browser
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
+	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.filters.BlurFilter;
+	import starling.textures.Texture;
 	import starling.utils.Align;
 
 	import talon.Attribute;
@@ -19,7 +21,9 @@ package talon.browser
 	import talon.browser.popups.PopupManager;
 	import talon.browser.utils.DeviceProfile;
 	import talon.browser.utils.TalonFeatherTextInput;
+	import talon.enums.FillMode;
 	import talon.layout.Layout;
+	import talon.starling.FillModeMesh;
 	import talon.starling.TalonFactoryStarling;
 	import talon.starling.TalonSprite;
 	import talon.utils.ITalonElement;
@@ -73,7 +77,6 @@ package talon.browser
 			_factory = new TalonFactoryStarling();
 			_factory.addTerminal("input");
 			_factory.setLinkage("input", TalonFeatherTextInput);
-			_factory.setLinkage("interface", TalonSpriteWithDrawCountReset);
 			_factory.addResourcesFromObject(_locale);
 			_factory.addArchiveContentAsync(new INTERFACE() as ByteArray, onFactoryComplete);
 		}
@@ -134,7 +137,7 @@ package talon.browser
 		private function onBackgroundChange(e:Event):void
 		{
 			var styleName:String = _platform.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
-			_interface.node.classes.parse(styleName);
+			_interface.node.accessor.classes.parse(styleName);
 			_platform.stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[styleName];
 		}
 
@@ -298,26 +301,13 @@ package talon.browser
 	}
 }
 
-import starling.rendering.Painter;
-
-import talon.browser.AppConstants;
-import talon.browser.AppPlatform;
-import talon.starling.TalonSprite;
-
-class TalonSpriteWithDrawCountReset extends TalonSprite
-{
-	public override function render(painter:Painter):void
-	{
-		super.render(painter);
-		painter.drawCount -= 1;
-	}
-}
-
 import flash.display.NativeMenuItem;
 import flash.display.NativeWindow;
 import flash.filesystem.File;
 import flash.ui.Keyboard;
 
+import talon.browser.AppConstants;
+import talon.browser.AppPlatform;
 import talon.browser.commands.*;
 import talon.browser.popups.ProfilePopup;
 import talon.browser.utils.DeviceProfile;

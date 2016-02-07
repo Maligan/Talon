@@ -3,8 +3,8 @@ package talon.browser.popups
 	import starling.errors.AbstractMethodError;
 	import starling.events.KeyboardEvent;
 
+	import talon.Attribute;
 	import talon.starling.TalonSprite;
-	import talon.utils.ITalonElement;
 
 	public class Popup extends TalonSprite
 	{
@@ -13,8 +13,7 @@ package talon.browser.popups
 
 		internal final function ctor(manager:PopupManager, data:Object = null):void
 		{
-			node.position.parse("50%");
-			node.pivot.parse("50%");
+			node.setAttribute(Attribute.POSITION, "50%");
 
 			_manager = manager;
 			_data = data;

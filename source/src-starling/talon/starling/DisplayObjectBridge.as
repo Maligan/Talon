@@ -21,7 +21,7 @@ package talon.starling
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.utils.GaugeQuad;
+	import talon.utils.AccessorGauge;
 	import talon.utils.StringParseUtil;
 
 	/** Provide method for synchronize starling display tree and talon tree. */
@@ -29,7 +29,6 @@ package talon.starling
 	{
 		private const MATRIX:Matrix = new Matrix();
 		private const POINT:Point = new Point();
-		private const GRID:GaugeQuad = new GaugeQuad();
 
 		private var _target:DisplayObject;
 		private var _node:Node;
@@ -94,8 +93,19 @@ package talon.starling
 
 		private function onBackgroundFillModeChange():void
 		{
-			_background.horizontalFillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE);
-			_background.verticalFillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE);
+			var id:String = _node.getAttributeCache(Attribute.ID);
+			var fm:String = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE);
+			var fmh:String = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE_HORIZONTAL);
+			var fmv:String = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE_VERTICAL);
+
+			if (id == "container")
+			{
+				trace("#" + id + ":");
+				trace(fm, fmh, fmv);
+			}
+
+			_background.horizontalFillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE_HORIZONTAL);
+			_background.verticalFillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE_VERTICAL);
 		}
 
 		private function onBackgroundAlphaChange():void
@@ -109,14 +119,14 @@ package talon.starling
 			var textureHeight:int = _background.texture ? _background.texture.height : 0;
 
 			var backgroundScale9Grid:String = _node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID);
-			GRID.parse(backgroundScale9Grid);
-
+//			GRID.parse(backgroundScale9Grid);
+//
 			_background.setStretchOffsets
 			(
-				GRID.top.toPixels(_node.ppmm, _node.ppem, _node.ppdp, textureHeight),
-				GRID.right.toPixels(_node.ppmm, _node.ppem, _node.ppdp, textureWidth),
-				GRID.bottom.toPixels(_node.ppmm, _node.ppem, _node.ppdp, textureHeight),
-				GRID.left.toPixels(_node.ppmm, _node.ppem, _node.ppdp, textureWidth)
+				AccessorGauge.toPixels(_node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID), _node.ppmm, _node.ppem, _node.ppdp, textureHeight),
+				AccessorGauge.toPixels(_node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID), _node.ppmm, _node.ppem, _node.ppdp, textureWidth),
+				AccessorGauge.toPixels(_node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID), _node.ppmm, _node.ppem, _node.ppdp, textureHeight),
+				AccessorGauge.toPixels(_node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID), _node.ppmm, _node.ppem, _node.ppdp, textureWidth)
 			);
 		}
 
@@ -173,43 +183,43 @@ package talon.starling
 		{
 			var touch:Touch = e.getTouch(_target);
 
-			_node.states.lock();
+			_node.accessor.states.lock();
 
 			if (touch == null)
 			{
-				_node.states.remove("hover");
-				_node.states.remove("active");
+				_node.accessor.states.remove("hover");
+				_node.accessor.states.remove("active");
 			}
 			else if (touch.phase == TouchPhase.HOVER)
 			{
-				_node.states.insert("hover");
+				_node.accessor.states.insert("hover");
 			}
-			else if (touch.phase == TouchPhase.BEGAN && !_node.states.contains("active"))
+			else if (touch.phase == TouchPhase.BEGAN && !_node.accessor.states.contains("active"))
 			{
-				_node.states.insert("active");
+				_node.accessor.states.insert("active");
 			}
 			else if (touch.phase == TouchPhase.MOVED)
 			{
 				var isWithinBounds:Boolean = _target.getBounds(_target.stage).contains(touch.globalX, touch.globalY);
 
-				if (_node.states.contains("active") && !isWithinBounds)
+				if (_node.accessor.states.contains("active") && !isWithinBounds)
 				{
-					_node.states.remove("hover");
-					_node.states.remove("active");
+					_node.accessor.states.remove("hover");
+					_node.accessor.states.remove("active");
 				}
-				else if (!_node.states.contains("active") && isWithinBounds)
+				else if (!_node.accessor.states.contains("active") && isWithinBounds)
 				{
-					_node.states.insert("hover");
-					_node.states.insert("active");
+					_node.accessor.states.insert("hover");
+					_node.accessor.states.insert("active");
 				}
 			}
 			else if (touch.phase == TouchPhase.ENDED)
 			{
-				_node.states.remove("hover");
-				_node.states.remove("active");
+				_node.accessor.states.remove("hover");
+				_node.accessor.states.remove("active");
 			}
 
-			_node.states.unlock();
+			_node.accessor.states.unlock();
 		}
 
 		//
@@ -245,7 +255,7 @@ package talon.starling
 			resultRect = base(targetSpace, resultRect);
 
 			// Expand resultRect with background bounds
-			if (_background.texture/* || !_background.transparent*/)
+			if (_background.texture || !_background.transparent)
 			{
 				_target.getTransformationMatrix(targetSpace, MATRIX);
 

@@ -20,7 +20,7 @@ package talon.browser.utils
 
 			try
 			{
-				// XXX: Error with class aliases, refactoring
+				// FIXME: Error with class aliases, refactoring
 				// Try move DeviceProfile to another package and after restart application
 				var sharedObject:SharedObject = SharedObject.getLocal(sharedObjectName);
 				storage._inner = sharedObject.data;

@@ -1,12 +1,13 @@
 package talon
 {
 	import flash.utils.Dictionary;
+	import talon.utils.OrderedObject;
 
 	/** Style Sheet Object. */
 	public class StyleSheet
 	{
-		protected var _stylesBySelector:Dictionary;
 		protected var _selectors:Vector.<StyleSelector>;
+		protected var _selectorsStyles:Dictionary;
 		protected var _selectorsByIdent:Dictionary;
 
 		private var _parseSelectorsCursor:Vector.<StyleSelector>;
@@ -14,7 +15,7 @@ package talon
 		/** @private */
 		public function StyleSheet()
 		{
-			_stylesBySelector = new Dictionary();
+			_selectorsStyles = new Dictionary();
 			_selectors = new Vector.<StyleSelector>();
 			_selectorsByIdent = new Dictionary();
 			_parseSelectorsCursor = new Vector.<StyleSelector>();
@@ -23,14 +24,15 @@ package talon
 		/** Get an object (containing key-value pairs) that reflects the style of the node. */
 		public function getStyle(node:Node, result:Object = null):Object
 		{
-			result ||= new Object();
+			result ||= new OrderedObject();
+
 			var priorities:Object = new Object();
 
 			for each (var selector:StyleSelector in _selectors)
 			{
 				if (!selector.match(node)) continue;
 
-				var styles:Object = _stylesBySelector[selector];
+				var styles:Object = _selectorsStyles[selector];
 				for (var property:String in styles)
 				{
 					var priority:int = priorities[property];
@@ -141,8 +143,8 @@ package talon
 		{
 			for each (var selector:StyleSelector in _parseSelectorsCursor)
 			{
-				var style:Object = _stylesBySelector[selector];
-				if (style == null) style = _stylesBySelector[selector] = new Object();
+				var style:Object = _selectorsStyles[selector];
+				if (style == null) style = _selectorsStyles[selector] = new OrderedObject();
 				style[name] = value;
 			}
 		}

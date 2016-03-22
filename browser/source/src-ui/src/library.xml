@@ -71,12 +71,12 @@
 	<template id="GoToPopup">
 		<node class="popup" id="goto" orientation="vertical"> 
 			<input width="300px" margin="4px"/>
-			<label />
-			<label />
-			<label />
-			<label />
-			<label />
-			<label />
+			<label id="GoTo1" />
+			<label id="GoTo2" />
+			<label id="GoTo3" />
+			<label id="GoTo4" />
+			<label id="GoTo5" />
+			<label id="GoTo6" />
 		</node>
 	</template>
 

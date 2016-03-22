@@ -2,9 +2,6 @@ package talon.starling
 {
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import flash.text.GridFitType;
-	import flash.text.TextField;
-	import flash.text.TextFormat;
 
 	import starling.display.DisplayObject;
 	import starling.events.Event;
@@ -12,7 +9,6 @@ package talon.starling
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
 	import starling.text.TextFieldAutoSize;
-	import starling.utils.Align;
 
 	import talon.Attribute;
 	import talon.Node;
@@ -20,10 +16,13 @@ package talon.starling
 	import talon.utils.ITalonElement;
 	import talon.utils.StringParseUtil;
 
-	public class TalonTextField extends starling.text.TextField implements ITalonElement
+	public class TalonTextField extends TextField implements ITalonElement
 	{
+		private static var _helperRect:Rectangle = new Rectangle();
+
 		private var _node:Node;
 		private var _bridge:DisplayObjectBridge;
+		private var _requiresRecompose:Boolean;
 
 		public function TalonTextField()
 		{
@@ -38,20 +37,11 @@ package talon.starling
 			_bridge = new DisplayObjectBridge(this, node);
 			_bridge.addAttributeChangeListener(Attribute.TEXT, onTextChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_AUTO_SCALE, onAutoScaleChange);
-			_bridge.addAttributeChangeListener(Attribute.HALIGN, onHAlignChange);
-			_bridge.addAttributeChangeListener(Attribute.VALIGN, onVAlignChange);
+			_bridge.addAttributeChangeListener(Attribute.HALIGN, onHAlignChange, true);
+			_bridge.addAttributeChangeListener(Attribute.VALIGN, onVAlignChange, true);
 			_bridge.addAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
-			_bridge.addAttributeChangeListener(Attribute.FONT_SHARPNESS, onSharpnessChange);
-		}
-
-		private function onSharpnessChange():void
-		{
-			var prev:String = text;
-			// Use super.text to save attribute value
-            super.text = null;
-            super.text = prev;
 		}
 
 		//
@@ -59,7 +49,6 @@ package talon.starling
 		//
 		private function measureWidth(availableHeight:Number):Number { return measure(Infinity, availableHeight).width; }
 		private function measureHeight(availableWidth:Number):Number { return measure(availableWidth, Infinity).height; }
-
 		private function measure(availableWidth:Number, availableHeight:Number):Rectangle
 		{
 			super.autoSize = getAutoSize(availableWidth == Infinity, availableHeight == Infinity);
@@ -69,23 +58,10 @@ package talon.starling
 			// NB! Use super.getBounds()
 			var result:Rectangle = super.getBounds(this);
 
-			// Starling have strange behavior for text with autoSize
-			// * ignore halign/valign properties
-			// * recalculate mHitArea without after offset (with bitmap font)
-//			if (getBitmapFont(format.font) != null)
-//			{
-//				if (availableWidth == Infinity)
-//					result.width += textBounds.x;
-//
-//				if (availableHeight == Infinity)
-//					result.height += textBounds.y;
-//			}
-
 			// Add paddings
 			result.width  += node.accessor.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp, 0) + node.accessor.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 			result.height += node.accessor.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0)  + node.accessor.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 
-//			super.autoSize = TextFieldAutoSize.NONE;
 			return result;
 		}
 
@@ -104,52 +80,59 @@ package talon.starling
 
 			width = _node.bounds.width;
 			height = _node.bounds.height;
-
-			_invalid = true;
 		}
 
-		private var _invalid:Boolean = false;
+		//
+		// DisplayObjectBridge customization
+		//
+		protected override function setRequiresRecomposition():void
+		{
+			_requiresRecompose = true;
+			super.setRequiresRecomposition();
+		}
 
-		// FIXME: Реализовать
-		public function redraw():void
+		private function recomposeWithPadding():void
 		{
 			if (numChildren > 0)
 			{
-                // NB! Used first children (border is DISABLED)
-				var child:DisplayObject = getChildAt(0);
+				var meshBatch:DisplayObject = getChildAt(0);
+				var meshBounds:Rectangle = meshBatch.getBounds(meshBatch); // NB! user textBounds instead `meshBatch.getBounds(meshBatch)` for `recompose()` invocation
 
-				// User modified Layout.pad() formula:
-				// without parent and child sizes, because starling.text.TextField
-				// already arrange text within self bounds.
-				// This code only add 'padding' distance.
+				// Invoke recomposition - this is hack - it allow call private super.recompose() method without extra memory allocations.
+				super.getBounds(this, _helperRect);
 
-				var childPaddingLeft:Number = node.accessor.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-				var childPaddingRight:Number = node.accessor.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-				child.x += Layout.pad(0, 0, childPaddingLeft, childPaddingRight, StringParseUtil.parseAlign(format.horizontalAlign));
+				// Add horizontal padding
+				var isHorizontalAutoSize:Boolean = super.autoSize == TextFieldAutoSize.HORIZONTAL || super.autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
+				var paddingLeft:Number = node.accessor.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				var paddingRight:Number = node.accessor.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				meshBatch.x += Layout.pad(isHorizontalAutoSize ? width : 0, isHorizontalAutoSize ? meshBounds.width : 0, paddingLeft, paddingRight, StringParseUtil.parseAlign(format.horizontalAlign));
 
-				var childPaddingTop:Number = node.accessor.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-				var childPaddingBottom:Number = node.accessor.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-				child.y += Layout.pad(0, 0, childPaddingTop, childPaddingBottom, StringParseUtil.parseAlign(format.verticalAlign));
+				// Add vertical padding
+				var isVerticalAutoSize:Boolean = super.autoSize == TextFieldAutoSize.VERTICAL || super.autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
+				var paddingTop:Number = node.accessor.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				var paddingBottom:Number = node.accessor.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				meshBatch.y += Layout.pad(isVerticalAutoSize ? height : 0, isVerticalAutoSize ? meshBounds.height : 0, paddingTop, paddingBottom, StringParseUtil.parseAlign(format.verticalAlign));
 			}
 		}
 
-		//
-		// Background customization
-		//
 		public override function render(painter:Painter):void
 		{
 			// Render background
 			_bridge.renderBackground(painter);
 
+			if (_requiresRecompose)
+			{
+				_requiresRecompose = false;
+				recomposeWithPadding();
+			}
+
 			// Render glyphs
 			super.render(painter);
+		}
 
-			if (_invalid)
-			{
-				redraw();
-
-				_invalid = false;
-			}
+		public override function hitTest(localPoint:Point):DisplayObject
+		{
+			return getBounds(this, _helperRect).containsPoint(localPoint) ? this : null;
 		}
 
 		public override function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
@@ -167,39 +150,27 @@ package talon.starling
 		// Properties Delegating
 		//
 
-		// FIXME: Обратные изменения от TextFormat в узел
-		// Вынести sharpness, gridFitType
+		// TODO: sharpness, gridFitType
 		private function onFontColorChange():void { format.color = StringParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
 		private function onFontSizeChange():void { format.size = node.ppem }
-		private function onFontNameChange():void { format.font = node.getAttributeCache(Attribute.FONT_NAME) || BitmapFont.MINI }
+		private function onFontNameChange():void { format.font = node.getAttributeCache(Attribute.FONT_NAME) || BitmapFont.MINI; }
 		private function onHAlignChange():void { format.horizontalAlign = _node.getAttributeCache(Attribute.HALIGN) }
 		private function onVAlignChange():void { format.verticalAlign = _node.getAttributeCache(Attribute.VALIGN) }
-
 		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); }
 		private function onAutoScaleChange():void { super.autoScale = StringParseUtil.parseBoolean(_node.getAttributeCache(Attribute.FONT_AUTO_SCALE)); }
-
 
 		//
 		// Properties
 		//
-		public function get node():Node
-		{
-			return _node;
-		}
+		public function get node():Node { return _node; }
 
 		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
 		public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.FONT_AUTO_SCALE, value.toString()); }
 
 		public override function get autoSize():String { return getAutoSize(node.accessor.width.isNone, node.accessor.height.isNone); }
-		public override function set autoSize(value:String):void
-		{
-			trace("[TalonTextFiled]", "Ignore autoSize value, this value defined via node width/height == 'none'");
-		}
+		public override function set autoSize(value:String):void { trace("[TalonTextFiled]", "Ignore autoSize value, this value defined via node width/height == 'none'"); }
 
 		public override function get border():Boolean { return false; }
-		public override function set border(value:Boolean):void
-		{
-			trace("[TalonTextFiled]", "Ignore border value, for debug draw use custom backgroundColor property");
-		}
+		public override function set border(value:Boolean):void { trace("[TalonTextFiled]", "Ignore border value, for debug draw use custom backgroundColor property"); }
 	}
 }

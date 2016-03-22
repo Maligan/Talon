@@ -5,7 +5,7 @@ package talon.layout
 	import talon.Attribute;
 	import talon.Node;
 	import talon.enums.Orientation;
-	import talon.utils.AccessorGauge;
+	import talon.utils.Gauge;
 	import talon.utils.StringParseUtil;
 	import talon.utils.StringParseUtil;
 
@@ -121,17 +121,17 @@ package talon.layout
 				flow.setChildBreakMode(child.getAttributeCache(Attribute.BREAK));
 				if (orientation == Orientation.HORIZONTAL)
 				{
-					flow.setChildLength(childWidth, child.accessor.width.unit == AccessorGauge.STAR);
+					flow.setChildLength(childWidth, child.accessor.width.unit == Gauge.STAR);
 					flow.setChildLengthMargin(childMarginLeft, childMarginRight);
-					flow.setChildThickness(childHeight, child.accessor.height.unit == AccessorGauge.STAR);
+					flow.setChildThickness(childHeight, child.accessor.height.unit == Gauge.STAR);
 					flow.setChildThicknessMargin(childMarginTop, childMarginBottom);
 					flow.setChildInlineAlign(getAlign(child, Attribute.IVALIGN));
 				}
 				else
 				{
-					flow.setChildLength(childHeight, child.accessor.height.unit == AccessorGauge.STAR);
+					flow.setChildLength(childHeight, child.accessor.height.unit == Gauge.STAR);
 					flow.setChildLengthMargin(childMarginTop, childMarginBottom);
-					flow.setChildThickness(childWidth, child.accessor.width.unit == AccessorGauge.STAR);
+					flow.setChildThickness(childWidth, child.accessor.width.unit == Gauge.STAR);
 					flow.setChildThicknessMargin(childMarginLeft, childMarginRight);
 					flow.setChildInlineAlign(getAlign(child, Attribute.IHALIGN));
 				}
@@ -143,8 +143,8 @@ package talon.layout
 
 		private function getWrap(node:Node):Boolean { return StringParseUtil.parseBoolean(node.getAttributeCache(Attribute.WRAP)); }
 		private function getAlign(node:Node, name:String):Number { return StringParseUtil.parseAlign(node.getAttributeCache(name)); }
-		private function getGap(node:Node):Number { return AccessorGauge.toPixels(node.getAttributeCache(Attribute.GAP), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0); }
-		private function getInterline(node:Node):Number { return AccessorGauge.toPixels(node.getAttributeCache(Attribute.INTERLINE), node.ppmm, node.ppem, node.ppdp, -1, 0, 0, 0); }
+		private function getGap(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.GAP), node.ppmm, node.ppem, node.ppdp, -1); }
+		private function getInterline(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.INTERLINE), node.ppmm, node.ppem, node.ppdp, -1); }
 	}
 }
 

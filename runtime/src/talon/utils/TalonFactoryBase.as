@@ -119,7 +119,7 @@ package talon.utils
 			var bindSplit:Array = bindPattern.exec(value);
 			var bindSource:String = bindSplit && bindSplit.length > 1 ? bindSplit[1] : null;
 
-			if (bindSource)
+			if (bindSource && false)
 			{
 				throw new Error("Unsupported");
 

@@ -2,7 +2,8 @@ package talon.enums
 {
 	public final class BreakMode
 	{
-		/** TODO: Add NONE (none before, none after, none both?) type, which works like nbsp. */
+		// TODO: Add NONE (none before, none after, none both?) type, which works like nbsp.
+		//       Or make two-dimension attributes: breakBefore, breakAfter with values: AUTO, NONE, ALWAYS
 		public static const AUTO:String = "auto";
 		public static const BEFORE:String = "before";
 		public static const AFTER:String = "after";

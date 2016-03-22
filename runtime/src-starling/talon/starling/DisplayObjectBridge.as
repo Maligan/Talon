@@ -18,10 +18,11 @@ package talon.starling
 	import starling.textures.Texture;
 	import starling.utils.Color;
 	import starling.utils.MatrixUtil;
+	import starling.utils.StringUtil;
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.utils.AccessorGauge;
+	import talon.utils.Gauge;
 	import talon.utils.StringParseUtil;
 
 	/** Provide method for synchronize starling display tree and talon tree. */
@@ -44,6 +45,7 @@ package talon.starling
 			_node.addTriggerListener(Event.RESIZE, onNodeResize);
 
 			_background = new FillModeMesh();
+			_background.addEventListener(Event.CHANGE, _target.setRequiresRedraw);
 
 			// Background
 			addAttributeChangeListener(Attribute.BACKGROUND_FILL,           onBackgroundFillChange);
@@ -60,9 +62,11 @@ package talon.starling
 			addAttributeChangeListener(Attribute.BLEND_MODE,                onBlendModeChange);
 		}
 
-		public function addAttributeChangeListener(attribute:String, listener:Function):void
+		public function addAttributeChangeListener(attribute:String, listener:Function, immediate:Boolean = false):void
 		{
 			_node.getOrCreateAttribute(attribute).change.addListener(listener);
+			// TODO: Trigger context
+			if (immediate) listener();
 		}
 
 		private function onNodeResize():void
@@ -93,17 +97,6 @@ package talon.starling
 
 		private function onBackgroundFillModeChange():void
 		{
-			var id:String = _node.getAttributeCache(Attribute.ID);
-			var fm:String = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE);
-			var fmh:String = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE_HORIZONTAL);
-			var fmv:String = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE_VERTICAL);
-
-			if (id == "container")
-			{
-				trace("#" + id + ":");
-				trace(fm, fmh, fmv);
-			}
-
 			_background.horizontalFillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE_HORIZONTAL);
 			_background.verticalFillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE_VERTICAL);
 		}
@@ -118,15 +111,12 @@ package talon.starling
 			var textureWidth:int = _background.texture ? _background.texture.width : 0;
 			var textureHeight:int = _background.texture ? _background.texture.height : 0;
 
-			var backgroundScale9Grid:String = _node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID);
-//			GRID.parse(backgroundScale9Grid);
-//
 			_background.setStretchOffsets
 			(
-				AccessorGauge.toPixels(_node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID), _node.ppmm, _node.ppem, _node.ppdp, textureHeight),
-				AccessorGauge.toPixels(_node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID), _node.ppmm, _node.ppem, _node.ppdp, textureWidth),
-				AccessorGauge.toPixels(_node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID), _node.ppmm, _node.ppem, _node.ppdp, textureHeight),
-				AccessorGauge.toPixels(_node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID), _node.ppmm, _node.ppem, _node.ppdp, textureWidth)
+				Gauge.toPixels(_node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID_TOP), _node.ppmm, _node.ppem, _node.ppdp, textureHeight),
+				Gauge.toPixels(_node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID_RIGHT), _node.ppmm, _node.ppem, _node.ppdp, textureWidth),
+				Gauge.toPixels(_node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID_BOTTOM), _node.ppmm, _node.ppem, _node.ppdp, textureHeight),
+				Gauge.toPixels(_node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID_LEFT), _node.ppmm, _node.ppem, _node.ppdp, textureWidth)
 			);
 		}
 
@@ -228,17 +218,16 @@ package talon.starling
 		// Validation subsystem based on render methods/rules/context etc.
 		// thus why I do not include invalidation/validation in Talon core
 		//
-		public function onEnterFrame(e:EnterFrameEvent):void
+		private function onEnterFrame(e:EnterFrameEvent):void
 		{
-			// FIXME: Вынести пересчёт построчно
-			if (_node.isInvalidated && (_node.parent == null || !_node.parent.isInvalidated))
+			if (_node.invalidated && (_node.parent == null || !_node.parent.invalidated))
 			{
 				_node.commit();
 			}
 		}
 
 		//
-		// Public methods witch must be used in target DisplayObject
+		// Public methods which must be used in target DisplayObject
 		//
 		public function renderBackground(painter:Painter):void
 		{

@@ -6,38 +6,38 @@ package talon.utils
 	[ExcludeClass]
 	public class Accessor
 	{
-		public var width:AccessorGauge;
-		public var height:AccessorGauge;
+		public var width:Gauge;
+		public var height:Gauge;
 
-		public var minWidth:AccessorGauge;
-		public var minHeight:AccessorGauge;
+		public var minWidth:Gauge;
+		public var minHeight:Gauge;
 
-		public var maxWidth:AccessorGauge;
-		public var maxHeight:AccessorGauge;
+		public var maxWidth:Gauge;
+		public var maxHeight:Gauge;
 
-		public var marginTop:AccessorGauge;
-		public var marginRight:AccessorGauge;
-		public var marginBottom:AccessorGauge;
-		public var marginLeft:AccessorGauge;
+		public var marginTop:Gauge;
+		public var marginRight:Gauge;
+		public var marginBottom:Gauge;
+		public var marginLeft:Gauge;
 
-		public var paddingTop:AccessorGauge;
-		public var paddingRight:AccessorGauge;
-		public var paddingBottom:AccessorGauge;
-		public var paddingLeft:AccessorGauge;
+		public var paddingTop:Gauge;
+		public var paddingRight:Gauge;
+		public var paddingBottom:Gauge;
+		public var paddingLeft:Gauge;
 
-		public var anchorTop:AccessorGauge;
-		public var anchorRight:AccessorGauge;
-		public var anchorBottom:AccessorGauge;
-		public var anchorLeft:AccessorGauge;
+		public var anchorTop:Gauge;
+		public var anchorRight:Gauge;
+		public var anchorBottom:Gauge;
+		public var anchorLeft:Gauge;
 
-		public var x:AccessorGauge;
-		public var y:AccessorGauge;
+		public var x:Gauge;
+		public var y:Gauge;
 
-		public var originX:AccessorGauge;
-		public var originY:AccessorGauge;
+		public var originX:Gauge;
+		public var originY:Gauge;
 
-		public var pivotX:AccessorGauge;
-		public var pivotY:AccessorGauge;
+		public var pivotX:Gauge;
+		public var pivotY:Gauge;
 
 		public var classes:AccessorStringSet;
 		public var states:AccessorStringSet;
@@ -86,9 +86,9 @@ package talon.utils
 			states = new AccessorStringSet(_node.getOrCreateAttribute(Attribute.STATE));
 		}
 
-		private function gauge(name:String):AccessorGauge
+		private function gauge(name:String):Gauge
 		{
-			return new AccessorGauge(_node.getOrCreateAttribute(name));
+			return new Gauge(_node.getOrCreateAttribute(name));
 		}
 	}
 }

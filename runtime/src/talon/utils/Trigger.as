@@ -28,7 +28,7 @@ package talon.utils
 			_listenersIndex = new Dictionary();
 		}
 
-		/** Add listener to list witch invoked by dispatch(). */
+		/** Add listener to list which invoked by dispatch(). */
 		public function addListener(listener:Function):void
 		{
 			var indexOf:int = _listenersIndex[listener] || -1;
@@ -40,7 +40,7 @@ package talon.utils
 			}
 		}
 
-		/** Remove listener from list witch invoked by dispatch(). */
+		/** Remove listener from list which invoked by dispatch(). */
 		public function removeListener(listener:Function):void
 		{
 			var indexOf:int = _listenersIndex[listener] || -1;
@@ -68,9 +68,11 @@ package talon.utils
 		{
 			context = context || _context;
 
-			var i:int = _listeners.length;
-
-			while (--i > -1)
+			for (var i:int = 0; i < _listeners.length; i++)
+//			var i:int = _listeners.length;
+//			while (--i > -1)
+//			var i:int = -1;
+//			while (++i > _listeners.length)
 			{
 				_listeners[i].length == 0
 					? _listeners[i]()

@@ -41,7 +41,7 @@ package talon.browser.plugins
 					var interfaces:Array = traits["interfaces"];
 					if (interfaces.indexOf(required) != -1)
 					{
-						// XXX: Error while constructor
+						// TODO: Error while constructor
 						var plugin:IPlugin = new definition();
 						addPlugin(plugin);
 					}
@@ -60,7 +60,7 @@ package talon.browser.plugins
 			dispatchEventWith(Event.CHANGE, false, plugin);
 		}
 
-		/** Start all detached plugins, witch is not deactivated. */
+		/** Start all detached plugins, which is not deactivated. */
 		public function start():void
 		{
 			var detached:Array = _platform.settings.getValueOrDefault(AppConstants.SETTING_DETACHED_PLUGINS, Array, []);

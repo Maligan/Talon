@@ -27,9 +27,6 @@ package
 		[Test]
 		public function testPosition():void
 		{
-			trace("DISABLED!!!!!!!!!!!!!!!")
-			return;
-
 			child.setAttribute(Attribute.X, "12px");
 			child.setAttribute(Attribute.Y, "20px");
 
@@ -37,7 +34,7 @@ package
 			Assert.assertEquals(32, child.bounds.width);
 			Assert.assertEquals(64, child.bounds.height);
 
-			Assert.assertEquals(10, child.bounds.x);
+			Assert.assertEquals(12, child.bounds.x);
 			Assert.assertEquals(20, child.bounds.y);
 		}
 	}

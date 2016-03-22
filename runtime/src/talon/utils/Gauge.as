@@ -3,7 +3,7 @@ package talon.utils
 	import talon.Attribute;
 
 	/** @private Measured size. Defined by 'units' and 'amount'. */
-	public final class AccessorGauge
+	public final class Gauge
 	{
 		/** Value is not set. This is <code>null</code> analog. */
 		public static const NONE:String = "none";
@@ -23,9 +23,40 @@ package talon.utils
 		private static const PATTERN:RegExp = /^(-?\d*\.?\d+)(px|dp|mm|em|%|\*|)$/;
 
  		/** @private */
-		public static function toPixels(string:String, ppmm:Number, ppem:Number, ppdt:Number, pp100p:Number, aa:Number = 0, ppts:Number = 0, ts:int = 0):Number
+		public static function toPixels(string:String, ppmm:Number, ppem:Number, ppdp:Number, pp100p:Number, auto:Function = null, aa:Number = 0, ppts:Number = 0, ts:int = 0):Number
 		{
-			return 0;
+			var _unit:String;
+			var _amount:Number;
+
+			if (string == NONE)
+			{
+				_unit = NONE;
+				_amount = 0;
+			}
+			else if (string == STAR)
+			{
+				_unit = STAR;
+				_amount = 1;
+			}
+			else
+			{
+				var match:Array = PATTERN.exec(string);
+				if (match == null) throw ArgumentError("Input string is not valid gauge: " + string);
+				_amount = parseFloat(match[1]);
+				_unit = match[2] || PX;
+			}
+
+			switch (_unit)
+			{
+				case NONE:		return auto ? auto(aa) : 0;
+				case PX:		return _amount;
+				case MM:		return _amount * ppmm;
+				case EM:        return _amount * ppem;
+				case DP:        return _amount * ppdp;
+				case PERCENT:   return _amount * pp100p/100;
+				case STAR:		return _amount * (ts?(ppts/ts):0);
+				default:		throw new Error("Unknown gauge unit: " + _unit);
+			}
 		}
 
 		private var _attribute:Attribute;
@@ -34,7 +65,7 @@ package talon.utils
 		private var _amount:Number = 0;
 		private var _auto:Function = null;
 
-		public function AccessorGauge(attribute:Attribute)
+		public function Gauge(attribute:Attribute)
 		{
 			_attribute = attribute;
 			_attribute.change.addListener(onChange);
@@ -43,7 +74,6 @@ package talon.utils
 		private function onChange():void
 		{
 			var string:String = _attribute.valueCache;
-
 			if (string == NONE)
 			{
 				_unit = NONE;

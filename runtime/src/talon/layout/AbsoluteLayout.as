@@ -2,7 +2,7 @@ package talon.layout
 {
 	import talon.Attribute;
 	import talon.Node;
-	import talon.utils.AccessorGauge;
+	import talon.utils.Gauge;
 	import talon.utils.StringParseUtil;
 
 	public class AbsoluteLayout extends Layout
@@ -138,7 +138,7 @@ package talon.layout
 		 * @param min value bottom restrainer
 		 * @param max value top restrainer
 		 */
-		protected final function toPixelsSugar(gauge:AccessorGauge, context:Node, pp100p:Number = 0, aw:Number = 0, ah:Number = 0, ppts:Number = 0, ts:int = 0, min:AccessorGauge = null, max:AccessorGauge = null):Number
+		protected final function toPixelsSugar(gauge:Gauge, context:Node, pp100p:Number = 0, aw:Number = 0, ah:Number = 0, ppts:Number = 0, ts:int = 0, min:Gauge = null, max:Gauge = null):Number
 		{
 			aw = Infinity;
 			ah = Infinity;

@@ -4,33 +4,34 @@ package
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.Node;
-	import talon.utils.AccessorGauge;
-	import talon.utils.GaugeQuad;
 
 	public class AttributeTest
 	{
-		private var parent1:Node;
-		private var parent2:Node;
+		private var node:Node;
+		private var node1:Node;
+		private var node2:Node;
 
 		private var attribute:Attribute;
 		private var changes:int;
 
-		[Before]
-		public function reset():void
+		private function resetNonStylable():void { reset(Attribute.ID); }
+		private function resetStylable():void { reset(Attribute.ALPHA); }
+		private function resetInheritable():void { reset(Attribute.FONT_NAME); }
+
+		private function reset(name:String):void
 		{
 			changes = 0;
 
-			var node:Node = new Node();
-			attribute = node.getOrCreateAttribute("attribute");
+			node = new Node();
+			attribute = node.getOrCreateAttribute(name);
 			attribute.change.addListener(onAttributeValueChange);
 
-			parent1 = new Node();
-			var parent1Attribute:Attribute = parent1.getOrCreateAttribute("attribute");
+			node1 = new Node();
+			var parent1Attribute:Attribute = node1.getOrCreateAttribute(name);
 			parent1Attribute.setted = "inheritFromParent1";
 
-			parent2 = new Node();
-			var parent2Attribute:Attribute = parent2.getOrCreateAttribute("attribute");
+			node2 = new Node();
+			var parent2Attribute:Attribute = node2.getOrCreateAttribute(name);
 			parent2Attribute.setted = "inheritFromParent2";
 		}
 
@@ -40,56 +41,70 @@ package
 		}
 
 		[Test]
-		public function testBasic():void
+		public function testSetters():void
 		{
+			resetStylable();
+
+			attribute.inited = "inited";
+			attribute.styled = "styled";
+			attribute.setted = "setted";
+
+			Assert.assertEquals("inited", attribute.inited);
+			Assert.assertEquals("styled", attribute.styled);
+			Assert.assertEquals("setted", attribute.setted);
+		}
+
+		[Test]
+		public function testSettersPriority():void
+		{
+//			resetNonStylable();
+//			attribute.inited = "inited";
+//			Assert.assertEquals(attribute.inited, attribute.value);
+//			attribute.styled = "styled";
+//			Assert.assertEquals(attribute.inited, attribute.value);
+//			attribute.setted = "setted";
+//			Assert.assertEquals(attribute.setted, attribute.value);
+
+			resetStylable();
 			attribute.inited = "inited";
 			Assert.assertEquals(attribute.inited, attribute.value);
-
 			attribute.styled = "styled";
 			Assert.assertEquals(attribute.styled, attribute.value);
-
 			attribute.setted = "setted";
 			Assert.assertEquals(attribute.setted, attribute.value);
 		}
 
 		[Test]
-		public function testIsStyleable():void
-		{
-			attribute.inited = "inited";
-			attribute.styled = "styled";
-
-			attribute.isStyleable = false;
-			Assert.assertEquals(attribute.inited, attribute.value);
-		}
-
-		[Test]
 		public function testInherit():void
 		{
+			resetInheritable();
+
 			// Pure
 			attribute.setted = Attribute.INHERIT;
-			attribute.isInheritable = true;
 			Assert.assertTrue(attribute.isInheritable);
 			Assert.assertFalse(attribute.isInherit);
 
 			// Added to 1 parent
-			parent1.addChild(attribute.node);
+			node1.addChild(attribute.node);
 			Assert.assertTrue(attribute.isInherit);
-			Assert.assertEquals(parent1.getOrCreateAttribute(attribute.name).value, attribute.value);
+			Assert.assertEquals(node1.getOrCreateAttribute(attribute.name).value, attribute.value);
 
 			// Removed from parent
-			parent1.removeChild(attribute.node);
+			node1.removeChild(attribute.node);
 			Assert.assertFalse(attribute.isInherit);
 
 			// Change parent form 1 to 2
-			parent1.addChild(attribute.node);
-			parent2.addChild(attribute.node);
+			node1.addChild(attribute.node);
+			node2.addChild(attribute.node);
 			Assert.assertTrue(attribute.isInherit);
-			Assert.assertEquals(parent2.getOrCreateAttribute(attribute.name).value, attribute.value);
+			Assert.assertEquals(node2.getOrCreateAttribute(attribute.name).value, attribute.value);
 		}
 
 		[Test]
 		public function testChangesWithoutParent():void
 		{
+			resetStylable();
+
 			attribute.inited = "inited";
 			Assert.assertEquals(1, changes);
 
@@ -112,35 +127,36 @@ package
 		[Test]
 		public function testChangesWithParent():void
 		{
+			reset(Attribute.FONT_NAME);
+
 			attribute.inited = "inited";
 			Assert.assertEquals(1, changes);
 
-			parent1.addChild(attribute.node);
-			Assert.assertEquals(1, changes);
-
-			attribute.isInheritable = true;
+			node1.addChild(attribute.node);
 			Assert.assertEquals(1, changes);
 
 			attribute.setted = Attribute.INHERIT;
 			Assert.assertEquals(2, changes);
 
-			parent1.removeChild(attribute.node);
+			node1.setAttribute(attribute.name, "inheritFromParent1_setted");
 			Assert.assertEquals(3, changes);
+
+			node1.removeChild(attribute.node);
+			Assert.assertEquals(4, changes);
 		}
 
 		[Test]
 		public function testCompositeAttribute():void
 		{
+			// Quad format
 			assertPadding("1",        "1", "1", "1", "1");
 			assertPadding("1 2",      "1", "2", "1", "2");
 			assertPadding("1 2 3",    "1", "2", "3", "2");
 			assertPadding("1 2 3 4",  "1", "2", "3", "4");
 
-			assertPosition("1",       "1", "1");
-			assertPosition("1 2",     "1", "2");
-
-			assertFillMode("repeat", "repeat", "repeat");
-			assertFillMode("stretch", "stretch", "stretch");
+			// Pair format
+			assertFillMode("repeat",         "repeat",  "repeat");
+			assertFillMode("stretch",        "stretch", "stretch");
 			assertFillMode("stretch repeat", "stretch", "repeat");
 		}
 
@@ -165,23 +181,6 @@ package
 			Assert.assertEquals(padding, node.getAttributeCache(Attribute.PADDING));
 		}
 
-		private function assertPosition(position:String, x:String, y:String):void
-		{
-			var node:Node;
-
-			// Direct
-			node = new Node();
-			node.setAttribute(Attribute.POSITION, position);
-			Assert.assertEquals(x, node.getAttributeCache(Attribute.X));
-			Assert.assertEquals(y, node.getAttributeCache(Attribute.Y));
-
-			// Reverse
-			node = new Node();
-			node.setAttribute(Attribute.X, x);
-			node.setAttribute(Attribute.Y, y);
-			Assert.assertEquals(position, node.getAttributeCache(Attribute.POSITION));
-		}
-
 		private function assertFillMode(fillMode:String, horizontal:String, vertical:String):void
 		{
 			var node:Node;
@@ -200,3 +199,19 @@ package
 		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

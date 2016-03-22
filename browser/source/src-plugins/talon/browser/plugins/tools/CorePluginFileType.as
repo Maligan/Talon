@@ -57,6 +57,7 @@ package talon.browser.plugins.tools
 		{
 			return ref.checkFirstMeaningfulChar("<")
 				&& ref.xml
+				&& ref.xml.name()
 				&& ref.xml.name().toString() == TalonFactoryBase.TAG_TEMPLATE;
 		}
 
@@ -64,6 +65,7 @@ package talon.browser.plugins.tools
 		{
 			return ref.checkFirstMeaningfulChar("<")
 				&& ref.xml
+				&& ref.xml.name()
 				&& ref.xml.name().toString() == TalonFactoryBase.TAG_LIBRARY;
 		}
 
@@ -71,6 +73,7 @@ package talon.browser.plugins.tools
 		{
 			return ref.checkFirstMeaningfulChar("<")
 				&& ref.xml
+				&& ref.xml.name()
 				&& ref.xml.name().toString() == "TextureAtlas";
 		}
 

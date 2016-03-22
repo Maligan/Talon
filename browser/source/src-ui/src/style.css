@@ -14,11 +14,11 @@
 #goto label {
 	halign: left;
 	padding: 10px;
-	/*padding: 10px;*/
 	width: *;
 	height: 35px;
 	cursor: button;
-	text: Hello My Dear friends my name is Sasha! And;
+	fontName: Source Sans Pro;
+	text: Hello My Dear friends my name
 }
 
 #goto label:nth-child(2n) {
@@ -105,11 +105,7 @@ checkbox:active #flag { src: $checkbox_unckecked_down; }
 
 #interface.dark #container  { backgroundFill: $('bg_dark'); }
 #interface.light #container { backgroundFill: $('bg_light'); }
-#interface #container {
-	width: 100%;
-	height: 100%;
-	backgroundFillMode: repeat; 
-}
+#interface #container { backgroundFillMode: repeat; }
 
 
 #interface.dark #bsod  { fontColor: white; }

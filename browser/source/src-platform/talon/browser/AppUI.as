@@ -12,6 +12,7 @@ package talon.browser
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.filters.BlurFilter;
+	import starling.text.TextField;
 	import starling.textures.Texture;
 	import starling.utils.Align;
 
@@ -103,7 +104,7 @@ package talon.browser
 			_isolator.name = "Isolator";
 			_isolator.addChild(_container);
 
-			_errorPage = _interface.getChildByName("bsod") as TalonSprite;
+			_errorPage = _interface.getChildByName("bsod") as TalonSprite || new TalonSprite();
 			_errorPage.visible = false;
 
 			_isolatorContainer = _interface.getChildByName("container") as TalonSprite;

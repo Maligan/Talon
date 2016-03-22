@@ -179,7 +179,7 @@ package talon.utils
 		private static function getRewrites(target:XML, rewrites:XMLList, mode:String):XMLList
 		{
 			var id:String = target.attribute(ATT_ID);
-			// TODO: @ref && @mode (ATT_REF, ATT_MODE)
+			// WARNING: There are literally constants (ATT_REF = @ref, ATT_MODE = @mode)
 			return rewrites.(@ref==id).(@mode==mode);
 		}
 

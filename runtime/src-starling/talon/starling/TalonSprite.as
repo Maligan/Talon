@@ -55,18 +55,6 @@ package talon.starling
 			node.removeChild(child.node);
 		}
 
-		private function sortByZIndex(child1:DisplayObject, child2:DisplayObject):int
-		{
-			var child1ZIndex:int = (child1 is ITalonElement) ? 0 : ITalonElement(child1).node.getAttributeCache(Attribute.Z_INDEX);
-			var child2ZIndex:int = (child2 is ITalonElement) ? 0 : ITalonElement(child2).node.getAttributeCache(Attribute.Z_INDEX);
-
-			var delta:int = child2ZIndex - child1ZIndex;
-			if (delta != 0) return delta;
-
-			// TODO: Poor logic, need hold base indexes
-			return getChildIndex(child2) - getChildIndex(child1);
-		}
-
 		//
 		// Bridge
 		//

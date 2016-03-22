@@ -7,7 +7,7 @@ package talon
 
 	import talon.layout.Layout;
 	import talon.utils.Accessor;
-	import talon.utils.AccessorGauge;
+	import talon.utils.Gauge;
 	import talon.utils.Trigger;
 
 	/** Any attribute changed. */
@@ -36,6 +36,9 @@ package talon
 		private var _ppmm:Number;
 		private var _invalidated:Boolean;
 
+		private var _touches:Dictionary = new Dictionary();
+		private var _touch:int = -1;
+
 		/** @private */
 		public function Node():void
 		{
@@ -44,9 +47,8 @@ package talon
 			_invalidated = true;
 
 			// Initialize all inheritable & composite attributes (initialize theirs listeners)
-			var attributeName:String;
-			for each (attributeName in Attribute.getInheritableAttributeNames()) getOrCreateAttribute(attributeName);
-			for each (attributeName in Attribute.getCompositeAttributeNames())   getOrCreateAttribute(attributeName);
+			for each (var attributeName:String in Attribute.getInheritableAttributeNames())
+				getOrCreateAttribute(attributeName);
 
 			// Listen attribute change
 			addTriggerListener(Event.CHANGE, onSelfAttributeChange);
@@ -55,8 +57,8 @@ package talon
 			_accessor = new Accessor(this);
 			_accessor.width.auto = measureAutoWidth;
 			_accessor.height.auto = measureAutoHeight;
-			_accessor.states.change.addListener(restyle);
-			_accessor.classes.change.addListener(restyle);
+			_accessor.states.change.addListener(refreshStyle);
+			_accessor.classes.change.addListener(refreshStyle);
 		}
 
 		//
@@ -95,7 +97,7 @@ package talon
 		public function setStyleSheet(style:StyleSheet):void
 		{
 			_style = style;
-			restyle();
+			refreshStyle();
 		}
 
 		public function getStyle(node:Node):Object
@@ -107,30 +109,28 @@ package talon
 		}
 
 		/** Recursive apply style to current node. */
-		private function restyle():void
+		private function refreshStyle():void
 		{
 			var style:Object = getStyle(this);
 
-			// Fill all the existing attributes
-			for each (var attribute:Attribute in _attributes)
-			{
-				attribute.styled = style[attribute.name];
-				delete style[attribute.name];
-			}
+			_touch++;
 
-			// Addition attributes defined by style
+			// Set styled values (NB! Order is important)
 			for (var name:String in style)
 			{
-				attribute = getOrCreateAttribute(name);
-				attribute.styled = style[name];
+				getOrCreateAttribute(name).styled = style[name];
+				_touches[name] = _touch;
+			}
+
+			for each (var attribute:Attribute in _attributes)
+			{
+				if (_touches[attribute.name] != _touch)
+					attribute.styled = null;
 			}
 
 			// Recursive children restyling
 			for (var i:int = 0; i < numChildren; i++)
-			{
-				var child:Node = getChildAt(i);
-				child.restyle();
-			}
+				getChildAt(i).refreshStyle();
 		}
 
 		//
@@ -140,7 +140,7 @@ package talon
 		public function setResources(resources:Object):void
 		{
 			_resources = resources;
-			resource();
+			refreshResource();
 		}
 
 		/** Find resource in self or ancestors resources. */
@@ -155,7 +155,7 @@ package talon
 			return null;
 		}
 
-		private function resource():void
+		private function refreshResource():void
 		{
 			// Notify resource change
 			for each (var attribute:Attribute in _attributes)
@@ -163,18 +163,18 @@ package talon
 
 			// Recursive children notify resource change
 			for (var i:int = 0; i < numChildren; i++)
-				getChildAt(i).resource();
+				getChildAt(i).refreshResource();
 		}
 
 		//
 		// Layout
 		//
-		public function get isInvalidated():Boolean
+		public function get invalidated():Boolean
 		{
 			return _invalidated;
 		}
 
-		/** Raise (only!) isInvalidated flag. */
+		/** Raise (only!) invalidated flag. */
 		public function invalidate():void
 		{
 			if (_invalidated === false)
@@ -188,10 +188,10 @@ package talon
 		 *
 		 *  - Apply 'bounds' via dispatch RESIZE event.
 		 *  - Arrange children with layout algorithm.
-		 *  - Reset isInvalidated flag.
+		 *  - Reset invalidated flag.
 		 *
 		 *  Call this method after manually change 'bounds' property to validate layout.
-		 *  NB! Node layout will be validated independently isInvalidated flag is true or false. */
+		 *  NB! Node layout will be validated independently invalidated flag is true or false. */
 		public function commit():void
 		{
 			// Update self view object attached to node
@@ -226,8 +226,10 @@ package talon
 			var base:int = 12;
 			var inherit:Number = parent ? parent.ppem : base;
 			var attribute:Attribute = getOrCreateAttribute(Attribute.FONT_SIZE);
-			if (attribute.isInheritable && attribute.basic == Attribute.INHERIT) return inherit;
-			return AccessorGauge.toPixels(attribute.basic, ppmm, inherit, ppdp, inherit, 0, 0, 0);
+			if (attribute.isInheritable && attribute.isInherit) return inherit;
+			if (attribute.valueCache == "inherit") return base;
+			// FIXME: Recalculate correct!
+			return Gauge.toPixels(attribute.value, ppmm, inherit, ppdp, inherit);
 		}
 
 		/** This is default 'auto' callback for gauges: width, minWidth, maxWidth. */
@@ -279,8 +281,8 @@ package talon
 		{
 			_children[_children.length] = child;
 			child._parent = this;
-            child.restyle();
-            child.resource();
+            child.refreshStyle();
+            child.refreshResource();
 			child.addTriggerListener(Event.CHANGE, onChildAttributeChange);
 			child.dispatch(Event.ADDED);
             invalidate();
@@ -295,8 +297,8 @@ package talon
 			child.removeTriggerListener(Event.CHANGE, onChildAttributeChange);
 			child.dispatch(Event.REMOVED);
 			child._parent = null;
-			child.restyle();
-			child.resource();
+			child.refreshStyle();
+			child.refreshResource();
 			invalidate();
 		}
 

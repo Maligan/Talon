@@ -60,7 +60,7 @@ package talon.browser
 			_updater.updateURL = AppConstants.APP_UPDATE_URL + "?rnd=" + int(Math.random() * int.MAX_VALUE);
 			_updater.initialize();
 
-			// XXX: NOT work after starling creating!
+			// WARNING: NOT work after starling creating!
 			var colorName:String = _settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
 			var color:uint = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[colorName];
 			stage.color = color;
@@ -264,7 +264,7 @@ package talon.browser
 
 			// Updater#checkNow() run only after delay, UI inited is a good, moment for this
 			var isEnableAutoUpdate:Boolean = _settings.getValueOrDefault(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, Boolean, true);
-			// XXX: Save for have default value != null
+			// TODO: Save for have default value != null
 			_settings.setValue(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, isEnableAutoUpdate);
 			if (isEnableAutoUpdate) _updater.checkNow();
 		}

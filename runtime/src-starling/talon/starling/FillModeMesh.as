@@ -1,6 +1,7 @@
 package talon.starling
 {
 	import starling.display.Mesh;
+	import starling.events.Event;
 	import starling.rendering.IndexData;
 	import starling.rendering.MeshStyle;
 	import starling.rendering.Painter;
@@ -60,6 +61,12 @@ package talon.starling
 		{
 			_requiresRecomposition = true;
 			setRequiresRedraw();
+		}
+
+		public override function setRequiresRedraw():void
+		{
+			super.setRequiresRedraw();
+			dispatchEventWith(Event.CHANGE);
 		}
 
 		//

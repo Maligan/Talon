@@ -2,7 +2,7 @@ package talon.browser.utils
 {
 	public class FuzzyUtil
 	{
-		/** Select all items witch fuzzy match query, and sort by Levenshtein order. */
+		/** Select all items which fuzzy match query, and sort by Levenshtein order. */
 		public static function fuzzyFilter(query:String, items:Array):Array
 		{
 			query = query.toLowerCase();

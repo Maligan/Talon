@@ -1,7 +1,7 @@
 <library>
 
 	<template id="TEST">
-		<button label="$dialog.preferences.showStats" />
+		<label text="Hello World" backgroundFill="red" padding="10px" width="none" height="none" valign="bottom" halign="right"/>
 	</template>
 
 	<template id="Interface">

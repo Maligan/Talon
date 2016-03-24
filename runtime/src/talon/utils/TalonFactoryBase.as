@@ -67,11 +67,15 @@ package talon.utils
 
 		protected function onElementBegin(e:Event):void
 		{
-			var type:String = _parser.cursorTag;
+			var type:String = _parser.cursorTags[0];
 			var attributes:Object = _parser.cursorAttributes;
 
+			// If template doesn't provide CSS type - install it from tag name
+			if (attributes[Attribute.TYPE] == null)
+				attributes[Attribute.TYPE] = type;
+
 			// Create new element
-			var elementClass:Class = getLinkageClass(_parser.cursorTag, _parser.cursorTagStack);
+			var elementClass:Class = getLinkageClass(_parser.cursorTags);
 			var element:* = new elementClass();
 			var elementNode:Node = getElementNode(element);
 
@@ -90,11 +94,6 @@ package talon.utils
 
 			_parserProductStack.push(element);
 
-			if (type == "button" || attributes["type"] == "button")
-			{
-				trace()
-			}
-
 			var isNonTerminal:Boolean = _parser.terminals.indexOf(type) == -1;
 			if (isNonTerminal) _parserProductStackNonTerminal.push(element);
 		}
@@ -104,14 +103,11 @@ package talon.utils
 			return element is ITalonElement ? ITalonElement(element).node : null;
 		}
 
-		protected function getLinkageClass(type:String, stack:Vector.<String>):Class
+		protected function getLinkageClass(types:Vector.<String>):Class
 		{
-			var result:Class = _linkage[type];
-			if (result) return result;
-
-			for (var i:int = stack.length-1; i >= 0; i--)
+			for (var i:int = 0; i < types.length; i++)
 			{
-				result = _linkage[stack[i]];
+				var result:Class = _linkage[types[i]];
 				if (result) return result;
 			}
 

@@ -15,7 +15,6 @@ package talon.utils
 
 		// Special keyword-attributes
 		private static const ATT_ID:String = "id";
-		private static const ATT_TYPE:String = "type";
 		private static const ATT_MODE:String = "mode";
 		private static const ATT_REF:String = "ref";
 
@@ -33,30 +32,33 @@ package talon.utils
 		//
 		private var _templates:Object;
 		private var _terminals:Vector.<String>;
-		private var _stack:Vector.<String>;
+		private var _tags:Vector.<String>;
 		private var _attributes:Object;
-		private var _type:String;
 
 		/** @private */
 		public function TMLParser(terminals:Vector.<String> = null, templates:Object = null)
 		{
 			_terminals = terminals || new Vector.<String>();
 			_templates = templates || new Object();
-			_stack = new Vector.<String>();
+			_tags = new Vector.<String>();
 		}
 
 		public function parse(xml:XML):void
 		{
-			_stack.length = 0;
+			_tags.length = 0;
 			parseInternal(xml, null, EMPTY_XML_LIST);
 		}
 
 		private function parseInternal(xml:XML, attributes:Object, rewrites:XMLList):void
 		{
-			_type = xml.name();
+			var tag:String = xml.name();
+
+			if (_tags.indexOf(tag) != -1) throw new Error("Template is recursive nested");
+
+			_tags[_tags.length] = tag;
 
 			// If node can't be expanded - create node
-			var isTerminal:Boolean = _terminals.indexOf(_type) != -1;
+			var isTerminal:Boolean = _terminals.indexOf(tag) != -1;
 			if (isTerminal)
 			{
 				var replacer:XML = getRewritesReplace(xml, rewrites);
@@ -64,6 +66,7 @@ package talon.utils
 				{
 					attributes = mergeAttributes(fetchAttributes(xml), getRewritesAttributes(xml, rewrites), attributes);
 					dispatchBegin(attributes);
+					_tags.length = 0;
 					for each (var child:XML in getRewritesContentOrChildren(xml, rewrites)) parseInternal(child, null, rewrites);
 					dispatchEnd();
 				}
@@ -76,11 +79,7 @@ package talon.utils
 			// Else if node is template
 			else
 			{
-				if (_stack.indexOf(_type) != -1) throw new Error("Template is recursive nested");
-
-				_stack.push(_type);
-				parseInternal(getTemplateOrDie(_type), mergeAttributes(fetchAttributes(xml), attributes), fetchRewrites(xml, rewrites));
-				_stack.pop();
+				parseInternal(getTemplateOrDie(tag), mergeAttributes(fetchAttributes(xml), attributes), fetchRewrites(xml, rewrites));
 			}
 		}
 
@@ -101,9 +100,6 @@ package talon.utils
 		private static function fetchAttributes(xml:XML):Object
 		{
 			var result:Object = new Object();
-
-			// Type is only mandatory attribute
-			result[ATT_TYPE] = xml.name().toString();
 
 			for each (var attribute:XML in xml.attributes())
 			{
@@ -201,10 +197,7 @@ package talon.utils
 		}
 
 		/** Current parse process stack of elements types. */
-		public function get cursorTagStack():Vector.<String> { return _stack; }
-
-		/** Current element tag type e.g. <tag />, not value of type attribute <tag type="type" />. */
-		public function get cursorTag():String { return _type; }
+		public function get cursorTags():Vector.<String> { return _tags; }
 
 		/** Current element attributes. */
 		public function get cursorAttributes():Object { return _attributes; }

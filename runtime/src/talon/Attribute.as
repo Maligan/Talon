@@ -178,6 +178,7 @@ package talon
 		private var _solver:ISolver;
 
 		private var _valueCache:*;
+		private var _valueCacheIsResource:Boolean;
 		private var _valueCached:Boolean;
 
 		/** @private */
@@ -225,8 +226,9 @@ package talon
 			if (_valueCached == false)
 			{
 				// By default is equal to value
-				_valueCached = true;
 				_valueCache = value;
+				_valueCacheIsResource = false;
+				_valueCached = true;
 
 				// Extract resource value
                 // FIXME: Stack overflow (loops)
@@ -235,6 +237,7 @@ package talon
 					var key:String = StringParseUtil.parseResource(_valueCache);
 					if (key == null) break;
 
+					_valueCacheIsResource = true;
 					_valueCache = node.getResource(key);
 				}
 			}
@@ -245,7 +248,6 @@ package talon
 		//
 		// Props
 		//
-
 		/** Use styled property when calculating attribute value. */
 		public function get isStyleable():Boolean { return _defIsStyleable[name]; }
 
@@ -259,11 +261,17 @@ package talon
 		public function get isInherit():Boolean { return isInheritable && InheritableSolver(_solver).isInherit; }
 
 		/** Attribute 'value' is mapped to resource. */
-		public function get isResource():Boolean { return StringParseUtil.parseResource(value) != null; }
+		public function get isResource():Boolean { valueCache; return _valueCacheIsResource; }
 
 		//
 		// Misc
 		//
+		public function bind(attribute:Attribute):void
+		{
+			_solver = attribute._solver;
+			dispatchChange();
+		}
+
 		public function dispose():void
 		{
 			_valueCache = null;

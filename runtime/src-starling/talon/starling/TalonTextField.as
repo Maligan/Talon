@@ -96,22 +96,31 @@ package talon.starling
 			if (numChildren > 0)
 			{
 				var meshBatch:DisplayObject = getChildAt(0);
-				var meshBounds:Rectangle = meshBatch.getBounds(meshBatch); // NB! user textBounds instead `meshBatch.getBounds(meshBatch)` for `recompose()` invocation
+				var meshBounds:Rectangle = meshBatch.getBounds(meshBatch);
 
 				// Invoke recomposition - this is hack - it allow call private super.recompose() method without extra memory allocations.
 				super.getBounds(this, _helperRect);
 
 				// Add horizontal padding
-				var isHorizontalAutoSize:Boolean = super.autoSize == TextFieldAutoSize.HORIZONTAL || super.autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
 				var paddingLeft:Number = node.accessor.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 				var paddingRight:Number = node.accessor.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-				meshBatch.x += Layout.pad(isHorizontalAutoSize ? width : 0, isHorizontalAutoSize ? meshBounds.width : 0, paddingLeft, paddingRight, StringParseUtil.parseAlign(format.horizontalAlign));
+
+				var isHorizontalAutoSize:Boolean = super.autoSize == TextFieldAutoSize.HORIZONTAL || super.autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
+				if (isHorizontalAutoSize)
+					meshBatch.x += Layout.pad(width, meshBounds.width, paddingLeft, paddingRight, StringParseUtil.parseAlign(format.horizontalAlign));
+				else
+					meshBatch.x  = Layout.pad(0, 0, paddingLeft, paddingRight, StringParseUtil.parseAlign(format.horizontalAlign));
 
 				// Add vertical padding
-				var isVerticalAutoSize:Boolean = super.autoSize == TextFieldAutoSize.VERTICAL || super.autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
 				var paddingTop:Number = node.accessor.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 				var paddingBottom:Number = node.accessor.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-				meshBatch.y += Layout.pad(isVerticalAutoSize ? height : 0, isVerticalAutoSize ? meshBounds.height : 0, paddingTop, paddingBottom, StringParseUtil.parseAlign(format.verticalAlign));
+
+				var isVerticalAutoSize:Boolean = super.autoSize == TextFieldAutoSize.VERTICAL || super.autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
+				if (isVerticalAutoSize)
+					meshBatch.y += Layout.pad(height, meshBounds.height, paddingTop, paddingBottom, StringParseUtil.parseAlign(format.verticalAlign));
+				else
+					meshBatch.y  = Layout.pad(0, 0, paddingTop, paddingBottom, StringParseUtil.parseAlign(format.verticalAlign));
+
 			}
 		}
 

@@ -68,11 +68,8 @@ package talon.utils
 		{
 			context = context || _context;
 
-			for (var i:int = 0; i < _listeners.length; i++)
-//			var i:int = _listeners.length;
-//			while (--i > -1)
-//			var i:int = -1;
-//			while (++i > _listeners.length)
+			var i:int = _listeners.length;
+			while (--i > -1)
 			{
 				_listeners[i].length == 0
 					? _listeners[i]()

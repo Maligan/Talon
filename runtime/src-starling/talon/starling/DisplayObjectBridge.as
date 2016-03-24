@@ -33,7 +33,7 @@ package talon.starling
 
 		private var _target:DisplayObject;
 		private var _node:Node;
-		private var _background:FillModeMesh;
+		private var _background:FillableMesh;
 
 		public function DisplayObjectBridge(target:DisplayObject, node:Node):void
 		{
@@ -44,7 +44,8 @@ package talon.starling
 			_node = node;
 			_node.addTriggerListener(Event.RESIZE, onNodeResize);
 
-			_background = new FillModeMesh();
+			_background = new FillableMesh();
+			_background.pixelSnapping = true;
 			_background.addEventListener(Event.CHANGE, _target.setRequiresRedraw);
 
 			// Background
@@ -244,18 +245,15 @@ package talon.starling
 			resultRect = base(targetSpace, resultRect);
 
 			// Expand resultRect with background bounds
-			if (_background.texture || !_background.transparent)
-			{
-				_target.getTransformationMatrix(targetSpace, MATRIX);
+			_target.getTransformationMatrix(targetSpace, MATRIX);
 
-				var topLeft:Point = MatrixUtil.transformCoords(MATRIX, 0, 0, POINT);
-				if (resultRect.left > topLeft.x) resultRect.left = topLeft.x;
-				if (resultRect.top > topLeft.y) resultRect.top = topLeft.y;
+			var topLeft:Point = MatrixUtil.transformCoords(MATRIX, 0, 0, POINT);
+			if (resultRect.left > topLeft.x) resultRect.left = topLeft.x;
+			if (resultRect.top > topLeft.y) resultRect.top = topLeft.y;
 
-				var bottomRight:Point = MatrixUtil.transformCoords(MATRIX, _background.width, _background.height, POINT);
-				if (resultRect.right < bottomRight.x) resultRect.right = bottomRight.x;
-				if (resultRect.bottom < bottomRight.y) resultRect.bottom = bottomRight.y;
-			}
+			var bottomRight:Point = MatrixUtil.transformCoords(MATRIX, _background.width, _background.height, POINT);
+			if (resultRect.right < bottomRight.x) resultRect.right = bottomRight.x;
+			if (resultRect.bottom < bottomRight.y) resultRect.bottom = bottomRight.y;
 
 			return resultRect;
 		}

@@ -119,14 +119,13 @@ package talon.utils
 			var bindSplit:Array = bindPattern.exec(value);
 			var bindSource:String = bindSplit && bindSplit.length > 1 ? bindSplit[1] : null;
 
-			if (bindSource && false)
+			if (bindSource)
 			{
-				throw new Error("Unsupported");
+				var sourceElement:ITalonElement = (_parserProductStackNonTerminal.length ? _parserProductStackNonTerminal[_parserProductStackNonTerminal.length - 1] : _parserProductStack[0]) as ITalonElement;
+				var source:Attribute = sourceElement.node.getOrCreateAttribute(bindSource);
+				var target:Attribute = node.getOrCreateAttribute(attributeName);
 
-//				var sourceElement:ITalonElement = (_parserProductStackNonTerminal.length ? _parserProductStackNonTerminal[_parserProductStackNonTerminal.length - 1] : _parserProductStack[0]) as ITalonElement;
-//				var source:Attribute = sourceElement.node.getOrCreateAttribute(bindSource);
-//				var target:Attribute = node.getOrCreateAttribute(attributeName);
-//
+				target.bind(source);
 //				var toTarget:TriggerBinding = TriggerBinding.bind(source.change, source, "value", target, "setted");
 //				toTarget.trigger();
 //				var toSource:TriggerBinding = TriggerBinding.bind(target.change, target, "value", source, "setted");

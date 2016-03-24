@@ -12,7 +12,7 @@ package talon.starling
 	import talon.enums.FillMode;
 	import talon.utils.StringParseUtil;
 
-	public class FillModeMesh extends Mesh
+	public class FillableMesh extends Mesh
 	{
 		private static var _byX:Vector.<Ruler>;
 		private static var _byY:Vector.<Ruler>;
@@ -30,7 +30,7 @@ package talon.starling
 
 		private var _requiresRecomposition:Boolean;
 
-		public function FillModeMesh()
+		public function FillableMesh()
 		{
 			var vertexData:VertexData = new VertexData(MeshStyle.VERTEX_FORMAT, 4);
 			var indexData:IndexData = new IndexData(6);

@@ -1,15 +1,10 @@
 <library>
 
-	<template id="ATest">
-		<!--<label backgroundFill="$bg_dark" backgroundFillMode="repeat" text="Hello World Wooo wooo" width="100%" height="100%" valign="center" halign="center" padding="0 300px 0 0" fontName="Source Sans Pro" fontSize="30px" fontColor="white" />-->
-		<node width="200" height="200" backgroundFill="$bg_light" backgroundFillMode="repeat" />
-	</template>
-
 	<template id="Interface">
 		<node id="interface" width="100%" height="100%" layout="abs" class="dark">
 			<node id="container" width="100%" height="100%" />
 			<node id="bsod" width="100%" height="100%"><label width="100%" height="100%" autoScale="true" text="¯\_(ツ)_/¯" /></node>
-			<node id="popups" width="100%" height="100%" layout="abs" halign="center" valign="center"/>
+			<node id="popups" width="100%" height="100%" layout="flow" halign="center" valign="center"/>
 			<image src="$error" width="48px" height="48px" anchor="0px 100% none none" margin="10px" />
 			<node id="drag" width="100%" height="100%" />
 		</node>
@@ -71,12 +66,12 @@
 	<template id="GoToPopup">
 		<node class="popup" id="goto" orientation="vertical"> 
 			<input width="300px" margin="4px"/>
-			<label id="GoTo1" />
-			<label id="GoTo2" />
-			<label id="GoTo3" />
-			<label id="GoTo4" />
-			<label id="GoTo5" />
-			<label id="GoTo6" />
+			<label />
+			<label />
+			<label />
+			<label />
+			<label />
+			<label />
 		</node>
 	</template>
 
@@ -86,7 +81,7 @@
 
 	<template id="Button" type="button">
 		<node type="button" label="Button">
-			<label text="@label" width="80px" height="32px" />
+			<label text="@label" padding="4px 8px" />
 		</node>
 	</template>
 

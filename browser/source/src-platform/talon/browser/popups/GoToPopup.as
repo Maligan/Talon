@@ -77,6 +77,7 @@ package talon.browser.popups
 			});
 
 			_input.addEventListener(FeathersEventType.FOCUS_OUT, function():void {
+				// FIXME: Much CPU load
 				_input.setFocus();
 			});
 
@@ -113,7 +114,10 @@ package talon.browser.popups
 
 		private function onDocumentChange():void
 		{
-			close();
+			if (_app.document)
+				refresh();
+			else
+				close();
 		}
 
 		private function onLabelTouch(e:TouchEvent):void

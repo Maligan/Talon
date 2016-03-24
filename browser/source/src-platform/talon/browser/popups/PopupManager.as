@@ -1,14 +1,13 @@
 package talon.browser.popups
 {
-	import flash.events.Event;
-
-	import starling.animation.Transitions;
 	import starling.animation.Tween;
 
 	import starling.core.Starling;
 
 	import starling.display.DisplayObjectContainer;
+	import starling.events.Event;
 	import starling.events.EventDispatcher;
+	import starling.events.KeyboardEvent;
 
 	import talon.starling.TalonFactoryStarling;
 
@@ -18,44 +17,50 @@ package talon.browser.popups
 		private var _host:DisplayObjectContainer;
 		private var _factory:TalonFactoryStarling;
 
-		private var _notifying:Boolean;
-		private var _notifyProperties:Object;
+		private var _notifyTween:Tween;
 
 		public function initialize(host:DisplayObjectContainer, factory:TalonFactoryStarling):void
 		{
 			_popups = new <Popup>[];
 			_host = host;
 			_factory = factory;
+
+			// Redispatch keyboard events to topmost popup
+			_host.stage.addEventListener(KeyboardEvent.KEY_DOWN, dispatchEventToTopmostPopup);
+			_host.stage.addEventListener(KeyboardEvent.KEY_UP, dispatchEventToTopmostPopup);
+		}
+
+		private function dispatchEventToTopmostPopup(e:Event):void
+		{
+			var topmost:Popup = _popups.length ? _popups[_popups.length-1] : null;
+			if (topmost)
+				topmost.dispatchEvent(e);
 		}
 
 		public function notify():void
 		{
-			if (_notifying) return;
+			if (_notifyTween && _notifyTween.isComplete == false) return;
 
 			var topmost:Popup = _popups.length ? _popups[0] : null;
 			if (topmost)
 			{
-				_notifying = true;
+				if (_notifyTween == null)
+					_notifyTween = new Tween(topmost, 1);
 
-				if (_notifyProperties == null)
-				{
-					_notifyProperties = {
-						scaleX: 1.1,
-						scaleY: 1.1,
-						repeatCount: 2,
-						reverse: true,
-						transition: Transitions.EASE_IN,
-						onComplete: notifyComplete
-					}
-				}
+				_notifyTween.reset(topmost, 0.2);
+				_notifyTween.onUpdate = notifyUpdate;
+				_notifyTween.onUpdateArgs = [topmost, topmost.x];
 
-				Starling.juggler.tween(topmost, 0.1, _notifyProperties);
+				Starling.juggler.add(_notifyTween);
 			}
 		}
 
-		private function notifyComplete():void
+		private function notifyUpdate(popup:Popup, base:Number):void
 		{
-			_notifying = false;
+			var x:Number = _notifyTween.progress;
+			var y:Number = Math.sin(3 * x * Math.PI) / Math.pow(Math.E, x);
+
+			popup.x = base + y * 10;
 		}
 
 		public function open(popup:Popup, data:Object = null):void

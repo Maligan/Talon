@@ -24,7 +24,7 @@ package talon.browser
 	import talon.browser.utils.TalonFeatherTextInput;
 	import talon.enums.FillMode;
 	import talon.layout.Layout;
-	import talon.starling.FillModeMesh;
+	import talon.starling.FillableMesh;
 	import talon.starling.TalonFactoryStarling;
 	import talon.starling.TalonSprite;
 	import talon.utils.ITalonElement;

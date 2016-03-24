@@ -230,6 +230,11 @@ package talon
 				_valueCacheIsResource = false;
 				_valueCached = true;
 
+				if (name == "text")
+				{
+					trace()
+				}
+
 				// Extract resource value
                 // FIXME: Stack overflow (loops)
 				while (_valueCache is String)

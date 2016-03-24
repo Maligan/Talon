@@ -90,6 +90,11 @@ package talon.utils
 
 			_parserProductStack.push(element);
 
+			if (type == "button" || attributes["type"] == "button")
+			{
+				trace()
+			}
+
 			var isNonTerminal:Boolean = _parser.terminals.indexOf(type) == -1;
 			if (isNonTerminal) _parserProductStackNonTerminal.push(element);
 		}

@@ -1,5 +1,9 @@
 <library>
 
+	<template id="TEST">
+		<button label="$dialog.preferences.showStats" />
+	</template>
+
 	<template id="Interface">
 		<node id="interface" width="100%" height="100%" layout="abs" class="dark">
 			<node id="container" width="100%" height="100%" />
@@ -15,7 +19,7 @@
 
 			<label text="$dialog.profile.title" width="*" padding="8px" />
 
-			<node orientation="vertical" gap="8px" padding="8px" width="*" backgroundColor="gray" backgroundAlpha="0.1">
+			<node orientation="vertical" gap="8px" padding="8px" width="*" backgroundFill="gray" backgroundAlpha="0.1">
 				<node width="100%" gap="8px">
 					<label text="$dialog.profile.size" width="*" height="*" halign="left" />
 					<input id="_width" width="48" />
@@ -47,7 +51,7 @@
 
 			<label text="$dialog.preferences.title" width="*" padding="8px" />
 
-			<node orientation="vertical" gap="8px" padding="8px" width="*" backgroundColor="gray" backgroundAlpha="0.1">
+			<node orientation="vertical" gap="8px" padding="8px" width="*" backgroundFill="gray" backgroundAlpha="0.1">
 				<checkbox label="$dialog.preferences.showStats" />
 				<checkbox label="$dialog.preferences.alwaysOnTop" />
 				<checkbox label="$dialog.preferences.checkForUpdate" />

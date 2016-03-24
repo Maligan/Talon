@@ -109,7 +109,7 @@ package talon.starling
 				if (isHorizontalAutoSize)
 					meshBatch.x += Layout.pad(width, meshBounds.width, paddingLeft, paddingRight, StringParseUtil.parseAlign(format.horizontalAlign));
 				else
-					meshBatch.x  = Layout.pad(0, 0, paddingLeft, paddingRight, StringParseUtil.parseAlign(format.horizontalAlign));
+					meshBatch.x += Layout.pad(0, 0, paddingLeft, paddingRight, StringParseUtil.parseAlign(format.horizontalAlign));
 
 				// Add vertical padding
 				var paddingTop:Number = node.accessor.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0);
@@ -119,7 +119,7 @@ package talon.starling
 				if (isVerticalAutoSize)
 					meshBatch.y += Layout.pad(height, meshBounds.height, paddingTop, paddingBottom, StringParseUtil.parseAlign(format.verticalAlign));
 				else
-					meshBatch.y  = Layout.pad(0, 0, paddingTop, paddingBottom, StringParseUtil.parseAlign(format.verticalAlign));
+					meshBatch.y += Layout.pad(0, 0, paddingTop, paddingBottom, StringParseUtil.parseAlign(format.verticalAlign));
 
 			}
 		}
@@ -135,7 +135,8 @@ package talon.starling
 				recomposeWithPadding();
 			}
 
-			// Render glyphs
+			// In this call recompose() nether will be invoked
+			// and now this is analog of super.super.render() :-)
 			super.render(painter);
 		}
 

@@ -1,6 +1,7 @@
 package talon.browser.commands
 {
 	import flash.display.BitmapData;
+	import flash.display3D.Context3D;
 	import flash.events.Event;
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
@@ -12,6 +13,7 @@ package talon.browser.commands
 	import starling.display.DisplayObject;
 	import starling.display.Stage;
 	import starling.rendering.Painter;
+	import starling.rendering.RenderState;
 
 	import talon.browser.AppConstants;
 	import talon.browser.AppPlatform;
@@ -78,22 +80,20 @@ package talon.browser.commands
 
 		public static function copyToBitmap(starling:Starling, displayObject:DisplayObject):BitmapData
 		{
-			var bounds:Rectangle = new Rectangle();
-			displayObject.getBounds(displayObject, bounds);
-
+			var bounds:Rectangle = displayObject.getBounds(displayObject);
 			var result:BitmapData = new BitmapData(bounds.width, bounds.height, true);
 			var stage:Stage = starling.stage;
-			var painter:Painter = new Painter(starling.stage3D);
+			var painter:Painter = starling.painter;
 
-			painter.clear(0, 0);
-//			painter.setProjectionMatrix(0, 0, stage.stageWidth, stage.stageHeight);
-//			painter.translateMatrix(-bounds.x, -bounds.y);
+			painter.pushState();
+			painter.state.renderTarget = null;
+			painter.state.setProjectionMatrix(bounds.x, bounds.y, stage.stageWidth, stage.stageHeight, stage.stageWidth, stage.stageHeight, stage.cameraPosition);
+			painter.clear();
 			displayObject.render(painter);
-//			painter.finishQuadBatch();
-			painter.dispose();
-
-			starling.context.drawToBitmapData(result);
-			starling.context.present();
+			painter.finishMeshBatch();
+			painter.context.drawToBitmapData(result);
+			painter.context.present();
+			painter.popState();
 
 			return result;
 		}

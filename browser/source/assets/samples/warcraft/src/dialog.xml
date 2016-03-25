@@ -5,10 +5,10 @@
 		<node type="dialog" orientation="vertical" header="Available Pangramms"> 
 
 			<!-- Header -->
-			<node id="header"><label text="@header" height="100%" marginTop="2px" /></node>
+			<node id="header"><label text="@header" height="100%" marginTop="14px" /></node>
 
 			<!-- Content -->
-			<node id="content" backgroundColor="none" gap="16px">
+			<node id="content" gap="16px">
 				<image class="warning" />
 				<label halign="left" text="- The quick brown fox jumps over the lazy dog. &#13;- Jackdaws love my big sphinx of quartz.&#13;- The five boxing wizards jump quickly." />
 			</node>

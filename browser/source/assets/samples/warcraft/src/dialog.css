@@ -1,6 +1,6 @@
 dialog {
-	backgroundImage: $('dialog-border');
-	background9Scale: 20px;
+	backgroundFill: $('dialog-border');
+	backgroundStretchGrid: 20px;
 
 	fontName: FrizQuadrata;
 	fontSize: 13px;
@@ -13,8 +13,8 @@ dialog {
 }
 
 dialog #header {
-	backgroundImage: $('dialog-header');
-	background9Scale: 16px;
+	backgroundFill: $('dialog-header');
+	backgroundStretchGrid: 16px;
 
 	marginTop: -28px;
 	ihalign: center;
@@ -23,8 +23,8 @@ dialog #header {
 }
 
 button {
-	background9Scale: 8px;
-	backgroundImage: $('button-up');
+	backgroundStretchGrid: 8px;
+	backgroundFill: $('button-up');
 	cursor: button;
 
 	fontName: FrizQuadrata;
@@ -34,20 +34,20 @@ button {
 	align: center;
 
 	height: 28px;
-	padding: 4px 32px 0px;
+	padding: 8px 32px 0px;
 }
 
 button:hover { filter: brightness(0.05); }
 button:active
 {
-	backgroundImage: $('button-down'); 
+	backgroundFill: $('button-down'); 
 	paddingBottom: 4px;
 }
 
 button.disabled:hover { filter: none; }
 button.disabled
 {
-	backgroundImage: $('button-disabled');
+	backgroundFill: $('button-disabled');
 	fontColor: #FFFFFF;
 	cursor: auto;
 }

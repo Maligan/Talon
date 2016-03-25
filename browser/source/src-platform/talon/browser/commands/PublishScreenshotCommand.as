@@ -45,19 +45,24 @@ package talon.browser.commands
 
 			if (_output == null)
 			{
-				_output = new File("/" + platform.ui.templateId + "." + AppConstants.BROWSER_SCREENSHOT_EXTENSION);
-				_output.addEventListener(Event.SELECT, onOutputFileSelect);
-				_output.browseForSave(AppConstants.T_PROJECT_FILE_TITLE);
+				var file:File = new File("/" + platform.ui.templateId + "." + AppConstants.BROWSER_SCREENSHOT_EXTENSION);
+				file.addEventListener(Event.SELECT, onOutputFileSelect);
+				file.browseForSave(AppConstants.T_PROJECT_FILE_TITLE);
 			}
 			else
 			{
-				onOutputFileSelect(null);
+				writeToFile(_output);
 			}
 		}
 
 		private function onOutputFileSelect(e:Event):void
 		{
-			if (_output != null)
+			writeToFile(e.target as File);
+		}
+
+		private function writeToFile(file:File):void
+		{
+			if (file != null)
 			{
 				var bitmap:BitmapData = copyToBitmap(platform.starling, platform.ui.template);
 				var bytes:ByteArray = PNGEncoder2.encode(bitmap);
@@ -65,7 +70,7 @@ package talon.browser.commands
 				try
 				{
 					var stream:FileStream = new FileStream();
-					stream.open(_output, FileMode.WRITE);
+					stream.open(file, FileMode.WRITE);
 					stream.writeBytes(bytes, 0, bytes.length);
 				}
 				finally
@@ -73,8 +78,6 @@ package talon.browser.commands
 					stream.close();
 					bytes.clear();
 				}
-
-				if (e != null) _output = null;
 			}
 		}
 

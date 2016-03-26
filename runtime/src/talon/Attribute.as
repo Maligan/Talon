@@ -271,7 +271,8 @@ package talon
 		//
 		// Misc
 		//
-		public function bind(attribute:Attribute):void
+		/** @private */
+		public function upstream(attribute:Attribute):void
 		{
 			_solver = attribute._solver;
 			dispatchChange();

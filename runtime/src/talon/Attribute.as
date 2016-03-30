@@ -68,10 +68,14 @@ package talon
 		public static const FONT_AUTO_SCALE:String                 = registerAttribute("fontAutoScale",       INHERIT,                  true);
 		public static const FONT_SHARPNESS:String                  = registerAttribute("fontSharpness",       INHERIT,                  true);
 
+		public static const TOUCH_MODE:String                      = registerAttribute("touchMode",           TouchMode.BRANCH);
+		public static const TOUCH_EVENTS:String                    = registerAttribute("touchEvents",         FALSE);
+		public static const CURSOR:String                          = registerAttribute("cursor",              AUTO);
+
+
 		public static const ALPHA:String                           = registerAttribute("alpha",               ONE);
 		public static const CLIPPING:String                        = registerAttribute("clipping",            FALSE);
 		public static const BLEND_MODE:String                      = registerAttribute("blendMode",           AUTO);
-		public static const CURSOR:String                          = registerAttribute("cursor",              AUTO);
 		public static const FILTER:String                          = registerAttribute("filter",              NONE);
 		public static const Z_INDEX:String                         = registerAttribute("zIndex",              ZERO);
 		public static const VISIBLE:String                         = registerAttribute("visible",             TRUE);

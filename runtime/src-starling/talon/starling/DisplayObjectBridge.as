@@ -7,6 +7,7 @@ package talon.starling
 	import flash.ui.MouseCursor;
 
 	import starling.display.DisplayObject;
+	import starling.display.DisplayObjectContainer;
 	import starling.display.DisplayObjectTraitor;
 	import starling.events.EnterFrameEvent;
 	import starling.events.Event;
@@ -22,6 +23,7 @@ package talon.starling
 
 	import talon.Attribute;
 	import talon.Node;
+	import talon.enums.TouchMode;
 	import talon.utils.Gauge;
 	import talon.utils.StringParseUtil;
 
@@ -38,7 +40,6 @@ package talon.starling
 		public function DisplayObjectBridge(target:DisplayObject, node:Node):void
 		{
 			_target = target;
-			_target.addEventListener(TouchEvent.TOUCH, onTouchForInteractionPurpose);
 			_target.addEventListener(EnterFrameEvent.ENTER_FRAME, onEnterFrame);
 
 			_node = node;
@@ -59,8 +60,12 @@ package talon.starling
 			addAttributeChangeListener(Attribute.VISIBLE,                   onVisibleChange);
 			addAttributeChangeListener(Attribute.FILTER,                    onFilterChange);
 			addAttributeChangeListener(Attribute.ALPHA,                     onAlphaChange);
-			addAttributeChangeListener(Attribute.CURSOR,                    onCursorChange);
 			addAttributeChangeListener(Attribute.BLEND_MODE,                onBlendModeChange);
+
+			// Interactive
+			addAttributeChangeListener(Attribute.TOUCH_MODE,                onTouchModeChange);
+			addAttributeChangeListener(Attribute.TOUCH_EVENTS,              onTouchEventsChange);
+			addAttributeChangeListener(Attribute.CURSOR,                    onCursorChange);
 		}
 
 		public function addAttributeChangeListener(attribute:String, listener:Function, immediate:Boolean = false):void
@@ -153,24 +158,44 @@ package talon.starling
 			_target.filter = nextFilter;
 		}
 
+		//
+		// Interaction
+		//
 		private function onCursorChange():void
 		{
 			var cursor:String = _node.getAttributeCache(Attribute.CURSOR);
-			if (cursor == MouseCursor.AUTO) _target.removeEventListener(TouchEvent.TOUCH, onTouchForCursorPurpose);
-			else _target.addEventListener(TouchEvent.TOUCH, onTouchForCursorPurpose);
+			if (cursor == MouseCursor.AUTO) _target.removeEventListener(TouchEvent.TOUCH, onTouch_Cursor);
+			else _target.addEventListener(TouchEvent.TOUCH, onTouch_Cursor);
 		}
 
-		private function onTouchForCursorPurpose(e:TouchEvent):void
+		private function onTouchModeChange():void
+		{
+			var mode:String = _node.getAttributeCache(Attribute.TOUCH_MODE);
+
+			_target.touchable = mode != TouchMode.NONE;
+
+			var targetAsContainer:DisplayObjectContainer = _target as DisplayObjectContainer;
+			if (targetAsContainer)
+				targetAsContainer.touchGroup = mode != TouchMode.BRANCH;
+		}
+
+		private function onTouchEventsChange():void
+		{
+			var touchEventsValue:String = _node.getAttributeCache(Attribute.TOUCH_EVENTS);
+			var touchEvents:Boolean = StringParseUtil.parseBoolean(touchEventsValue);
+
+			if (touchEvents) _target.addEventListener(TouchEvent.TOUCH, onTouch_States);
+			else _target.removeEventListener(TouchEvent.TOUCH, onTouch_States);
+		}
+
+		private function onTouch_Cursor(e:TouchEvent):void
 		{
 			Mouse.cursor = e.interactsWith(_target)
 				? _node.getAttributeCache(Attribute.CURSOR)
 				: MouseCursor.AUTO;
 		}
 
-		//
-		// Interaction
-		//
-		private function onTouchForInteractionPurpose(e:TouchEvent):void
+		private function onTouch_States(e:TouchEvent):void
 		{
 			var touch:Touch = e.getTouch(_target);
 
@@ -259,130 +284,3 @@ package talon.starling
 		}
 	}
 }
-
-//
-// Starling FragmentFilter factories
-//
-//private static const _filterParsers:Object = new Object();
-//
-//public static function registerFilterParser(name:String, parser:Function):void
-//{
-//	_filterParsers[name] = parser;
-//}
-//
-//registerFilterParser("brightness", function (prev:FragmentFilter, args:Array):FragmentFilter
-//{
-//	var brightness:Number =  parseNumber(args[0], 0);
-//
-//	var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
-//	colorMatrixFilter.reset();
-//	colorMatrixFilter.adjustBrightness(brightness);
-//
-//	return colorMatrixFilter;
-//});
-//
-//registerFilterParser("contrast", function (prev:FragmentFilter, args:Array):FragmentFilter
-//{
-//	var contrast:Number = parseNumber(args[0], 0);
-//
-//	var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
-//	colorMatrixFilter.reset();
-//	colorMatrixFilter.adjustContrast(contrast);
-//
-//	return colorMatrixFilter;
-//});
-//
-//registerFilterParser("hue", function (prev:FragmentFilter, args:Array):FragmentFilter
-//{
-//	var hue:Number = parseNumber(args[0], 0);
-//
-//	var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
-//	colorMatrixFilter.reset();
-//	colorMatrixFilter.adjustHue(hue);
-//
-//	return colorMatrixFilter;
-//});
-//
-//registerFilterParser("saturation", function (prev:FragmentFilter, args:Array):FragmentFilter
-//{
-//	var saturation:Number = parseNumber(args[0], 0);
-//
-//	var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
-//	colorMatrixFilter.reset();
-//	colorMatrixFilter.adjustSaturation(saturation);
-//
-//	return colorMatrixFilter;
-//});
-//
-//registerFilterParser("tint", function (prev:FragmentFilter, args:Array):FragmentFilter
-//{
-//	var color:Number = StringParseUtil.parseColor(args[0], Color.WHITE);
-//	var amount:Number = parseNumber(args[1], 1);
-//
-//	var colorMatrixFilter:ColorMatrixFilter = prev as ColorMatrixFilter || new ColorMatrixFilter();
-//	colorMatrixFilter.reset();
-//	colorMatrixFilter.tint(color, amount);
-//
-//	return colorMatrixFilter;
-//});
-//
-//registerFilterParser("blur", function (prev:FragmentFilter, args:Array):FragmentFilter
-//{
-//	var blurX:Number = parseNumber(args[0], 0);
-//	var blurY:Number = (args.length > 1 ? parseFloat(args[1]) : blurX) || 0;
-//
-//	var blurFilter:BlurFilter = getCleanBlurFilter(prev as BlurFilter);
-//	blurFilter.blurX = blurX;
-//	blurFilter.blurY = blurY;
-//
-//	return blurFilter;
-//});
-//
-//registerFilterParser("drop-shadow", function(prev:FragmentFilter, args:Array):FragmentFilter
-//{
-//	var distance:Number = parseNumber(args[0], 0);
-//	var angle:Number    = StringParseUtil.parseAngle(args[1], 0.785);
-//	var color:Number    = StringParseUtil.parseColor(args[2], 0x000000);
-//	var alpha:Number    = parseNumber(args[3], 0.5);
-//	var blur:Number     = parseNumber(args[4], 1.0);
-//
-//	var dropShadowFilter:BlurFilter = getCleanBlurFilter(prev as BlurFilter);
-//	dropShadowFilter.blurX = dropShadowFilter.blurY = blur;
-//	dropShadowFilter.offsetX = Math.cos(angle) * distance;
-//	dropShadowFilter.offsetY = Math.sin(angle) * distance;
-//	dropShadowFilter.mode = FragmentFilterMode.BELOW;
-//	dropShadowFilter.setUniformColor(true, color, alpha);
-//
-//	return dropShadowFilter;
-//});
-//
-//registerFilterParser("glow", function(prev:FragmentFilter, args:Array):FragmentFilter
-//{
-//	var color:Number    = StringParseUtil.parseColor(args[0], 0xffffff);
-//	var alpha:Number    = parseNumber(args[1], 0.5);
-//	var blur:Number     = parseNumber(args[2], 1.0);
-//
-//	var glowFilter:BlurFilter = getCleanBlurFilter(prev as BlurFilter);
-//	glowFilter.blurX = glowFilter.blurY = blur;
-//	glowFilter.mode = FragmentFilterMode.BELOW;
-//	glowFilter.setUniformColor(true, color, alpha);
-//
-//	return glowFilter;
-//});
-//
-//private static function getCleanBlurFilter(result:BlurFilter):BlurFilter
-//{
-//	result ||= new BlurFilter();
-//	result.blurX = result.blurY = 0;
-//	result.offsetX = result.offsetY = 0;
-//	result.mode = FragmentFilterMode.REPLACE;
-//	result.setUniformColor(false);
-//	return result;
-//}
-//
-//private static function parseNumber(value:*, ifNaN:Number):Number
-//{
-//	var result:Number = parseFloat(value);
-//	if (result != result) result = ifNaN;
-//	return result;
-//}

@@ -18,6 +18,9 @@
 	height: 35px;
 	cursor: button;
 	fontName: Source Sans Pro;
+
+	touchMode: leaf;
+	touchEvents: true;
 }
 
 #goto label:nth-child(2n) {
@@ -58,6 +61,9 @@ button {
 
 	minWidth: 23px;
 	minHeight: 23px;
+
+	touchMode: leaf;
+	touchEvents: true;
 }
 
 button:hover {
@@ -97,6 +103,8 @@ checkbox label {
 
 checkbox { 
 	cursor: button;
+	touchMode: leaf;
+	touchEvents: true;
 }
 
 checkbox #flag { src: $checkbox_unckecked_normal; }

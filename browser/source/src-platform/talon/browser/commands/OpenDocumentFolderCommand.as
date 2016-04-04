@@ -4,12 +4,14 @@ package talon.browser.commands
 
 	import starling.events.Event;
 
+	import talon.browser.AppPlatformEvent;
+
 	public class OpenDocumentFolderCommand extends Command
 	{
 		public function OpenDocumentFolderCommand(platform:AppPlatform)
 		{
 			super(platform);
-			platform.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
 		}
 
 		private function onDocumentChange(e:Event):void

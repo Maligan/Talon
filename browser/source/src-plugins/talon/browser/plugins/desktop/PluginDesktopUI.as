@@ -1,45 +1,46 @@
-package talon.browser
+package talon.browser.plugins.desktop
 {
+	import air.update.ApplicationUpdaterUI;
+
+	import flash.filesystem.File;
+	import flash.filesystem.FileMode;
+	import flash.filesystem.FileStream;
 	import flash.utils.ByteArray;
 
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
-	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.filters.BlurFilter;
-	import starling.text.TextField;
-	import starling.textures.Texture;
 	import starling.utils.Align;
 
 	import talon.Attribute;
+	import talon.browser.*;
 	import talon.browser.document.DocumentEvent;
 	import talon.browser.document.log.DocumentMessage;
+	import talon.browser.plugins.IPlugin;
 	import talon.browser.popups.PopupManager;
 	import talon.browser.utils.DeviceProfile;
 	import talon.browser.utils.TalonFeatherTextInput;
-	import talon.enums.FillMode;
 	import talon.layout.Layout;
-	import talon.starling.FillableMesh;
 	import talon.starling.TalonFactoryStarling;
 	import talon.starling.TalonSprite;
 	import talon.utils.ITalonElement;
 	import talon.utils.StringParseUtil;
 	import talon.utils.TalonFactoryBase;
 
-	public class AppUI extends EventDispatcher
+	public class PluginDesktopUI extends EventDispatcher implements IPlugin
 	{
-		[Embed(source="/../assets/interface.zip", mimeType="application/octet-stream")] private static const INTERFACE:Class;
-		[Embed(source="/../assets/SourceSansPro.otf", embedAsCFF="false", fontName="Source Sans Pro")] private static const INTERFACE_FONT:Class;
-		[Embed(source="/../assets/locale/en_US.properties", mimeType="application/octet-stream")] private static const INTERFACE_LOCALE:Class;
+		[Embed(source="/SourceSansPro.otf", embedAsCFF="false", fontName="Source Sans Pro")] private static const INTERFACE_FONT:Class;
 
 		private var _platform:AppPlatform;
 		private var _menu:AppUINativeMenu;
 		private var _popups:PopupManager;
+		private var _updater:ApplicationUpdaterUI;
 
 		private var _locale:Object;
 		private var _factory:TalonFactoryStarling;
@@ -49,37 +50,97 @@ package talon.browser
 		private var _isolator:DisplayObjectContainer;
 		private var _container:TalonSprite;
 
-		private var _templateId:String;
 		private var _template:DisplayObject;
 		private var _templateProduceMessage:DocumentMessage;
 		private var _locked:Boolean;
-		private var _completed:Boolean;
 
-		public function AppUI(controller:AppPlatform)
-		{
-			_platform = controller;
-			_platform.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, refreshWindowTitle);
-			_platform.profile.addEventListener(Event.CHANGE, refreshWindowTitle);
-
-			_platform.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, refreshCurrentTemplate);
-			_platform.addEventListener(DocumentEvent.CHANGE, refreshCurrentTemplate);
-
-			_isolator = new Sprite();
-			_locale = StringParseUtil.parseProperties(new INTERFACE_LOCALE());
-			_menu = new AppUINativeMenu(_platform, _locale);
-			_popups = new PopupManager();
-
-			refreshWindowTitle();
-		}
+		public function get id():String { return "UI"; }
+		public function get version():String{ return "1.0.0"; }
+		public function get versionAPI():String { return "1.0.0"; }
+		public function detach():void { }
 
 		/** Call after starling initialize completed. */
-		public function initialize():void
+		public function attach(platform:AppPlatform):void
 		{
-			_factory = new TalonFactoryStarling();
+			_platform = platform;
+
+			_platform.addEventListener(AppPlatformEvent.START, onPlatformStart);
+			_platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, refreshWindowTitle);
+			_platform.addEventListener(AppPlatformEvent.TEMPLATE_CHANGE, refreshWindowTitle);
+			_platform.profile.addEventListener(Event.CHANGE, refreshWindowTitle);
+
+			_platform.profile.addEventListener(Event.CHANGE, onProfileChange);
+
+			var fileLocale:File = File.applicationDirectory.resolvePath("locales/en_US.properties");
+			if (fileLocale.exists)
+			{
+				_locale = StringParseUtil.parseProperties(readFile(fileLocale).toString());
+			}
+			else
+			{
+				_platform.dispatchEventWith(AppPlatformEvent.ERROR, false, "Can't find locale file:\n" + fileLocale.nativePath);
+				return;
+			}
+
+			_isolator = new Sprite();
+
+			_updater = new ApplicationUpdaterUI();
+			_updater.isCheckForUpdateVisible = false;
+			_updater.updateURL = AppConstants.APP_UPDATE_URL + "?rnd=" + int(Math.random() * int.MAX_VALUE);
+			_updater.initialize();
+
+			_menu = new AppUINativeMenu(_platform, this, _locale);
+
+			refreshWindowTitle();
+
+			var fileInterface:File = File.applicationDirectory.resolvePath("interface.zip");
+			if (!fileInterface.exists)
+			{
+				_platform.dispatchEventWith(AppPlatformEvent.ERROR, false, "Can't find interface file:\n" + fileInterface.nativePath);
+				return;
+			}
+
+			_popups = _platform.popups;
+			_factory = _platform.factory;
 			_factory.addTerminal("input");
 			_factory.setLinkage("input", TalonFeatherTextInput);
 			_factory.addResourcesFromObject(_locale);
-			_factory.addArchiveContentAsync(new INTERFACE() as ByteArray, onFactoryComplete);
+			_factory.addArchiveContentAsync(readFile(fileInterface), onFactoryComplete);
+		}
+
+		private function readFile(file:File):ByteArray
+		{
+			var result:ByteArray = null;
+			var stream:FileStream = new FileStream();
+
+			try
+			{
+				result = new ByteArray();
+				stream.open(file, FileMode.READ);
+				stream.readBytes(result, 0, stream.bytesAvailable);
+			}
+			catch (e:Error)
+			{
+				result = null;
+			}
+			finally
+			{
+				stream.close();
+				return result;
+			}
+		}
+
+		private function onProfileChange(e:Event):void
+		{
+			resizeTo(_platform.starling.stage.stageWidth, _platform.starling.stage.stageHeight);
+		}
+
+		private function onPlatformStart(e:Event):void
+		{
+			var isEnableAutoUpdate:Boolean = _platform.settings.getValueOrDefault(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, Boolean, true);
+			// TODO: Save for have default value != null
+			_platform.settings.setValue(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, isEnableAutoUpdate);
+			if (isEnableAutoUpdate) _updater.checkNow();
 		}
 
 		//
@@ -87,11 +148,14 @@ package talon.browser
 		//
 		private function onFactoryComplete():void
 		{
-			_completed = true;
+			_platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, refreshCurrentTemplate);
+			_platform.addEventListener(AppPlatformEvent.TEMPLATE_CHANGE, refreshCurrentTemplate);
+			_platform.addEventListener(DocumentEvent.CHANGE, refreshCurrentTemplate);
+
 			_interface = _factory.produce("Interface") as TalonSprite;
 			host.addChild(_interface);
 
-			_popups.initialize(_interface.getChildByName("popups") as DisplayObjectContainer, _factory);
+			_popups.host = _interface.getChildByName("popups") as DisplayObjectContainer;
 			_popups.addEventListener(Event.CHANGE, onPopupManagerChange);
 
 			_container = new TalonSprite();
@@ -118,7 +182,7 @@ package talon.browser
 
 			resizeTo(_platform.profile.width, _platform.profile.height);
 
-			dispatchEventWith(Event.COMPLETE);
+			refreshCurrentTemplate();
 		}
 
 		private function onPopupManagerChange(e:Event):void
@@ -183,7 +247,7 @@ package talon.browser
 			if (_platform.document)
 			{
 				var title:String = _platform.document.project.name.replace(/\.[^\.]*$/,"");
-				if (_templateId) title += "/" + _templateId;
+				if (_platform.templateId) title += "/" + _platform.templateId;
 				result.push(title);
 			}
 
@@ -207,10 +271,10 @@ package talon.browser
 		{
 			// Refresh current prototype
 			var canShow:Boolean = true;
-			canShow &&= _templateId != null;
+			canShow &&= _platform.templateId != null;
 			canShow &&= _platform.document != null;
 			canShow &&= _platform.document.tasks.isBusy == false;
-			canShow &&= _platform.document.factory.hasTemplate(_templateId);
+			canShow &&= _platform.document.factory.hasTemplate(_platform.templateId);
 
 			_errorPage.visible = false;
 			_container.removeChildren();
@@ -218,7 +282,7 @@ package talon.browser
 			_templateProduceMessage = null;
 
 			_template && _template.removeFromParent(true);
-			_template = canShow ? produce(_templateId) : null;
+			_template = canShow ? produce(_platform.templateId) : null;
 
 			// Show state
 			if (_platform.document && _platform.document.messages.numMessages != 0)
@@ -232,6 +296,8 @@ package talon.browser
 				_container.addChild(_template);
 				resizeTo(_platform.profile.width, _platform.profile.height);
 			}
+
+			dispatchEventWith(Event.CHANGE);
 		}
 
 		private function produce(templateId:String):DisplayObject
@@ -258,25 +324,11 @@ package talon.browser
 		//
 		// Properties
 		//
-		public function get popups():PopupManager { return _popups; }
-
 		public function get host():DisplayObjectContainer { return _platform.starling.root as DisplayObjectContainer }
 
-		public function get completed():Boolean { return _completed; }
 		public function get factory():TalonFactoryBase { return _factory; }
 		public function get template():DisplayObject { return _template; }
-
-		public function get templateId():String { return _templateId; }
-		public function set templateId(value:String):void
-		{
-			if (_templateId != value)
-			{
-				_templateId = value;
-				refreshCurrentTemplate();
-				refreshWindowTitle();
-				_platform.settings.setValue(AppConstants.SETTING_RECENT_TEMPLATE, value);
-			}
-		}
+		public function get updater():ApplicationUpdaterUI { return _updater; }
 
 		public function get locked():Boolean { return _locked; }
 		public function set locked(value:Boolean):void
@@ -310,6 +362,7 @@ import flash.ui.Keyboard;
 import talon.browser.AppConstants;
 import talon.browser.AppPlatform;
 import talon.browser.commands.*;
+import talon.browser.plugins.desktop.PluginDesktopUI;
 import talon.browser.popups.ProfilePopup;
 import talon.browser.utils.DeviceProfile;
 import talon.browser.utils.NativeMenuAdapter;
@@ -321,7 +374,7 @@ class AppUINativeMenu
 	private var _menu:NativeMenuAdapter;
 	private var _prevDocuments:Array;
 
-	public function AppUINativeMenu(platform:AppPlatform, locale:Object)
+	public function AppUINativeMenu(platform:AppPlatform, ui:PluginDesktopUI, locale:Object)
 	{
 		_platform = platform;
 		_locale = locale;
@@ -347,7 +400,7 @@ class AppUINativeMenu
 		insert("file/preferences/autoUpdate",  new  ChangeSettingCommand(_platform, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, true, false));
 		insert("file/-");
 		insert("file/publishAs",               new  PublishCommand(_platform), "shift-ctrl-s");
-		insert("file/screenshot",              new  PublishScreenshotCommand(_platform), "shift-ctrl-a");
+		insert("file/screenshot",              new  PublishScreenshotCommand(_platform, ui), "shift-ctrl-a");
 
 		_platform.settings.addPropertyListener(AppConstants.SETTING_RECENT_DOCUMENTS, refreshRecentOpenedDocumentsList);
 		refreshRecentOpenedDocumentsList();
@@ -384,7 +437,7 @@ class AppUINativeMenu
 		// Help
 		insert("help");
 		insert("help/online", new OpenOnlineDocumentationCommand(_platform));
-		insert("help/update", new UpdateCommand(_platform));
+		insert("help/update", new UpdateCommand(_platform, ui.updater));
 
 		if (NativeWindow.supportsMenu) platform.stage.nativeWindow.menu = _menu.nativeMenu;
 	}

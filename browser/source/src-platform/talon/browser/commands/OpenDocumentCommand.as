@@ -1,13 +1,13 @@
 package talon.browser.commands
 {
-	import talon.browser.document.files.DocumentFileReference;
-	import talon.browser.AppConstants;
-	import talon.browser.AppPlatform;
-	import talon.browser.document.Document;
-
 	import flash.events.Event;
 	import flash.filesystem.File;
 	import flash.net.FileFilter;
+
+	import talon.browser.AppConstants;
+	import talon.browser.AppPlatform;
+	import talon.browser.document.Document;
+	import talon.browser.document.files.DocumentFileReference;
 
 	public class OpenDocumentCommand extends Command
 	{
@@ -51,7 +51,7 @@ package talon.browser.commands
 			// Try open first template
 			var templates:Vector.<String> = platform.document.factory.templateIds;
 			var template:String = templates.shift();
-			if (template) platform.ui.templateId = template;
+			if (template) platform.templateId = template;
 
 			// Add document to recent list
 			var recent:Array = platform.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);

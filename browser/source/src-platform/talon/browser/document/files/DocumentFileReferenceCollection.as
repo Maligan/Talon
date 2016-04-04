@@ -5,7 +5,7 @@ package talon.browser.document.files
 	import starling.events.Event;
 
 	import talon.browser.document.Document;
-	import talon.browser.plugins.tools.types.Asset;
+	import talon.browser.plugins.filetypes.assets.Asset;
 
 	public class DocumentFileReferenceCollection
 	{

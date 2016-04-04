@@ -1,6 +1,7 @@
 package talon.browser.commands
 {
 	import talon.browser.AppPlatform;
+	import talon.browser.AppPlatformEvent;
 	import talon.browser.popups.GoToPopup;
 
 	import starling.events.Event;
@@ -11,7 +12,7 @@ package talon.browser.commands
 		{
 			super(platform, GoToPopup, platform);
 
-			platform.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
 		}
 
 		private function onDocumentChange(e:Event):void

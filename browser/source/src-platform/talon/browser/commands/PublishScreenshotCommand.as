@@ -17,26 +17,30 @@ package talon.browser.commands
 
 	import talon.browser.AppConstants;
 	import talon.browser.AppPlatform;
+	import talon.browser.AppPlatformEvent;
+	import talon.browser.plugins.desktop.PluginDesktopUI;
 
 	public class PublishScreenshotCommand extends Command
 	{
+		private var _ui:PluginDesktopUI;
 		private var _output:File;
 
-		public function PublishScreenshotCommand(platform:AppPlatform, output:File = null)
+		public function PublishScreenshotCommand(platform:AppPlatform, ui:PluginDesktopUI, output:File = null)
 		{
 			super(platform);
-			platform.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
 			_output = output;
+			_ui = ui;
+			_ui.addEventListener(Event.CHANGE, onTemplateChange);
 		}
 
-		private function onDocumentChange(e:*):void
+		private function onTemplateChange(e:*):void
 		{
 			dispatchEventWith(Event.CHANGE);
 		}
 
 		public override function get isExecutable():Boolean
 		{
-			return platform.ui && platform.ui.template;
+			return _ui.template;
 		}
 
 		public override function execute():void
@@ -45,7 +49,7 @@ package talon.browser.commands
 
 			if (_output == null)
 			{
-				var file:File = new File("/" + platform.ui.templateId + "." + AppConstants.BROWSER_SCREENSHOT_EXTENSION);
+				var file:File = new File("/" + platform.templateId + "." + AppConstants.BROWSER_SCREENSHOT_EXTENSION);
 				file.addEventListener(Event.SELECT, onOutputFileSelect);
 				file.browseForSave(AppConstants.T_PROJECT_FILE_TITLE);
 			}
@@ -64,7 +68,7 @@ package talon.browser.commands
 		{
 			if (file != null)
 			{
-				var bitmap:BitmapData = copyToBitmap(platform.starling, platform.ui.template);
+				var bitmap:BitmapData = copyToBitmap(platform.starling, _ui.template);
 				var bytes:ByteArray = PNGEncoder2.encode(bitmap);
 
 				try

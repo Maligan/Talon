@@ -12,9 +12,10 @@ package talon.browser
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
 
-	import talon.browser.plugins.tools.CorePluginConsole;
-	import talon.browser.plugins.tools.CorePluginDragAndDrop;
-	import talon.browser.plugins.tools.CorePluginFileType;
+	import talon.browser.plugins.console.PluginConsole;
+	import talon.browser.plugins.desktop.PluginDesktopDragAndDrop;
+	import talon.browser.plugins.filetypes.PluginFileType;
+	import talon.browser.plugins.desktop.PluginDesktopUI;
 
 	[SWF(frameRate="60")]
 	public class AppLauncher extends Sprite
@@ -37,6 +38,7 @@ package talon.browser
 
 			// Create platform root class
 			_platform = new AppPlatform(stage);
+			_platform.addEventListener(AppPlatformEvent.ERROR, onFatalError);
 
 			// Search for modules, and start platform class
 			loadPluginsAndStartPlatform();
@@ -45,9 +47,10 @@ package talon.browser
 		private function loadPluginsAndStartPlatform():void
 		{
 			// Register built-in plugins
-			CorePluginConsole;
-			CorePluginFileType;
-			CorePluginDragAndDrop;
+			PluginConsole;
+			PluginFileType;
+			PluginDesktopDragAndDrop;
+			PluginDesktopUI;
 			_platform.plugins.addPluginsFromApplicationDomain(ApplicationDomain.currentDomain);
 
 			// Search plugins in application subdirectory
@@ -106,6 +109,13 @@ package talon.browser
 			{
 				_platform.invoke(e.arguments);
 			}
+		}
+
+		private function onFatalError(e:*):void
+		{
+			var message:String = e.data;
+			if (message == null) message = "Internal fatal error";
+			_platform.starling.stopWithFatalError(message);
 		}
 	}
 }

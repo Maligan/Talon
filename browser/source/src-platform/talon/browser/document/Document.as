@@ -1,14 +1,14 @@
 package talon.browser.document
 {
 	import talon.browser.document.files.DocumentFileReferenceCollection;
-	import talon.browser.plugins.tools.types.XMLAtlasAsset;
-	import talon.browser.plugins.tools.types.DirectoryAsset;
-	import talon.browser.plugins.tools.types.XMLFontAsset;
-	import talon.browser.plugins.tools.types.XMLLibraryAsset;
-	import talon.browser.plugins.tools.types.PropertiesAsset;
-	import talon.browser.plugins.tools.types.CSSAsset;
-	import talon.browser.plugins.tools.types.XMLTemplateAsset;
-	import talon.browser.plugins.tools.types.TextureAsset;
+	import talon.browser.plugins.filetypes.assets.XMLAtlasAsset;
+	import talon.browser.plugins.filetypes.assets.DirectoryAsset;
+	import talon.browser.plugins.filetypes.assets.XMLFontAsset;
+	import talon.browser.plugins.filetypes.assets.XMLLibraryAsset;
+	import talon.browser.plugins.filetypes.assets.PropertiesAsset;
+	import talon.browser.plugins.filetypes.assets.CSSAsset;
+	import talon.browser.plugins.filetypes.assets.XMLTemplateAsset;
+	import talon.browser.plugins.filetypes.assets.TextureAsset;
 	import talon.browser.document.log.DocumentMessageCollection;
 	import talon.browser.document.log.DocumentTaskTracker;
 	import talon.browser.utils.Storage;

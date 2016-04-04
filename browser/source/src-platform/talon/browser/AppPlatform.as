@@ -9,7 +9,6 @@ package talon.browser
 	import flash.filesystem.File;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import flash.html.__HTMLScriptObject;
 	import flash.system.Capabilities;
 
 	import starling.core.Starling;
@@ -21,26 +20,27 @@ package talon.browser
 	import talon.browser.document.Document;
 	import talon.browser.document.DocumentEvent;
 	import talon.browser.plugins.PluginManager;
+	import talon.browser.popups.PopupManager;
 	import talon.browser.utils.DeviceProfile;
 	import talon.browser.utils.OrientationMonitor;
 	import talon.browser.utils.Storage;
 	import talon.browser.utils.registerClassAlias;
+	import talon.starling.TalonFactoryStarling;
 
 	public class AppPlatform extends EventDispatcher
 	{
-		public static const EVENT_DOCUMENT_CHANGE:String = "documentChange";
-		public static const EVENT_START:String = "start";
-
 		private var _stage:Stage;
-	    private var _plugins:PluginManager;
 		private var _document:Document;
-		private var _ui:AppUI;
+		private var _templateId:String;
 		private var _settings:Storage;
 		private var _orientation:OrientationMonitor;
 		private var _profile:DeviceProfile;
 		private var _starling:Starling;
-		private var _updater:ApplicationUpdaterUI;
+		private var _factory:TalonFactoryStarling;
+		private var _plugins:PluginManager;
+		private var _popups:PopupManager;
 	    private var _invokeArgs:Array;
+		private var _started:Boolean;
 
 		public function AppPlatform(stage:Stage)
 		{
@@ -53,12 +53,9 @@ package talon.browser
 			_settings = Storage.fromSharedObject("settings");
 			_profile = _settings.getValueOrDefault(AppConstants.SETTING_PROFILE, DeviceProfile) || new DeviceProfile(stage.stageWidth, stage.stageHeight, 1, Capabilities.screenDPI);
 			_orientation = new OrientationMonitor(stage);
-			_ui = new AppUI(this);
+			_factory = new TalonFactoryStarling();
 			_plugins = new PluginManager(this);
-			_updater = new ApplicationUpdaterUI();
-			_updater.isCheckForUpdateVisible = false;
-			_updater.updateURL = AppConstants.APP_UPDATE_URL + "?rnd=" + int(Math.random() * int.MAX_VALUE);
-			_updater.initialize();
+			_popups = new PopupManager(this);
 
 			// WARNING: NOT work after starling creating!
 			var colorName:String = _settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
@@ -77,42 +74,45 @@ package talon.browser
 
 		public function start():void
 		{
-			_starling.start();
+			_started = true;
+
+			// If starling already initialized
+			if (_starling.root)
+			{
+				_starling.start();
+				_plugins.start();
+
+				dispatchEventWith(AppPlatformEvent.START);
+
+				invokeAndRestore();
+			}
 		}
 
 		public function invoke(args:Array):void
 		{
-			if (_ui.completed)
-			{
-				_invokeArgs = args || [];
+			_invokeArgs = args || [];
 
-				if (_invokeArgs && _invokeArgs.length > 0)
-				{
-					// Open
-					var path:String = _invokeArgs[0];
-					var file:File = new File(path);
-					if (file.exists)
-					{
-						var open:OpenDocumentCommand = new OpenDocumentCommand(this, file);
-						open.execute();
-					}
-				}
-			}
-			else
+			if (_started && _invokeArgs && _invokeArgs.length > 0)
 			{
-				// Delay
-				_invokeArgs = args;
+				// Open
+				var path:String = _invokeArgs[0];
+				var file:File = new File(path);
+				if (file.exists)
+				{
+					var open:OpenDocumentCommand = new OpenDocumentCommand(this, file);
+					open.execute();
+				}
 			}
 		}
 
 		//
 		// Properties
 		//
-		/** @private Application updater. */
-		public function get updater():ApplicationUpdaterUI { return _updater; }
+		/** Talon factory for all browser UI. */
+		public function get factory():TalonFactoryStarling { return _factory; }
 
-		/** @private Application UI module. */
-		public function get ui():AppUI { return _ui; }
+		/** Special popup manager (@see PopupManager#host) */
+		public function get popups():PopupManager { return _popups; }
 
 	    /** Current Starling instance (preferably use this accessor, browser may work in multi windowed mode). */
 	    public function get starling():Starling { return _starling; }
@@ -135,7 +135,11 @@ package talon.browser
 		{
 			if (_document != value)
 			{
-				_document && _document.dispose();
+				templateId = null;
+
+				if (_document)
+					_document.dispose();
+
 				_document = value;
 
 				if (_document)
@@ -145,7 +149,19 @@ package talon.browser
 					_document.factory.csf = _profile.csf;
 				}
 
-				dispatchEventWith(EVENT_DOCUMENT_CHANGE);
+				dispatchEventWith(AppPlatformEvent.DOCUMENT_CHANGE);
+			}
+		}
+
+		/** Current selected template name or null. */
+		public function get templateId():String { return _templateId; }
+		public function set templateId(value:String):void
+		{
+			if (_templateId != value)
+			{
+				_templateId = value;
+				settings.setValue(AppConstants.SETTING_RECENT_TEMPLATE, value);
+				dispatchEventWith(AppPlatformEvent.TEMPLATE_CHANGE);
 			}
 		}
 
@@ -182,7 +198,6 @@ package talon.browser
 			}
 
 			_profile.setSize(_stage.stageWidth, _stage.stageHeight);
-			_ui.resizeTo(_profile.width, _profile.height);
 		}
 
 		private function onProfileChange(e:*):void
@@ -228,15 +243,12 @@ package talon.browser
 		private function onStarlingRootCreated(e:Event):void
 		{
 			_starling.removeEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
-			_ui.addEventListener(Event.COMPLETE, onUIComplete);
-			_ui.initialize();
+
+			if (_started) start();
 		}
 
-		private function onUIComplete(e:Event):void
+		private function invokeAndRestore():void
 		{
-			// NB! Before document open (any invoke execution)
-			plugins.start();
-
 			var invArgs:Array = _invokeArgs;
 			var invTemplate:String = null;
 
@@ -260,13 +272,7 @@ package talon.browser
 
 			// Do reopen
 			if (invArgs != null) invoke(invArgs);
-			if (invTemplate != null) _ui.templateId = invTemplate;
-
-			// Updater#checkNow() run only after delay, UI inited is a good, moment for this
-			var isEnableAutoUpdate:Boolean = _settings.getValueOrDefault(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, Boolean, true);
-			// TODO: Save for have default value != null
-			_settings.setValue(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, isEnableAutoUpdate);
-			if (isEnableAutoUpdate) _updater.checkNow();
+			if (invTemplate != null) templateId = invTemplate;
 		}
 	}
 }

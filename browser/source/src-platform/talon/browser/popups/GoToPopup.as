@@ -1,6 +1,7 @@
 package talon.browser.popups
 {
 	import talon.browser.AppPlatform;
+	import talon.browser.AppPlatformEvent;
 	import talon.browser.utils.FuzzyUtil;
 	import talon.browser.utils.MouseWheel;
 	import talon.browser.utils.TalonFeatherTextInput;
@@ -41,7 +42,7 @@ package talon.browser.popups
 			addChild(view);
 
 			_app = data as AppPlatform;
-			_app.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			_app.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
 
 			var source:Vector.<String> = _app.document.factory.templateIds;
 			_items = new Array();
@@ -104,7 +105,7 @@ package talon.browser.popups
 			super.dispose();
 			_wheel.dispose();
 			_wheel = null;
-			_app.removeEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			_app.removeEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
 			_app = null;
 		}
 
@@ -153,7 +154,7 @@ package talon.browser.popups
 		private function commit(templateId:String):void
 		{
 			close();
-			_app.ui.templateId = templateId;
+			_app.templateId = templateId;
 		}
 
 		private function refresh():void

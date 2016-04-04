@@ -1,4 +1,4 @@
-package talon.browser.plugins.tools
+package talon.browser.plugins.desktop
 {
 	import flash.desktop.ClipboardFormats;
 	import flash.desktop.NativeDragActions;
@@ -7,13 +7,16 @@ package talon.browser.plugins.tools
 	import flash.events.Event;
 	import flash.events.NativeDragEvent;
 	import flash.filesystem.File;
+
+	import starling.display.DisplayObjectContainer;
+
 	import talon.browser.AppConstants;
 	import talon.browser.AppPlatform;
 	import talon.browser.plugins.IPlugin;
 	import talon.browser.utils.DisplayTreeUtil;
 	import talon.starling.TalonSprite;
 
-	public class CorePluginDragAndDrop implements IPlugin
+	public class PluginDesktopDragAndDrop implements IPlugin
 	{
 		public static const EVENT_DRAG_IN:String = "dragIn";
 		public static const EVENT_DRAG_OUT:String = "dragOut";
@@ -46,13 +49,13 @@ package talon.browser.plugins.tools
 
 		private function activate():void
 		{
-			var overlay:TalonSprite = DisplayTreeUtil.findChildByName(_platform.ui.host, "drag") as TalonSprite;
+			var overlay:TalonSprite = DisplayTreeUtil.findChildByName(_platform.starling.root as DisplayObjectContainer, "drag") as TalonSprite;
 			if (overlay) overlay.node.accessor.classes.insert("active");
 		}
 
 		private function deactivate():void
 		{
-			var overlay:TalonSprite = DisplayTreeUtil.findChildByName(_platform.ui.host, "drag") as TalonSprite;
+			var overlay:TalonSprite = DisplayTreeUtil.findChildByName(_platform.starling.root as DisplayObjectContainer, "drag") as TalonSprite;
 			if (overlay) overlay.node.accessor.classes.remove("active");
 		}
 

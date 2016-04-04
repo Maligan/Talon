@@ -1,4 +1,4 @@
-package talon.browser.plugins.tools.types
+package talon.browser.plugins.filetypes.assets
 {
 	import flash.system.System;
 

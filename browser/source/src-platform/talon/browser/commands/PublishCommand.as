@@ -2,10 +2,12 @@ package talon.browser.commands
 {
 	import avmplus.getQualifiedClassName;
 
+	import talon.browser.AppPlatformEvent;
+
 	import talon.browser.document.Document;
 	import talon.browser.document.files.IDocumentFileController;
-	import talon.browser.plugins.tools.types.Asset;
-	import talon.browser.plugins.tools.types.DirectoryAsset;
+	import talon.browser.plugins.filetypes.assets.Asset;
+	import talon.browser.plugins.filetypes.assets.DirectoryAsset;
 	import talon.browser.utils.Glob;
 
 	import deng.fzip.FZip;
@@ -30,7 +32,7 @@ package talon.browser.commands
 		public function PublishCommand(platform:AppPlatform, target:File = null)
 		{
 			super(platform);
-			platform.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
 			_target = target;
 		}
 

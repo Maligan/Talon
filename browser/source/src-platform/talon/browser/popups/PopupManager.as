@@ -9,32 +9,24 @@ package talon.browser.popups
 	import starling.events.EventDispatcher;
 	import starling.events.KeyboardEvent;
 
+	import talon.browser.AppPlatform;
+
+	import talon.browser.AppPlatform;
+
 	import talon.starling.TalonFactoryStarling;
 
 	public class PopupManager extends EventDispatcher
 	{
+		private var _platform:AppPlatform;
 		private var _popups:Vector.<Popup>;
 		private var _host:DisplayObjectContainer;
-		private var _factory:TalonFactoryStarling;
 
 		private var _notifyTween:Tween;
 
-		public function initialize(host:DisplayObjectContainer, factory:TalonFactoryStarling):void
+		public function PopupManager(platform:AppPlatform)
 		{
 			_popups = new <Popup>[];
-			_host = host;
-			_factory = factory;
-
-			// Redispatch keyboard events to topmost popup
-			_host.stage.addEventListener(KeyboardEvent.KEY_DOWN, dispatchEventToTopmostPopup);
-			_host.stage.addEventListener(KeyboardEvent.KEY_UP, dispatchEventToTopmostPopup);
-		}
-
-		private function dispatchEventToTopmostPopup(e:Event):void
-		{
-			var topmost:Popup = _popups.length ? _popups[_popups.length-1] : null;
-			if (topmost)
-				topmost.dispatchEvent(e);
+			_platform = platform;
 		}
 
 		public function notify():void
@@ -65,6 +57,12 @@ package talon.browser.popups
 
 		public function open(popup:Popup, data:Object = null):void
 		{
+			if (_host == null)
+			{
+				trace("[PopupManager]", "Popups host container is null");
+				return;
+			}
+
 			if (_popups.indexOf(popup) == -1 && !hasOpenedPopup)
 			{
 				_popups.push(popup);
@@ -97,12 +95,29 @@ package talon.browser.popups
 
 		public function get factory():TalonFactoryStarling
 		{
-			return _factory;
+			return _platform.factory;
 		}
 
 		public function get hasOpenedPopup():Boolean
 		{
 			return _popups.length > 0;
+		}
+
+		public function get host():DisplayObjectContainer { return _host; }
+		public function set host(value:DisplayObjectContainer):void
+		{
+			_host = value;
+
+			// Redispatch keyboard events to topmost popup
+			_host.stage.addEventListener(KeyboardEvent.KEY_DOWN, dispatchEventToTopmostPopup);
+			_host.stage.addEventListener(KeyboardEvent.KEY_UP, dispatchEventToTopmostPopup);
+		}
+
+		private function dispatchEventToTopmostPopup(e:Event):void
+		{
+			var topmost:Popup = _popups.length ? _popups[_popups.length-1] : null;
+			if (topmost)
+				topmost.dispatchEvent(e);
 		}
 	}
 }

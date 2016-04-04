@@ -18,7 +18,7 @@ package talon.browser.commands
 		public override function execute():void
 		{
 			var popup:Popup = new _popupClass();
-			platform.ui.popups.open(popup, _popupData);
+			platform.popups.open(popup, _popupData);
 		}
 	}
 }

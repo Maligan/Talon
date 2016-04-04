@@ -1,4 +1,4 @@
-package talon.browser.plugins.tools
+package talon.browser.plugins.console
 {
 	import starling.utils.StringUtil;
 
@@ -11,7 +11,7 @@ package talon.browser.plugins.tools
 	import talon.browser.utils.Console;
 	import talon.utils.ITalonElement;
 
-	public class CorePluginConsole implements IPlugin
+	public class PluginConsole implements IPlugin
 	{
 		private var _platform:AppPlatform;
 		private var _console:Console;
@@ -76,7 +76,7 @@ package talon.browser.plugins.tools
 		private function cmdResourceMiss(query:String):void
 		{
 			if (_platform.document == null) throw new Error("Document not opened");
-			if (_platform.ui.templateId == null) throw new Error("Prototype not selected");
+			if (_platform.templateId == null) throw new Error("Prototype not selected");
 
 			for each (var resourceId:String in _platform.document.factory.missedResourceIds)
 			{
@@ -86,11 +86,13 @@ package talon.browser.plugins.tools
 
 		private function cmdTree(query:String):void
 		{
+			throw new Error("Not implemented");
+
 			var split:Array = query.split(" ");
 			var useAttrs:Boolean = split.length > 1 && split[1] == "-a";
 			var attrs:Array = useAttrs ? split[2].split(/\s*,\s*/) : [];
 
-			var template:ITalonElement = ITalonElement(_platform.ui.template);
+			var template:ITalonElement = ITalonElement(null /* FIXME */);
 			var node:Node = template.node;
 			traceNode(node, 0, attrs);
 		}

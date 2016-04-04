@@ -1,16 +1,17 @@
-package talon.browser.plugins.tools
+package talon.browser.plugins.filetypes
 {
 	import starling.events.Event;
 
 	import talon.browser.AppConstants;
 
 	import talon.browser.AppPlatform;
+	import talon.browser.AppPlatformEvent;
 	import talon.browser.document.files.DocumentFileReference;
-	import talon.browser.plugins.tools.types.*;
+	import talon.browser.plugins.filetypes.assets.*;
 	import talon.browser.plugins.IPlugin;
 	import talon.utils.TalonFactoryBase;
 
-	public class CorePluginFileType implements IPlugin
+	public class PluginFileType implements IPlugin
 	{
 		private var _platform:AppPlatform;
 
@@ -21,12 +22,12 @@ package talon.browser.plugins.tools
 		public function attach(platform:AppPlatform):void
 		{
 			_platform = platform;
-			_platform.addEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			_platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
 		}
 
 		public function detach():void
 		{
-			_platform.removeEventListener(AppPlatform.EVENT_DOCUMENT_CHANGE, onDocumentChange);
+			_platform.removeEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
 			_platform = null;
 		}
 

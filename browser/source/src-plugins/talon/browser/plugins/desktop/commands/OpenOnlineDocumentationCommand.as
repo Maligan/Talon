@@ -1,5 +1,6 @@
-package talon.browser.commands
+package talon.browser.plugins.desktop.commands
 {
+	import talon.browser.commands.*;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
 

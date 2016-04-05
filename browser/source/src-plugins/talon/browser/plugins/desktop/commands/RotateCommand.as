@@ -1,5 +1,6 @@
-package talon.browser.commands
+package talon.browser.plugins.desktop.commands
 {
+	import talon.browser.commands.*;
 	import talon.browser.AppPlatform;
 	import flash.display.NativeWindow;
 	import flash.events.Event;

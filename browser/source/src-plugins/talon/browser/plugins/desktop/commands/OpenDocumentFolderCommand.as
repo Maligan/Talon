@@ -1,14 +1,15 @@
-package talon.browser.commands
+package talon.browser.plugins.desktop.commands
 {
+	import talon.browser.commands.*;
 	import talon.browser.AppPlatform;
 
 	import starling.events.Event;
 
 	import talon.browser.AppPlatformEvent;
 
-	public class CloseDocumentCommand extends Command
+	public class OpenDocumentFolderCommand extends Command
 	{
-		public function CloseDocumentCommand(platform:AppPlatform):void
+		public function OpenDocumentFolderCommand(platform:AppPlatform)
 		{
 			super(platform);
 			platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
@@ -21,7 +22,7 @@ package talon.browser.commands
 
 		public override function execute():void
 		{
-			platform.document = null;
+			platform.document.project.parent.openWithDefaultApplication();
 		}
 
 		public override function get isExecutable():Boolean

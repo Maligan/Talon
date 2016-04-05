@@ -16,7 +16,9 @@ package talon.browser
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
-	import talon.browser.commands.OpenDocumentCommand;
+	import talon.browser.commands.CommandManager;
+
+	import talon.browser.plugins.desktop.commands.OpenDocumentCommand;
 	import talon.browser.document.Document;
 	import talon.browser.document.DocumentEvent;
 	import talon.browser.plugins.PluginManager;
@@ -39,6 +41,7 @@ package talon.browser
 		private var _factory:TalonFactoryStarling;
 		private var _plugins:PluginManager;
 		private var _popups:PopupManager;
+		private var _commands:CommandManager;
 	    private var _invokeArgs:Array;
 		private var _started:Boolean;
 
@@ -56,6 +59,7 @@ package talon.browser
 			_factory = new TalonFactoryStarling();
 			_plugins = new PluginManager(this);
 			_popups = new PopupManager(this);
+			_commands = new CommandManager();
 
 			// WARNING: NOT work after starling creating!
 			var colorName:String = _settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
@@ -128,6 +132,8 @@ package talon.browser
 
 	    /** Application plugin list (all: attached, detached, broken). */
 	    public function get plugins():PluginManager { return _plugins; }
+
+		public function get commands():CommandManager { return _commands; }
 
 	    /** Current opened document or null. */
 	    public function get document():Document { return _document; }

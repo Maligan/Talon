@@ -1,5 +1,6 @@
-package talon.browser.commands
+package talon.browser.plugins.desktop.commands
 {
+	import talon.browser.commands.*;
 	import talon.browser.AppPlatform;
 	import talon.browser.AppConstants;
 	import flash.events.Event;

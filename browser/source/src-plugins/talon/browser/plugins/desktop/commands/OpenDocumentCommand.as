@@ -1,5 +1,6 @@
-package talon.browser.commands
+package talon.browser.plugins.desktop.commands
 {
+	import talon.browser.commands.*;
 	import flash.events.Event;
 	import flash.filesystem.File;
 	import flash.net.FileFilter;

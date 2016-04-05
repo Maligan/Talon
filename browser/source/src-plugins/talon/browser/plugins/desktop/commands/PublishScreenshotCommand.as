@@ -1,5 +1,6 @@
-package talon.browser.commands
+package talon.browser.plugins.desktop.commands
 {
+	import talon.browser.commands.*;
 	import flash.display.BitmapData;
 	import flash.display3D.Context3D;
 	import flash.events.Event;

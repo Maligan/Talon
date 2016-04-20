@@ -18,6 +18,7 @@ package talon.browser
 	import talon.browser.plugins.desktop.PluginDesktopDragAndDrop;
 	import talon.browser.plugins.filetypes.PluginFileType;
 	import talon.browser.plugins.desktop.PluginDesktopUI;
+	import talon.browser.utils.Updater;
 
 	[SWF(frameRate="60")]
 	public class AppLauncher extends Sprite
@@ -49,7 +50,8 @@ package talon.browser
 		private function loadPluginsAndStartPlatform():void
 		{
 			// Register built-in plugins
-//			ApplicationUpdaterUI; // Need to added explicit
+
+			// ApplicationUpdaterUI; // NB! Need to added explicit
 			PluginConsole;
 			PluginFileType;
 			PluginDesktopDragAndDrop;

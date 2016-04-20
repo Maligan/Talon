@@ -29,6 +29,7 @@ package talon.browser.popups
 			_platform = platform;
 		}
 
+		/** Animate topmost popup. */
 		public function notify():void
 		{
 			if (_notifyTween && _notifyTween.isComplete == false) return;

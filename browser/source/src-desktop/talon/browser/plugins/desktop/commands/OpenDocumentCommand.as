@@ -42,7 +42,7 @@ package talon.browser.plugins.desktop.commands
 
 		private function openDocument(source:File):void
 		{
-			platform.invoke([source]);
+			platform.invoke([source.url]);
 
 			// Try open first template
 			var templates:Vector.<String> = platform.document.factory.templateIds;
@@ -56,6 +56,9 @@ package talon.browser.plugins.desktop.commands
 			recent.unshift(source.nativePath);
 			recent = recent.slice(0, AppConstants.HISTORY_RECENT_MAX);
 			platform.settings.setValue(AppConstants.SETTING_RECENT_DOCUMENTS, recent);
+
+			// Clear history
+			platform.commands.clear();
 		}
 
 		public override function get isExecutable():Boolean

@@ -86,11 +86,7 @@ package talon.browser.plugins.desktop.commands
 		private function isIgnored(file:DocumentFileReference):Boolean
 		{
 			var fileController:IDocumentFileController = platform.document.files.getController(file.url);
-			var fileControllerClassName:String = getQualifiedClassName(fileController);
-			var fileControllerClass:Class = getDefinitionByName(fileControllerClassName) as Class;
-
-			if (fileControllerClass == DirectoryAsset) return true;
-			if (fileControllerClass == Asset) return true;
+			if (fileController is DirectoryAsset) return true;
 
 			var patternsString:String = platform.document.properties.getValueOrDefault(AppConstants.PROPERTY_EXPORT_IGNORE, String);
 			if (patternsString == null) return false;

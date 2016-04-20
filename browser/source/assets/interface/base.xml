@@ -75,13 +75,25 @@
 		</node>
 	</template>
 
+	<template id="UpdatePopup">
+		<node class="popup" orientation="vertical">
+			<label text="hello world" />
+
+			<node ihalign="center" margin="none" gap="8px" padding="8px">
+				<button id="_accept" label="Update" class="action" />
+				<button id="_cancel" label="Cancel" />
+			</node>
+
+		</node>
+	</template>
+
 	<template id="Input" type="input">
 		<label type="input" />
 	</template>
 
 	<template id="Button" type="button">
-		<node type="button" label="Button">
-			<label text="@label" padding="8px 8px" />
+		<node type="button" label="MButton">
+			<label text="@label" />
 		</node>
 	</template>
 

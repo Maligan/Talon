@@ -1,3 +1,7 @@
+* {
+	fontSize: 14px;
+}
+
 .popup {
 	fontName: Source Sans Pro;
 	fontSize: 14px;
@@ -74,10 +78,12 @@ button:active {
 }
 
 button label {
-	fontName: Source Sans Pro;
 	fontSize: 14px;
+	fontName: Source Sans Pro;
 	fontColor: #F0F1F1;
 	filter: drop-shadow(1, -90deg, black, 0.5, 0);
+
+	padding: 0.5em;
 }
 
 button.action {
@@ -95,7 +101,6 @@ button.action:active {
 
 checkbox label {
 	fontName: Source Sans Pro;
-	fontSize: 14px;
 	fontColor: #FFFFFF;
 	marginTop: -2px;
 	ivalign: center;

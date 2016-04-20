@@ -73,6 +73,13 @@ package talon.browser
 			initializeWindowMonitor();
 		}
 
+		private function onStarlingRootCreated(e:Event):void
+		{
+			_starling.removeEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
+
+			if (_started) start();
+		}
+
 		public function start():void
 		{
 			_started = true;
@@ -85,8 +92,37 @@ package talon.browser
 
 				dispatchEventWith(AppPlatformEvent.START);
 
-				invokeAndRestore();
+				tryReopenLastDocument();
 			}
+		}
+
+
+		private function tryReopenLastDocument():void
+		{
+			var invArgs:Array = _invokeArgs;
+			var invTemplate:String = null;
+
+			// Document can be opened via invoke (click on document file)
+			// in this case need omit autoReopen feature
+			var isEnableReopen:Boolean = settings.getValueOrDefault(AppConstants.SETTING_AUTO_REOPEN, Boolean, false);
+			if (isEnableReopen && invArgs.length == 0)
+			{
+				var template:String = settings.getValueOrDefault(AppConstants.SETTING_RECENT_TEMPLATE, String);
+				if (template != null)
+				{
+					var recentArray:Array = settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array);
+					var recentPath:String = recentArray && recentArray.length ? recentArray[0] : null;
+					if (recentPath)
+					{
+						invArgs = [recentPath];
+						invTemplate = template;
+					}
+				}
+			}
+
+			// Do reopen
+			if (invArgs != null) invoke(invArgs);
+			if (invTemplate != null) templateId = invTemplate;
 		}
 
 		public function invoke(args:Array):void
@@ -113,30 +149,31 @@ package talon.browser
 		}
 
 		//
-		// Properties
+		// Properties (Open API)
 		//
-		/** Talon factory for all browser UI. */
-		public function get factory():TalonFactoryStarling { return _factory; }
+		/** Native Flash Stage. */
+		public function get stage():Stage { return _stage; }
+
+		/** Application configuration file (for read AND write). */
+		public function get settings():Storage { return _settings; }
+
+		/** Current device profile. */
+		public function get profile():DeviceProfile { return _profile; }
 
 		/** Special popup manager (@see PopupManager#host) */
 		public function get popups():PopupManager { return _popups; }
 
-	    /** Current Starling instance (preferably use this accessor, browser may work in multi windowed mode). */
+		/** Application plugin list (all: attached, detached, broken). */
+		public function get plugins():PluginManager { return _plugins; }
+
+		/** Application command manager - history/shortcuts etc. */
+		public function get commands():CommandManager { return _commands; }
+
+	    /** Current Starling instance (preferably use this accessor). */
 	    public function get starling():Starling { return _starling; }
 
-	    /** Application configuration file (for read AND write). */
-		public function get settings():Storage { return _settings; }
-
-	    /** Native Flash Stage. */
-		public function get stage():Stage { return _stage; }
-
-	    /** Device profile. */
-		public function get profile():DeviceProfile { return _profile; }
-
-	    /** Application plugin list (all: attached, detached, broken). */
-	    public function get plugins():PluginManager { return _plugins; }
-
-		public function get commands():CommandManager { return _commands; }
+		/** Talon factory for all browser UI. */
+		public function get factory():TalonFactoryStarling { return _factory; }
 
 	    /** Current opened document or null. */
 	    public function get document():Document { return _document; }
@@ -244,44 +281,6 @@ package talon.browser
 		private function onWindowMove(e:NativeWindowBoundsEvent):void
 		{
 			settings.setValue(AppConstants.SETTING_WINDOW_POSITION, e.afterBounds.topLeft);
-		}
-
-		//
-		// Starling
-		//
-		private function onStarlingRootCreated(e:Event):void
-		{
-			_starling.removeEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
-
-			if (_started) start();
-		}
-
-		private function invokeAndRestore():void
-		{
-			var invArgs:Array = _invokeArgs;
-			var invTemplate:String = null;
-
-			// Document can be opened via invoke (click on document file)
-			// in this case need omit autoReopen feature
-			var isEnableReopen:Boolean = settings.getValueOrDefault(AppConstants.SETTING_AUTO_REOPEN, Boolean, false);
-			if (isEnableReopen && invArgs.length == 0)
-			{
-				var template:String = settings.getValueOrDefault(AppConstants.SETTING_RECENT_TEMPLATE, String);
-				if (template != null)
-				{
-					var recentArray:Array = settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array);
-					var recentPath:String = recentArray && recentArray.length ? recentArray[0] : null;
-					if (recentPath)
-					{
-						invArgs = [recentPath];
-						invTemplate = template;
-					}
-				}
-			}
-
-			// Do reopen
-			if (invArgs != null) invoke(invArgs);
-			if (invTemplate != null) templateId = invTemplate;
 		}
 	}
 }

@@ -7,7 +7,7 @@ package talon.browser.plugins.filetypes.assets
 	import talon.browser.document.files.IDocumentFileController;
 	import talon.browser.document.log.DocumentMessage;
 
-	public class Asset implements IDocumentFileController
+	internal class Asset implements IDocumentFileController
 	{
 		private var _file:DocumentFileReference;
 		private var _messages:Vector.<DocumentMessage> = new <DocumentMessage>[];

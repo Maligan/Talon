@@ -28,6 +28,12 @@ package talon.browser.commands
 			throw new AbstractMethodError();
 		}
 
+		/** Revert current command. */
+		public function rollback():void
+		{
+			throw new AbstractMethodError();
+		}
+
 		/** Cancel command executing (if command is async). */
 		public function cancel():void
 		{

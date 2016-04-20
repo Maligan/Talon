@@ -8,6 +8,7 @@ package talon
 	import talon.layout.Layout;
 	import talon.utils.Accessor;
 	import talon.utils.Gauge;
+	import talon.utils.ITalonElement;
 	import talon.utils.Trigger;
 
 	/** Any attribute changed. */
@@ -222,14 +223,18 @@ package talon
 		/** Current node 'fontSize' expressed in pixels.*/
 		public function get ppem():Number
 		{
-			// TODO: Optimize calculation (bubbling ppem method call is poor)
-			var base:int = 12;
-			var inherit:Number = parent ? parent.ppem : base;
+			const BASE:int = 12;
+
+			// If fontSize is inherit:
 			var attribute:Attribute = getOrCreateAttribute(Attribute.FONT_SIZE);
-			if (attribute.isInheritable && attribute.isInherit) return inherit;
-			if (attribute.valueCache == "inherit") return base;
-			// FIXME: Recalculate correct!
-			return Gauge.toPixels(attribute.value, ppmm, inherit, ppdp, inherit);
+			if (attribute.isInherit) return parent.ppem;
+
+			// If it is root node and fontSize is not setted:
+			if (attribute.valueCache == "inherit") return BASE;
+
+			// Else calculate via parent and self values:
+			var relative:int = parent ? parent.ppem : BASE;
+			return Gauge.toPixels(attribute.value, ppmm, relative, ppdp, relative);
 		}
 
 		/** This is default 'auto' callback for gauges: width, minWidth, maxWidth. */

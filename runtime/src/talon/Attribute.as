@@ -157,10 +157,7 @@ package talon
 
 				var solvers:Vector.<ISolver> = new <ISolver>[];
 				for each (var attributeName:String in attributes)
-				{
-					var attribute:Attribute = attribute.node.getOrCreateAttribute(attributeName);
-					solvers[solvers.length] = attribute._solver;
-				}
+					solvers[solvers.length] = attribute.node.getOrCreateAttribute(attributeName)._solver;
 
 				return new CompositeSolver(format, solvers);
 			}

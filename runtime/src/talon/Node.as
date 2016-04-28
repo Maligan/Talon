@@ -123,6 +123,7 @@ package talon
 				_touches[name] = _touch;
 			}
 
+			// Clear all previous styles
 			for each (var attribute:Attribute in _attributes)
 			{
 				if (_touches[attribute.name] != _touch)
@@ -187,9 +188,9 @@ package talon
 
 		/** Commit node bounds (and validate node layout):
 		 *
-		 *  - Apply 'bounds' via dispatch RESIZE event.
-		 *  - Arrange children with layout algorithm.
-		 *  - Reset invalidated flag.
+		 *  1) Dispatch RESIZE event.
+		 *  2) Arrange children with layout algorithm & commit them.
+		 *  3) Reset invalidated flag.
 		 *
 		 *  Call this method after manually change 'bounds' property to validate layout.
 		 *  NB! Node layout will be validated independently invalidated flag is true or false. */

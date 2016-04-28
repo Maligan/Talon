@@ -276,6 +276,7 @@ package talon
 		public function upstream(attribute:Attribute):void
 		{
 			_solver = attribute._solver;
+			_solver.change.addListener(dispatchChange);
 			dispatchChange();
 		}
 

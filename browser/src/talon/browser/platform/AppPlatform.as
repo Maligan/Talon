@@ -1,9 +1,7 @@
 package talon.browser.platform
 {
-	import flash.display.NativeWindow;
 	import flash.display.Stage;
 	import flash.display3D.Context3DProfile;
-	import flash.events.NativeWindowBoundsEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.system.Capabilities;
@@ -20,7 +18,6 @@ package talon.browser.platform
 	import talon.browser.platform.plugins.PluginManager;
 	import talon.browser.platform.popups.PopupManager;
 	import talon.browser.platform.utils.DeviceProfile;
-	import talon.browser.platform.utils.OrientationMonitor;
 	import talon.browser.platform.utils.Storage;
 	import talon.browser.platform.utils.registerClassAlias;
 
@@ -30,7 +27,6 @@ package talon.browser.platform
 		private var _document:Document;
 		private var _templateId:String;
 		private var _settings:Storage;
-		private var _orientation:OrientationMonitor;
 		private var _profile:DeviceProfile;
 		private var _starling:Starling;
 		private var _factory:StarlingTalonFactory;
@@ -50,7 +46,6 @@ package talon.browser.platform
 			_lastInvokeArgs = [];
 			_settings = Storage.fromSharedObject("settings");
 			_profile = _settings.getValueOrDefault(AppConstants.SETTING_PROFILE, DeviceProfile) || new DeviceProfile(stage.stageWidth, stage.stageHeight, 1, Capabilities.screenDPI);
-			_orientation = new OrientationMonitor(stage);
 			_factory = new StarlingTalonFactory();
 			_plugins = new PluginManager(this);
 			_popups = new PopupManager(this);
@@ -68,7 +63,11 @@ package talon.browser.platform
 			_starling = new Starling(Sprite, stage, null, null, "auto", Context3DProfile.BASELINE);
 			_starling.addEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
 
-			initializeWindowMonitor();
+			// Resize listeners
+			_stage.stageWidth = _profile.width;
+			_stage.stageHeight = _profile.height;
+			_stage.addEventListener(Event.RESIZE, onStageResize);
+			_profile.addEventListener(Event.CHANGE, onProfileChange);
 		}
 
 		private function onStarlingRootCreated(e:Event):void
@@ -169,28 +168,8 @@ package talon.browser.platform
 		}
 
 		//
-		// [Events] Move And Resize
+		// Resize listeners
 		//
-		private function initializeWindowMonitor():void
-		{
-			_stage.addEventListener(Event.RESIZE, onStageResize);
-			_stage.nativeWindow.minSize = new Point(200, 100);
-			_stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.MOVE, onWindowMove);
-			_stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.RESIZING, onWindowResizing);
-			_profile.addEventListener(Event.CHANGE, onProfileChange);
-
-			// Restore window position
-			var position:Point = settings.getValueOrDefault(AppConstants.SETTING_WINDOW_POSITION, Point);
-			if (position)
-			{
-				_stage.nativeWindow.x = position.x;
-				_stage.nativeWindow.y = position.y;
-			}
-
-			// Restore window size / DPI / CSF
-			onProfileChange(null);
-		}
-
 		private function onStageResize(e:* = null):void
 		{
 			if (_starling)
@@ -205,8 +184,6 @@ package talon.browser.platform
 
 		private function onProfileChange(e:*):void
 		{
-			resizeWindowTo(profile.width, profile.height);
-
 			if (_document)
 			{
 				_document.factory.dpi = _profile.dpi;
@@ -214,30 +191,6 @@ package talon.browser.platform
 			}
 
 			_settings.setValue(AppConstants.SETTING_PROFILE, _profile);
-		}
-
-		private function resizeWindowTo(stageWidth:int, stageHeight:int):void
-		{
-			if (stage.stageWidth != stageWidth || stage.stageHeight != stageHeight)
-			{
-				var window:NativeWindow = stage.nativeWindow;
-				var deltaWidth:int = window.width - stage.stageWidth;
-				var deltaHeight:int = window.height - stage.stageHeight;
-				window.width = Math.max(stageWidth + deltaWidth, window.minSize.x);
-				window.height = Math.max(stageHeight + deltaHeight, window.minSize.y);
-			}
-		}
-
-		private function onWindowResizing(e:NativeWindowBoundsEvent):void
-		{
-			// NativeWindow#resizable is read only, this is fix:
-			var needPrevent:Boolean = settings.getValueOrDefault(AppConstants.SETTING_LOCK_RESIZE, Boolean, false);
-			if (needPrevent) e.preventDefault();
-		}
-
-		private function onWindowMove(e:NativeWindowBoundsEvent):void
-		{
-			settings.setValue(AppConstants.SETTING_WINDOW_POSITION, e.afterBounds.topLeft);
 		}
 	}
 }

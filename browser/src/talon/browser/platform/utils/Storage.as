@@ -1,11 +1,9 @@
 package talon.browser.platform.utils
 {
-	import flash.filesystem.File;
-	import flash.filesystem.FileMode;
-	import flash.filesystem.FileStream;
 	import flash.net.SharedObject;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
+	import flash.utils.getDefinitionByName;
 
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
@@ -34,7 +32,7 @@ package talon.browser.platform.utils
 			return storage;
 		}
 
-		public static function fromPropertiesFile(file:File):Storage
+		public static function fromPropertiesFile(file:*):Storage
 		{
 			var storage:Storage = new Storage();
 			var bytes:ByteArray = readFile(file);
@@ -43,10 +41,13 @@ package talon.browser.platform.utils
 			return storage;
 		}
 
-		private static function readFile(file:File):ByteArray
+		private static function readFile(file:*):ByteArray
 		{
+			const FileStream:Class = getDefinitionByName("flash.filesystem.FileStream") as Class;
+			const FileMode:Class = getDefinitionByName("flash.filesystem.FileMode") as Class;
+
 			var result:ByteArray = new ByteArray();
-			var stream:FileStream = new FileStream();
+			var stream:* = new FileStream();
 
 			try
 			{

@@ -2,9 +2,13 @@ package talon.browser.desktop.plugins
 {
 	import air.update.ApplicationUpdaterUI;
 
+	import flash.display.NativeWindow;
+	import flash.events.NativeWindowBoundsEvent;
+
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
+	import flash.geom.Point;
 	import flash.utils.ByteArray;
 
 	import starling.core.Starling;
@@ -110,6 +114,21 @@ package talon.browser.desktop.plugins
 			_factory.setLinkage("input", TalonFeatherTextInput);
 			_factory.addResourcesFromObject(_locale);
 			_factory.addArchiveContentAsync(readFile(fileInterface), onFactoryComplete);
+
+			// Windows
+			_platform.stage.nativeWindow.minSize = new Point(200, 100);
+			_platform.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.MOVE, onWindowMove);
+			_platform.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.RESIZING, onWindowResizing);
+
+			// Restore window position
+			var position:Point = _platform.settings.getValueOrDefault(AppConstants.SETTING_WINDOW_POSITION, Point);
+			if (position)
+			{
+				_platform.stage.nativeWindow.x = position.x;
+				_platform.stage.nativeWindow.y = position.y;
+			}
+
+			onProfileChange(null);
 		}
 
 		private function readFile(file:File):ByteArray
@@ -136,6 +155,7 @@ package talon.browser.desktop.plugins
 
 		private function onProfileChange(e:Event):void
 		{
+			resizeWindowTo(_platform.profile.width, _platform.profile.height);
 			resizeTo(_platform.starling.stage.stageWidth, _platform.starling.stage.stageHeight);
 		}
 
@@ -184,6 +204,33 @@ package talon.browser.desktop.plugins
 				if (file.exists)
 					new OpenDocumentCommand(_platform, file).execute();
 			}
+		}
+
+		//
+		// Native Window
+		//
+		private function resizeWindowTo(stageWidth:int, stageHeight:int):void
+		{
+			if (_platform.stage.stageWidth != stageWidth || _platform.stage.stageHeight != stageHeight)
+			{
+				var window:NativeWindow = _platform.stage.nativeWindow;
+				var deltaWidth:int = window.width - _platform.stage.stageWidth;
+				var deltaHeight:int = window.height - _platform.stage.stageHeight;
+				window.width = Math.max(stageWidth + deltaWidth, window.minSize.x);
+				window.height = Math.max(stageHeight + deltaHeight, window.minSize.y);
+			}
+		}
+
+		private function onWindowResizing(e:NativeWindowBoundsEvent):void
+		{
+			// NativeWindow#resizable is read only, this is fix:
+			var needPrevent:Boolean = _platform.settings.getValueOrDefault(AppConstants.SETTING_LOCK_RESIZE, Boolean, false);
+			if (needPrevent) e.preventDefault();
+		}
+
+		private function onWindowMove(e:NativeWindowBoundsEvent):void
+		{
+			_platform.settings.setValue(AppConstants.SETTING_WINDOW_POSITION, e.afterBounds.topLeft);
 		}
 
 		//

@@ -8,7 +8,7 @@
 
   <initialWindow>
     <content>SWF file name is set automatically at compile time</content>
-    <visible>true</visible>
+    <visible>false</visible>
     <renderMode>direct</renderMode>
     <depthAndStencil>true</depthAndStencil>
   </initialWindow>

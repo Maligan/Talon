@@ -10,6 +10,7 @@ package talon.browser.desktop.commands
 	import talon.browser.platform.AppPlatform;
 	import talon.browser.platform.commands.Command;
 	import talon.browser.platform.document.Document;
+	import talon.browser.platform.utils.Storage;
 
 	public class OpenDocumentCommand extends Command
 	{
@@ -44,7 +45,8 @@ package talon.browser.desktop.commands
 		private function openDocument(source:File):void
 		{
 			// NB! Set as current document immediately
-			var document:Document = platform.document = new Document(source);
+			var documentProperties:Storage = Storage.fromPropertiesFile(source);
+			var document:Document = platform.document = new Document(documentProperties);
 
 			var sourcePathProperty:String = document.properties.getValueOrDefault(DesktopDocumentProperty.SOURCE_PATH, String);
 			var sourcePath:File = source.parent.resolvePath(sourcePathProperty || source.parent.nativePath);

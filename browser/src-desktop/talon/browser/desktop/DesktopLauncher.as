@@ -33,7 +33,6 @@ package talon.browser.desktop
 
 		private function initialize(e:* = null):void
 		{
-			stage.stageWidth = stage.stageHeight = 200;
 			removeEventListener(Event.ADDED_TO_STAGE, initialize);
 
 			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
@@ -42,6 +41,7 @@ package talon.browser.desktop
 			// Create platform root class
 			_platform = new AppPlatform(stage);
 			_platform.addEventListener(AppPlatformEvent.ERROR, onFatalError);
+			_platform.addEventListener(AppPlatformEvent.STARTED, onStarted);
 
 			// Search for modules, and start platform class
 			loadPluginsAndStartPlatform();
@@ -50,8 +50,6 @@ package talon.browser.desktop
 		private function loadPluginsAndStartPlatform():void
 		{
 			// Register built-in plugins
-
-			// ApplicationUpdaterUI; // NB! Need to added explicit
 			PluginConsole;
 			PluginFileType;
 			PluginDesktopDragAndDrop;
@@ -106,6 +104,11 @@ package talon.browser.desktop
 		{
 			if (_numPluginLoaders == 0)
 				_platform.start();
+		}
+
+		private function onStarted(e:*):void
+		{
+			stage.nativeWindow.visible = true;
 		}
 
 		private function onInvoke(e:InvokeEvent):void

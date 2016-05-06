@@ -1,4 +1,4 @@
-#1 [[+]] <<19-03-15 11:56>> ((malig)) {{Write README}}
+#1 [[*]] <<19-03-15 11:56>> ((malig)) {{Write README}}
 #2 [[.]] <<19-03-15 11:56>> ((malig)) {{Add 'New Project' to browser}}
 #3 [[.]] <<19-03-15 11:57>> ((malig)) {{Create invalidation system}}
 #4 [[*]] <<19-03-15 11:58>> ((malig)) {{Finish FlowLayout}}
@@ -7,5 +7,7 @@
 #7 [[.]] <<22-04-15 10:19>> ((malig)) {{Rewrite 9scale/tiles system}}
 #8 [[.]] <<19-05-15 06:17>> ((malig)) {{Rename src-as3 into src}}
 #9 [[.]] <<21-05-15 16:26>> ((malig)) {{Root node change <template> to <library>}}
-#10 [[+]] <<22-05-15 09:28>> ((malig)) {{Move <template> to another file}}
-#11 [[*]] <<08-10-15 06:16>> ((malig)) {{Add popups: Messages, Export, Update, Plugin}}
+#10 [[.]] <<22-05-15 09:28>> ((malig)) {{Move <template> to another file}}
+#11 [[+]] <<21-04-16 11:35>> ((malig)) {{Implement message popup (Errors/Info/Warnings)}}
+#12 [[+]] <<21-04-16 11:35>> ((malig)) {{Implement update popup}}
+#13 [[+]] <<21-04-16 11:35>> ((malig)) {{Implement plugin manager popup}}

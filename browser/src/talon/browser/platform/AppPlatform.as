@@ -128,9 +128,6 @@ package talon.browser.platform
 		/** Talon factory for all browser UI. */
 		public function get factory():StarlingTalonFactory { return _factory; }
 
-		/** Platform was initialized and START event already dispatched. */
-		public function get started():Boolean { return _started; }
-
 	    /** Current opened document or null. */
 	    public function get document():Document { return _document; }
 		public function set document(value:Document):void

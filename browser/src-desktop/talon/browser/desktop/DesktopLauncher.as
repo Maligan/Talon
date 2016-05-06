@@ -12,10 +12,10 @@ package talon.browser.desktop
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
 
-	import talon.browser.desktop.plugins.PluginFileType;
 	import talon.browser.desktop.plugins.PluginConsole;
 	import talon.browser.desktop.plugins.PluginDesktopDragAndDrop;
 	import talon.browser.desktop.plugins.PluginDesktopUI;
+	import talon.browser.desktop.plugins.PluginFileType;
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;
 	import talon.browser.platform.AppPlatformEvent;

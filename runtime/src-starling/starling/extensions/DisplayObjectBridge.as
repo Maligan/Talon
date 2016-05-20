@@ -267,20 +267,33 @@ package starling.extensions
 
 		public function getBoundsCustom(base:Function, targetSpace:DisplayObject, resultRect:Rectangle):Rectangle
 		{
-			resultRect = base(targetSpace, resultRect);
+			if (resultRect == null)
+				resultRect = new Rectangle();
+
+			if (base != null)
+				resultRect = base(targetSpace, resultRect);
 
 			// Expand resultRect with background bounds
-			_target.getTransformationMatrix(targetSpace, MATRIX);
+			// FIXME: Expand ignore resultRect == null in args => expand from (0; 0)
+//			if (hasOpaqueBackground)
+			{
+				_target.getTransformationMatrix(targetSpace, MATRIX);
 
-			var topLeft:Point = MatrixUtil.transformCoords(MATRIX, 0, 0, POINT);
-			if (resultRect.left > topLeft.x) resultRect.left = topLeft.x;
-			if (resultRect.top > topLeft.y) resultRect.top = topLeft.y;
+				var topLeft:Point = MatrixUtil.transformCoords(MATRIX, 0, 0, POINT);
+				if (resultRect.left > topLeft.x) resultRect.left = topLeft.x;
+				if (resultRect.top > topLeft.y) resultRect.top = topLeft.y;
 
-			var bottomRight:Point = MatrixUtil.transformCoords(MATRIX, _background.width, _background.height, POINT);
-			if (resultRect.right < bottomRight.x) resultRect.right = bottomRight.x;
-			if (resultRect.bottom < bottomRight.y) resultRect.bottom = bottomRight.y;
+				var bottomRight:Point = MatrixUtil.transformCoords(MATRIX, _background.width, _background.height, POINT);
+				if (resultRect.right < bottomRight.x) resultRect.right = bottomRight.x;
+				if (resultRect.bottom < bottomRight.y) resultRect.bottom = bottomRight.y;
+			}
 
 			return resultRect;
+		}
+
+		public function get hasOpaqueBackground():Boolean
+		{
+			return _background.texture || !_background.transparent;
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package starling.extensions
 {
 	import starling.display.Image;
+	import starling.display.Quad;
 	import starling.events.Event;
 	import starling.rendering.Painter;
 	import starling.textures.Texture;
@@ -9,18 +10,18 @@ package starling.extensions
 	import talon.Node;
 	import talon.utils.ITalonElement;
 
-	public class TalonImage extends Image implements ITalonElement
+	public class TalonImage extends Quad implements ITalonElement
 	{
-		private static var EMPTY:Texture;
+		private static var _emptyTexture:Texture;
 
 		private var _bridge:DisplayObjectBridge;
 		private var _node:Node;
 
 		public function TalonImage()
 		{
-			EMPTY ||= Texture.empty(1, 1);
+			super(1, 1);
 
-			super(EMPTY);
+			_emptyTexture ||= Texture.empty(1, 1);
 
 			_node = new Node();
 			_node.accessor.width.auto = measureWidth;
@@ -28,7 +29,9 @@ package starling.extensions
 			_node.addTriggerListener(Event.RESIZE, onNodeResize);
 
 			_bridge = new DisplayObjectBridge(this, node);
-			_bridge.addAttributeChangeListener(Attribute.SRC, onSrcChange);
+			_bridge.addAttributeChangeListener(Attribute.SOURCE, onSourceChange);
+
+			texture = _emptyTexture;
 		}
 
 		private function measureWidth(height:Number):Number { return measure(height, texture.height, texture.width); }
@@ -37,16 +40,16 @@ package starling.extensions
 		private function measure(knownDimension:Number, knownDimensionOfTexture:Number, measuredDimensionOfTexture:Number):Number
 		{
 			// If there is no texture - size is zero
-			if (texture == EMPTY) return 0;
+			if (texture == _emptyTexture) return 0;
 			// If no limit on image size - return original texture size
 			if (knownDimension == Infinity) return measuredDimensionOfTexture;
 			// Else calculate new size preserving texture aspect ratio
 			return measuredDimensionOfTexture * (knownDimension/knownDimensionOfTexture);
 		}
 
-		private function onSrcChange():void
+		private function onSourceChange():void
 		{
-			texture = node.getAttributeCache(Attribute.SRC) as Texture || EMPTY;
+			texture = node.getAttributeCache(Attribute.SOURCE) as Texture || _emptyTexture;
 			readjustSize();
 		}
 

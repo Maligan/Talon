@@ -6,6 +6,7 @@ package starling.extensions
 	import starling.rendering.MeshStyle;
 	import starling.rendering.Painter;
 	import starling.rendering.VertexData;
+	import starling.styles.MeshStyle;
 	import starling.utils.Align;
 	import starling.utils.Color;
 

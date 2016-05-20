@@ -36,7 +36,9 @@ package talon.browser.desktop
 			removeEventListener(Event.ADDED_TO_STAGE, initialize);
 
 			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
-			NativeApplication.nativeApplication.setAsDefaultApplication(AppConstants.BROWSER_DOCUMENT_EXTENSION);
+
+			try { NativeApplication.nativeApplication.setAsDefaultApplication(AppConstants.BROWSER_DOCUMENT_EXTENSION); }
+			catch (e:Error) { }
 
 			// Create platform root class
 			_platform = new AppPlatform(stage);

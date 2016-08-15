@@ -13,6 +13,7 @@ package talon.browser.desktop.popups
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.extensions.TalonTextField;
+	import starling.styles.MeshStyle;
 	import starling.utils.Color;
 
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
@@ -71,7 +72,6 @@ package talon.browser.desktop.popups
 			_input.restrict = null;
 			_input.maxChars = 60;
 			_input.setFocus();
-			_input.textFormat.align = TextFormatAlign.LEFT;
 			_input.paddingLeft = 8; // 2px GAP!
 
 			_input.addEventListener(Event.CHANGE, function():void
@@ -177,37 +177,31 @@ package talon.browser.desktop.popups
 		{
 			for (var i:int = 0; i < _labels.length; i++)
 			{
+				var label:TalonTextField = _labels[i];
+				var labelStyle:MeshStyle = label.style;
+
 				var itemIndex:int = _labelsShift + i;
 				var item:String = _queryItems[itemIndex] || "";
 
-				_labels[i].text = item;
+				// Invalidation & composition (via bounds)
+				label.text = null;
+				label.text = item;
+				label.bounds;
 
 				if (item)
 				{
-					// Validate text field (for initialize inner meshBatch)
-					_labels[i].textBounds;
+					var prescription:Array = FuzzyUtil.getPrescription(_query.toLocaleLowerCase(), item.toLocaleLowerCase());
 
-					var meshBatch:MeshBatch = _labels[i].getChildAt(0) as MeshBatch;
-
-					var numChars:int = meshBatch.numVertices/4;
-					if (numChars == item.length)
+					// Set char color
+					for (var j:int = 0; j < item.length; j++)
 					{
-						var prescription:Array = FuzzyUtil.getPrescription(_query, item);
-
-						// Reset color
-						meshBatch.color = Color.WHITE;
-
-						// Set char color
-						for (var j:int = 0; j < numChars; j++)
+						var type:String = prescription[j];
+						if (type == "M")
 						{
-							var type:String = prescription[j];
-							if (type == "M")
-							{
-								meshBatch.setVertexColor(j*4+0, 0x00BFFF);
-								meshBatch.setVertexColor(j*4+1, 0x00BFFF);
-								meshBatch.setVertexColor(j*4+2, 0x00BFFF);
-								meshBatch.setVertexColor(j*4+3, 0x00BFFF);
-							}
+							labelStyle.setVertexColor(j*4+0, 0x00BFFF);
+							labelStyle.setVertexColor(j*4+1, 0x00BFFF);
+							labelStyle.setVertexColor(j*4+2, 0x00BFFF);
+							labelStyle.setVertexColor(j*4+3, 0x00BFFF);
 						}
 					}
 				}

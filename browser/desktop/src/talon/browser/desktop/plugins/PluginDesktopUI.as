@@ -101,7 +101,7 @@ package talon.browser.desktop.plugins
 
 			refreshWindowTitle();
 
-			var fileInterface:File = File.applicationDirectory.resolvePath("interface.zip");
+			var fileInterface:File = File.applicationDirectory.resolvePath("ui.zip");
 			if (!fileInterface.exists)
 			{
 				_platform.dispatchEventWith(AppPlatformEvent.ERROR, false, "Can't find interface file:\n" + fileInterface.nativePath);
@@ -522,7 +522,7 @@ class AppUINativeMenu
 		insert("view/theme/dark",              new  ChangeSettingCommand(_platform, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
 		insert("view/theme/light",             new  ChangeSettingCommand(_platform, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
 		insert("view/profile");
-		insert("view/profile/custom",          new  OpenPopupCommand(_platform, ProfilePopup, platform.profile), "alt-0");
+		insert("view/profile/custom",          new  OpenPopupCommand(_platform, ProfilePopup, platform.profile), "ctrl-0");
 		insert("view/profile/-");
 
 		var profiles:Vector.<DeviceProfile> = DeviceProfile.getProfiles();
@@ -530,7 +530,7 @@ class AppUINativeMenu
 		{
 			var profileNumber:String = (i+1).toString();
 			var profile:DeviceProfile = profiles[i];
-			insert("view/profile/" + profile.id, new ChangeProfileCommand(_platform, profile), "alt-" + profileNumber);
+			insert("view/profile/" + profile.id, new ChangeProfileCommand(_platform, profile), "ctrl-" + profileNumber);
 		}
 
 		insert("view/-");

@@ -66,6 +66,8 @@ package starling.extensions
 		//
 		public override function render(painter:Painter):void
 		{
+			// FIXME: Image with scale
+
 			// Background render
 			_bridge.renderBackground(painter);
 

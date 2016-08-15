@@ -3,7 +3,7 @@
 }
 
 .popup {
-	fontName: Source Sans Pro;
+	fontName: Source_Sans_Pro;
 	fontSize: 14px;
 	fontColor: white;
 	fontSharpness: -1;
@@ -20,7 +20,7 @@
 	width: *;
 	height: 35px;
 	cursor: button;
-	fontName: Source Sans Pro;
+	fontName: Source_Sans_Pro;
 
 	touchMode: leaf;
 	touchEvents: true;
@@ -62,11 +62,19 @@ button {
 	backgroundStretchGrid: 4px;
 	cursor: button;
 
-	minWidth: 23px;
-	minHeight: 23px;
+	fontSize: 14px;
+	fontName: Source_Sans_Pro;
+	fontColor: #F0F1F1;
+
+	padding: 0.2em 0.5em 0em;
 
 	touchMode: leaf;
 	touchEvents: true;
+}
+
+button label {
+	height: 2em;
+	valign: center;
 }
 
 button:hover {
@@ -75,15 +83,6 @@ button:hover {
 
 button:active {
 	backgroundFill: $button_down;
-}
-
-button label {
-	fontSize: 14px;
-	fontName: Source Sans Pro;
-	fontColor: #F0F1F1;
-	filter: drop-shadow(1, -90deg, black, 0.5, 0);
-
-	padding: 0.5em;
 }
 
 button.action {
@@ -100,7 +99,7 @@ button.action:active {
 }
 
 checkbox label {
-	fontName: Source Sans Pro;
+	fontName: Source_Sans_Pro;
 	fontColor: #FFFFFF;
 	marginTop: -2px;
 	ivalign: center;

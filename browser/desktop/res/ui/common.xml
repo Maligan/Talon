@@ -13,23 +13,23 @@
 	<template id="ProfilePopup">
 		<node class="popup" layout="flow" orientation="vertical"> 
 
-			<label text="$dialog.profile.title" width="*" padding="8px" />
+			<label text="$dialog.profile.title" padding="8px" /> <!-- width="*" -->
 
 			<node orientation="vertical" gap="8px" padding="8px" width="*" backgroundFill="gray" backgroundAlpha="0.1">
 				<node width="100%" gap="8px">
-					<label text="$dialog.profile.size" width="*" height="*" halign="left" />
+					<label text="$dialog.profile.size" width="*" height="*" halign="left" valign="center" />
 					<input id="_width" width="48" />
-					<label text="x" height="*" margin="none -4px" />
+					<label text="x" ivalign="center" margin="none -7px" />
 					<input id="_height" width="48" />
 				</node>
 
 				<node width="100%"> 
-					<label text="$dialog.profile.DPI" width="*" height="*" halign="left" />
+					<label text="$dialog.profile.DPI" halign="left" valign="center" width="*" height="*" />
 					<input id="_dpi" width="48" />
 				</node>
 
 				<node width="100%"> 
-					<label text="$dialog.profile.CSF" width="*" height="*" halign="left" />
+					<label text="$dialog.profile.CSF" halign="left" valign="center" width="*" height="*" />
 					<input id="_csf" width="48" />
 				</node>
 			</node>

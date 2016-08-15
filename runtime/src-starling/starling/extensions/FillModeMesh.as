@@ -3,7 +3,6 @@ package starling.extensions
 	import starling.display.Mesh;
 	import starling.events.Event;
 	import starling.rendering.IndexData;
-	import starling.rendering.MeshStyle;
 	import starling.rendering.Painter;
 	import starling.rendering.VertexData;
 	import starling.styles.MeshStyle;

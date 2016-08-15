@@ -5,6 +5,7 @@ package talon.utils
 
     use namespace flash_proxy;
 
+    [ExcludeClass]
     public dynamic class OrderedObject extends Proxy
     {
         private var _reorderByUpdate:Boolean;

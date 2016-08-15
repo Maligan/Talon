@@ -2,7 +2,7 @@ package talon.browser.platform.document
 {
 	import starling.events.EventDispatcher;
 
-	import talon.browser.platform.document.files.DocumentFileReferenceCollection;
+	import talon.browser.platform.document.files.DocumentFileCollection;
 	import talon.browser.platform.document.log.DocumentMessageCollection;
 	import talon.browser.platform.document.log.DocumentTaskTracker;
 
@@ -13,7 +13,7 @@ package talon.browser.platform.document
 	public class Document extends EventDispatcher
 	{
 		private var _properties:Storage;
-		private var _files:DocumentFileReferenceCollection;
+		private var _files:DocumentFileCollection;
 		private var _factory:DocumentTalonFactory;
 		private var _messages:DocumentMessageCollection;
 		private var _tracker:DocumentTaskTracker;
@@ -22,7 +22,7 @@ package talon.browser.platform.document
 		public function Document(properties:Storage)
 		{
 			_properties = properties;
-			_files = new DocumentFileReferenceCollection(this);
+			_files = new DocumentFileCollection(this);
 			_tracker = new DocumentTaskTracker(onTasksEnd);
 			_messages = new DocumentMessageCollection();
 			_factory = new DocumentTalonFactory(this);
@@ -31,7 +31,7 @@ package talon.browser.platform.document
 		/** Background task counter. */
 		public function get tasks():DocumentTaskTracker { return _tracker; }
 		/** Document's files. */
-		public function get files():DocumentFileReferenceCollection { return _files; }
+		public function get files():DocumentFileCollection { return _files; }
 		/** Talon factory. */
 		public function get factory():DocumentTalonFactory { return _factory; }
 		/** Status messages (aka Errors/Warnings/Infos). */

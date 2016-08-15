@@ -5,7 +5,7 @@ package talon.browser.platform.document.files
 
 	import talon.browser.platform.document.Document;
 
-	public class DocumentFileReferenceCollection
+	public class DocumentFileCollection
 	{
 		private var _document:Document;
 		private var _mappings:Dictionary;
@@ -14,7 +14,7 @@ package talon.browser.platform.document.files
 		private var _references:Dictionary;
 		private var _controllers:Dictionary;
 
-		public function DocumentFileReferenceCollection(document:Document)
+		public function DocumentFileCollection(document:Document)
 		{
 			_document = document;
 			_mappings = new Dictionary();

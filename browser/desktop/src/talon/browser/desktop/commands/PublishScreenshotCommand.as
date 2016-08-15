@@ -94,6 +94,7 @@ package talon.browser.desktop.commands
 			painter.state.renderTarget = null;
 			painter.state.setProjectionMatrix(bounds.x, bounds.y, stage.stageWidth, stage.stageHeight, stage.stageWidth, stage.stageHeight, stage.cameraPosition);
 			painter.clear();
+			displayObject.setRequiresRedraw();
 			displayObject.render(painter);
 			painter.finishMeshBatch();
 			painter.context.drawToBitmapData(result);

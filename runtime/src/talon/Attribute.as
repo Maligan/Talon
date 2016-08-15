@@ -20,10 +20,10 @@ package talon
 		//
 		// Standard Attribute list
 		//
-		public static const ID:String                              = registerAttribute("id",                  null,                     false,  false);
-		public static const TYPE:String                            = registerAttribute("type",                null,                     false,  false);
-		public static const CLASS:String                           = registerAttribute("class",               null,                     false,  false);
-		public static const STATE:String                           = registerAttribute("state",               null,                     false,  false);
+		public static const ID:String                              = registerAttribute("id",                  null, null,  false);
+		public static const TYPE:String                            = registerAttribute("type",                null, null,  false);
+		public static const CLASS:String                           = registerAttribute("class",               null, null,  false);
+		public static const STATE:String                           = registerAttribute("state",               null, null,  false);
 
 		public static const WIDTH:String                           = registerAttribute("width",               NONE);
 		public static const MIN_WIDTH:String                       = registerAttribute("minWidth",            NONE);
@@ -62,11 +62,11 @@ package talon
 		public static const BACKGROUND_FILL_MODE_VERTICAL:String   = registerAttribute("backgroundFillModeVertical",    FillMode.STRETCH);
 		public static const BACKGROUND_FILL_MODE:String            = registerComposite("backgroundFillMode",            [BACKGROUND_FILL_MODE_HORIZONTAL, BACKGROUND_FILL_MODE_VERTICAL]);
 
-		public static const FONT_COLOR:String                      = registerAttribute("fontColor",           INHERIT,                  true);
-		public static const FONT_NAME:String                       = registerAttribute("fontName",            INHERIT,                  true);
-		public static const FONT_SIZE:String                       = registerAttribute("fontSize",            INHERIT,                  true);
-		public static const FONT_AUTO_SCALE:String                 = registerAttribute("fontAutoScale",       INHERIT,                  true);
-		public static const FONT_SHARPNESS:String                  = registerAttribute("fontSharpness",       INHERIT,                  true);
+		public static const FONT_COLOR:String                      = registerAttribute("fontColor",           INHERIT, "#FFFFFF");
+		public static const FONT_NAME:String                       = registerAttribute("fontName",            INHERIT, "mini");
+		public static const FONT_SIZE:String                       = registerAttribute("fontSize",            INHERIT, "12"); // FIXME: add 'px'
+		public static const FONT_AUTO_SCALE:String                 = registerAttribute("fontAutoScale",       INHERIT, "false");
+		public static const FONT_SHARPNESS:String                  = registerAttribute("fontSharpness",       INHERIT, "1");
 
 		public static const TOUCH_MODE:String                      = registerAttribute("touchMode",           TouchMode.BRANCH);
 		public static const TOUCH_EVENTS:String                    = registerAttribute("touchEvents",         FALSE);
@@ -102,30 +102,30 @@ package talon
 		public static const BREAK:String                           = registerAttribute("break",               BreakMode.AUTO);
 
 		public static const TEXT:String                            = registerAttribute("text");
-		public static const SRC:String                             = registerAttribute("src");
+		public static const SOURCE:String                          = registerAttribute("source");
 
 		//
 		// Defaults
 		//
 		private static var _defInited:Object;
-		private static var _defIsInheritable:Object;
+		private static var _defInherit:Object;
 		private static var _defIsStyleable:Object;
-		private static var _defFormat:Object;
+		private static var _defCompositeFormat:Object;
 
 		private static var _inheritable:Vector.<String>;
 
-		public static function registerAttribute(name:String, inited:String = null, isInheritable:Boolean = false, isStyleable:Boolean = true):String
+		public static function registerAttribute(name:String, inited:String = null, inherit:String = null, isStyleable:Boolean = true):String
 		{
 			_defInited ||= {};
 			_defInited[name] = inited;
 
-			_defIsInheritable ||= {};
-			_defIsInheritable[name] = isInheritable;
+			_defInherit ||= {};
+			_defInherit[name] = inherit;
 
 			_defIsStyleable ||= {};
 			_defIsStyleable[name] = isStyleable;
 
-			if (isInheritable)
+			if (inherit != null)
 			{
 				_inheritable ||= new <String>[];
 				_inheritable[_inheritable.length] = name;
@@ -136,8 +136,8 @@ package talon
 
 		public static function registerComposite(name:String, attributes:Array):String
 		{
-			_defFormat ||= {};
-			_defFormat[name] = attributes;
+			_defCompositeFormat ||= {};
+			_defCompositeFormat[name] = attributes;
 
 			return name;
 		}
@@ -150,7 +150,7 @@ package talon
 
 		private static function buildSolver(attribute:Attribute):ISolver
 		{
-			var attributes:Array = _defFormat[attribute.name];
+			var attributes:Array = _defCompositeFormat[attribute.name];
 			if (attributes)
 			{
 				var format:String = attributes.length == 4 ? CompositeSolver.FORMAT_QUAD : CompositeSolver.FORMAT_PAIR;
@@ -161,13 +161,13 @@ package talon
 
 				return new CompositeSolver(format, solvers);
 			}
-			else if (_defIsInheritable[attribute.name])
+			else if (_defInherit[attribute.name])
 			{
-				return new InheritableSolver(attribute);
+				return new InheritableSolver(attribute, _defInherit[attribute.name]);
 			}
 
-
-			return new SimpleSolver();
+			var styleable:Boolean = _defIsStyleable[attribute.name];
+			return new SimpleSolver(styleable ? -1 : 1);
 		}
 
 		//
@@ -218,6 +218,9 @@ package talon
 		public function get setted():String { return _solver.getValue(2, name); }
 		public function set setted(value:String):void { _solver.setValue(2, name, value); }
 
+		/** This value used as fallback value for inheritable attributes with value == 'inherit' but without parent. */
+		public function get based():String { return isInheritable ? InheritableSolver(_solver).based : null; }
+
 		/** Value calculated from (inited->styled->setted) & inherit parent attribute. */
 		public function get value():String { return _solver.value; }
 
@@ -230,11 +233,6 @@ package talon
 				_valueCache = value;
 				_valueCacheIsResource = false;
 				_valueCached = true;
-
-				if (name == "text")
-				{
-					trace()
-				}
 
 				// Extract resource value
                 // FIXME: Stack overflow (loops)
@@ -255,13 +253,13 @@ package talon
 		// Props
 		//
 		/** Use styled property when calculating attribute value. */
-		public function get isStyleable():Boolean { return _defIsStyleable[name]; }
-
-		/** If attribute value == 'inherit' concrete value must be taken from parent node. */
-		public function get isInheritable():Boolean { return _solver is InheritableSolver; }
+		public function get isStyleable():Boolean { return SimpleSolver(_solver).ignore != 1; }
 
 		/** Attribute has composite format. */
 		public function get isComposite():Boolean { return _solver is CompositeSolver; }
+
+		/** If attribute value == 'inherit' concrete value must be taken from parent node. */
+		public function get isInheritable():Boolean { return _solver is InheritableSolver; }
 
 		/** Attribute 'value' is inherit from parent. */
 		public function get isInherit():Boolean { return isInheritable && InheritableSolver(_solver).isInherit; }
@@ -317,29 +315,31 @@ interface ISolver
 class SimpleSolver implements ISolver
 {
 	private var _change:Trigger;
-	private var _hashes:Vector.<Object>;
+	private var _values:Vector.<Object>;
 	private var _orders:Object;
+	private var _ignore:int;
 
-	public function SimpleSolver():void
+	public function SimpleSolver(ignore:int = -1):void
 	{
 		_change = new Trigger(this);
-		_hashes = new Vector.<Object>();
+		_values = new Vector.<Object>();
 		_orders = new Object();
+		_ignore = ignore;
 	}
 
 	public function getValue(priority:int, key:String):String
 	{
-		return (priority < _hashes.length) ? _hashes[priority][key] : null;
+		return (priority < _values.length) ? _values[priority][key] : null;
 	}
 
 	public function setValue(priority:int, key:String, string:String):void
 	{
 		var prev:String = value;
 
-		if (_hashes.length < priority + 1)
-			_hashes.length = priority + 1;
+		if (_values.length < priority + 1)
+			_values.length = priority + 1;
 
-		var hash:Object = _hashes[priority] || (_hashes[priority] = {});
+		var hash:Object = _values[priority] || (_values[priority] = {});
 		var order:Vector.<String> = _orders[hash] || (_orders[hash] = new Vector.<String>());
 
 		// Mark as last changed key
@@ -361,9 +361,10 @@ class SimpleSolver implements ISolver
 
 	public function get value():String
 	{
-		for (var i:int = _hashes.length-1; i >= 0; i--)
+		for (var i:int = _values.length-1; i >= 0; i--)
 		{
-			var hash:Object = _hashes[i];
+			if (i == ignore) continue;
+			var hash:Object = _values[i];
 			if (hash == null) continue;
 			var order:Object = _orders[hash];
 
@@ -378,15 +379,22 @@ class SimpleSolver implements ISolver
 
 		return null;
 	}
+
+	public function get ignore():int
+	{
+		return _ignore;
+	}
 }
 
 class InheritableSolver extends SimpleSolver
 {
 	private var _attribute:Attribute;
 	private var _parent:Attribute;
+	private var _based:String;
 
-	public function InheritableSolver(attribute:Attribute)
+	public function InheritableSolver(attribute:Attribute, based:String)
 	{
+		_based = based;
 		_attribute = attribute;
 		_attribute.node.addTriggerListener(Event.ADDED, onAdded);
 		_attribute.node.addTriggerListener(Event.REMOVED, onRemoved);
@@ -413,7 +421,17 @@ class InheritableSolver extends SimpleSolver
 
 	public override function get value():String
 	{
-		return isInherit ? _parent.value : super.value;
+		// If value == 'inherit' and there is parent and return parent value
+		if (isInherit) return _parent.value;
+		// If value == 'inherit' but there is no parent return basic value
+		if (super.value == Attribute.INHERIT) return _based;
+		// Else return self value
+		return super.value;
+	}
+
+	public function get based():String
+	{
+		return _based;
 	}
 
 	public function get isInherit():Boolean
@@ -449,12 +467,12 @@ class CompositeSolver extends SimpleSolver
 
 	private function suppress(value:Boolean):void
 	{
-		var needChange:Boolean = !value && _hasSuppressedChange;
+		var needDispatchChange:Boolean = !value && _hasSuppressedChange;
 
 		_isSuppressed = value;
 		_hasSuppressedChange = false;
 
-		if (needChange) change.dispatch();
+		if (needDispatchChange) change.dispatch();
 	}
 
 	public override function setValue(priority:int, key:String, string:String):void
@@ -476,8 +494,9 @@ class CompositeSolver extends SimpleSolver
 	//
 	// Static
 	//
-	public static const FORMAT_QUAD:String = "{0, 1, 2, 3} | {0, 2} {1, 3} | {0} {1, 3} {2} | {0} {1} {2} {3}";
 	public static const FORMAT_PAIR:String = "{0, 1} | {0} {1}";
+	public static const FORMAT_QUAD:String = "{0, 1, 2, 3} | {0, 2} {1, 3} | {0} {1, 3} {2} | {0} {1} {2} {3}";
+
 
 	/** Convert to more comfortable structure. */
 	private static function prepare(format:String, solvers:Vector.<ISolver>):Array

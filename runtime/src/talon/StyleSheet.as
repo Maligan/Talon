@@ -6,11 +6,6 @@ package talon
 	/** Style Sheet Object. */
 	public class StyleSheet
 	{
-		public static function isMatch(node:Node, selector:String):Boolean
-		{
-			return new StyleSelector(selector).match(node);
-		}
-
 		protected var _selectors:Vector.<StyleSelector>;
 		protected var _selectorsStyles:Dictionary;
 		protected var _selectorsByIdent:Dictionary;

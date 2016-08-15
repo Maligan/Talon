@@ -47,7 +47,7 @@ package talon
 			_ppmm = Capabilities.screenDPI / 25.4; // 25.4mm in 1 inch
 			_invalidated = true;
 
-			// Initialize all inheritable & composite attributes (initialize theirs listeners)
+			// Initialize all inheritable attributes (initialize theirs listeners)
 			for each (var attributeName:String in Attribute.getInheritableAttributeNames())
 				getOrCreateAttribute(attributeName);
 
@@ -182,7 +182,7 @@ package talon
 			if (_invalidated === false)
 			{
 				_invalidated = true;
-				dispatch(Event.CHANGE);
+				dispatch(Event.CHANGE); // FIXME: Change event type (CHANGE used for attribute changing)
 			}
 		}
 

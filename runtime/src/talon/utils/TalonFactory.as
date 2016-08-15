@@ -26,7 +26,7 @@ package talon.utils
 
 		protected var _linkageByDefault:Class;
 		protected var _linkage:Dictionary = new Dictionary();
-		public var _resources:Object = new Dictionary();
+		protected var _resources:Object = new Dictionary();
 		protected var _templates:Object = new Dictionary();
 		protected var _style:StyleSheet = new StyleSheet();
 

@@ -7,9 +7,7 @@ package talon.browser.desktop.utils
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
-	/**
-	* Dispatched when the modified date of the file being modified changes.
-	*
+	/** Dispatched when the modified date of the file being modified changes. */
 	[Event(name="change", type="starling.events.Event")]
 	
 	/**

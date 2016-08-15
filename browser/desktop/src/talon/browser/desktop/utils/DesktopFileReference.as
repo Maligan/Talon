@@ -72,13 +72,6 @@ package talon.browser.desktop.utils
 			return _target.url;
 		}
 
-		public function get basename():String
-		{
-			var matches:Array = NAME_REGEX.exec(url);
-			if (matches && matches.length > 0) return matches[1];
-			else return null;
-		}
-
 		public function get extension():String
 		{
 			var matches:Array = NAME_REGEX.exec(url);
@@ -89,10 +82,7 @@ package talon.browser.desktop.utils
 		//
 		// IFileReference
 		//
-		public function get path():String
-		{
-			return root.getRelativePath(target) + (target.isDirectory ? "/" : "");
-		}
+		public function get path():String { return root.getRelativePath(target) + (target.isDirectory ? "/" : ""); }
 
 		public function get data():ByteArray { return _target.exists ? bytes : null; }
 

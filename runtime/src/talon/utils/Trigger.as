@@ -14,11 +14,11 @@ package talon.utils
 	 * Please, do not use this class - except if you understand what and why you do it.
 	 */
 	[ExcludeClass]
-	public class Trigger
+	public final class Trigger
 	{
-		protected var _context:*;
-		protected var _listeners:Vector.<Function>;
-		protected var _listenersIndex:Dictionary;
+		private var _context:*;
+		private var _listeners:Vector.<Function>;
+		private var _listenersIndex:Dictionary;
 
 		/** @param context - default value send to listeners while dispatch(). */
 		public function Trigger(context:* = null)

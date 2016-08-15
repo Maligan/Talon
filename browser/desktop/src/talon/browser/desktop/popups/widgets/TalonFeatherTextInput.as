@@ -1,9 +1,11 @@
 package talon.browser.desktop.popups.widgets
 {
 	import feathers.controls.TextInput;
+	import feathers.controls.text.BitmapFontTextEditor;
 	import feathers.controls.text.TextFieldTextEditor;
 	import feathers.core.ITextEditor;
 	import feathers.events.FeathersEventType;
+	import feathers.text.BitmapFontTextFormat;
 
 	import flash.text.Font;
 	import flash.text.TextFormat;
@@ -12,6 +14,10 @@ package talon.browser.desktop.popups.widgets
 	import starling.events.Event;
 	import starling.extensions.DisplayObjectBridge;
 	import starling.rendering.Painter;
+	import starling.text.BitmapFont;
+	import starling.text.TextField;
+	import starling.text.TextField;
+	import starling.utils.Color;
 
 	import talon.Attribute;
 	import talon.Node;
@@ -40,12 +46,24 @@ package talon.browser.desktop.popups.widgets
 			maxChars = 5;
 
 			// Create textEditor
-			textEditorFactory = buildTextEditor;
-			validate();
+			textEditorFactory = editorFactory;
 
 			// Focus
 			addEventListener(FeathersEventType.FOCUS_IN, onFocusIn);
 			addEventListener(FeathersEventType.FOCUS_OUT, onFocusOut);
+		}
+
+		private function editorFactory():ITextEditor
+		{
+			var editor:BitmapFontTextEditor = new BitmapFontTextEditor();
+
+			editor.textFormat = new BitmapFontTextFormat(
+				node.getAttributeCache(Attribute.FONT_NAME),
+				node.getAttributeCache(Attribute.FONT_SIZE),
+				StringParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR))
+			);
+
+			return editor;
 		}
 
 		private function onFocusIn(e:Event):void
@@ -58,15 +76,6 @@ package talon.browser.desktop.popups.widgets
 			node.accessor.states.remove(STATE_FOCUS);
 		}
 
-		private function buildTextEditor():ITextEditor
-		{
-			var editor:TextFieldTextEditor = new TextFieldTextEditor();
-			editor.textFormat = new TextFormat("Source Sans Pro", 14, 0XFFFFFF, null, null, null, null, null, TextFormatAlign.CENTER);
-			editor.embedFonts = true;
-			editor.sharpness = -400;
-			return editor;
-		}
-
 		private function onResize():void
 		{
 			x = node.bounds.x;
@@ -75,26 +84,14 @@ package talon.browser.desktop.popups.widgets
 			height = node.bounds.height;
 		}
 
-		private function onFontNameChange():void
-		{
-			textFormat.font = node.getAttributeCache(Attribute.FONT_NAME);
-			var fonts:Array = Font.enumerateFonts(false).map(getFontName);
-			TextFieldTextEditor(textEditor).embedFonts = fonts.indexOf(textFormat.font) != -1;
-			validate();
-		}
-
-		private function getFontName(font:Font, index:int, array:Array):String
-		{
-			return font.fontName;
-		}
-
-		private function onFontSizeChange():void { textFormat.size = parseFloat(node.getAttributeCache(Attribute.FONT_SIZE)); }
-		private function onFontColorChange():void { textFormat.color = StringParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
+		private function onFontNameChange():void { if (textFormat) textFormat.font = TextField.getBitmapFont(node.getAttributeCache(Attribute.FONT_NAME)); }
+		private function onFontSizeChange():void { if (textFormat) textFormat.size = parseFloat(node.getAttributeCache(Attribute.FONT_SIZE)); }
+		private function onFontColorChange():void { if (textFormat) textFormat.color = StringParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
 		private function onTextChange():void { text = node.getAttributeCache(Attribute.TEXT); }
 
-		public function get textFormat():TextFormat
+		private function get textFormat():BitmapFontTextFormat
 		{
-			return TextFieldTextEditor(textEditor).textFormat
+			return textEditor ? BitmapFontTextEditor(textEditor).textFormat : null;
 		}
 
 		public override function render(painter:Painter):void

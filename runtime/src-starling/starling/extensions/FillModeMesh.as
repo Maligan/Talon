@@ -3,9 +3,9 @@ package starling.extensions
 	import starling.display.Mesh;
 	import starling.events.Event;
 	import starling.rendering.IndexData;
-	import starling.rendering.MeshStyle;
 	import starling.rendering.Painter;
 	import starling.rendering.VertexData;
+	import starling.styles.MeshStyle;
 	import starling.utils.Align;
 	import starling.utils.Color;
 
@@ -170,7 +170,7 @@ package starling.extensions
 		}
 
 		//
-		// Recompose algorithm - main purpose of this class and all background system
+		// Recompose algorithm - main purpose of this class and all background fill system
 		//
 
 		private function recompose():void

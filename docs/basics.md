@@ -1,14 +1,14 @@
-## The Basics
+# The Basics
 Talon determines UI as tree of displayable **Nodes**.
 
-### Node
+## Node
 Node - is main building block, you can teat it as `DisplayObject`.
 In core node consist from 4 main parts:
 
-1. Has visible *bounds* (simple rectangle)
-3. Can contain children nodes
-2. Has *dynamic* set of **Attributes**
-4. Can contain attached **Style Sheet** and **Resource Dictionary**
+* Has visible *bounds* (simple rectangle)
+* Can contain children nodes
+* Has *dynamic* set of **Attributes**
+* Can contain attached **Style Sheet** and **Resource Dictionary**
 
 Fore example see next message box:
 
@@ -32,8 +32,8 @@ There is small but unfamiliar difference.
 There are two approach to implementation composite pattern:
 
 <!-- Уточнить по GOF эти названия -->
-1. Security - base composite object (aka `DisplayObject`) can be only leaf node in trees, and there is another inherit class (aka `DisplayObjectContainer`) which *can* contain another objects.
-2. Transparency - base composite object already has methods for work with children (aka `numChildren`, `getChildAt`, `addChild`, etc.)
+1. Security - base composite object (like `DisplayObject`) can be only leaf node in trees, and there is another inherit class (like `DisplayObjectContainer`) which *can* contain another objects.
+2. Transparency - base composite object already has methods for work with children (like `numChildren`, `getChildAt`, `addChild`, etc.)
 
 Any of this ways has pros and cons.
 Native flash or starling display tree use first way, but talon Node implement second way.
@@ -41,9 +41,6 @@ Native flash or starling display tree use first way, but talon Node implement se
 ### Node Attribute
 Attribute is named value. The principal rule:
 > Attribute *name* and *value* is always **string** values, no exceptions.
-
-This rule give solid basis for all toolkit, but it is not always easy to work with string, for example if you need work with set then array `["one", "two", "three"]` is more comfortable than string `"one two three"`.
-Therefore for most used attributes (like `width`, `x`, `classes` and same another) `Node` has strong typed accessors.
 
 #### Name
 Attribute name can be any string value: `"id"`, `"width"`, `"y"`, `"alpha"`, `"bla-bla-bla"`, `"1#@!:"`, etc. as you want. Node has a dynamically collection of attributes witch is lazy initialized by request i.e. function [`Node#getOrCreateAttribute(name:String):Attribute`](http://google.com/) always return non-null attribute object (as difined in its name :-)

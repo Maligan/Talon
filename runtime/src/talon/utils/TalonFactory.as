@@ -7,7 +7,6 @@ package talon.utils
 	import talon.Attribute;
 	import talon.Node;
 	import talon.StyleSheet;
-	import talon.utils.StringParseUtil;
 
 	public class TalonFactory
 	{
@@ -20,21 +19,20 @@ package talon.utils
 		public static const ATT_TYPE:String = "type";
 
 		protected var _parser:TMLParser;
-		protected var _parserProductStack:Array;
-		protected var _parserProductStackNonTerminal:Array;
+		protected var _parserStack:Array;
 		protected var _parserProduct:*;
+		protected var _parserLastTemplateRoot:Node;
 
 		protected var _linkageByDefault:Class;
 		protected var _linkage:Dictionary = new Dictionary();
-		public var _resources:Object = new Dictionary();
+		protected var _resources:Object = new Dictionary();
 		protected var _templates:Object = new Dictionary();
 		protected var _style:StyleSheet = new StyleSheet();
 
 		public function TalonFactory(linkageByDefault:Class):void
 		{
 			_linkageByDefault = linkageByDefault;
-			_parserProductStack = new Array();
-			_parserProductStackNonTerminal = new Array();
+			_parserStack = new Array();
 
 			_parser = new TMLParser(null, null);
 			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
@@ -53,6 +51,7 @@ package talon.utils
 			_parser.parse(template);
 			var result:* = _parserProduct;
 			var resultAsTalonElement:ITalonElement = result as ITalonElement;
+			_parserLastTemplateRoot = null;
 			_parserProduct = null;
 
 			// Add style and resources
@@ -70,7 +69,7 @@ package talon.utils
 			var type:String = _parser.cursorTags[0];
 			var attributes:Object = _parser.cursorAttributes;
 
-			// If template doesn't provide CSS type - install it from tag name
+			// If template doesn't provide CSS type - use tag name
 			if (attributes[Attribute.TYPE] == null)
 				attributes[Attribute.TYPE] = type;
 
@@ -79,23 +78,24 @@ package talon.utils
 			var element:* = new elementClass();
 			var elementNode:Node = getElementNode(element);
 
+			// Save last template root (for binding purpose)
+			if (_parserLastTemplateRoot == null || _parser.cursorTags.length>1)
+				_parserLastTemplateRoot = elementNode;
+
 			// Copy attributes to node
 			if (elementNode)
 				for (var key:String in attributes)
 					setNodeAttribute(elementNode, key, attributes[key]);
 
 			// Add to parent
-			if (_parserProductStack.length)
+			if (_parserStack.length)
 			{
-				var parent:* = _parserProductStack[_parserProductStack.length - 1];
+				var parent:* = _parserStack[_parserStack.length - 1];
 				var child:* = element;
 				addChild(parent, child);
 			}
 
-			_parserProductStack.push(element);
-
-			var isNonTerminal:Boolean = _parser.terminals.indexOf(type) == -1;
-			if (isNonTerminal) _parserProductStackNonTerminal.push(element);
+			_parserStack.push(element);
 		}
 
 		protected function getElementNode(element:*):Node
@@ -118,15 +118,13 @@ package talon.utils
 		{
 			var bindPattern:RegExp = /@(\w+)/;
 			var bindSplit:Array = bindPattern.exec(value);
-			var bindSource:String = bindSplit && bindSplit.length > 1 ? bindSplit[1] : null;
 
-			if (bindSource)
+			var bindSourceAttributeName:String = (bindSplit && bindSplit.length>1) ? bindSplit[1] : null;
+			if (bindSourceAttributeName)
 			{
-				var sourceElement:ITalonElement = (_parserProductStackNonTerminal.length ? _parserProductStackNonTerminal[_parserProductStackNonTerminal.length - 1] : _parserProductStack[0]) as ITalonElement;
-				var source:Attribute = sourceElement.node.getOrCreateAttribute(bindSource);
-				var target:Attribute = node.getOrCreateAttribute(attributeName);
-
-				target.upstream(source);
+				var bindSourceAttribute:Attribute = _parserLastTemplateRoot.getOrCreateAttribute(bindSourceAttributeName);
+				var bindTargetAttribute:Attribute = node.getOrCreateAttribute(attributeName);
+				bindTargetAttribute.upstream(bindSourceAttribute);
 			}
 			else
 			{
@@ -141,10 +139,7 @@ package talon.utils
 
 		protected function onElementEnd(e:Event):void
 		{
-			_parserProduct = _parserProductStack.pop();
-
-			var isNonTerminal:Boolean = getElementNode(_parserProduct).getAttributeCache(Attribute.TYPE) in _parser.templates;
-			if (isNonTerminal) _parserProductStackNonTerminal.pop();
+			_parserProduct = _parserStack.pop();
 		}
 
 		//
@@ -160,11 +155,7 @@ package talon.utils
 		public function addResource(id:String, resource:*):void { _resources[id] = resource; }
 
 		/** Add all key-value pairs from object. */
-		public function addResourcesFromObject(object:Object):void
-		{
-			for (var id:String in object)
-				addResource(id, object[id]);
-		}
+		public function addResourcesFromObject(object:Object):void { for (var id:String in object) addResource(id, object[id]); }
 
 		/** Add css to global factory scope. */
 		public function addStyleSheet(css:String):void { _style.parse(css); }
@@ -192,10 +183,10 @@ package talon.utils
 			// Registry by template id
 			_templates[id] = template;
 
-			// Registry by tag for reusable templates
-			var tag:String = xml.attribute(ATT_TYPE);
-			if (tag == null) throw new ArgumentError("Template must contains " + ATT_TYPE + " attribute");
-			_parser.templates[tag] = template;
+			// Registry by type for reusable templates
+			var type:String = xml.attribute(ATT_TYPE);
+			if (type == null) throw new ArgumentError("Template must contains " + ATT_TYPE + " attribute");
+			_parser.templates[type] = template;
 		}
 
 		public function removeTemplate(id:String):void

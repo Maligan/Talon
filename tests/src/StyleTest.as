@@ -42,9 +42,9 @@ package
 			sheet.parse("* { backgroundFillMode: stretch repeat; }");
 			node.setStyleSheet(sheet);
 
-			Assert.assertEquals("stretch repeat", node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE));
-			Assert.assertEquals("stretch", node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE_HORIZONTAL));
-			Assert.assertEquals("repeat", node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE_VERTICAL));
+			Assert.assertEquals("stretch repeat", node.getAttributeCache(Attribute.FILL_MODE));
+			Assert.assertEquals("stretch", node.getAttributeCache(Attribute.FILL_MODE_HORIZONTAL));
+			Assert.assertEquals("repeat", node.getAttributeCache(Attribute.FILL_MODE_VERTICAL));
 
 		}
 	}

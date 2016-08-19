@@ -22,7 +22,7 @@ package starling.extensions
 
 		private var _node:Node;
 		private var _bridge:DisplayObjectBridge;
-		private var _requiresRecompose:Boolean;
+		private var _requiresRecomposition:Boolean;
 
 		public function TalonTextField()
 		{
@@ -87,7 +87,7 @@ package starling.extensions
 		//
 		protected override function setRequiresRecomposition():void
 		{
-			_requiresRecompose = true;
+			_requiresRecomposition = true;
 			super.setRequiresRecomposition();
 		}
 
@@ -98,7 +98,7 @@ package starling.extensions
 				var meshBatch:DisplayObject = getChildAt(0);
 				var meshBounds:Rectangle = meshBatch.getBounds(meshBatch);
 
-				// Invoke recomposition - this is hack - it allow call private super.recompose() method without extra memory allocations.
+				// Invoke super.recompose() - via this hack.
 				super.getBounds(this, _helperRect);
 
 				// Add horizontal padding
@@ -120,7 +120,6 @@ package starling.extensions
 					meshBatch.y += Layout.pad(height, meshBounds.height, paddingTop, paddingBottom, StringParseUtil.parseAlign(format.verticalAlign));
 				else
 					meshBatch.y += Layout.pad(0, 0, paddingTop, paddingBottom, StringParseUtil.parseAlign(format.verticalAlign));
-
 			}
 		}
 
@@ -129,13 +128,13 @@ package starling.extensions
 			// Render background
 			_bridge.renderBackground(painter);
 
-			if (_requiresRecompose)
+			if (_requiresRecomposition)
 			{
-				_requiresRecompose = false;
+				_requiresRecomposition = false;
 				recomposeWithPadding();
 			}
 
-			// In this call recompose() nether will be invoked
+			// In this call recompose() nether will be invoked (already invoked)
 			// and now this is analog of super.super.render() :-)
 			super.render(painter);
 		}
@@ -147,7 +146,7 @@ package starling.extensions
 
 		public override function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
 		{
-			return _bridge.getBoundsCustom(super.getBounds, targetSpace, resultRect);
+			return _bridge.getBoundsCustom(null, targetSpace, resultRect);
 		}
 
 		public override function dispose():void

@@ -1,5 +1,6 @@
 package starling.extensions
 {
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 
 	import starling.display.DisplayObject;
@@ -9,10 +10,13 @@ package starling.extensions
 
 	import talon.Attribute;
 	import talon.Node;
+	import talon.enums.TouchMode;
 	import talon.utils.ITalonElement;
 
 	public class TalonSprite extends Sprite implements ITalonElement
 	{
+		private static var _helperRect:Rectangle = new Rectangle();
+
 		private var _node:Node;
 		private var _bridge:DisplayObjectBridge;
 
@@ -21,7 +25,6 @@ package starling.extensions
 			_node = new Node();
 			_node.addTriggerListener(Event.RESIZE, onNodeResize);
 			_bridge = new DisplayObjectBridge(this, node);
-			_bridge.addAttributeChangeListener(Attribute.CLIPPING, refreshClipping);
 		}
 
 		//
@@ -62,28 +65,8 @@ package starling.extensions
 			node.bounds.top = node.bounds.top;
 			node.bounds.bottom = node.bounds.bottom;
 
-			pivotX = int(node.accessor.pivotX.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width));
-			pivotY = int(node.accessor.pivotY.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.height));
-
-			x = node.bounds.x + pivotX;
-			y = node.bounds.y + pivotY;
-
-			refreshClipping();
-		}
-
-		private function refreshClipping():void
-		{
-			/*
-			var clippingString:String = _node.getAttributeCache(Attribute.CLIPPING);
-			var clipping:Boolean = StringParseUtil.parseBoolean(clippingString);
-
-			if (clipping && clipRect)
-				clipRect.setTo(0, 0, node.bounds.width, node.bounds.height);
-			else if (clipping && !clipRect)
-				clipRect = new Rectangle(0, 0, node.bounds.width, node.bounds.height);
-			else
-				clipRect = null;
-			*/
+			x = node.bounds.x - pivotX;
+			y = node.bounds.y - pivotY;
 		}
 
 		//
@@ -101,6 +84,28 @@ package starling.extensions
 		public override function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
 		{
 			return _bridge.getBoundsCustom(super.getBounds, targetSpace, resultRect);
+		}
+
+		public override function hitTest(localPoint:Point):DisplayObject
+		{
+			var localX:Number = localPoint.x;
+			var localY:Number = localPoint.y;
+
+			var superHitTest:DisplayObject = super.hitTest(localPoint);
+			if (superHitTest == null && _bridge.hasOpaqueBackground)
+			{
+				// Restore for hitTestMask()
+				localPoint.setTo(localX, localY);
+				// Make check like within super.hitTest()
+				if (!visible || !touchable || !hitTestMask(localPoint)) return null;
+
+				// Use getBoundsCustom(null, ...) directly - in this way there is no traveling via children
+				_helperRect.setEmpty();
+				var contains:Boolean = _bridge.getBoundsCustom(null, this, _helperRect).contains(localX, localY);
+				if (contains) return this;
+			}
+
+			return superHitTest;
 		}
 
 		public override function dispose():void

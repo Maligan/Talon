@@ -1,0 +1,147 @@
+* {
+	fontSize: 13px;
+}
+
+.popup {
+	fontName: Source_Sans_Pro;
+	fontSize: 13px;
+	fontColor: white;
+	fontSharpness: -1;
+
+	fill: $bg_dialog;
+	fillStretchGrid: 18px;
+
+	padding: 17px;
+	margin: -17px;
+}
+
+#goto label {
+	halign: left;
+	padding: 10px 12px;
+	width: *;
+	height: 35px;
+	cursor: button;
+	fontName: Source_Sans_Pro;
+
+	touchMode: leaf;
+	touchEvents: true;
+}
+
+#goto label:nth-child(2n) {
+	fill: #4e5051;
+}
+
+#goto label:hover {
+	/** NB! Color not from topcoat */
+	fill: #555859;
+}
+
+#goto label.selected {
+	fill: #406079;
+}
+
+input {
+	fill: $input_normal;
+	fillStretchGrid: 10px;
+
+	margin: -4px;
+	padding: 8px;
+	height: 35px;
+
+	cursor: ibeam;
+}
+
+input:error {
+	fill: $input_error;	
+}
+
+input:focus {
+	fill: $input_focus;	
+}
+
+button {
+	fill: $button_normal;
+	fillStretchGrid: 4px;
+	cursor: button;
+
+	fontSize: 13px;
+	fontName: Source_Sans_Pro;
+	fontColor: #F0F1F1;
+	height: 2em;
+
+	valign: center;
+	halign: center;
+
+	padding: 0.2em 0.5em 0em;
+
+	label: Button;
+
+	touchMode: leaf;
+	touchEvents: true;
+}
+
+button:hover {
+	fill: $button_over;
+}
+
+button:active {
+	fill: $button_down;
+}
+
+button.action {
+	fill: $button_action_normal;
+	fontColor: #FFFFFF;
+}
+
+button.action:hover {
+	fill: $button_action_over;
+}
+
+button.action:active {
+	fill: $button_action_down;
+}
+
+checkbox label {
+	fontName: Source_Sans_Pro;
+	fontColor: #FFFFFF;
+	marginTop: -2px;
+	ivalign: center;
+
+	/*filter: drop-shadow(1, -90deg, black, 0.5, 0);*/
+}
+
+checkbox { 
+	cursor: button;
+	touchMode: leaf;
+	touchEvents: true;
+}
+
+checkbox #flag { src: $checkbox_unckecked_normal; }
+checkbox:active #flag { src: $checkbox_unckecked_down; }
+
+#interface.dark #container  { fill: $('bg_dark'); }
+#interface.light #container { fill: $('bg_light'); }
+#interface #container { fillMode: repeat; }
+
+
+#interface.dark #bsod  { fontColor: white; }
+#interface.white #bsod { fontColor: black; }
+#interface #bsod {
+	fill: #ff0000;
+	alpha: 0.0;
+
+	fontName: Consolas;
+	fontSize: 128px;
+
+	width: 100%;
+	height: 100%;
+	halign: center;
+	valign: center;
+	orientation: vertical;
+}
+
+
+#interface #drag.active {
+	fill: $drag;
+	fillStretchGrid: 5px;
+}

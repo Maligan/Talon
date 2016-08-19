@@ -1,0 +1,124 @@
+<library>
+
+	<template id="Interface">
+		<node id="interface" width="100%" height="100%" layout="abs" class="dark">
+			<node id="container" width="100%" height="100%" />
+			<node id="bsod" width="100%" height="100%"><label width="100%" height="100%" autoScale="true" text="¯\_(ツ)_/¯" /></node>
+			<node id="popups" width="100%" height="100%" layout="flow" halign="center" valign="center"/>
+			<image src="$error" width="48px" height="48px" anchor="0px 100% none none" margin="10px" />
+			<node id="drag" width="100%" height="100%" />
+		</node>
+	</template>
+
+	<template id="ProfilePopup">
+		<node class="popup" layout="flow" orientation="vertical"> 
+
+			<label text="$dialog.profile.title" padding="8px" /> <!-- width="*" -->
+
+			<node orientation="vertical" gap="8px" padding="8px" width="*" fill="gray" fillAlpha="0.1">
+				<node width="100%" gap="8px">
+					<label text="$dialog.profile.size" width="*" height="*" halign="left" valign="center" />
+					<input id="_width" width="48" />
+					<label text="x" ivalign="center" margin="none -6px" />
+					<input id="_height" width="48" />
+				</node>
+
+				<node width="100%"> 
+					<label text="$dialog.profile.DPI" halign="left" valign="center" width="*" height="*" />
+					<input id="_dpi" width="48" />
+				</node>
+
+				<node width="100%"> 
+					<label text="$dialog.profile.CSF" halign="left" valign="center" width="*" height="*" />
+					<input id="_csf" width="48" />
+				</node>
+			</node>
+
+			<node ihalign="center" margin="none" gap="8px" padding="8px" width="150px">
+				<button id="_accept" label="$button.accept" width="*" class="action" />
+				<button id="_cancel" label="$button.cancel" width="*" />
+			</node>
+
+		</node>
+	</template>
+
+	<template id="BoxModel">
+		<node fill="gray" layout="abs" width="100" height="100">
+			<node width="32" height="32" position="100" />
+		</node>
+	</template>
+
+	<template id="UpdatePopup">
+		<node class="popup" orientation="vertical" width="300px">
+
+			<label text="Check for Updates" padding="8px" />
+
+			<node fill="gray" fillAlpha="0.1" width="100%" orientation="horizontal" gap="10px" padding="8px">
+				<!--<label text="hello world" padding="" />-->
+				<!--<label text="hello world" padding="" />-->
+				<!--<label text="hello world" padding="" />-->
+				<!--<label text="hello world" padding="" />-->
+				<label text="Ask server for last version..." width="*" height="*" />
+				<image id="spinner" pivotX="8px" pivotY="8" source="$spinner_16"/>
+			</node>
+
+			<node ihalign="center" margin="none" gap="8px" padding="8px" width="100%" halign="right">
+				<button id="accept" label="Update" class="action" />
+				<button id="cancel" label="Cancel" />
+			</node>
+
+		</node>
+	</template>
+
+	<!--
+	<template id="PreferencesPopup">
+		<node class="popup" layout="flow" orientation="vertical"> 
+
+			<label text="$dialog.preferences.title" width="*" padding="8px" />
+
+			<node orientation="vertical" gap="8px" padding="8px" width="*" fill="gray" fillAlpha="0.1">
+				<checkbox label="$dialog.preferences.showStats" />
+				<checkbox label="$dialog.preferences.alwaysOnTop" />
+				<checkbox label="$dialog.preferences.checkForUpdate" />
+				<checkbox label="$dialog.preferences.lockWindowSize" />
+				<checkbox label="$dialog.preferences.openLastDocument" />
+			</node>
+
+			<node ihalign="center" margin="none" gap="8px" padding="8px">
+				<button id="_accept" label="$button.accept" class="action" />
+				<button id="_cancel" label="$button.cancel" />
+			</node>
+
+		</node>
+	</template>
+	-->
+
+	<template id="GoToPopup">
+		<node class="popup" id="goto" orientation="vertical"> 
+			<input width="300px" margin="4px"/>
+			<label />
+			<label />
+			<label />
+			<label />
+			<label />
+			<label />
+		</node>
+	</template>
+
+
+	<template id="Input" type="input">
+		<label type="input" />
+	</template>
+
+	<template id="Button" type="button">
+		<label type="button" text="@label" />
+	</template>
+
+	<template id="Checkbox" type="checkbox">
+		<node type="checkbox" label="Checkbox">
+			<image id="flag" />
+			<label text="@label" halign="left" />
+		</node>
+	</template>
+
+</library>

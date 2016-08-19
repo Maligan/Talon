@@ -1,5 +1,6 @@
 package talon.browser.platform.popups
 {
+	import starling.animation.Juggler;
 	import starling.animation.Tween;
 	import starling.core.Starling;
 	import starling.display.DisplayObjectContainer;
@@ -15,12 +16,14 @@ package talon.browser.platform.popups
 		private var _platform:AppPlatform;
 		private var _popups:Vector.<Popup>;
 		private var _host:DisplayObjectContainer;
+		private var _juggler:Juggler;
 
 		private var _notifyTween:Tween;
 
 		public function PopupManager(platform:AppPlatform)
 		{
 			_popups = new <Popup>[];
+			_juggler = new Juggler();
 			_platform = platform;
 		}
 
@@ -39,7 +42,7 @@ package talon.browser.platform.popups
 				_notifyTween.onUpdate = notifyUpdate;
 				_notifyTween.onUpdateArgs = [topmost, topmost.x];
 
-				Starling.juggler.add(_notifyTween);
+				juggler.add(_notifyTween);
 			}
 		}
 
@@ -99,6 +102,11 @@ package talon.browser.platform.popups
 		public function get hasOpenedPopup():Boolean
 		{
 			return _popups.length > 0;
+		}
+
+		public function get juggler():Juggler
+		{
+			return _juggler;
 		}
 
 		public function get host():DisplayObjectContainer { return _host; }

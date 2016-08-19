@@ -108,7 +108,8 @@ package talon.browser.desktop
 
 		private function onStarted(e:*):void
 		{
-			stage.nativeWindow.visible = true;
+			// Make visible & focus
+			stage.nativeWindow.activate();
 		}
 
 		private function onInvoke(e:InvokeEvent):void

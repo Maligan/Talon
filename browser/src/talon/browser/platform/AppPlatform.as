@@ -73,6 +73,7 @@ package talon.browser.platform
 		private function onStarlingRootCreated(e:Event):void
 		{
 			_starling.removeEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
+			_starling.juggler.add(_popups.juggler);
 
 			if (_started) start();
 		}

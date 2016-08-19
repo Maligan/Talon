@@ -73,6 +73,7 @@ package talon.utils
 				// If node must be replaced (by parent node rewrites) to another XML
 				else if (replacer != EMPTY_XML)
 				{
+					// TODO: May be _tags.pop() ?
 					parseInternal(replacer, attributes, rewrites);
 				}
 			}

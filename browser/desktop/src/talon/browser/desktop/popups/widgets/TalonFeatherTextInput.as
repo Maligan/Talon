@@ -41,6 +41,7 @@ package talon.browser.desktop.popups.widgets
 			_bridge.addAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
 			_bridge.addAttributeChangeListener(Attribute.TEXT, onTextChange);
+			_bridge.addAttributeChangeListener(Attribute.PADDING, onPaddingChange);
 
 			restrict = "0-9.,";
 			maxChars = 5;
@@ -88,6 +89,13 @@ package talon.browser.desktop.popups.widgets
 		private function onFontSizeChange():void { if (textFormat) textFormat.size = parseFloat(node.getAttributeCache(Attribute.FONT_SIZE)); }
 		private function onFontColorChange():void { if (textFormat) textFormat.color = StringParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
 		private function onTextChange():void { text = node.getAttributeCache(Attribute.TEXT); }
+		private function onPaddingChange():void
+		{
+			paddingLeft = node.accessor.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+			paddingRight = node.accessor.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+			paddingTop = node.accessor.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+			paddingBottom = node.accessor.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+		}
 
 		private function get textFormat():BitmapFontTextFormat
 		{

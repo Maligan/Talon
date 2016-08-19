@@ -3,17 +3,18 @@
 ## Theory
 1. [Basics](basics.md)
 	* Node
+	* Styles/Resources
 	* Attribute
-	* Styles
-	* Resources
-2. [Layouts](layouts.md)
+2. [Background](background.md)
+	* Fill Model
+3. [Layouts](layouts.md)
 	* Box Model
 	* Gauges
 	* Layouts
 		* Absolute
 		* Flow
 		* Grid
-3. [Template Markup Language (TML)](tml.md)
+4. [Template Markup Language (TML)](tml.md)
 	* Formal Grammars
 	* Expanding
 	* Keywords and syntax

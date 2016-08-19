@@ -170,7 +170,7 @@ package starling.extensions
 		}
 
 		//
-		// Recompose algorithm - main purpose of this class and all background system
+		// Recompose algorithm - main purpose of this class and all background fill system
 		//
 
 		private function recompose():void

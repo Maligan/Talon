@@ -224,6 +224,7 @@ package talon
 		/** Current node 'fontSize' expressed in pixels.*/
 		public function get ppem():Number
 		{
+			// FIXME: Remove base (already in Attribute.FONT_SIZE) (or recalculate it?)
 			const BASE:int = 12;
 
 			// If fontSize is inherit:

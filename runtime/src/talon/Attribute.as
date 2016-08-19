@@ -1,5 +1,8 @@
 package talon
 {
+	import flash.utils.setInterval;
+	import flash.utils.setTimeout;
+
 	import talon.enums.*;
 	import talon.layout.Layout;
 	import talon.utils.*;
@@ -51,16 +54,16 @@ package talon
 		public static const ANCHOR_LEFT:String                     = registerAttribute("anchorLeft",          NONE);
 		public static const ANCHOR:String                          = registerComposite("anchor",              [ANCHOR_TOP, ANCHOR_RIGHT, ANCHOR_BOTTOM, ANCHOR_LEFT]);
 
-		public static const BACKGROUND_FILL:String                 = registerAttribute("backgroundFill",                NONE);
-		public static const BACKGROUND_STRETCH_GRID_TOP:String     = registerAttribute("backgroundStretchGridTop",      NONE);
-		public static const BACKGROUND_STRETCH_GRID_RIGHT:String   = registerAttribute("backgroundStretchGridRight",    NONE);
-		public static const BACKGROUND_STRETCH_GRID_BOTTOM:String  = registerAttribute("backgroundStretchGridBottom",   NONE);
-		public static const BACKGROUND_STRETCH_GRID_LEFT:String    = registerAttribute("backgroundStretchGridLeft",     NONE);
-		public static const BACKGROUND_STRETCH_GRID:String         = registerComposite("backgroundStretchGrid",         [BACKGROUND_STRETCH_GRID_TOP, BACKGROUND_STRETCH_GRID_RIGHT, BACKGROUND_STRETCH_GRID_BOTTOM, BACKGROUND_STRETCH_GRID_LEFT]);
-		public static const BACKGROUND_ALPHA:String                = registerAttribute("backgroundAlpha",               ONE);
-		public static const BACKGROUND_FILL_MODE_HORIZONTAL:String = registerAttribute("backgroundFillModeHorizontal",  FillMode.STRETCH);
-		public static const BACKGROUND_FILL_MODE_VERTICAL:String   = registerAttribute("backgroundFillModeVertical",    FillMode.STRETCH);
-		public static const BACKGROUND_FILL_MODE:String            = registerComposite("backgroundFillMode",            [BACKGROUND_FILL_MODE_HORIZONTAL, BACKGROUND_FILL_MODE_VERTICAL]);
+		public static const FILL:String                            = registerAttribute("fill",                  NONE);
+		public static const FILL_STRETCH_GRID_TOP:String           = registerAttribute("fillStretchGridTop",    NONE);
+		public static const FILL_STRETCH_GRID_RIGHT:String         = registerAttribute("fillStretchGridRight",  NONE);
+		public static const FILL_STRETCH_GRID_BOTTOM:String        = registerAttribute("fillStretchGridBottom", NONE);
+		public static const FILL_STRETCH_GRID_LEFT:String          = registerAttribute("fillStretchGridLeft",   NONE);
+		public static const FILL_STRETCH_GRID:String               = registerComposite("fillStretchGrid",       [FILL_STRETCH_GRID_TOP, FILL_STRETCH_GRID_RIGHT, FILL_STRETCH_GRID_BOTTOM, FILL_STRETCH_GRID_LEFT]);
+		public static const FILL_ALPHA:String                      = registerAttribute("fillAlpha",             ONE);
+		public static const FILL_MODE_HORIZONTAL:String            = registerAttribute("fillModeHorizontal",    FillMode.STRETCH);
+		public static const FILL_MODE_VERTICAL:String              = registerAttribute("fillModeVertical",      FillMode.STRETCH);
+		public static const FILL_MODE:String                       = registerComposite("fillMode",              [FILL_MODE_HORIZONTAL, FILL_MODE_VERTICAL]);
 
 		public static const FONT_COLOR:String                      = registerAttribute("fontColor",           INHERIT, "#FFFFFF");
 		public static const FONT_NAME:String                       = registerAttribute("fontName",            INHERIT, "mini");
@@ -166,7 +169,7 @@ package talon
 				return new InheritableSolver(attribute, _defInherit[attribute.name]);
 			}
 
-			var styleable:Boolean = _defIsStyleable[attribute.name];
+			var styleable:Boolean = attribute.name in _defIsStyleable ? _defIsStyleable[attribute.name] : true;
 			return new SimpleSolver(styleable ? -1 : 1);
 		}
 
@@ -273,6 +276,7 @@ package talon
 		/** @private */
 		public function upstream(attribute:Attribute):void
 		{
+			_solver.change.removeListener(dispatchChange);
 			_solver = attribute._solver;
 			_solver.change.addListener(dispatchChange);
 			dispatchChange();

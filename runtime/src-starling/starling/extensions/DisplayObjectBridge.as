@@ -50,10 +50,10 @@ package starling.extensions
 			_background.addEventListener(Event.CHANGE, _target.setRequiresRedraw);
 
 			// Background
-			addAttributeChangeListener(Attribute.BACKGROUND_FILL,           onBackgroundFillChange);
-			addAttributeChangeListener(Attribute.BACKGROUND_FILL_MODE,      onBackgroundFillModeChange);
-			addAttributeChangeListener(Attribute.BACKGROUND_STRETCH_GRID,   onBackgroundStretchGridChange);
-			addAttributeChangeListener(Attribute.BACKGROUND_ALPHA,          onBackgroundAlphaChange);
+			addAttributeChangeListener(Attribute.FILL,           onFillChange);
+			addAttributeChangeListener(Attribute.FILL_MODE,      onFillModeChange);
+			addAttributeChangeListener(Attribute.FILL_STRETCH_GRID,   onFillStretchGridChange);
+			addAttributeChangeListener(Attribute.FILL_ALPHA,          onFillAlphaChange);
 
 			// Common options
 			addAttributeChangeListener(Attribute.ID,                        onIDChange);
@@ -66,6 +66,10 @@ package starling.extensions
 			addAttributeChangeListener(Attribute.TOUCH_MODE,                onTouchModeChange);
 			addAttributeChangeListener(Attribute.TOUCH_EVENTS,              onTouchEventsChange);
 			addAttributeChangeListener(Attribute.CURSOR,                    onCursorChange);
+
+			// Pivot
+			addAttributeChangeListener(Attribute.PIVOT_X,					onPivotXChange);
+			addAttributeChangeListener(Attribute.PIVOT_Y,					onPivotYChange);
 		}
 
 		public function addAttributeChangeListener(attribute:String, listener:Function, immediate:Boolean = false):void
@@ -82,11 +86,26 @@ package starling.extensions
 		}
 
 		//
+		// Pivot
+		//
+		private function onPivotXChange():void
+		{
+			_target.pivotX = _node.accessor.pivotX.toPixels(_node.ppmm, _node.ppem, _node.ppdp, _node.bounds.width);
+			trace(_target.pivotX);
+		}
+
+		private function onPivotYChange():void
+		{
+			_target.pivotY = _node.accessor.pivotY.toPixels(_node.ppmm, _node.ppem, _node.ppdp, _node.bounds.height);
+			trace(_target.pivotY);
+		}
+
+		//
 		// Listeners: Background
 		//
-		private function onBackgroundFillChange():void
+		private function onFillChange():void
 		{
-			var value:* = _node.getAttributeCache(Attribute.BACKGROUND_FILL);
+			var value:* = _node.getAttributeCache(Attribute.FILL);
 			if (value is Texture)
 			{
 				_background.texture = value;
@@ -101,28 +120,28 @@ package starling.extensions
 			}
 		}
 
-		private function onBackgroundFillModeChange():void
+		private function onFillModeChange():void
 		{
-			_background.horizontalFillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE_HORIZONTAL);
-			_background.verticalFillMode = _node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE_VERTICAL);
+			_background.horizontalFillMode = _node.getAttributeCache(Attribute.FILL_MODE_HORIZONTAL);
+			_background.verticalFillMode = _node.getAttributeCache(Attribute.FILL_MODE_VERTICAL);
 		}
 
-		private function onBackgroundAlphaChange():void
+		private function onFillAlphaChange():void
 		{
-			_background.alpha = parseFloat(_node.getAttributeCache(Attribute.BACKGROUND_ALPHA));
+			_background.alpha = parseFloat(_node.getAttributeCache(Attribute.FILL_ALPHA));
 		}
 
-		private function onBackgroundStretchGridChange():void
+		private function onFillStretchGridChange():void
 		{
 			var textureWidth:int = _background.texture ? _background.texture.width : 0;
 			var textureHeight:int = _background.texture ? _background.texture.height : 0;
 
 			_background.setStretchOffsets
 			(
-				Gauge.toPixels(_node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID_TOP), _node.ppmm, _node.ppem, _node.ppdp, textureHeight),
-				Gauge.toPixels(_node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID_RIGHT), _node.ppmm, _node.ppem, _node.ppdp, textureWidth),
-				Gauge.toPixels(_node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID_BOTTOM), _node.ppmm, _node.ppem, _node.ppdp, textureHeight),
-				Gauge.toPixels(_node.getAttributeCache(Attribute.BACKGROUND_STRETCH_GRID_LEFT), _node.ppmm, _node.ppem, _node.ppdp, textureWidth)
+				Gauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_TOP), _node.ppmm, _node.ppem, _node.ppdp, textureHeight),
+				Gauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_RIGHT), _node.ppmm, _node.ppem, _node.ppdp, textureWidth),
+				Gauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_BOTTOM), _node.ppmm, _node.ppem, _node.ppdp, textureHeight),
+				Gauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_LEFT), _node.ppmm, _node.ppem, _node.ppdp, textureWidth)
 			);
 		}
 
@@ -267,26 +286,24 @@ package starling.extensions
 
 		public function getBoundsCustom(base:Function, targetSpace:DisplayObject, resultRect:Rectangle):Rectangle
 		{
-			if (resultRect == null)
-				resultRect = new Rectangle();
+			if (resultRect == null) resultRect = new Rectangle();
+			else resultRect.setEmpty();
 
 			if (base != null)
 				resultRect = base(targetSpace, resultRect);
 
+			var isEmpty:Boolean = resultRect.isEmpty();
+
 			// Expand resultRect with background bounds
-			// FIXME: Expand ignore resultRect == null in args => expand from (0; 0)
-//			if (hasOpaqueBackground)
-			{
-				_target.getTransformationMatrix(targetSpace, MATRIX);
+			_target.getTransformationMatrix(targetSpace, MATRIX);
 
-				var topLeft:Point = MatrixUtil.transformCoords(MATRIX, 0, 0, POINT);
-				if (resultRect.left > topLeft.x) resultRect.left = topLeft.x;
-				if (resultRect.top > topLeft.y) resultRect.top = topLeft.y;
+			var topLeft:Point = MatrixUtil.transformCoords(MATRIX, 0, 0, POINT);
+			if (isEmpty || resultRect.left>topLeft.x) resultRect.left = topLeft.x;
+			if (isEmpty || resultRect.top>topLeft.y) resultRect.top = topLeft.y;
 
-				var bottomRight:Point = MatrixUtil.transformCoords(MATRIX, _background.width, _background.height, POINT);
-				if (resultRect.right < bottomRight.x) resultRect.right = bottomRight.x;
-				if (resultRect.bottom < bottomRight.y) resultRect.bottom = bottomRight.y;
-			}
+			var bottomRight:Point = MatrixUtil.transformCoords(MATRIX, _node.bounds.width, _node.bounds.height, POINT);
+			if (isEmpty || resultRect.right<bottomRight.x) resultRect.right = bottomRight.x;
+			if (isEmpty || resultRect.bottom<bottomRight.y) resultRect.bottom = bottomRight.y;
 
 			return resultRect;
 		}

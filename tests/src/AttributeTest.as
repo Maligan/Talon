@@ -187,15 +187,15 @@ package
 
 			// Direct
 			node = new Node();
-			node.setAttribute(Attribute.BACKGROUND_FILL_MODE, fillMode);
-			Assert.assertEquals(horizontal, node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE_HORIZONTAL));
-			Assert.assertEquals(vertical, node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE_VERTICAL));
+			node.setAttribute(Attribute.FILL_MODE, fillMode);
+			Assert.assertEquals(horizontal, node.getAttributeCache(Attribute.FILL_MODE_HORIZONTAL));
+			Assert.assertEquals(vertical, node.getAttributeCache(Attribute.FILL_MODE_VERTICAL));
 
 			// Reverse
 			node = new Node();
-			node.setAttribute(Attribute.BACKGROUND_FILL_MODE_HORIZONTAL, horizontal);
-			node.setAttribute(Attribute.BACKGROUND_FILL_MODE_VERTICAL, vertical);
-			Assert.assertEquals(fillMode, node.getAttributeCache(Attribute.BACKGROUND_FILL_MODE));
+			node.setAttribute(Attribute.FILL_MODE_HORIZONTAL, horizontal);
+			node.setAttribute(Attribute.FILL_MODE_VERTICAL, vertical);
+			Assert.assertEquals(fillMode, node.getAttributeCache(Attribute.FILL_MODE));
 		}
 	}
 }

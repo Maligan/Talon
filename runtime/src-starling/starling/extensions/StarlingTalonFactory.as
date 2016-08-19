@@ -40,6 +40,7 @@ package starling.extensions
 
 			var manager:AssetManagerExtended = new AssetManagerExtended(null /*getNameCallback*/);
 			manager.verbose = false;
+			manager.useMipMaps = false; // FIXME: Bugs with MipMaps
 			manager.enqueueZip(bytes);
 			manager.loadQueue(onProgress);
 

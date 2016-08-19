@@ -2,8 +2,12 @@ package talon.browser.desktop.popups
 {
 	import feathers.events.FeathersEventType;
 
+	import flash.display.InteractiveObject;
+	import flash.events.FocusEvent;
+
 	import flash.text.TextFormatAlign;
 	import flash.ui.Keyboard;
+	import flash.utils.setTimeout;
 
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
@@ -72,7 +76,6 @@ package talon.browser.desktop.popups
 			_input.restrict = null;
 			_input.maxChars = 60;
 			_input.setFocus();
-			_input.paddingLeft = 8; // 2px GAP!
 
 			_input.addEventListener(Event.CHANGE, function():void
 			{
@@ -80,12 +83,8 @@ package talon.browser.desktop.popups
 				refresh();
 			});
 
-			_input.addEventListener(FeathersEventType.FOCUS_OUT, function():void {
-				// FIXME: Much CPU load
-				_input.setFocus();
-			});
-
-			addEventListener(KeyboardEvent.KEY_UP, function():void {
+			addEventListener(KeyboardEvent.KEY_UP, function():void
+			{
 				_input.text = _input.text.replace(/[^\w\d_]/g, "");
 			});
 			// ---------------------------------------------------------------------------

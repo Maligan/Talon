@@ -3,7 +3,6 @@ package talon.browser.desktop.popups
 	import flash.events.Event;
 
 	import talon.browser.desktop.utils.Updater;
-	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.popups.Popup;
 
 	public class UpdatePopup extends Popup
@@ -13,25 +12,26 @@ package talon.browser.desktop.popups
 		protected override function initialize():void
 		{
 			addChild(manager.factory.create("UpdatePopup"));
+			node.commit();
 
-			_updater = new Updater(AppConstants.APP_UPDATE_URL, AppConstants.APP_VERSION);
+			query("#cancel").onTap(onCancelClick);
+			query("#update").onTap(onUpdateClick);
+			query("#spinner").tween(1, { rotation: 2*Math.PI, repeatCount: 0 }, juggler);
+
+			_updater = Updater(data);
 			_updater.addEventListener(Event.CHANGE, onUpdaterChange);
 			_updater.addEventListener(Event.COMPLETE, onUpdaterComplete);
-			_updater.execute(true);
-		}
-
-		public override function dispose():void
-		{
-			_updater.removeEventListener(Event.CHANGE, onUpdaterChange);
-			_updater.removeEventListener(Event.COMPLETE, onUpdaterComplete);
-			_updater.stop();
-
-			super.dispose();
 		}
 
 		private function onUpdateClick(e:*):void
 		{
 			_updater.execute();
+		}
+
+		private function onCancelClick():void
+		{
+			_updater.stop();
+			close();
 		}
 
 		//

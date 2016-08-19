@@ -34,6 +34,7 @@ package talon.browser.platform
 		public static const SETTING_BACKGROUND_DEFAULT:String = SETTING_BACKGROUND_DARK;
 		public static const SETTING_BACKGROUND_STAGE_COLOR:Object = { "dark": 0x3F4142, "light": 0xBFBFBF };
 		public static const SETTING_STATS:String = "stats";
+		public static const SETTING_OUTLINE:String = "outline";
 		public static const SETTING_ZOOM:String = "zoom";
 		public static const SETTING_LOCK_RESIZE:String = "lockWindowResize";
 		public static const SETTING_ALWAYS_ON_TOP:String = "alwaysOnTop";

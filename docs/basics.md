@@ -1,14 +1,14 @@
-## The Basics
+# The Basics
 Talon determines UI as tree of displayable **Nodes**.
 
-### Node
+## Node
 Node - is main building block, you can teat it as `DisplayObject`.
 In core node consist from 4 main parts:
 
-1. Has visible *bounds* (simple rectangle)
-3. Can contain children nodes
-2. Has *dynamic* set of **Attributes**
-4. Can contain attached **Style Sheet** and **Resource Dictionary**
+* Has visible *bounds* (simple rectangle)
+* Can contain children nodes
+* Has *dynamic* set of **Attributes**
+* Can contain attached **Style Sheet** and **Resource Dictionary**
 
 Fore example see next message box:
 

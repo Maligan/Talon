@@ -1,7 +1,9 @@
 package talon.browser.platform.popups
 {
+	import starling.animation.Juggler;
 	import starling.errors.AbstractMethodError;
 	import starling.events.KeyboardEvent;
+	import starling.extensions.TalonQuery;
 	import starling.extensions.TalonSprite;
 
 	import talon.Attribute;
@@ -10,11 +12,14 @@ package talon.browser.platform.popups
 	{
 		private var _manager:PopupManager;
 		private var _data:Object;
+		private var _query:TalonQuery;
+		private var _juggler:Juggler;
 
 		internal final function ctor(manager:PopupManager, data:Object = null):void
 		{
 			node.setAttribute(Attribute.POSITION, "50%");
 
+			_query = new TalonQuery(this);
 			_manager = manager;
 			_data = data;
 
@@ -31,6 +36,11 @@ package talon.browser.platform.popups
 			return _data;
 		}
 
+		protected final function get juggler():Juggler
+		{
+			return _juggler;
+		}
+
 		protected final function get manager():PopupManager
 		{
 			return _manager;
@@ -39,16 +49,21 @@ package talon.browser.platform.popups
 		//
 		// Code sugar
 		//
+		protected final function query(selector:String):TalonQuery
+		{
+			return _query.reset(this).select(selector);
+		}
+
 		protected final function close():void
 		{
 			manager.close(this);
 		}
 
-		protected final function addKeyboardListener(keyCode:int, listener:Function, type:String = KeyboardEvent.KEY_DOWN):void
+		protected final function addKeyboardListener(keyCode:int = -1, listener:Function = null, type:String = KeyboardEvent.KEY_DOWN):void
 		{
 			addEventListener(type, function(e:KeyboardEvent):void
 			{
-				if (e.keyCode == keyCode)
+				if (keyCode == -1 || keyCode == e.keyCode)
 					listener.length
 						? listener(e)
 						: listener();

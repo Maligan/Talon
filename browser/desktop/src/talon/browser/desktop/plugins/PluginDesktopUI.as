@@ -1,14 +1,13 @@
 package talon.browser.desktop.plugins
 {
-	import air.update.ApplicationUpdaterUI;
-
+	import flash.display.Graphics;
 	import flash.display.NativeWindow;
 	import flash.events.NativeWindowBoundsEvent;
-
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 
 	import starling.core.Starling;
@@ -23,12 +22,13 @@ package talon.browser.desktop.plugins
 	import starling.extensions.TalonSprite;
 	import starling.filters.BlurFilter;
 	import starling.utils.Align;
+	import starling.utils.Color;
 
 	import talon.Attribute;
 	import talon.browser.desktop.commands.OpenDocumentCommand;
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
-	import talon.browser.platform.AppConstants;
+	import talon.browser.desktop.utils.Updater;
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;
 	import talon.browser.platform.AppPlatformEvent;
@@ -47,7 +47,7 @@ package talon.browser.desktop.plugins
 		private var _platform:AppPlatform;
 		private var _menu:AppUINativeMenu;
 		private var _popups:PopupManager;
-		private var _updater:ApplicationUpdaterUI;
+		private var _updater:Updater;
 
 		private var _locale:Object;
 		private var _factory:StarlingTalonFactory;
@@ -80,10 +80,7 @@ package talon.browser.desktop.plugins
 
 			_platform.profile.addEventListener(Event.CHANGE, onProfileChange);
 
-			_updater = new ApplicationUpdaterUI();
-			_updater.isCheckForUpdateVisible = false;
-			_updater.updateURL = AppConstants.APP_UPDATE_URL + "?rnd=" + int(Math.random() * int.MAX_VALUE);
-			_updater.initialize();
+			_updater = new Updater(AppConstants.APP_UPDATE_URL, AppConstants.APP_VERSION);
 
 			var fileLocale:File = File.applicationDirectory.resolvePath("locales/en_US.properties");
 			if (fileLocale.exists)
@@ -165,7 +162,9 @@ package talon.browser.desktop.plugins
 			var isEnableAutoUpdate:Boolean = _platform.settings.getValueOrDefault(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, Boolean, true);
 			// TODO: Save for have default value != null
 			_platform.settings.setValue(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, isEnableAutoUpdate);
-			if (isEnableAutoUpdate) _updater.checkNow();
+
+			// FIXME: Auto check
+			// if (isEnableAutoUpdate) _updater.checkNow();
 
 			// REOPEN
 			var invArgs:Array = e.data as Array;
@@ -267,6 +266,7 @@ package talon.browser.desktop.plugins
 
 			_platform.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, onBackgroundChange); onBackgroundChange(null);
 			_platform.settings.addPropertyListener(AppConstants.SETTING_STATS, onStatsChange); onStatsChange(null);
+			_platform.settings.addPropertyListener(AppConstants.SETTING_OUTLINE, onOutlineChange); onOutlineChange(null);
 			_platform.settings.addPropertyListener(AppConstants.SETTING_ZOOM, onZoomChange); onZoomChange(null);
 			_platform.settings.addPropertyListener(AppConstants.SETTING_ALWAYS_ON_TOP, onAlwaysOnTopChange); onAlwaysOnTopChange(null);
 
@@ -278,6 +278,7 @@ package talon.browser.desktop.plugins
 		private function onPopupManagerChange(e:Event):void
 		{
 			locked = _popups.hasOpenedPopup;
+			refreshOutline(_template);
 		}
 
 		private function onIsolatorTouch(e:TouchEvent):void
@@ -301,6 +302,11 @@ package talon.browser.desktop.plugins
 			Starling.current.showStats = _platform.settings.getValueOrDefault(AppConstants.SETTING_STATS, Boolean, false);
 		}
 
+		private function onOutlineChange(e:Event):void
+		{
+			refreshOutline(_template);
+		}
+
 		private function onZoomChange(e:Event):void
 		{
 			zoom = _platform.settings.getValueOrDefault(AppConstants.SETTING_ZOOM, int, 100) / 100;
@@ -322,7 +328,8 @@ package talon.browser.desktop.plugins
 			if (_container)
 			{
 				_container.node.bounds.setTo(0, 0, width/zoom, height/zoom);
-				_container.node.invalidate();
+				_container.node.commit();
+				refreshOutline(_template);
 			}
 		}
 
@@ -390,6 +397,38 @@ package talon.browser.desktop.plugins
 			dispatchEventWith(Event.CHANGE);
 		}
 
+		private function refreshOutline(displayObject:DisplayObject):void
+		{
+			var graphics:Graphics = Starling.current.nativeOverlay.graphics;
+			graphics.clear();
+
+			if (outline && !locked)
+			{
+				graphics.lineStyle(1, Color.FUCHSIA);
+				refreshOutlineRect(graphics, displayObject, -1);
+			}
+		}
+
+		private function refreshOutlineRect(graphics:Graphics, displayObject:DisplayObject, deep:Number = -1):void
+		{
+			if (deep!=0 && displayObject && displayObject.stage)
+			{
+				var displayObjectAsTalonElement:ITalonElement = displayObject as ITalonElement;
+				if (displayObjectAsTalonElement)
+				{
+					var bounds:Rectangle = displayObject.getBounds(displayObject.stage);
+					graphics.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+				}
+
+				var displayObjectAsContainer:DisplayObjectContainer = displayObject as DisplayObjectContainer;
+				if (displayObjectAsContainer)
+				{
+					for (var i:int = 0; i < displayObjectAsContainer.numChildren; i++)
+						refreshOutlineRect(graphics, displayObjectAsContainer.getChildAt(i), deep-1);
+				}
+			}
+		}
+
 		private function produce(templateId:String):DisplayObject
 		{
 			var result:DisplayObject = null;
@@ -418,7 +457,7 @@ package talon.browser.desktop.plugins
 
 		public function get factory():TalonFactory { return _factory; }
 		public function get template():DisplayObject { return _template; }
-		public function get updater():ApplicationUpdaterUI { return _updater; }
+		public function get updater():Updater { return _updater; }
 
 		public function get locked():Boolean { return _locked; }
 		public function set locked(value:Boolean):void
@@ -440,6 +479,11 @@ package talon.browser.desktop.plugins
 				resizeTo(_platform.profile.width, _platform.profile.height);
 				refreshWindowTitle();
 			}
+		}
+
+		public function get outline():Boolean
+		{
+			return _platform.settings.getValueOrDefault(AppConstants.SETTING_OUTLINE, Boolean, false);
 		}
 	}
 }
@@ -467,7 +511,7 @@ import talon.browser.desktop.commands.ToggleFullScreenCommand;
 import talon.browser.desktop.commands.UpdateCommand;
 import talon.browser.desktop.plugins.PluginDesktopUI;
 import talon.browser.desktop.popups.ProfilePopup;
-import talon.browser.desktop.utils.DesktopDocumentProperty;
+import talon.browser.desktop.popups.UpdatePopup;
 import talon.browser.desktop.utils.NativeMenuAdapter;
 import talon.browser.platform.AppConstants;
 import talon.browser.platform.AppPlatform;
@@ -517,6 +561,8 @@ class AppUINativeMenu
 		insert("view/zoomIn",                  new  ChangeZoomCommand(_platform, +25), "ctrl-=");
 		insert("view/zoomOut",                 new  ChangeZoomCommand(_platform, -25), "ctrl--");
 		insert("view/-");
+		insert("view/outline",				   new  ChangeSettingCommand(_platform, AppConstants.SETTING_OUTLINE, true, false), "ctrl-l");
+		insert("view/-");
 		insert("view/rotate",                  new  RotateCommand(_platform), "ctrl-r");
 		insert("view/theme");
 		insert("view/theme/dark",              new  ChangeSettingCommand(_platform, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
@@ -534,7 +580,7 @@ class AppUINativeMenu
 		}
 
 		insert("view/-");
-		insert("view/fullScreen",             new  ToggleFullScreenCommand(_platform), "ctrl-f");
+		insert("view/fullScreen",              new  ToggleFullScreenCommand(_platform), "ctrl-f");
 
 		// Navigate
 		insert("navigate");
@@ -544,7 +590,7 @@ class AppUINativeMenu
 		// Help
 		insert("help");
 		insert("help/online", new OpenOnlineDocumentationCommand(_platform));
-		insert("help/update", new UpdateCommand(_platform, ui.updater));
+		insert("help/update", new OpenPopupCommand(_platform, UpdatePopup, ui.updater));
 
 		if (NativeWindow.supportsMenu) platform.stage.nativeWindow.menu = _menu.nativeMenu;
 	}

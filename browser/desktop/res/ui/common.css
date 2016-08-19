@@ -1,22 +1,23 @@
 * {
-	fontSize: 14px;
+	fontSize: 13px;
 }
 
 .popup {
 	fontName: Source_Sans_Pro;
-	fontSize: 14px;
+	fontSize: 13px;
 	fontColor: white;
 	fontSharpness: -1;
 
-	backgroundFill: $bg_dialog;
-	backgroundStretchGrid: 18px;
+	fill: $bg_dialog;
+	fillStretchGrid: 18px;
 
 	padding: 17px;
+	margin: -17px;
 }
 
 #goto label {
 	halign: left;
-	padding: 10px;
+	padding: 10px 12px;
 	width: *;
 	height: 35px;
 	cursor: button;
@@ -27,75 +28,77 @@
 }
 
 #goto label:nth-child(2n) {
-	backgroundFill: #4e5051;
+	fill: #4e5051;
 }
 
 #goto label:hover {
 	/** NB! Color not from topcoat */
-	backgroundFill: #555859;
+	fill: #555859;
 }
 
 #goto label.selected {
-	backgroundFill: #406079;
+	fill: #406079;
 }
 
 input {
-	backgroundFill: $input_normal;
-	backgroundStretchGrid: 10px;
+	fill: $input_normal;
+	fillStretchGrid: 10px;
 
 	margin: -4px;
+	padding: 8px;
 	height: 35px;
 
 	cursor: ibeam;
 }
 
 input:error {
-	backgroundFill: $input_error;	
+	fill: $input_error;	
 }
 
 input:focus {
-	backgroundFill: $input_focus;	
+	fill: $input_focus;	
 }
 
 button {
-	backgroundFill: $button_normal;
-	backgroundStretchGrid: 4px;
+	fill: $button_normal;
+	fillStretchGrid: 4px;
 	cursor: button;
 
-	fontSize: 14px;
+	fontSize: 13px;
 	fontName: Source_Sans_Pro;
 	fontColor: #F0F1F1;
+	height: 2em;
+
+	valign: center;
+	halign: center;
 
 	padding: 0.2em 0.5em 0em;
+
+	label: Button;
 
 	touchMode: leaf;
 	touchEvents: true;
 }
 
-button label {
-	height: 2em;
-	valign: center;
-}
-
 button:hover {
-	backgroundFill: $button_over;
+	fill: $button_over;
 }
 
 button:active {
-	backgroundFill: $button_down;
+	fill: $button_down;
 }
 
 button.action {
-	backgroundFill: $button_action_normal;
+	fill: $button_action_normal;
 	fontColor: #FFFFFF;
 }
 
 button.action:hover {
-	backgroundFill: $button_action_over;
+	fill: $button_action_over;
 }
 
 button.action:active {
-	backgroundFill: $button_action_down;
+	fill: $button_action_down;
 }
 
 checkbox label {
@@ -116,15 +119,15 @@ checkbox {
 checkbox #flag { src: $checkbox_unckecked_normal; }
 checkbox:active #flag { src: $checkbox_unckecked_down; }
 
-#interface.dark #container  { backgroundFill: $('bg_dark'); }
-#interface.light #container { backgroundFill: $('bg_light'); }
-#interface #container { backgroundFillMode: repeat; }
+#interface.dark #container  { fill: $('bg_dark'); }
+#interface.light #container { fill: $('bg_light'); }
+#interface #container { fillMode: repeat; }
 
 
 #interface.dark #bsod  { fontColor: white; }
 #interface.white #bsod { fontColor: black; }
 #interface #bsod {
-	backgroundFill: #ff0000;
+	fill: #ff0000;
 	alpha: 0.0;
 
 	fontName: Consolas;
@@ -139,6 +142,6 @@ checkbox:active #flag { src: $checkbox_unckecked_down; }
 
 
 #interface #drag.active {
-	backgroundFill: $drag;
-	backgroundStretchGrid: 5px;
+	fill: $drag;
+	fillStretchGrid: 5px;
 }

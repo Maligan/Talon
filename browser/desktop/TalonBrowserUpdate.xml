@@ -2,10 +2,8 @@
 	<versionNumber>0.1.1</versionNumber>
 	<url>https://raw.githubusercontent.com/Maligan/Talon/master/browser/bin/TalonBrowser.air</url>
 	<description>
-		This is the latest version of the Talon Browser.
-		* Feature number 1
-		* Second item
-		* Remove this
-		* Four item
+		* Added custom updater popup
+		* Fixed char colorization
+		* Added release description
 	</description>
 </update>

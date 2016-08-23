@@ -19,7 +19,6 @@ package starling.extensions
 	import starling.textures.Texture;
 	import starling.utils.Color;
 	import starling.utils.MatrixUtil;
-	import starling.utils.StringUtil;
 
 	import talon.Attribute;
 	import talon.Node;
@@ -50,10 +49,11 @@ package starling.extensions
 			_background.addEventListener(Event.CHANGE, _target.setRequiresRedraw);
 
 			// Background
-			addAttributeChangeListener(Attribute.FILL,           onFillChange);
-			addAttributeChangeListener(Attribute.FILL_MODE,      onFillModeChange);
-			addAttributeChangeListener(Attribute.FILL_STRETCH_GRID,   onFillStretchGridChange);
-			addAttributeChangeListener(Attribute.FILL_ALPHA,          onFillAlphaChange);
+			addAttributeChangeListener(Attribute.FILL,           			onFillChange);
+			addAttributeChangeListener(Attribute.FILL_MODE,      			onFillModeChange);
+			addAttributeChangeListener(Attribute.FILL_STRETCH_GRID,   		onFillStretchGridChange);
+			addAttributeChangeListener(Attribute.FILL_ALPHA,          		onFillAlphaChange);
+			addAttributeChangeListener(Attribute.FILL_BLEND_MODE,			onFillBlendModeChange);
 
 			// Common options
 			addAttributeChangeListener(Attribute.ID,                        onIDChange);
@@ -110,6 +110,11 @@ package starling.extensions
 		private function onFillAlphaChange():void
 		{
 			_background.alpha = parseFloat(_node.getAttributeCache(Attribute.FILL_ALPHA));
+		}
+
+		private function onFillBlendModeChange():void
+		{
+			_background.blendMode = _node.getAttributeCache(Attribute.FILL_BLEND_MODE);
 		}
 
 		private function onFillStretchGridChange():void
@@ -257,7 +262,10 @@ package starling.extensions
 		//
 		public function renderBackground(painter:Painter):void
 		{
+			painter.pushState();
+			painter.setStateTo(_background.transformationMatrix, _background.alpha, _background.blendMode);
 			_background.render(painter);
+			painter.popState();
 		}
 
 		public function renderChildrenWithZIndex(painter:Painter):void

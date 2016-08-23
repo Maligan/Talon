@@ -18,6 +18,8 @@ package starling.extensions
 
 	public class TalonTextField extends TextField implements ITalonElement
 	{
+		private static const NATIVE_TEXT_FIELD_PADDING:int = 2;
+
 		private static var _helperRect:Rectangle = new Rectangle();
 
 		private var _node:Node;
@@ -61,6 +63,10 @@ package starling.extensions
 			// Add paddings
 			result.width  += node.accessor.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp, 0) + node.accessor.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 			result.height += node.accessor.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0)  + node.accessor.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+
+			// Remove native flash / starling hardcoded 2px padding
+			result.width -= NATIVE_TEXT_FIELD_PADDING*2;
+			result.height -= NATIVE_TEXT_FIELD_PADDING*2;
 
 			return result;
 		}
@@ -107,7 +113,7 @@ package starling.extensions
 
 				var isHorizontalAutoSize:Boolean = super.autoSize == TextFieldAutoSize.HORIZONTAL || super.autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
 				if (isHorizontalAutoSize)
-					meshBatch.x += Layout.pad(width, meshBounds.width, paddingLeft, paddingRight, StringParseUtil.parseAlign(format.horizontalAlign));
+					meshBatch.x += Layout.pad(width, meshBounds.width, paddingLeft - NATIVE_TEXT_FIELD_PADDING, paddingRight - NATIVE_TEXT_FIELD_PADDING, StringParseUtil.parseAlign(format.horizontalAlign));
 				else
 					meshBatch.x += Layout.pad(0, 0, paddingLeft, paddingRight, StringParseUtil.parseAlign(format.horizontalAlign));
 
@@ -117,7 +123,7 @@ package starling.extensions
 
 				var isVerticalAutoSize:Boolean = super.autoSize == TextFieldAutoSize.VERTICAL || super.autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
 				if (isVerticalAutoSize)
-					meshBatch.y += Layout.pad(height, meshBounds.height, paddingTop, paddingBottom, StringParseUtil.parseAlign(format.verticalAlign));
+					meshBatch.y += Layout.pad(height, meshBounds.height, paddingTop - NATIVE_TEXT_FIELD_PADDING, paddingBottom - NATIVE_TEXT_FIELD_PADDING, StringParseUtil.parseAlign(format.verticalAlign));
 				else
 					meshBatch.y += Layout.pad(0, 0, paddingTop, paddingBottom, StringParseUtil.parseAlign(format.verticalAlign));
 			}

@@ -171,6 +171,7 @@ package talon
 		//
 		// Layout
 		//
+		/** This flag means that current automatic width/height is changed from last measurement. */
 		public function get invalidated():Boolean
 		{
 			return _invalidated;
@@ -183,6 +184,9 @@ package talon
 			{
 				_invalidated = true;
 				dispatch(Event.CHANGE); // FIXME: Change event type (CHANGE used for attribute changing)
+
+				if (_parent && (accessor.width.isNone||accessor.height.isNone))
+					_parent.invalidate();
 			}
 		}
 

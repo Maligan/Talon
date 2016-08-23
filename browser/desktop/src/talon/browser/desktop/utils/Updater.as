@@ -12,6 +12,7 @@ package talon.browser.desktop.utils
 	import flash.net.URLLoader;
 	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
+	import flash.net.URLRequestHeader;
 	import flash.utils.ByteArray;
 
 	[Event(type="flash.events.ProgressEvent", name="progress")]
@@ -36,6 +37,12 @@ package talon.browser.desktop.utils
 
 			return 0;
 		}
+
+		private static const NO_CACHE:Array = [
+			new URLRequestHeader("Cache-Control", "no-cache, no-store, must-revalidate"),
+			new URLRequestHeader("Pragma", "no-cache"),
+			new URLRequestHeader("Expires", "0")
+		];
 
 		private var _url:String;
 		private var _version:String;
@@ -87,13 +94,14 @@ package talon.browser.desktop.utils
 			_onlyCheckNewVersion = onlyCheckNewVersion;
 
 			// Check update support
-			if (flash.desktop.Updater.isSupported == false)
+			if (!onlyCheckNewVersion && flash.desktop.Updater.isSupported == false)
 			{
 				complete(UpdateStatus.UPDATER_IS_NOT_SUPPORTED);
 				return;
 			}
 
 			var descriptorRequest:URLRequest = new URLRequest(_url);
+			descriptorRequest.requestHeaders = NO_CACHE;
 			_updateStep = UpdateStep.DOWNLOAD_DESCRIPTOR;
 			_updateDescriptorLoader.load(descriptorRequest);
 		}
@@ -136,6 +144,7 @@ package talon.browser.desktop.utils
 
 			// Download file
 			var descriptorApplicationRequest:URLRequest = new URLRequest(descriptorApplicationURL);
+			descriptorApplicationRequest.requestHeaders = NO_CACHE;
 			_updateStep = UpdateStep.DOWNLOAD_APPLICATION;
 			_updateApplicationFileLoader.load(descriptorApplicationRequest);
 		}

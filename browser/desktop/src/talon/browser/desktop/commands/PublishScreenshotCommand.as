@@ -83,25 +83,25 @@ package talon.browser.desktop.commands
 			}
 		}
 
-		public static function copyToBitmap(starling:Starling, displayObject:DisplayObject):BitmapData
-		{
-			var bounds:Rectangle = displayObject.getBounds(displayObject);
-			var result:BitmapData = new BitmapData(bounds.width, bounds.height, true);
-			var stage:Stage = starling.stage;
-			var painter:Painter = starling.painter;
+public static function copyToBitmap(starling:Starling, displayObject:DisplayObject):BitmapData
+{
+	var bounds:Rectangle = displayObject.getBounds(displayObject);
+	var result:BitmapData = new BitmapData(bounds.width, bounds.height, true);
+	var stage:Stage = starling.stage;
+	var painter:Painter = starling.painter;
 
-			painter.pushState();
-			painter.state.renderTarget = null;
-			painter.state.setProjectionMatrix(bounds.x, bounds.y, stage.stageWidth, stage.stageHeight, stage.stageWidth, stage.stageHeight, stage.cameraPosition);
-			painter.clear();
-			displayObject.setRequiresRedraw();
-			displayObject.render(painter);
-			painter.finishMeshBatch();
-			painter.context.drawToBitmapData(result);
-			painter.context.present();
-			painter.popState();
+	painter.pushState();
+	painter.state.renderTarget = null;
+	painter.state.setProjectionMatrix(bounds.x, bounds.y, stage.stageWidth, stage.stageHeight, stage.stageWidth, stage.stageHeight, stage.cameraPosition);
+	painter.clear();
+	displayObject.setRequiresRedraw();
+	displayObject.render(painter);
+	painter.finishMeshBatch();
+	painter.context.drawToBitmapData(result);
+	painter.context.present();
+	painter.popState();
 
-			return result;
-		}
+	return result;
+}
 	}
 }

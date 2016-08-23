@@ -165,7 +165,7 @@ package starling.extensions
 		private function onFontNameChange():void { format.font = node.getAttributeCache(Attribute.FONT_NAME) || BitmapFont.MINI; }
 		private function onHAlignChange():void { format.horizontalAlign = _node.getAttributeCache(Attribute.HALIGN) }
 		private function onVAlignChange():void { format.verticalAlign = _node.getAttributeCache(Attribute.VALIGN) }
-		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); }
+		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); node.invalidate(); } // TODO: What about invalidate()?
 		private function onAutoScaleChange():void { super.autoScale = StringParseUtil.parseBoolean(_node.getAttributeCache(Attribute.FONT_AUTO_SCALE)); }
 
 		//

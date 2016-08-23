@@ -55,8 +55,11 @@ package starling.extensions
 
 		private function onNodeResize():void
 		{
-			x = node.bounds.x;
-			y = node.bounds.y;
+			pivotX = node.accessor.pivotX.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width);
+			pivotY = node.accessor.pivotY.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width);
+
+			x = node.bounds.x + pivotX;
+			y = node.bounds.y + pivotY;
 			width = node.bounds.width;
 			height = node.bounds.height;
 		}

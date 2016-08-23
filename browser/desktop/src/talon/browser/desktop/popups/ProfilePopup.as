@@ -1,24 +1,20 @@
 package talon.browser.desktop.popups
 {
+	import feathers.core.FocusManager;
 	import feathers.events.FeathersEventType;
 
 	import flash.ui.Keyboard;
 
-	import starling.display.DisplayObject;
 	import starling.events.Event;
-	import starling.events.TouchEvent;
-	import starling.events.TouchPhase;
 
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
 	import talon.browser.platform.popups.Popup;
 	import talon.browser.platform.utils.DeviceProfile;
-	import talon.browser.platform.utils.DisplayTreeUtil;
 
 	public class ProfilePopup extends Popup
 	{
 		private static const NUMBER:RegExp = /^\s*\d+([,.]\d+)?\s*$/;
 
-		// Data
 		private var _profileSource:DeviceProfile;
 		private var _profileTemp:DeviceProfile;
 
@@ -30,75 +26,73 @@ package talon.browser.desktop.popups
 			_profileTemp = new DeviceProfile();
 			_profileTemp.copyFrom(_profileSource);
 
-			addTextInput("_width",     _profileTemp.width);
-			addTextInput("_height",    _profileTemp.height);
-			addTextInput("_dpi",       _profileTemp.dpi);
-			addTextInput("_csf",       _profileTemp.csf);
+			initializeInput("#width",     _profileTemp.width);
+			initializeInput("#height",    _profileTemp.height);
+			initializeInput("#dpi",       _profileTemp.dpi);
+			initializeInput("#csf",       _profileTemp.csf);
+			initializeTabFocus(["#width", "#height", "#dpi", "#csf"]);
 
-			bindClickHandler("_accept", onAccept);
-			bindClickHandler("_cancel", onCancel);
+			query("#accept").onTap(onAccept);
+			query("#cancel").onTap(onCancel);
 
 			addKeyboardListener(Keyboard.ENTER, onAccept);
 			addKeyboardListener(Keyboard.ESCAPE, onCancel);
+
+			FocusManager.setEnabledForStage(stage, true);
 		}
 
-		private function bindClickHandler(childName:String, listener:Function):void
+		public override function dispose():void
 		{
-			var child:DisplayObject = DisplayTreeUtil.findChildByName(this, childName);
-			if (child == null) return;
-
-			child.addEventListener(TouchEvent.TOUCH, function(e:TouchEvent):void
-			{
-				if (e.getTouch(child, TouchPhase.ENDED))
-				{
-					listener(e);
-				}
-			});
+			FocusManager.setEnabledForStage(stage, false);
+			super.dispose();
 		}
 
-		private function addTextInput(inputName:String, value:Number, nextName:String = null):void
+		private function initializeInput(inputName:String, value:Number):void
 		{
-			var child:* =  DisplayTreeUtil.findChildByName(this, inputName);
-			if (child == null) return;
-
-			var input:TalonFeatherTextInput = child as TalonFeatherTextInput;
+			var input:TalonFeatherTextInput = query(inputName).getElement(0) as TalonFeatherTextInput;
 			if (input != null)
 			{
 				input.text = value.toString();
 
-//				input.nextTabFocus = nextName != null ? DisplayTreeUtil.findChildByName(this, nextName) as IFocusDisplayObject : null;
-
-//				input.addEventListener(FeathersEventType.FOCUS_IN, function():void {
-//					input.selectRange(0, input.text.length);
-//				});
+				input.addEventListener(FeathersEventType.FOCUS_IN, function():void {
+					input.selectRange(0, input.text.length);
+				});
 
 				input.addEventListener(FeathersEventType.FOCUS_OUT, function():void {
-
-					var valid:Boolean = NUMBER.test(input.text);
+					var valid:Boolean = NUMBER.test(input.text) && parseInt(input.text)>0;
 					if (valid) input.node.accessor.states.remove("error");
 					else input.node.accessor.states.insert("error");
-
 				});
 			}
 		}
 
+		private function initializeTabFocus(inputNames:Array):void
+		{
+			for (var i:int = 0; i < inputNames.length; i++)
+			{
+				var curr:TalonFeatherTextInput = query(inputNames[i]).getElement(0) as TalonFeatherTextInput;
+				var next:TalonFeatherTextInput = query(inputNames[(i+1) % inputNames.length]).getElement(0) as TalonFeatherTextInput;
+
+				curr.nextTabFocus = next;
+				next.previousTabFocus = curr;
+			}
+
+			next.setFocus();
+		}
+
 		private function readInput(inputName:String):Number
 		{
-			var child:* =  DisplayTreeUtil.findChildByName(this, inputName);
-			if (child == null) return NaN;
-
-			var input:TalonFeatherTextInput = child as TalonFeatherTextInput;
+			var input:TalonFeatherTextInput = query(inputName).getElement(0) as TalonFeatherTextInput;
 			if (input != null) return parseFloat(input.text);
-
 			return NaN;
 		}
 
 		private function commit():void
 		{
-			var width:Number = readInput("_width");
-			var height:Number = readInput("_height");
-			var dpi:Number = readInput("_dpi");
-			var csf:Number = readInput("_csf");
+			var width:Number = readInput("#width");
+			var height:Number = readInput("#height");
+			var dpi:Number = readInput("#dpi");
+			var csf:Number = readInput("#csf");
 
 			_profileTemp.setSize(width, height);
 			_profileTemp.dpi = dpi;
@@ -118,12 +112,12 @@ package talon.browser.desktop.popups
 		private function onAccept(e:Event):void
 		{
 			var isValidated:Boolean = true;
-			var inputs:Array = ["_width", "_height", "_dpi", "_csf"];
+			var inputs:Array = ["#width", "#height", "#dpi", "#csf"];
 
 			for each (var inputName:String in inputs)
 			{
-				var input:TalonFeatherTextInput = DisplayTreeUtil.findChildByName(this, inputName) as TalonFeatherTextInput;
-				if (NUMBER.test(input.text) === false)
+				var value:Number = readInput(inputName);
+				if (value!=value || value<=0)
 				{
 					isValidated = false;
 					break;
@@ -132,8 +126,8 @@ package talon.browser.desktop.popups
 
 			if (isValidated)
 			{
-				close();
 				commit();
+				close();
 			}
 			else
 			{

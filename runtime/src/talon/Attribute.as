@@ -102,7 +102,10 @@ package talon
 		public static const GAP:String                             = registerAttribute("gap",                 ZERO);
 		public static const INTERLINE:String                       = registerAttribute("interline",           ZERO);
 		public static const WRAP:String                            = registerAttribute("wrap",                FALSE);
-		public static const BREAK:String                           = registerAttribute("break",               BreakMode.AUTO);
+
+		public static const BREAK_BEFORE:String                    = registerAttribute("breakBefore",         BreakMode.SOFT);
+		public static const BREAK_AFTER:String                     = registerAttribute("breakAfter",          BreakMode.SOFT);
+		public static const BREAK:String                           = registerComposite("break",               [BREAK_BEFORE, BREAK_AFTER]);
 
 		public static const TEXT:String                            = registerAttribute("text");
 		public static const SOURCE:String                          = registerAttribute("source");

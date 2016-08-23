@@ -104,11 +104,11 @@ package talon.browser.desktop.popups
 
 		public override function dispose():void
 		{
-			super.dispose();
 			_wheel.dispose();
 			_wheel = null;
 			_app.removeEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
 			_app = null;
+			super.dispose();
 		}
 
 		//
@@ -155,8 +155,8 @@ package talon.browser.desktop.popups
 		//
 		private function commit(templateId:String):void
 		{
-			close();
 			_app.templateId = templateId;
+			close();
 		}
 
 		private function refresh():void
@@ -182,10 +182,10 @@ package talon.browser.desktop.popups
 				var itemIndex:int = _labelsShift + i;
 				var item:String = _queryItems[itemIndex] || "";
 
-				// Invalidation & composition (via bounds)
+				// Invalidation & composition (via textBounds)
 				label.text = null;
 				label.text = item;
-				label.bounds;
+				label.textBounds;
 
 				if (item)
 				{

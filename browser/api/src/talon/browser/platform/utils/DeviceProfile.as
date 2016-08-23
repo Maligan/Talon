@@ -10,6 +10,8 @@ package talon.browser.platform.utils
 
 	public class DeviceProfile extends EventDispatcher implements IExternalizable
 	{
+		public static const MIN_SIZE:int = 32;
+
 		public static const IPHONE:DeviceProfile = registerDeviceProfile("iPhone", 320, 480, 1, 163);
 		public static const IPHONE_RETINA:DeviceProfile = registerDeviceProfile("iPhone (Retina)", 640, 960, 2, 326);
 		public static const IPHONE_5:DeviceProfile = registerDeviceProfile("iPhone 5", 640, 1136, 2, 326);
@@ -65,10 +67,9 @@ package talon.browser.platform.utils
 
 		public function DeviceProfile(width:Number = NaN, height:Number = NaN, csf:Number = NaN, dpi:Number = NaN)
 		{
-			_width = width;
-			_height = height;
-			_csf = csf;
-			_dpi = dpi;
+			setSize(width, height);
+			this.csf = csf;
+			this.dpi = dpi;
 		}
 
 		//
@@ -78,8 +79,8 @@ package talon.browser.platform.utils
 		{
 			if (_width != width || _height != height)
 			{
-				_width = width;
-				_height = height;
+				_width = Math.max(MIN_SIZE, width);
+				_height = Math.max(MIN_SIZE, height);
 				dispatchChange();
 			}
 		}

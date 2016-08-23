@@ -18,25 +18,25 @@
 			<node orientation="vertical" gap="8px" padding="8px" width="*" fill="gray" fillAlpha="0.1">
 				<node width="100%" gap="8px">
 					<label text="$dialog.profile.size" width="*" height="*" halign="left" valign="center" />
-					<input id="_width" width="48" />
+					<input id="width" width="48" />
 					<label text="x" ivalign="center" margin="none -6px" />
-					<input id="_height" width="48" />
+					<input id="height" width="48" />
 				</node>
 
 				<node width="100%"> 
 					<label text="$dialog.profile.DPI" halign="left" valign="center" width="*" height="*" />
-					<input id="_dpi" width="48" />
+					<input id="dpi" width="48" />
 				</node>
 
 				<node width="100%"> 
 					<label text="$dialog.profile.CSF" halign="left" valign="center" width="*" height="*" />
-					<input id="_csf" width="48" />
+					<input id="csf" width="48" />
 				</node>
 			</node>
 
 			<node ihalign="center" margin="none" gap="8px" padding="8px" width="150px">
-				<button id="_accept" label="$button.accept" width="*" class="action" />
-				<button id="_cancel" label="$button.cancel" width="*" />
+				<button id="accept" label="$button.accept" width="*" class="action" />
+				<button id="cancel" label="$button.cancel" width="*" />
 			</node>
 
 		</node>
@@ -53,17 +53,13 @@
 
 			<label text="Check for Updates" padding="8px" />
 
-			<node fill="gray" fillAlpha="0.1" width="100%" orientation="horizontal" gap="10px" padding="8px">
-				<!--<label text="hello world" padding="" />-->
-				<!--<label text="hello world" padding="" />-->
-				<!--<label text="hello world" padding="" />-->
-				<!--<label text="hello world" padding="" />-->
-				<label text="Ask server for last version..." width="*" height="*" />
-				<image id="spinner" pivotX="8px" pivotY="8" source="$spinner_16"/>
+			<node id="100" fill="gray" fillAlpha="0.1" width="100%" orientation="horizontal" padding="8px">
+				<label id="info" text="$patch_notes" width="*" />
+				<image id="spinner" pivot="50%" source="$spinner_16"/>
 			</node>
 
 			<node ihalign="center" margin="none" gap="8px" padding="8px" width="100%" halign="right">
-				<button id="accept" label="Update" class="action" />
+				<button id="update" label="Update" class="action" />
 				<button id="cancel" label="Cancel" />
 			</node>
 

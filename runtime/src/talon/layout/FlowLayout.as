@@ -49,6 +49,9 @@ package talon.layout
 		//
 		private function calculateFlow(node:Node, maxWidth:Number, maxHeight:Number):Flow
 		{
+			if (node.getAttributeCache(Attribute.ID) == "100")
+				trace("#Begin");
+
 			var orientationAttribute:Attribute = node.getOrCreateAttribute(Attribute.ORIENTATION);
 			var orientation:String = orientationAttribute.valueCache;
 			if (Orientation.isValid(orientation) == false)
@@ -123,7 +126,7 @@ package talon.layout
 				{
 					flow.setChildLength(childWidth, child.accessor.width.unit == Gauge.STAR);
 					flow.setChildLengthMargin(childMarginLeft, childMarginRight);
-					flow.setChildThickness(childHeight, child.accessor.height.unit == Gauge.STAR);
+					flow.setChildThickness(childHeight);
 					flow.setChildThicknessMargin(childMarginTop, childMarginBottom);
 					flow.setChildInlineAlign(getAlign(child, Attribute.IVALIGN));
 				}
@@ -131,7 +134,7 @@ package talon.layout
 				{
 					flow.setChildLength(childHeight, child.accessor.height.unit == Gauge.STAR);
 					flow.setChildLengthMargin(childMarginTop, childMarginBottom);
-					flow.setChildThickness(childWidth, child.accessor.width.unit == Gauge.STAR);
+					flow.setChildThickness(childWidth); // TODO: child.accessor.width.unit == Gauge.STAR throw error
 					flow.setChildThicknessMargin(childMarginLeft, childMarginRight);
 					flow.setChildInlineAlign(getAlign(child, Attribute.IHALIGN));
 				}
@@ -247,7 +250,7 @@ class Flow
 
 	public function setChildLength(value:Number, isStar:Boolean):void { _child.length = value; _child.lengthIsStar = isStar }
 	public function setChildLengthMargin(before:Number, after:Number):void { _child.lengthBefore = before; _child.lengthAfter = after }
-	public function setChildThickness(value:Number, isStar:Boolean):void { _child.thickness = value; _child.thicknessIsStar = isStar }
+	public function setChildThickness(value:Number):void { _child.thickness = value }
 	public function setChildThicknessMargin(before:Number, after:Number):void { _child.thicknessBefore = before; _child.thicknessAfter = after }
 	public function setChildInlineAlign(value:Number):void { _child.thicknessAlign = value }
 	public function setChildBreakMode(value:String):void { _childBreakMode = value }
@@ -363,7 +366,7 @@ class FlowLine
 		if (_children.length > 1) _length += _gap;
 		_length += child.lengthBefore + child.lengthAfter;
 
-		_thickness = Math.max(_thickness, child.thicknessBefore + (!child.thicknessIsStar ? child.thickness : 0) + child.thicknessAfter);
+		_thickness = Math.max(_thickness, child.thicknessBefore + child.thickness + child.thicknessAfter);
 	}
 
 	public function arrange(lShift:Number, tShift:Number):void
@@ -379,7 +382,7 @@ class FlowLine
 			else element.lSize = 0;
 
 			// Via thickness
-			element.tSize = element.thicknessIsStar ? _thickness : element.thickness;
+			element.tSize = element.thickness;
 			element.tPos = tShift + Layout.pad(_thickness, element.tSize, element.thicknessBefore, element.thicknessAfter, element.thicknessAlign);
 
 			lOffset += element.lengthBefore + element.lSize + element.lengthAfter + _gap;
@@ -413,7 +416,6 @@ class FlowElement
 	public var thicknessBefore:Number;
 	public var thicknessAfter:Number;
 	public var thickness:Number;
-	public var thicknessIsStar:Boolean;
 	public var thicknessAlign:Number;
 
 	// Result

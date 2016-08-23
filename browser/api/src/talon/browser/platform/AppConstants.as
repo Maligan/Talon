@@ -6,7 +6,7 @@ package talon.browser.platform
 		// Application info
 		//
 		public static const APP_NAME:String = "Talon Browser";
-		public static const APP_UPDATE_URL:String = "https://raw.githubusercontent.com/Maligan/Talon/master/browser/release/update.xml";
+		public static const APP_UPDATE_URL:String = "https://raw.githubusercontent.com/Maligan/Talon/master/browser/desktop/TalonBrowserUpdate.xml";
 		public static const APP_DOCUMENTATION_URL:String = "https://github.com/Maligan/Talon/blob/master/docs/index.md";
 		public static function get APP_VERSION():String
 		{
@@ -54,7 +54,7 @@ package talon.browser.platform
 		public static const T_EXPORT_TITLE:String                           = "Export";
 		public static const T_SCREENSHOT_TITLE:String                       = "Select Screenshot File";
 		public static const T_PROJECT_ROOT_TITLE:String                     = "Select Document Folder";
-		public static const T_BROWSER_FILE_EXTENSION_NAME:String            = "Talon Designer Document";
+		public static const T_BROWSER_FILE_EXTENSION_NAME:String            = "Talon Browser Document";
 		public static const T_BROWSER_EXPORT_FILE_EXTENSION_NAME:String     = "Zip Archive";
 	}
 }

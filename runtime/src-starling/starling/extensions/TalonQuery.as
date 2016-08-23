@@ -3,95 +3,135 @@ package starling.extensions
 	import starling.animation.Juggler;
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
+	import starling.display.DisplayObjectContainer;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
+
+	import talon.utils.ITalonElement;
 
 	public class TalonQuery
 	{
 		private var _elements:Vector.<DisplayObject>;
+		private var _elementsBackBuffer:Vector.<DisplayObject>;
 
-		public function TalonQuery(base:DisplayObject)
+		public function TalonQuery(element:DisplayObject = null):void
 		{
 			_elements = new <DisplayObject>[];
-			reset(base);
+			_elementsBackBuffer = new <DisplayObject>[];
+			if (element) reset(element);
 		}
 
-		public function reset(base:DisplayObject):TalonQuery
+		public function reset(element:DisplayObject = null):TalonQuery
 		{
 			_elements.length = 0;
-			_elements[0] = base;
+			_elementsBackBuffer.length = 0;
+			_elements[0] = element;
 			return this;
 		}
 
+		//
+		// Selection
+		//
 		public function select(selector:String):TalonQuery
 		{
-			if (_elements.length > 0)
+			// Select
+			var result:Vector.<DisplayObject> = _elementsBackBuffer;
+
+			for each (var element:DisplayObject in _elements)
+				selectInternal(element, selector, result);
+
+			// Swap
+			_elementsBackBuffer = _elements;
+			_elementsBackBuffer.length = 0;
+			_elements = result;
+
+			return this;
+		}
+
+		private function selectInternal(element:DisplayObject, selector:String, result:Vector.<DisplayObject>):void
+		{
+			// Check self
+			if (isMatch(selector, element))
+				result[result.length] = element;
+
+			// Recursive
+			var elementAsContainer:DisplayObjectContainer = element as DisplayObjectContainer;
+			if (elementAsContainer)
+				for (var i:int = 0; i < elementAsContainer.numChildren; i++)
+					selectInternal(elementAsContainer.getChildAt(i), selector, result);
+		}
+
+		private function isMatch(selector:String, element:DisplayObject):Boolean
+		{
+			var id:String = element.name;
+			if (id == null) return false;
+			return id.indexOf(selector.substr(1)) == 0;
+		}
+
+		//
+		// Enumeration
+		//
+		public function get numElements():int { return _elements.length; }
+		public function getElement(index:int):DisplayObject { return (index>-1 && index<_elements.length) ? _elements[index] : null; }
+		public function getElementIndex(element:DisplayObject):int { return _elements.indexOf(element); }
+
+		//
+		// Common
+		//
+		public function setAttribute(name:String, value:*):TalonQuery
+		{
+			for each (var element:DisplayObject in _elements)
 			{
-				var base:DisplayObject = _elements[0];
-				_elements.length = 0;
-				var child:DisplayObject = findObjectByName(base, selector.substr(1));
-				if (child) _elements[0] = child;
+				var talonElememt:ITalonElement = element as ITalonElement;
+				if (talonElememt) talonElememt.node.setAttribute(name, value);
 			}
 
 			return this;
 		}
 
-		public function forEach(callback:Function, ...args):TalonQuery
-		{
-			return this;
-		}
-
-		public function setAttribute(name:String, value:String):TalonQuery
-		{
-			return this;
-		}
-
 		public function tween(time:Number, properties:Object, juggler:Juggler = null):TalonQuery
 		{
-			if (juggler == null)
-				juggler = Starling.juggler;
+		   if (juggler == null)
+		       juggler = Starling.juggler;
 
-			for each (var object:DisplayObject in _elements)
-				juggler.tween(object, time, properties);
+		   for each (var object:DisplayObject in _elements)
+		       juggler.tween(object, time, properties);
 
 			return this;
 		}
 
 		public function clone():TalonQuery
 		{
-			return this;
+			var query:TalonQuery = new TalonQuery();
+			query._elements = _elements.slice();
+			return query;
 		}
 
-		public function onTap(listener:Function):TalonQuery
+		//
+		// Event Listeners
+		//
+		public function onEvent(type:String, listener:Function):void
 		{
 			for each (var element:DisplayObject in _elements)
+				element.addEventListener(type, listener);
+		}
+
+		public function onTap(listener:Function, numTapsRequired:int = 1):TalonQuery
+		{
+			for each (var element:DisplayObject in _elements)
+			{
 				element.addEventListener(TouchEvent.TOUCH, function(e:TouchEvent):void
 				{
-					if (e.getTouch(e.target as DisplayObject, TouchPhase.BEGAN))
-						listener.length ? listener(e) : listener();
+					if (e.getTouch(e.target as DisplayObject, TouchPhase.ENDED))
+					{
+						listener.length
+							? listener(e)
+							: listener();
+					}
 				})
+			}
 
 			return this;
 		}
 	}
-}
-
-import starling.display.DisplayObject;
-import starling.display.DisplayObjectContainer;
-
-function findObjectByName(root:DisplayObject, name:String):DisplayObject
-{
-	if (root.name == name) return root;
-
-	var rootAsContainer:DisplayObjectContainer = root as DisplayObjectContainer;
-	if (rootAsContainer)
-	{
-		for (var i:int = 0; i < rootAsContainer.numChildren; i++)
-		{
-			var child:DisplayObject = findObjectByName(rootAsContainer.getChildAt(i), name);
-			if (child) return child;
-		}
-	}
-
-	return null;
 }

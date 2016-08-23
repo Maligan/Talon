@@ -66,10 +66,6 @@ package starling.extensions
 			addAttributeChangeListener(Attribute.TOUCH_MODE,                onTouchModeChange);
 			addAttributeChangeListener(Attribute.TOUCH_EVENTS,              onTouchEventsChange);
 			addAttributeChangeListener(Attribute.CURSOR,                    onCursorChange);
-
-			// Pivot
-			addAttributeChangeListener(Attribute.PIVOT_X,					onPivotXChange);
-			addAttributeChangeListener(Attribute.PIVOT_Y,					onPivotYChange);
 		}
 
 		public function addAttributeChangeListener(attribute:String, listener:Function, immediate:Boolean = false):void
@@ -83,21 +79,6 @@ package starling.extensions
 		{
 			_background.width = _node.bounds.width;
 			_background.height = _node.bounds.height;
-		}
-
-		//
-		// Pivot
-		//
-		private function onPivotXChange():void
-		{
-			_target.pivotX = _node.accessor.pivotX.toPixels(_node.ppmm, _node.ppem, _node.ppdp, _node.bounds.width);
-			trace(_target.pivotX);
-		}
-
-		private function onPivotYChange():void
-		{
-			_target.pivotY = _node.accessor.pivotY.toPixels(_node.ppmm, _node.ppem, _node.ppdp, _node.bounds.height);
-			trace(_target.pivotY);
 		}
 
 		//

@@ -1,5 +1,8 @@
 package starling.extensions
 {
+	import flash.utils.Proxy;
+	import flash.utils.flash_proxy;
+
 	import starling.animation.Juggler;
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
@@ -8,6 +11,8 @@ package starling.extensions
 	import starling.events.TouchPhase;
 
 	import talon.utils.ITalonElement;
+
+	use namespace flash_proxy;
 
 	public class TalonQuery
 	{
@@ -96,6 +101,17 @@ package starling.extensions
 
 		   for each (var object:DisplayObject in _elements)
 		       juggler.tween(object, time, properties);
+
+			return this;
+		}
+
+		public function tweenKill(juggler:Juggler = null):TalonQuery
+		{
+			if (juggler == null)
+				juggler = Starling.juggler;
+
+			for each (var object:DisplayObject in _elements)
+				juggler.removeTweens(object);
 
 			return this;
 		}

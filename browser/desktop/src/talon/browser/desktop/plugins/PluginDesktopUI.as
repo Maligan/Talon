@@ -466,7 +466,8 @@ package talon.browser.desktop.plugins
 			{
 				_locked = value;
 				_menu.locked = !value;
-				_isolatorContainer.filter = _locked ? new BlurFilter(1, 1) : null;
+				_isolatorContainer.touchGroup = value;
+				_isolatorContainer.filter = value ? new BlurFilter(1, 1) : null;
 			}
 		}
 
@@ -535,10 +536,10 @@ class AppUINativeMenu
 
 		// File
 		insert("file");
-		insert("file/newDocument",             new  CreateDocumentCommand(_platform), "ctrl-n");
-		insert("file/-");
-		insert("file/recent");
+		//insert("file/newDocument",             new  CreateDocumentCommand(_platform), "ctrl-n");
+		//insert("file/-");
 		insert("file/openDocument",            new  OpenDocumentCommand(_platform), "ctrl-o");
+		insert("file/recent");
 		insert("file/-");
 		insert("file/closeDocument",           new  CloseDocumentCommand(_platform), "ctrl-w");
 		insert("file/closeBrowser",            new  CloseWindowCommand(_platform), "shift-ctrl-w");
@@ -628,8 +629,9 @@ class AppUINativeMenu
 			for (var i:int = 0; i < recent.length; i++)
 			{
 				var path:String = recent[i];
-				var pathToLabelRegExp:RegExp = new RegExp("\\" + File.separator + "[^\\" + File.separator + "]*\\." + AppConstants.BROWSER_DOCUMENT_EXTENSION + "$");
-				var label:String = path.replace(pathToLabelRegExp, "");
+				//var pathToLabelRegExp:RegExp = new RegExp("\\" + File.separator + "[^\\" + File.separator + "]*\\." + AppConstants.BROWSER_DOCUMENT_EXTENSION + "$");
+				//var label:String = path.replace(pathToLabelRegExp, "");
+				var label:String = path;
 				recentMenu.insert(i.toString(), label, new OpenDocumentCommand(_platform, new File(path)));
 			}
 

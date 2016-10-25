@@ -11,7 +11,7 @@ package talon.layout
 
 	public class FlowLayout extends Layout
 	{
-		public override function measureAutoWidth(node:Node, availableHeight:Number):Number
+		public override function measureWidth(node:Node, availableHeight:Number):Number
 		{
 			var flow:Flow = calculateFlow(node, Infinity, availableHeight);
 			var flowWidth:Number = node.getAttributeCache(Attribute.ORIENTATION) == Orientation.HORIZONTAL ? flow.getLength() : flow.getThickness();
@@ -19,7 +19,7 @@ package talon.layout
 			return flowWidth;
 		}
 
-		public override function measureAutoHeight(node:Node, availableWidth:Number):Number
+		public override function measureHeight(node:Node, availableWidth:Number):Number
 		{
 			var flow:Flow = calculateFlow(node, availableWidth, Infinity);
 			var flowHeight:Number = node.getAttributeCache(Attribute.ORIENTATION) == Orientation.VERTICAL ? flow.getLength() : flow.getThickness();

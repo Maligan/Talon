@@ -1,8 +1,10 @@
 package talon.browser.desktop.popups
 {
-	import flash.events.Event;
 	import flash.ui.Keyboard;
-	import flash.utils.setTimeout;
+	import flash.ui.MouseCursor;
+
+	import starling.display.DisplayObject;
+	import starling.events.Event;
 
 	import starling.utils.StringUtil;
 
@@ -25,8 +27,7 @@ package talon.browser.desktop.popups
 
 			_updater = Updater(data);
 			_updater.addEventListener(Event.CHANGE, onUpdaterChange);
-			_updater.addEventListener(Event.COMPLETE, onUpdaterComplete);
-			setTimeout(_updater.execute, 2000, true);
+			_updater.execute(true);
 
 			addKeyboardListener(Keyboard.ENTER, onUpdateClick);
 			addKeyboardListener(Keyboard.ESCAPE, onCancelClick);
@@ -35,7 +36,6 @@ package talon.browser.desktop.popups
 		public override function dispose():void
 		{
 			_updater.removeEventListener(Event.CHANGE, onUpdaterChange);
-			_updater.removeEventListener(Event.COMPLETE, onUpdaterComplete);
 			super.dispose();
 		}
 
@@ -50,32 +50,66 @@ package talon.browser.desktop.popups
 			close();
 		}
 
+		private function onExpandClick(e:Event):void
+		{
+			var spinner:DisplayObject = e.target as DisplayObject;
+			spinner.rotation = spinner.rotation == 0 ? -Math.PI/2 : 0;
+		}
+
 		//
 		// Updater Events
 		//
 		private function onUpdaterChange(e:*):void
 		{
-			// show Updater log
-		}
-
-		private function onUpdaterComplete(e:*):void
-		{
-			if (_updater.lastStatus == "UPDATE_DESCRIPTOR_LOADED")
+			// [Begin load descriptor]
+			if (_updater.step == 1)
+			{
+				query("#info").setAttribute(Attribute.TEXT, "$dialog.updater.patchLoading");
+			}
+			// [Begin load application]
+			else if (_updater.step == 2)
+			{
+				query("#info").setAttribute(Attribute.TEXT, "[Загрузка приложения]");
+			}
+			// [Success descriptor load]
+			else if (_updater.lastStatus == "UPDATE_DESCRIPTOR_LOADED")
 			{
 				var patchNotesPattern:String = node.getResource("dialog.updater.patchNotes");
 				var patchNotes:String = StringUtil.format(patchNotesPattern, _updater.lastUpdaterVersion, _updater.lastUpdaterDescription.replace(/\t/g, ""));
 				query("#info").setAttribute(Attribute.TEXT, patchNotes);
-				query("#spinner").setAttribute(Attribute.VISIBLE, false);
+				// query("#spinner").setAttribute(Attribute.VISIBLE, false);
+
+				query("#spinner")
+					.setAttribute(Attribute.SOURCE, "$drop_down")
+					.setAttribute(Attribute.MARGIN, "4px")
+					.setAttribute(Attribute.CURSOR, MouseCursor.BUTTON)
+					.onTap(onExpandClick)
+					.tweenKill(juggler)
+					.getElement(0).rotation = 0;
 			}
+			// [Success application load & start update]
 			else if (_updater.lastStatus == "UPDATER_STARTED")
 			{
-
 			}
-			else // Error
+			// [Any exceptions]
+			else
 			{
-				query("#info").setAttribute(Attribute.TEXT, _updater.lastStatus);
-				query("#spinner").setAttribute(Attribute.VISIBLE, false);
+				// Error
+//				query("#info").setAttribute(Attribute.TEXT, _updater.lastStatus);
+				query("#info").setAttribute(Attribute.TEXT, "Sorry, update can't be completed :-(");
+				query("#info").setAttribute(Attribute.FONT_COLOR, "#FFaaaa");
+
+				query("#spinner")
+					.setAttribute(Attribute.SOURCE, "$drop_down")
+					.setAttribute(Attribute.MARGIN, "4px")
+					.setAttribute(Attribute.CURSOR, MouseCursor.BUTTON)
+					.onTap(onExpandClick)
+					.tweenKill(juggler)
+					.getElement(0).rotation = 0;
 			}
+
+			node.invalidate();
+			node.parent.parent.commit();
 		}
 	}
 }

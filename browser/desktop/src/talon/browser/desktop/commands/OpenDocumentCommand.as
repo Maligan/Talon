@@ -16,10 +16,10 @@ package talon.browser.desktop.commands
 	{
 		private var _source:File;
 
-		public function OpenDocumentCommand(platform:AppPlatform, source:File = null)
+		public function OpenDocumentCommand(platform:AppPlatform, root:File = null)
 		{
 			super(platform);
-			_source = source;
+			_source = root;
 		}
 
 		public override function execute():void
@@ -30,10 +30,9 @@ package talon.browser.desktop.commands
 			}
 			else
 			{
-				var filter:FileFilter = new FileFilter(AppConstants.T_BROWSER_FILE_EXTENSION_NAME, "*." + AppConstants.BROWSER_DOCUMENT_EXTENSION);
 				var source:File = new File();
 				source.addEventListener(Event.SELECT, onOpenFileSelect);
-				source.browseForOpen(AppConstants.T_OPEN_TITLE, [filter]);
+				source.browseForDirectory(AppConstants.T_OPEN_TITLE);
 			}
 		}
 
@@ -42,10 +41,19 @@ package talon.browser.desktop.commands
 			openDocument(e.target as File);
 		}
 
-		private function openDocument(source:File):void
+		private function openDocument(root:File):void
 		{
-			// NB! Set as current document immediately
-			var documentProperties:Storage = Storage.fromPropertiesFile(source);
+			var source:File = null;
+
+			if (root.isDirectory)
+				source = root.resolvePath(AppConstants.BROWSER_DEFAULT_DOCUMENT_FILENAME);
+			else if (root.extension == AppConstants.BROWSER_DOCUMENT_EXTENSION)
+				source = root;
+			else
+				throw new Error(); // TODO: Make error messages like within document
+
+			// NB! Set as current document immediately (before any references)
+			var documentProperties:Storage = source.exists ? Storage.fromPropertiesFile(source) : new Storage();
 			var document:Document = platform.document = new Document(documentProperties);
 
 			var sourcePathProperty:String = document.properties.getValueOrDefault(DesktopDocumentProperty.SOURCE_PATH, String);
@@ -69,9 +77,9 @@ package talon.browser.desktop.commands
 
 			// Add document to recent list
 			var recent:Array = platform.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);
-			var indexOf:int = recent.indexOf(source.nativePath);
+			var indexOf:int = recent.indexOf(root.nativePath);
 			if (indexOf != -1) recent.splice(indexOf, 1);
-			recent.unshift(source.nativePath);
+			recent.unshift(root.nativePath);
 			recent = recent.slice(0, AppConstants.HISTORY_RECENT_MAX);
 			platform.settings.setValue(AppConstants.SETTING_RECENT_DOCUMENTS, recent);
 

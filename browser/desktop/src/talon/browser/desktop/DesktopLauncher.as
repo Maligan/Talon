@@ -23,7 +23,7 @@ package talon.browser.desktop
 	[SWF(frameRate="60")]
 	public class DesktopLauncher extends Sprite
 	{
-		private var _platform:AppPlatform;
+		private var _platform:AppPlatform; 
 		private var _numPluginLoaders:int;
 
 		public function DesktopLauncher()
@@ -36,9 +36,6 @@ package talon.browser.desktop
 			removeEventListener(Event.ADDED_TO_STAGE, initialize);
 
 			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
-
-			try { NativeApplication.nativeApplication.setAsDefaultApplication(AppConstants.BROWSER_DOCUMENT_EXTENSION); }
-			catch (e:Error) { }
 
 			// Create platform root class
 			_platform = new AppPlatform(stage);

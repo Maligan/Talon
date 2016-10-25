@@ -22,6 +22,7 @@
 
   <customUpdateUI>false</customUpdateUI>
 
+  <!--
   <fileTypes>
     <fileType>
       <name>TalonBrowserProject</name>
@@ -36,5 +37,6 @@
       </icon>
     </fileType>
   </fileTypes>
+  -->
 
 </application>

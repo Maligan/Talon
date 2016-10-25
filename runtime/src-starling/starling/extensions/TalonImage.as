@@ -21,7 +21,11 @@ package starling.extensions
 		{
 			super(1, 1);
 
-			_emptyTexture ||= Texture.empty(1, 1);
+			if (_emptyTexture == null)
+			{
+				_emptyTexture = Texture.empty(1, 1);
+				_emptyTexture.root.dispose();
+			}
 
 			_node = new Node();
 			_node.accessor.width.auto = measureWidth;
@@ -32,6 +36,7 @@ package starling.extensions
 			_bridge.addAttributeChangeListener(Attribute.SOURCE, onSourceChange);
 
 			texture = _emptyTexture;
+			pixelSnapping = true;
 		}
 
 		private function measureWidth(height:Number):Number { return measure(height, texture.height, texture.width); }
@@ -55,13 +60,19 @@ package starling.extensions
 
 		private function onNodeResize():void
 		{
+			var rotationStash:Number = rotation;
+			if (rotationStash) rotation = 0;
+
 			pivotX = node.accessor.pivotX.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width);
 			pivotY = node.accessor.pivotY.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width);
 
 			x = node.bounds.x + pivotX;
 			y = node.bounds.y + pivotY;
+
 			width = node.bounds.width;
 			height = node.bounds.height;
+
+			if (rotationStash) rotation = rotationStash;
 		}
 
 		//

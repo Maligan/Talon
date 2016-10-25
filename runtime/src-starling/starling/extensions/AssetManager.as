@@ -132,6 +132,8 @@ package starling.extensions
 
 		protected function decodeByteArrayToTexture(value:ByteArray, key:String, options:Object):void
 		{
+			var texture:Texture = _shared["decodeByteArrayToTexture.texture"];
+
 			if (isBitmapData(value))
 			{
 				var loaderContext:LoaderContext = new LoaderContext(_checkPolicyFile);
@@ -152,15 +154,34 @@ package starling.extensions
 					if (e.type == Event.COMPLETE)
 					{
 						var bitmap:Bitmap = Bitmap(loader.content);
-						var texture:Texture = Texture.fromData(bitmap, options as TextureOptions);
-						addAsset(Texture, key, texture);
-						handle(texture, key, options);
+						if (texture == null)
+						{
+							texture = Texture.fromData(bitmap, options as TextureOptions);
+							texture.root.onRestore = function():void
+							{
+								// _numLostTextures++
+								_shared["decodeByteArrayToTexture.texture"] = texture;
+								decodeByteArrayToTexture(value, key, options);
+								_shared["decodeByteArrayToTexture.texture"] = null;
+								// _numRestoredTextures++
+							}
+
+							addAsset(Texture, key, texture);
+							handle(texture, key, options);
+						}
+						else 
+						{
+							try { texture.root.uploadBitmap(bitmap); }
+							catch (e:Error) { log("Texture restoration failed for '" + key + "': " + e.message); }
+						}
+
+						bitmap.bitmapData.dispose();
 					}
 				}
 			}
 			else if (AtfData.isAtfData(value))
 			{
-				var texture:Texture = Texture.fromData(value, options as TextureOptions);
+				texture = Texture.fromData(value, options as TextureOptions);
 				addAsset(Texture, key, texture);
 				handle(texture, key);
 			}

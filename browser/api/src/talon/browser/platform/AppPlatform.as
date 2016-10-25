@@ -61,7 +61,6 @@ package talon.browser.platform
 			// * stage.color while starling inited have misbehavior
 			// * take screenshot have no alpha
 			_starling = new Starling(Sprite, stage, null, null, "auto", Context3DProfile.BASELINE);
-			_starling.antiAliasing = 16;
 			_starling.skipUnchangedFrames = true;
 			_starling.addEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
 

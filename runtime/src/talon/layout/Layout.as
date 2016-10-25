@@ -12,6 +12,7 @@ package talon.layout
 		public static const ABSOLUTE:String = "abs";
 		public static const FLOW:String = "flow";
 		public static const GRID:String = "grid";
+		public static const FLEX:String = "flex";
 
 		private static var _initialized:Boolean = false;
 		private static var _layout:Dictionary = new Dictionary();
@@ -65,6 +66,8 @@ package talon.layout
 				if (!_layout[ABSOLUTE]) registerLayoutAlias(ABSOLUTE, new AbsoluteLayout(), null, ["width", "height"]);
 				if (!_layout[FLOW]) registerLayoutAlias(FLOW, new FlowLayout(), ["gap", "interline", "wrap", "orientation"], ["width", "height", "filter"]);
 				if (!_layout[GRID]) registerLayoutAlias(GRID, new GridLayout());
+
+				if (!_layout[FLEX]) registerLayoutAlias(FLEX, new FlexLayout());
 			}
 		}
 
@@ -81,13 +84,13 @@ package talon.layout
 		// Layout methods
 		//
 		/** This method will be call while arranging, and must calculate node width in pixels, based on node children. */
-		public function measureAutoWidth(node:Node, availableHeight:Number):Number
+		public function measureWidth(node:Node, availableHeight:Number):Number
 		{
 			throw new Error("Method not implemented");
 		}
 
 		/** This method will be call while arranging, and must calculate node height in pixels, based on node children. */
-		public function measureAutoHeight(node:Node, availableWidth:Number):Number
+		public function measureHeight(node:Node, availableWidth:Number):Number
 		{
 			throw new Error("Method not implemented");
 		}

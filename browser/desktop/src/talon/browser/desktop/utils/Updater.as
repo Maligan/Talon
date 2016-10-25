@@ -16,7 +16,6 @@ package talon.browser.desktop.utils
 	import flash.utils.ByteArray;
 
 	[Event(type="flash.events.ProgressEvent", name="progress")]
-	[Event(type="flash.events.Event", name="complete")]
 	[Event(type="flash.events.Event", name="change")]
 	public class Updater extends EventDispatcher
 	{
@@ -64,7 +63,7 @@ package talon.browser.desktop.utils
 			_url = url;
 			_version = currentVersion;
 
-			_updateStep = UpdateStep.NOP;
+			_updateStep = UpdateStep.IDLE;
 
 			_updateDescriptorLoader = new URLLoader();
 			_updateDescriptorLoader.addEventListener(Event.COMPLETE, onUpdateDescriptorLoaded);
@@ -81,7 +80,16 @@ package talon.browser.desktop.utils
 
 		public function stop():void
 		{
+			if (_updateStep != UpdateStep.IDLE)
+			{
+				try { _updateDescriptorLoader.close() }
+				catch (e:Error) { }
 
+				try { _updateApplicationFileLoader.close() }
+				catch (e:Error) { }
+
+				complete(UpdateStatus.UPDATE_CANCELED);
+			}
 		}
 
 		//
@@ -89,7 +97,7 @@ package talon.browser.desktop.utils
 		//
 		public function execute(onlyCheckNewVersion:Boolean = false):void
 		{
-			if (_updateStep != UpdateStep.NOP) return;
+			if (_updateStep != UpdateStep.IDLE) return;
 
 			_onlyCheckNewVersion = onlyCheckNewVersion;
 
@@ -102,7 +110,7 @@ package talon.browser.desktop.utils
 
 			var descriptorRequest:URLRequest = new URLRequest(_url);
 			descriptorRequest.requestHeaders = NO_CACHE;
-			_updateStep = UpdateStep.DOWNLOAD_DESCRIPTOR;
+			step = UpdateStep.DOWNLOAD_DESCRIPTOR;
 			_updateDescriptorLoader.load(descriptorRequest);
 		}
 
@@ -145,7 +153,7 @@ package talon.browser.desktop.utils
 			// Download file
 			var descriptorApplicationRequest:URLRequest = new URLRequest(descriptorApplicationURL);
 			descriptorApplicationRequest.requestHeaders = NO_CACHE;
-			_updateStep = UpdateStep.DOWNLOAD_APPLICATION;
+			step = UpdateStep.DOWNLOAD_APPLICATION;
 			_updateApplicationFileLoader.load(descriptorApplicationRequest);
 		}
 
@@ -224,15 +232,24 @@ package talon.browser.desktop.utils
 		//
 		private function complete(status:String):void
 		{
-			_updateStep = UpdateStep.NOP;
 			_updateStatus = status;
-
-			dispatchEvent(new Event(Event.COMPLETE));
+			step = UpdateStep.IDLE;
+			dispatchEvent(new Event(Event.CHANGE));
 		}
 
 		//
 		// Properties
 		//
+		public function get step():int { return _updateStep; }
+		public function set step(value:int):void
+		{
+			if (_updateStep != value)
+			{
+				_updateStep = value;
+				dispatchEvent(new Event(Event.CHANGE));
+			}
+		}
+
 		public function get lastStatus():String { return _updateStatus; }
 		public function get lastUpdaterVersion():String { return _updateDescriptorVersion; }
 		public function get lastUpdaterDescription():String { return _updateDescriptorDescription; }
@@ -241,13 +258,15 @@ package talon.browser.desktop.utils
 
 class UpdateStep
 {
-	public static const NOP:int = 0;
+	public static const IDLE:int = 0;
 	public static const DOWNLOAD_DESCRIPTOR:int = 1;
 	public static const DOWNLOAD_APPLICATION:int = 2;
 }
 
 class UpdateStatus
 {
+	public static const UPDATE_CANCELED:String = "UPDATE_CANCELED";
+
 	public static const UPDATE_DESCRIPTOR_DOWNLOAD_ERROR:String = "UPDATE_DESCRIPTOR_DOWNLOAD_ERROR";
 	public static const UPDATE_DESCRIPTOR_WRONG_XML:String = "UPDATE_DESCRIPTOR_WRONG_XML";
 	public static const UPDATE_DESCRIPTOR_VERSION_IS_LESS_OR_EQUALS:String = "UPDATE_DESCRIPTOR_VERSION_IS_LESS_OR_EQUALS";

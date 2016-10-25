@@ -93,7 +93,7 @@ package talon.layout
 			}
 		}
 
-		public override function measureAutoWidth(node:Node, availableHeight:Number):Number
+		public override function measureWidth(node:Node, availableHeight:Number):Number
 		{
 			var resultWidth:int = 0;
 
@@ -112,7 +112,7 @@ package talon.layout
 			return resultWidth + toPixelsSugar(node.accessor.paddingRight, node) + toPixelsSugar(node.accessor.paddingLeft, node);
 		}
 
-		public override function measureAutoHeight(node:Node, availableWidth:Number):Number
+		public override function measureHeight(node:Node, availableWidth:Number):Number
 		{
 			var resultHeight:int = 0;
 

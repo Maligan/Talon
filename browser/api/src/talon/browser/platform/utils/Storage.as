@@ -69,6 +69,7 @@ package talon.browser.platform.utils
 		public function Storage():void
 		{
 			_listeners = new Dictionary();
+			_inner = {};
 		}
 
 		public function addPropertyListener(name:String, listener:Function):void

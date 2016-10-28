@@ -13,7 +13,7 @@ package talon.browser.platform.document.files
 		function get path():String;
 
 		/** - File's content
-		 *  - Has "null" ONLY IF file not exist (if existence is unknown - empty ByteArray) */
+		 *  - Has "null" ONLY IF file doesn't exists (if existence is unknown - empty ByteArray) */
 		function get data():ByteArray;
 	}
 }

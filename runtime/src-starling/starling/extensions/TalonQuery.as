@@ -1,8 +1,5 @@
 package starling.extensions
 {
-	import flash.utils.Proxy;
-	import flash.utils.flash_proxy;
-
 	import starling.animation.Juggler;
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
@@ -11,8 +8,6 @@ package starling.extensions
 	import starling.events.TouchPhase;
 
 	import talon.utils.ITalonElement;
-
-	use namespace flash_proxy;
 
 	public class TalonQuery
 	{
@@ -77,7 +72,7 @@ package starling.extensions
 		// Enumeration
 		//
 		public function get numElements():int { return _elements.length; }
-		public function getElement(index:int):DisplayObject { return (index>-1 && index<_elements.length) ? _elements[index] : null; }
+		public function getElementAt(index:int):DisplayObject { return (index>-1 && index<_elements.length) ? _elements[index] : null; }
 		public function getElementIndex(element:DisplayObject):int { return _elements.indexOf(element); }
 
 		//
@@ -87,8 +82,8 @@ package starling.extensions
 		{
 			for each (var element:DisplayObject in _elements)
 			{
-				var talonElememt:ITalonElement = element as ITalonElement;
-				if (talonElememt) talonElememt.node.setAttribute(name, value);
+				var talonElement:ITalonElement = element as ITalonElement;
+				if (talonElement) talonElement.node.setAttribute(name, value);
 			}
 
 			return this;
@@ -126,26 +121,25 @@ package starling.extensions
 		//
 		// Event Listeners
 		//
-		public function onEvent(type:String, listener:Function):void
+		public function onEvent(type:String, listener:Function):TalonQuery
 		{
 			for each (var element:DisplayObject in _elements)
 				element.addEventListener(type, listener);
+
+			return this;
 		}
 
 		public function onTap(listener:Function, numTapsRequired:int = 1):TalonQuery
 		{
-			for each (var element:DisplayObject in _elements)
+			onEvent(TouchEvent.TOUCH, function(e:TouchEvent):void
 			{
-				element.addEventListener(TouchEvent.TOUCH, function(e:TouchEvent):void
+				if (e.getTouch(e.target as DisplayObject, TouchPhase.ENDED))
 				{
-					if (e.getTouch(e.target as DisplayObject, TouchPhase.ENDED))
-					{
-						listener.length
-							? listener(e)
-							: listener();
-					}
-				})
-			}
+					listener.length
+						? listener(e)
+						: listener();
+				}
+			});
 
 			return this;
 		}

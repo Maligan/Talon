@@ -14,8 +14,8 @@ package
 		private var attribute:Attribute;
 		private var changes:int;
 
-		private function resetNonStylable():void { reset(Attribute.ID); }
-		private function resetStylable():void { reset(Attribute.ALPHA); }
+		private function resetNonStyleable():void { reset(Attribute.ID); }
+		private function resetStyleable():void { reset(Attribute.ALPHA); }
 		private function resetInheritable():void { reset(Attribute.FONT_NAME); }
 
 		private function reset(name:String):void
@@ -43,7 +43,7 @@ package
 		[Test]
 		public function testSetters():void
 		{
-			resetStylable();
+			resetStyleable();
 
 			attribute.inited = "inited";
 			attribute.styled = "styled";
@@ -57,15 +57,15 @@ package
 		[Test]
 		public function testSettersPriority():void
 		{
-//			resetNonStylable();
-//			attribute.inited = "inited";
-//			Assert.assertEquals(attribute.inited, attribute.value);
-//			attribute.styled = "styled";
-//			Assert.assertEquals(attribute.inited, attribute.value);
-//			attribute.setted = "setted";
-//			Assert.assertEquals(attribute.setted, attribute.value);
+			resetNonStyleable();
+			attribute.inited = "inited";
+			Assert.assertEquals(attribute.inited, attribute.value);
+			attribute.styled = "styled";
+			Assert.assertEquals(attribute.inited, attribute.value);
+			attribute.setted = "setted";
+			Assert.assertEquals(attribute.setted, attribute.value);
 
-			resetStylable();
+			resetStyleable();
 			attribute.inited = "inited";
 			Assert.assertEquals(attribute.inited, attribute.value);
 			attribute.styled = "styled";
@@ -103,7 +103,7 @@ package
 		[Test]
 		public function testChangesWithoutParent():void
 		{
-			resetStylable();
+			resetStyleable();
 
 			attribute.inited = "inited";
 			Assert.assertEquals(1, changes);

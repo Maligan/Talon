@@ -7,36 +7,17 @@
   <versionNumber>0.2.0</versionNumber>
 
   <initialWindow>
-    <content>SWF file name is set automatically at compile time</content>
+    <content>%CONTENT%</content>
     <visible>false</visible>
     <renderMode>direct</renderMode>
     <depthAndStencil>true</depthAndStencil>
   </initialWindow>
 
   <icon>
-    <image16x16>icons/app_16.png</image16x16>
-    <image32x32>icons/app_32.png</image32x32>
-    <image48x48>icons/app_48.png</image48x48>
-    <image128x128>icons/app_128.png</image128x128>
+    <image16x16>icons/icon16.png</image16x16>
+    <image32x32>icons/icon32.png</image32x32>
+    <image48x48>icons/icon48.png</image48x48>
+    <image128x128>icons/icon128.png</image128x128>
   </icon>
-
-  <customUpdateUI>false</customUpdateUI>
-
-  <!--
-  <fileTypes>
-    <fileType>
-      <name>TalonBrowserProject</name>
-      <extension>talon</extension>
-      <description>Talon Browser Project</description>
-      <contentType>text/plain</contentType>
-      <icon>
-        <image16x16>icons/file_16.png</image16x16>
-        <image32x32>icons/file_32.png</image32x32>
-        <image48x48>icons/file_48.png</image48x48>
-        <image128x128>icons/file_128.png</image128x128>
-      </icon>
-    </fileType>
-  </fileTypes>
-  -->
 
 </application>

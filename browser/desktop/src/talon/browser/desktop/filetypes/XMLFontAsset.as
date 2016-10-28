@@ -30,7 +30,7 @@ package talon.browser.desktop.filetypes
 			_xml && System.disposeXML(_xml);
 			_xml = null;
 
-			_font && TextField.unregisterBitmapFont(_font.name, false);
+			_font && TextField.unregisterCompositor(_font.name, false);
 			_font = null;
 
 			_texture = null;
@@ -56,7 +56,7 @@ package talon.browser.desktop.filetypes
 				document.tasks.begin();
 				_texture = texture;
 				_font = new BitmapFont(_texture, _xml);
-				TextField.registerBitmapFont(_font);
+				TextField.registerCompositor(_font, _font.name);
 				document.tasks.end();
 			}
 		}

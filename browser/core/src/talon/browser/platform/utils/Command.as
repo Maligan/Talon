@@ -1,4 +1,4 @@
-package talon.browser.platform.commands
+package talon.browser.platform.utils
 {
 	import starling.errors.AbstractMethodError;
 	import starling.events.EventDispatcher;

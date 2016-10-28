@@ -39,7 +39,7 @@ package
 		[Test]
 		public function testBackground():void
 		{
-			sheet.parse("* { backgroundFillMode: stretch repeat; }");
+			sheet.parse("* { fillMode: stretch repeat; }");
 			node.setStyleSheet(sheet);
 
 			Assert.assertEquals("stretch repeat", node.getAttributeCache(Attribute.FILL_MODE));

@@ -6,7 +6,7 @@ package talon.browser.desktop.utils
 
 	import starling.events.Event;
 
-	import talon.browser.platform.commands.Command;
+	import talon.browser.platform.utils.Command;
 
 	public class NativeMenuAdapter
 	{
@@ -16,7 +16,7 @@ package talon.browser.desktop.utils
 		private static var POOL_SEPARATOR:Vector.<NativeMenuAdapter> = new <NativeMenuAdapter>[];
 		private static var POOL:Vector.<NativeMenuAdapter> = new <NativeMenuAdapter>[];
 
-		private function produce(name:String, isSeparator:Boolean):NativeMenuAdapter
+		private function fromPool(name:String, isSeparator:Boolean):NativeMenuAdapter
 		{
 			var list:Vector.<NativeMenuAdapter> = isSeparator ? POOL_SEPARATOR : POOL;
 			var item:NativeMenuAdapter = list.pop() || new NativeMenuAdapter(name, isSeparator);
@@ -28,7 +28,7 @@ package talon.browser.desktop.utils
 			return item;
 		}
 
-		private function release(item:NativeMenuAdapter):void
+		private function toPool(item:NativeMenuAdapter):void
 		{
 			item.command = null;
 			item.label = null;
@@ -143,7 +143,7 @@ package talon.browser.desktop.utils
 				_children.splice(indexOf, 1);
 				nativeMenu.removeItem(child._nativeItem);
 				refreshSubmenu();
-				release(child);
+				toPool(child);
 			}
 		}
 
@@ -164,7 +164,7 @@ package talon.browser.desktop.utils
 				return child.addChildByPath(childPath, isSeparator);
 			}
 
-			return addChild(produce(path, isSeparator))
+			return addChild(fromPool(path, isSeparator))
 		}
 
 		public function addChild(child:NativeMenuAdapter):NativeMenuAdapter

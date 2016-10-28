@@ -1,7 +1,7 @@
 package talon.browser.desktop.commands
 {
 	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.commands.Command;
+	import talon.browser.platform.utils.Command;
 	import talon.browser.platform.popups.Popup;
 
 	public class OpenPopupCommand extends Command

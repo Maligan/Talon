@@ -5,7 +5,7 @@ package talon.browser.desktop.commands
 	import flash.display.NativeWindowRenderMode;
 
 	import talon.browser.desktop.DesktopLauncher;
-	import talon.browser.platform.commands.Command;
+	import talon.browser.platform.utils.Command;
 
 	public class CreateWindowCommand extends Command
 	{

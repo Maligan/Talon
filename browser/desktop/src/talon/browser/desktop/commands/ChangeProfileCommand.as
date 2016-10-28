@@ -3,7 +3,7 @@ package talon.browser.desktop.commands
 	import starling.events.Event;
 
 	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.commands.Command;
+	import talon.browser.platform.utils.Command;
 	import talon.browser.platform.utils.DeviceProfile;
 
 	public class ChangeProfileCommand extends Command

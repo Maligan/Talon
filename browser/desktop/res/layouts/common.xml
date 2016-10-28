@@ -7,7 +7,7 @@
 			<node id="popups" width="100%" height="100%" layout="flow" halign="center" valign="center"/>
 			<image src="$error" width="48px" height="48px" anchor="0px 100% none none" margin="10px" />
 			<node id="drag" width="100%" height="100%" />
-			<messages id="messages" width="100%" anchor="none none none none" />
+			<!--<messages id="messages" width="100%" anchor="none none none none" />-->
 		</node>
 	</template>
 

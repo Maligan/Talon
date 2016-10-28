@@ -14,7 +14,7 @@ package talon.browser.desktop.commands
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;
 	import talon.browser.platform.AppPlatformEvent;
-	import talon.browser.platform.commands.Command;
+	import talon.browser.platform.utils.Command;
 	import talon.browser.platform.document.Document;
 	import talon.browser.platform.document.files.IFileController;
 	import talon.browser.platform.document.files.IFileReference;
@@ -126,16 +126,16 @@ package talon.browser.desktop.commands
 					return sourcePath.parent.resolvePath(sourcePath.name + "." + AppConstants.BROWSER_PUBLISH_EXTENSION).nativePath;
 			}
 
-			return document.properties.getValueOrDefault(DesktopDocumentProperty.DISPLAY_NAME, String, AppConstants.T_UNNAMED)
+			return document.properties.getValueOrDefault(DesktopDocumentProperty.DISPLAY_NAME, String)
 				+ "."
 				+ AppConstants.BROWSER_PUBLISH_EXTENSION;
 		}
 
 		private function getSourcePath(document:Document):File
 		{
-			if (platform.document == null) return null;
+			if (document == null) return null;
 
-			var fileReferences:Vector.<IFileReference> = platform.document.files.toArray();
+			var fileReferences:Vector.<IFileReference> = document.files.toArray();
 			var fileReference:DesktopFileReference = fileReferences.shift() as DesktopFileReference;
 
 			return fileReference ? fileReference.root : null;

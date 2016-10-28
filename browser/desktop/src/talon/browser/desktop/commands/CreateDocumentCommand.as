@@ -8,7 +8,7 @@ package talon.browser.desktop.commands
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.commands.Command;
+	import talon.browser.platform.utils.Command;
 
 	public class CreateDocumentCommand extends Command
 	{

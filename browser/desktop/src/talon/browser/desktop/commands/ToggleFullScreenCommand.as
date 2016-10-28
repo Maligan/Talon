@@ -6,7 +6,7 @@ package talon.browser.desktop.commands
 	import starling.events.Event;
 
 	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.commands.Command;
+	import talon.browser.platform.utils.Command;
 
 	public class ToggleFullScreenCommand extends Command
 	{

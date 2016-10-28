@@ -12,12 +12,12 @@ package talon.browser.platform
 	import starling.events.EventDispatcher;
 	import starling.extensions.StarlingTalonFactory;
 
-	import talon.browser.platform.commands.CommandManager;
 	import talon.browser.platform.document.Document;
 	import talon.browser.platform.document.DocumentEvent;
 	import talon.browser.platform.plugins.PluginManager;
 	import talon.browser.platform.popups.PopupManager;
 	import talon.browser.platform.utils.DeviceProfile;
+	import talon.browser.platform.utils.Locale;
 	import talon.browser.platform.utils.Storage;
 	import talon.browser.platform.utils.registerClassAlias;
 
@@ -32,7 +32,7 @@ package talon.browser.platform
 		private var _factory:StarlingTalonFactory;
 		private var _plugins:PluginManager;
 		private var _popups:PopupManager;
-		private var _commands:CommandManager;
+		private var _locale:Locale;
 	    private var _lastInvokeArgs:Array;
 		private var _started:Boolean;
 
@@ -49,7 +49,7 @@ package talon.browser.platform
 			_factory = new StarlingTalonFactory();
 			_plugins = new PluginManager(this);
 			_popups = new PopupManager(this);
-			_commands = new CommandManager();
+			_locale = new Locale();
 
 			// WARNING: NOT work after starling creating!
 			var colorName:String = _settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
@@ -121,11 +121,11 @@ package talon.browser.platform
 		/** Application plugin list (all: attached, detached, broken). */
 		public function get plugins():PluginManager { return _plugins; }
 
-		/** Application command manager - history/shortcuts etc. */
-		public function get commands():CommandManager { return _commands; }
-
 	    /** Current Starling instance (preferably use this accessor). */
 	    public function get starling():Starling { return _starling; }
+
+		/** Application localization information. */
+		public function get locale():Locale { return _locale; }
 
 		/** Talon factory for all browser UI. */
 		public function get factory():StarlingTalonFactory { return _factory; }

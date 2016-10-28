@@ -69,10 +69,10 @@ package talon.browser.platform.utils
 			var m:int = str1.length;
 			var n:int = str2.length;
 
-			var D:* = getMatrix(m + 1, n + 1);
-			var O:* = getMatrix(m + 1, n + 1);
+			var D:Vector.<Vector.<int>> = getMatrix(m + 1, n + 1);
+			var O:Vector.<Vector.<int>> = getMatrix(m + 1, n + 1);
 
-			// Базовые значения
+			// Basic values
 			for (var i:int = 0; i <= m; i++)
 			{
 				D[i][0] = i;
@@ -85,7 +85,7 @@ package talon.browser.platform.utils
 				O[0][j] = OP_INSERT;
 			}
 
-			// Построение таблицы переходов
+			// Table of transitions
 			for (i = 1; i <= m; i++)
 			for (j = 1; j <= n; j++)
 			{
@@ -93,25 +93,25 @@ package talon.browser.platform.utils
 
 				if (D[i][j-1] < D[i-1][j] && D[i][j-1] < D[i-1][j-1] + cost)
 				{
-					// Вставка
+					// Insert
 					D[i][j] = D[i][j-1] + 1;
 					O[i][j] = OP_INSERT;
 				}
 				else if (D[i-1][j] < D[i-1][j-1] + cost)
 				{
-					// Удаление
+					// Delete
 					D[i][j] = D[i-1][j] + 1;
 					O[i][j] = OP_DELETE;
 				}
 				else
 				{
-					// Замена или отсутствие операции
+					// Replace or match
 					D[i][j] = D[i-1][j-1] + cost;
 					O[i][j] = (cost == 1) ? OP_REPLACE : OP_MATCH;
 				}
 			}
 
-			// Восстановление предписания
+			// Restore prescription path
 			var route:Array = new Array();
 			i = m;
 			j = n;
@@ -138,7 +138,7 @@ package talon.browser.platform.utils
 			} while ((i != 0) || (j != 0));
 
 
-			// Результат
+			// Result
 			route.distance = D[m][n];
 			route.reverse();
 			return route;

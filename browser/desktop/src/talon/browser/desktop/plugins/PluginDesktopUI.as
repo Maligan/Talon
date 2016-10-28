@@ -28,6 +28,7 @@ package talon.browser.desktop.plugins
 	import talon.browser.desktop.commands.OpenDocumentCommand;
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
+	import talon.browser.desktop.utils.LocaleAdapter;
 	import talon.browser.desktop.utils.Updater;
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;
@@ -85,7 +86,11 @@ package talon.browser.desktop.plugins
 			var fileLocale:File = File.applicationDirectory.resolvePath("locales/en_US.properties");
 			if (fileLocale.exists)
 			{
-				_locale = StringParseUtil.parseProperties(readFile(fileLocale).toString());
+				var localeFile:String = readFile(fileLocale).toString();
+				var localeProperties:Object = StringParseUtil.parseProperties(localeFile);
+				_platform.locale.merge(localeProperties, "en_US");
+				_platform.locale.language = "en_US";
+				_locale = new LocaleAdapter(_platform.locale);
 			}
 			else
 			{
@@ -98,7 +103,7 @@ package talon.browser.desktop.plugins
 
 			refreshWindowTitle();
 
-			var fileInterface:File = File.applicationDirectory.resolvePath("ui.zip");
+			var fileInterface:File = File.applicationDirectory.resolvePath("layouts.zip");
 			if (!fileInterface.exists)
 			{
 				_platform.dispatchEventWith(AppPlatformEvent.ERROR, false, "Can't find interface file:\n" + fileInterface.nativePath);
@@ -343,7 +348,7 @@ package talon.browser.desktop.plugins
 			// Opened document/template
 			if (_platform.document)
 			{
-				var title:String = _platform.document.properties.getValueOrDefault(DesktopDocumentProperty.DISPLAY_NAME, String, AppConstants.T_UNNAMED);
+				var title:String = _platform.document.properties.getValueOrDefault(DesktopDocumentProperty.DISPLAY_NAME, String);
 				if (_platform.templateId) title += "/" + _platform.templateId;
 				result.push(title);
 			}
@@ -394,6 +399,7 @@ package talon.browser.desktop.plugins
 				resizeTo(_platform.profile.width, _platform.profile.height);
 			}
 
+			refreshOutline(_template);
 			dispatchEventWith(Event.CHANGE);
 		}
 
@@ -516,7 +522,7 @@ import talon.browser.desktop.popups.UpdatePopup;
 import talon.browser.desktop.utils.NativeMenuAdapter;
 import talon.browser.platform.AppConstants;
 import talon.browser.platform.AppPlatform;
-import talon.browser.platform.commands.Command;
+import talon.browser.platform.utils.Command;
 import talon.browser.platform.utils.DeviceProfile;
 
 class AppUINativeMenu

@@ -7,7 +7,7 @@ package talon.browser.desktop.commands
 	import talon.browser.desktop.utils.DesktopFileReference;
 	import talon.browser.platform.AppPlatform;
 	import talon.browser.platform.AppPlatformEvent;
-	import talon.browser.platform.commands.Command;
+	import talon.browser.platform.utils.Command;
 	import talon.browser.platform.document.files.IFileReference;
 
 	public class OpenDocumentFolderCommand extends Command

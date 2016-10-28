@@ -84,8 +84,7 @@ package talon.browser.desktop.popups
 					.setAttribute(Attribute.MARGIN, "4px")
 					.setAttribute(Attribute.CURSOR, MouseCursor.BUTTON)
 					.onTap(onExpandClick)
-					.tweenKill(juggler)
-					.getElement(0).rotation = 0;
+					.tweenKill(juggler);
 			}
 			// [Success application load & start update]
 			else if (_updater.lastStatus == "UPDATER_STARTED")
@@ -104,8 +103,7 @@ package talon.browser.desktop.popups
 					.setAttribute(Attribute.MARGIN, "4px")
 					.setAttribute(Attribute.CURSOR, MouseCursor.BUTTON)
 					.onTap(onExpandClick)
-					.tweenKill(juggler)
-					.getElement(0).rotation = 0;
+					.tweenKill(juggler);
 			}
 
 			node.invalidate();

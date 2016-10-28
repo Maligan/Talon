@@ -8,7 +8,7 @@ package talon.browser.desktop.commands
 	import talon.browser.desktop.utils.DesktopFileReference;
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.commands.Command;
+	import talon.browser.platform.utils.Command;
 	import talon.browser.platform.document.Document;
 	import talon.browser.platform.utils.Storage;
 
@@ -47,8 +47,6 @@ package talon.browser.desktop.commands
 
 			if (root.isDirectory)
 				source = root.resolvePath(AppConstants.BROWSER_DEFAULT_DOCUMENT_FILENAME);
-			else if (root.extension == AppConstants.BROWSER_DOCUMENT_EXTENSION)
-				source = root;
 			else
 				throw new Error(); // TODO: Make error messages like within document
 
@@ -80,11 +78,8 @@ package talon.browser.desktop.commands
 			var indexOf:int = recent.indexOf(root.nativePath);
 			if (indexOf != -1) recent.splice(indexOf, 1);
 			recent.unshift(root.nativePath);
-			recent = recent.slice(0, AppConstants.HISTORY_RECENT_MAX);
+			recent = recent.slice(0, AppConstants.RECENT_HISTORY);
 			platform.settings.setValue(AppConstants.SETTING_RECENT_DOCUMENTS, recent);
-
-			// Clear history
-			platform.commands.clear();
 		}
 
 		public override function get isExecutable():Boolean

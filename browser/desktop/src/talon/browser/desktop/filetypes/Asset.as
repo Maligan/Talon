@@ -75,8 +75,6 @@ package talon.browser.desktop.filetypes
 
 		protected function activate():void
 		{
-			var isXML:Boolean = file.checkFirstMeaningfulChar("<");
-			if (isXML && file.xml == null) reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_XML, file.url);
 		}
 
 		protected function deactivate():void

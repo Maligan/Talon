@@ -12,6 +12,8 @@ package talon.browser.desktop.popups
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
 	import starling.display.MeshBatch;
+	import starling.display.MeshBatch;
+	import starling.display.MeshBatch;
 	import starling.events.Event;
 	import starling.events.KeyboardEvent;
 	import starling.events.TouchEvent;
@@ -182,6 +184,8 @@ package talon.browser.desktop.popups
 				var itemIndex:int = _labelsShift + i;
 				var item:String = _queryItems[itemIndex] || "";
 
+				label.batchable = false;
+
 				// Invalidation & composition (via textBounds)
 				label.text = null;
 				label.text = item;
@@ -203,6 +207,8 @@ package talon.browser.desktop.popups
 							labelStyle.setVertexColor(j*4+3, 0x00BFFF);
 						}
 					}
+
+					MeshBatch(labelStyle.target).setVertexDataChanged();
 				}
 			}
 		}

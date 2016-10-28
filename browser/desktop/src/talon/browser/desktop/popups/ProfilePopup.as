@@ -49,7 +49,7 @@ package talon.browser.desktop.popups
 
 		private function initializeInput(inputName:String, value:Number):void
 		{
-			var input:TalonFeatherTextInput = query(inputName).getElement(0) as TalonFeatherTextInput;
+			var input:TalonFeatherTextInput = query(inputName).getElementAt(0) as TalonFeatherTextInput;
 			if (input != null)
 			{
 				input.text = value.toString();
@@ -70,8 +70,8 @@ package talon.browser.desktop.popups
 		{
 			for (var i:int = 0; i < inputNames.length; i++)
 			{
-				var curr:TalonFeatherTextInput = query(inputNames[i]).getElement(0) as TalonFeatherTextInput;
-				var next:TalonFeatherTextInput = query(inputNames[(i+1) % inputNames.length]).getElement(0) as TalonFeatherTextInput;
+				var curr:TalonFeatherTextInput = query(inputNames[i]).getElementAt(0) as TalonFeatherTextInput;
+				var next:TalonFeatherTextInput = query(inputNames[(i+1) % inputNames.length]).getElementAt(0) as TalonFeatherTextInput;
 
 				curr.nextTabFocus = next;
 				next.previousTabFocus = curr;
@@ -82,7 +82,7 @@ package talon.browser.desktop.popups
 
 		private function readInput(inputName:String):Number
 		{
-			var input:TalonFeatherTextInput = query(inputName).getElement(0) as TalonFeatherTextInput;
+			var input:TalonFeatherTextInput = query(inputName).getElementAt(0) as TalonFeatherTextInput;
 			if (input != null) return parseFloat(input.text);
 			return NaN;
 		}

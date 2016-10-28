@@ -27,7 +27,7 @@ package talon.browser.platform
 		public static const PLUGINS_DIR:String = "plugins";
 		public static const ZOOM_MIN:int = 25;
 		public static const ZOOM_MAX:int = 300;
-		public static const HISTORY_RECENT_MAX:int = 10;
+		public static const RECENT_HISTORY:int = 10;
 
 		public static const SETTING_BACKGROUND:String = "background";
 		public static const SETTING_BACKGROUND_DARK:String = "dark";
@@ -50,13 +50,9 @@ package talon.browser.platform
 		//
 		// Language
 		//
-		public static const T_UNNAMED:String                                = "Unnamed";
-
 		public static const T_OPEN_TITLE:String                             = "Open Document Root Folder";
 		public static const T_EXPORT_TITLE:String                           = "Export";
 		public static const T_SCREENSHOT_TITLE:String                       = "Select Screenshot File";
 		public static const T_PROJECT_ROOT_TITLE:String                     = "Select Document Folder";
-		public static const T_BROWSER_FILE_EXTENSION_NAME:String            = "Talon Browser Document";
-		public static const T_BROWSER_EXPORT_FILE_EXTENSION_NAME:String     = "Zip Archive";
 	}
 }

@@ -43,6 +43,14 @@ package
 				var value:int = i;
 				object[key] = value;
 			}
+
+			var index:int = 0;
+			for (var attribute:String in object)
+			{
+				Assert.assertEquals(properties[index], attribute);
+				Assert.assertEquals(object[attribute], index);
+				index++;
+			}
 		}
 	}
 }

@@ -46,6 +46,7 @@ package talon.browser.desktop
 			loadPluginsAndStartPlatform();
 		}
 
+
 		private function loadPluginsAndStartPlatform():void
 		{
 			// Register built-in plugins

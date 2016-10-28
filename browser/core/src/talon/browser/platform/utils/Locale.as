@@ -18,6 +18,8 @@ package talon.browser.platform.utils
 			return _values[_language] ? (_values[_language][key] || key) : key;
 		}
 
+		public function get values():Object { return _values[_language] || {}; }
+
 		public function get language():String { return _language; }
 		public function set language(value:String):void { _language = value; }
 	}

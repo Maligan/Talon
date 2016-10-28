@@ -90,7 +90,7 @@ package talon.browser.desktop.plugins
 				var localeProperties:Object = StringParseUtil.parseProperties(localeFile);
 				_platform.locale.merge(localeProperties, "en_US");
 				_platform.locale.language = "en_US";
-				_locale = new LocaleAdapter(_platform.locale);
+				_locale = _platform.locale.values;
 			}
 			else
 			{

@@ -10,7 +10,7 @@ package talon.browser.platform
 		public static const APP_DOCUMENTATION_URL:String = "https://github.com/Maligan/Talon/blob/master/docs/index.md";
 		public static function get APP_VERSION():String
 		{
-			return "0.0.2";
+			return "0.2.1";
 //			var xml:XML = NativeApplication.nativeApplication.applicationDescriptor;
 //			var ns:Namespace = xml.namespace();
 //			var version:String = xml.ns::versionNumber;

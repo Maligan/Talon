@@ -143,5 +143,5 @@ checkbox:active #flag { src: $checkbox_unckecked_down; }
 
 #interface #drag.active {
 	fill: $drag;
-	fillStretchGrid: 5px;
+	fillStretchGrid: 8px;
 }

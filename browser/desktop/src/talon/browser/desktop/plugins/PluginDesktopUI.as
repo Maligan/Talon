@@ -28,7 +28,6 @@ package talon.browser.desktop.plugins
 	import talon.browser.desktop.commands.OpenDocumentCommand;
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
-	import talon.browser.desktop.utils.LocaleAdapter;
 	import talon.browser.desktop.utils.Updater;
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;

@@ -93,7 +93,7 @@ package talon.browser.desktop.plugins
 				if (files.length == 1)
 				{
 					var file:File = File(files[0]);
-					if (file.extension == AppConstants.BROWSER_DOCUMENT_EXTENSION)
+					if (file.isDirectory)
 					{
 						NativeDragManager.acceptDragDrop(_nativeDragLayer);
 						NativeDragManager.dropAction = NativeDragActions.MOVE;

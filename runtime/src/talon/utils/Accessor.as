@@ -6,42 +6,41 @@ package talon.utils
 	[ExcludeClass]
 	public class Accessor
 	{
-		public var width:Gauge;
-		public var height:Gauge;
+		/** @private */ public var width:AttributeGauge;
+		/** @private */ public var height:AttributeGauge;
 
-		public var minWidth:Gauge;
-		public var minHeight:Gauge;
+		/** @private */ public var minWidth:AttributeGauge;
+		/** @private */ public var minHeight:AttributeGauge;
 
-		public var maxWidth:Gauge;
-		public var maxHeight:Gauge;
+		/** @private */ public var maxWidth:AttributeGauge;
+		/** @private */ public var maxHeight:AttributeGauge;
 
-		public var marginTop:Gauge;
-		public var marginRight:Gauge;
-		public var marginBottom:Gauge;
-		public var marginLeft:Gauge;
+		/** @private */ public var marginTop:AttributeGauge;
+		/** @private */ public var marginRight:AttributeGauge;
+		/** @private */ public var marginBottom:AttributeGauge;
+		/** @private */ public var marginLeft:AttributeGauge;
 
-		public var paddingTop:Gauge;
-		public var paddingRight:Gauge;
-		public var paddingBottom:Gauge;
-		public var paddingLeft:Gauge;
+		/** @private */ public var paddingTop:AttributeGauge;
+		/** @private */ public var paddingRight:AttributeGauge;
+		/** @private */ public var paddingBottom:AttributeGauge;
+		/** @private */ public var paddingLeft:AttributeGauge;
 
-		public var anchorTop:Gauge;
-		public var anchorRight:Gauge;
-		public var anchorBottom:Gauge;
-		public var anchorLeft:Gauge;
+		/** @private */ public var anchorTop:AttributeGauge;
+		/** @private */ public var anchorRight:AttributeGauge;
+		/** @private */ public var anchorBottom:AttributeGauge;
+		/** @private */ public var anchorLeft:AttributeGauge;
 
-		public var x:Gauge;
-		public var y:Gauge;
+		/** @private */ public var x:AttributeGauge;
+		/** @private */ public var y:AttributeGauge;
 
-		public var originX:Gauge;
-		public var originY:Gauge;
+		/** @private */ public var originX:AttributeGauge;
+		/** @private */ public var originY:AttributeGauge;
 
-		public var pivotX:Gauge;
-		public var pivotY:Gauge;
+		/** @private */ public var pivotX:AttributeGauge;
+		/** @private */ public var pivotY:AttributeGauge;
 
-		public var classes:AccessorStringSet;
-		public var states:AccessorStringSet;
-
+		/** @private */ public var classes:AttributeStringSet;
+		/** @private */ public var states:AttributeStringSet;
 
 		private var _node:Node;
 
@@ -82,13 +81,13 @@ package talon.utils
 			originX = gauge("originX");
 			originY = gauge("originY");
 
-			classes = new AccessorStringSet(_node.getOrCreateAttribute(Attribute.CLASS));
-			states = new AccessorStringSet(_node.getOrCreateAttribute(Attribute.STATE));
+			classes = new AttributeStringSet(_node, Attribute.CLASS);
+			states = new AttributeStringSet(_node, Attribute.STATE);
 		}
 
-		private function gauge(name:String):Gauge
+		private function gauge(name:String):AttributeGauge
 		{
-			return new Gauge(_node.getOrCreateAttribute(name));
+			return new AttributeGauge(_node.getOrCreateAttribute(name));
 		}
 	}
 }

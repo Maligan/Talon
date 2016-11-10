@@ -7,7 +7,7 @@ package talon
 
 	import talon.layout.Layout;
 	import talon.utils.Accessor;
-	import talon.utils.Gauge;
+	import talon.utils.AttributeGauge;
 	import talon.utils.ITalonElement;
 	import talon.utils.Trigger;
 
@@ -240,7 +240,7 @@ package talon
 
 			// Else calculate via parent and self values:
 			var relative:int = parent ? parent.ppem : BASE;
-			return Gauge.toPixels(attribute.value, ppmm, relative, ppdp, relative);
+			return AttributeGauge.toPixels(attribute.value, ppmm, relative, ppdp, relative);
 		}
 
 		/** This is default 'auto' callback for gauges: width, minWidth, maxWidth. */

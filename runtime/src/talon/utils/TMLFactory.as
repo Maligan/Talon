@@ -8,7 +8,7 @@ package talon.utils
 	import talon.Node;
 	import talon.StyleSheet;
 
-	public class TalonFactory
+	public class TMLFactory
 	{
 		public static const TAG_LIBRARY:String = "library";
 		public static const TAG_TEMPLATE:String = "template";
@@ -29,7 +29,7 @@ package talon.utils
 		protected var _templates:Object = new Dictionary();
 		protected var _style:StyleSheet = new StyleSheet();
 
-		public function TalonFactory(linkageByDefault:Class):void
+		public function TMLFactory(linkageByDefault:Class):void
 		{
 			_linkageByDefault = linkageByDefault;
 			_parserStack = new Array();
@@ -151,20 +151,20 @@ package talon.utils
 		//
 		// Library
 		//
+		/** Setup specific object as resource source. */
+		public function setResourceScope(scope:Object):void { _resources = scope || {}; }
+
 		/** Add resource (image, string, etc.) to global factory scope. */
-		public function addResource(id:String, resource:*):void { _resources[id] = resource; }
+		public function addResourceToScope(id:String, resource:*):void { _resources[id] = resource; }
 
 		/** Add all key-value pairs from object. */
-		public function addResourcesFromObject(object:Object):void { for (var id:String in object) addResource(id, object[id]); }
+		public function addResourcesToScope(object:Object):void { for (var id:String in object) addResourceToScope(id, object[id]); }
 
 		/** Add css to global factory scope. */
 		public function addStyleSheet(css:String):void { _style.parse(css); }
 
 		/** Define type as terminal (see TML specification) */
 		public function addTerminal(type:String):void { _parser.terminals.push(type); }
-
-		/** Add all archive content to factory (images, templates, css, etc.). */
-		public function addArchiveContentAsync(bytes:ByteArray, complete:Function):void { throw new Error("Not implemented"); }
 
 		/** Add template (non terminal symbol) definition. Template name equals @id attribute. */
 		public function addTemplate(xml:XML):void
@@ -225,7 +225,7 @@ package talon.utils
 						addStyleSheet(child.text());
 						break;
 					case TAG_PROPERTIES:
-						addResourcesFromObject(StringParseUtil.parseProperties(child.text()));
+						addResourcesToScope(ParseUtil.parseProperties(child.text()));
 						break;
 					default:
 						logger("Ignore library part", "'" + subtype + "'", "unknown type");

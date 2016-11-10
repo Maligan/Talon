@@ -197,7 +197,7 @@ package talon.utils
 			dispatchEvent(event);
 		}
 
-		/** Current parse process stack of elements types. */
+		/** Current parse process stack of element types. */
 		public function get cursorTags():Vector.<String> { return _tags; }
 
 		/** Current element attributes. */

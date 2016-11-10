@@ -10,7 +10,7 @@ package starling.extensions
 	import starling.utils.Color;
 
 	import talon.enums.FillMode;
-	import talon.utils.StringParseUtil;
+	import talon.utils.ParseUtil;
 
 	public class FillModeMesh extends Mesh
 	{
@@ -220,15 +220,15 @@ package starling.extensions
 				switch (horizontalFillMode)
 				{
 					case FillMode.STRETCH:  fillStretch(width, texture.width, _stretchOffsets[3], _stretchOffsets[1], horizontal); break;
-					case FillMode.REPEAT:   fillRepeat(width, texture.width, StringParseUtil.parseAlign(horizontalAlign), horizontal); break;
-					case FillMode.NONE:     fillNone(width, texture.width, StringParseUtil.parseAlign(horizontalAlign), horizontal); break;
+					case FillMode.REPEAT:   fillRepeat(width, texture.width, ParseUtil.parseAlign(horizontalAlign), horizontal); break;
+					case FillMode.NONE:     fillNone(width, texture.width, ParseUtil.parseAlign(horizontalAlign), horizontal); break;
 				}
 
 				switch (verticalFillMode)
 				{
 					case FillMode.STRETCH:  fillStretch(height, texture.height, _stretchOffsets[0], _stretchOffsets[2], vertical); break;
-					case FillMode.REPEAT:   fillRepeat(height, texture.height, StringParseUtil.parseAlign(verticalAlign), vertical); break;
-					case FillMode.NONE:     fillNone(height, texture.height, StringParseUtil.parseAlign(verticalAlign), vertical); break;
+					case FillMode.REPEAT:   fillRepeat(height, texture.height, ParseUtil.parseAlign(verticalAlign), vertical); break;
+					case FillMode.NONE:     fillNone(height, texture.height, ParseUtil.parseAlign(verticalAlign), vertical); break;
 				}
 			}
 			else if (!transparent)

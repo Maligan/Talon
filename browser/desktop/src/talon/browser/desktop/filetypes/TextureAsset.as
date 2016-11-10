@@ -78,7 +78,7 @@ package talon.browser.desktop.filetypes
 			{
 				_id = document.factory.getResourceId(file.url);
 				_texture = Texture.fromData(data);
-				document.factory.addResource(_id, _texture);
+				document.factory.addResourceToScope(_id, _texture);
 			}
 			catch (e:Error)
 			{

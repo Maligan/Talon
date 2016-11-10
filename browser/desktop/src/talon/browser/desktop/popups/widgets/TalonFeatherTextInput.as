@@ -22,7 +22,7 @@ package talon.browser.desktop.popups.widgets
 	import talon.Attribute;
 	import talon.Node;
 	import talon.utils.ITalonElement;
-	import talon.utils.StringParseUtil;
+	import talon.utils.ParseUtil;
 
 	public class TalonFeatherTextInput extends TextInput implements ITalonElement
 	{
@@ -61,7 +61,7 @@ package talon.browser.desktop.popups.widgets
 			editor.textFormat = new BitmapFontTextFormat(
 				node.getAttributeCache(Attribute.FONT_NAME),
 				node.getAttributeCache(Attribute.FONT_SIZE),
-				StringParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR))
+				ParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR))
 			);
 
 			return editor;
@@ -69,12 +69,12 @@ package talon.browser.desktop.popups.widgets
 
 		private function onFocusIn(e:Event):void
 		{
-			node.accessor.states.insert(STATE_FOCUS);
+			node.states.insert(STATE_FOCUS);
 		}
 
 		private function onFocusOut(e:Event):void
 		{
-			node.accessor.states.remove(STATE_FOCUS);
+			node.states.remove(STATE_FOCUS);
 		}
 
 		private function onResize():void
@@ -87,14 +87,14 @@ package talon.browser.desktop.popups.widgets
 
 		private function onFontNameChange():void { if (textFormat) textFormat.font = TextField.getBitmapFont(node.getAttributeCache(Attribute.FONT_NAME)); }
 		private function onFontSizeChange():void { if (textFormat) textFormat.size = parseFloat(node.getAttributeCache(Attribute.FONT_SIZE)); }
-		private function onFontColorChange():void { if (textFormat) textFormat.color = StringParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
+		private function onFontColorChange():void { if (textFormat) textFormat.color = ParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
 		private function onTextChange():void { text = node.getAttributeCache(Attribute.TEXT); }
 		private function onPaddingChange():void
 		{
-			paddingLeft = node.accessor.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-			paddingRight = node.accessor.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-			paddingTop = node.accessor.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-			paddingBottom = node.accessor.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+			paddingLeft = node.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+			paddingRight = node.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+			paddingTop = node.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+			paddingBottom = node.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 		}
 
 		private function get textFormat():BitmapFontTextFormat

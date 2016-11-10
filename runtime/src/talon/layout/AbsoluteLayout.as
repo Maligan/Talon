@@ -3,90 +3,90 @@ package talon.layout
 	import talon.Attribute;
 	import talon.Node;
 	import talon.utils.AttributeGauge;
-	import talon.utils.StringParseUtil;
+	import talon.utils.ParseUtil;
 
 	public class AbsoluteLayout extends Layout
 	{
 		public override function arrange(node:Node, width:Number, height:Number):void
 		{
 			// Node padding
-			var paddingTop:Number = toPixelsSugar(node.accessor.paddingTop, node, height);
-			var paddingRight:Number = toPixelsSugar(node.accessor.paddingRight, node, width);
-			var paddingBottom:Number = toPixelsSugar(node.accessor.paddingBottom, node, height);
-			var paddingLeft:Number = toPixelsSugar(node.accessor.paddingLeft, node, width);
+			var paddingTop:Number = toPixelsSugar(node.paddingTop, node, height);
+			var paddingRight:Number = toPixelsSugar(node.paddingRight, node, width);
+			var paddingBottom:Number = toPixelsSugar(node.paddingBottom, node, height);
+			var paddingLeft:Number = toPixelsSugar(node.paddingLeft, node, width);
 
 			width -= paddingLeft + paddingRight;
 			height -= paddingTop + paddingBottom;
 
 			// Node origin
-			var originX:Number = toPixelsSugar(node.accessor.originX, node, width);
-			var originY:Number = toPixelsSugar(node.accessor.originY, node, height);
+			var originX:Number = toPixelsSugar(node.originX, node, width);
+			var originY:Number = toPixelsSugar(node.originY, node, height);
 
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				if (!StringParseUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBLE))) continue;
+				if (!ParseUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBLE))) continue;
 
 				// Child margin
-				var marginTop:Number = toPixelsSugar(child.accessor.marginTop, node, height);
-				var marginRight:Number = toPixelsSugar(child.accessor.marginRight, node, width);
-				var marginBottom:Number = toPixelsSugar(child.accessor.marginBottom, node, height);
-				var marginLeft:Number = toPixelsSugar(child.accessor.marginLeft, node, width);
+				var marginTop:Number = toPixelsSugar(child.marginTop, node, height);
+				var marginRight:Number = toPixelsSugar(child.marginRight, node, width);
+				var marginBottom:Number = toPixelsSugar(child.marginBottom, node, height);
+				var marginLeft:Number = toPixelsSugar(child.marginLeft, node, width);
 
 				//
 				// Horizontal (width/x/left/right)
 				//
-				/**/ if ( child.accessor.anchorLeft.isNone &&  child.accessor.anchorRight.isNone)
+				/**/ if ( child.anchorLeft.isNone &&  child.anchorRight.isNone)
 				{
-					child.bounds.width = toPixelsSugar(child.accessor.width, child, width, width, height, 0, 0, child.accessor.minWidth, child.accessor.maxWidth);
+					child.bounds.width = toPixelsSugar(child.width, child, width, width, height, 0, 0, child.minWidth, child.maxWidth);
 					child.bounds.x = originX;
 					child.bounds.x += paddingLeft;
-					child.bounds.x += toPixelsSugar(child.accessor.x, child, width);
-					child.bounds.x -= toPixelsSugar(child.accessor.pivotX, child, child.bounds.width);
+					child.bounds.x += toPixelsSugar(child.x, child, width);
+					child.bounds.x -= toPixelsSugar(child.pivotX, child, child.bounds.width);
 				}
-				else if ( child.accessor.anchorLeft.isNone && !child.accessor.anchorRight.isNone)
+				else if ( child.anchorLeft.isNone && !child.anchorRight.isNone)
 				{
-					child.bounds.right = paddingRight - marginRight + toPixelsSugar(child.accessor.anchorRight, child, width);
-					child.bounds.left = child.bounds.right - toPixelsSugar(child.accessor.width, child, width, width, height, 0, 0, child.accessor.minWidth, child.accessor.maxWidth);
+					child.bounds.right = paddingRight - marginRight + toPixelsSugar(child.anchorRight, child, width);
+					child.bounds.left = child.bounds.right - toPixelsSugar(child.width, child, width, width, height, 0, 0, child.minWidth, child.maxWidth);
 				}
-				else if (!child.accessor.anchorLeft.isNone &&  child.accessor.anchorRight.isNone)
+				else if (!child.anchorLeft.isNone &&  child.anchorRight.isNone)
 				{
-					child.bounds.left = paddingLeft + marginRight + toPixelsSugar(child.accessor.anchorLeft, child, width);
-					child.bounds.right = child.bounds.left + toPixelsSugar(child.accessor.width, child, width, width, height, 0, 0, child.accessor.minWidth, child.accessor.maxWidth);
+					child.bounds.left = paddingLeft + marginRight + toPixelsSugar(child.anchorLeft, child, width);
+					child.bounds.right = child.bounds.left + toPixelsSugar(child.width, child, width, width, height, 0, 0, child.minWidth, child.maxWidth);
 				}
-				else if (!child.accessor.anchorLeft.isNone && !child.accessor.anchorRight.isNone)
+				else if (!child.anchorLeft.isNone && !child.anchorRight.isNone)
 				{
 					var deltaWidth:Number = paddingLeft + marginLeft + paddingRight + marginRight;
-					child.bounds.left = paddingLeft + marginLeft + toPixelsSugar(child.accessor.anchorLeft, child, width - deltaWidth);
-					child.bounds.right = paddingRight - marginRight + toPixelsSugar(child.accessor.anchorRight, child, width - deltaWidth);
+					child.bounds.left = paddingLeft + marginLeft + toPixelsSugar(child.anchorLeft, child, width - deltaWidth);
+					child.bounds.right = paddingRight - marginRight + toPixelsSugar(child.anchorRight, child, width - deltaWidth);
 				}
 
 				//
 				// Vertical (height/y/top/bottom)
 				//
-				/**/ if ( child.accessor.anchorTop.isNone &&  child.accessor.anchorBottom.isNone)
+				/**/ if ( child.anchorTop.isNone &&  child.anchorBottom.isNone)
 				{
-					child.bounds.height = toPixelsSugar(child.accessor.height, child, height, width, height, 0, 0, child.accessor.minHeight, child.accessor.maxHeight);
+					child.bounds.height = toPixelsSugar(child.height, child, height, width, height, 0, 0, child.minHeight, child.maxHeight);
 					child.bounds.y = originY;
 					child.bounds.y += paddingTop;
-					child.bounds.y += toPixelsSugar(child.accessor.y, child, height);
-					child.bounds.y -= toPixelsSugar(child.accessor.pivotY, child, child.bounds.height);
+					child.bounds.y += toPixelsSugar(child.y, child, height);
+					child.bounds.y -= toPixelsSugar(child.pivotY, child, child.bounds.height);
 				}
-				else if ( child.accessor.anchorTop.isNone && !child.accessor.anchorBottom.isNone)
+				else if ( child.anchorTop.isNone && !child.anchorBottom.isNone)
 				{
-					child.bounds.bottom = paddingBottom - marginBottom + toPixelsSugar(child.accessor.anchorBottom, child, height);
-					child.bounds.top = child.bounds.bottom - toPixelsSugar(child.accessor.height, child, height, width, height, 0, 0, child.accessor.minHeight, child.accessor.maxHeight);
+					child.bounds.bottom = paddingBottom - marginBottom + toPixelsSugar(child.anchorBottom, child, height);
+					child.bounds.top = child.bounds.bottom - toPixelsSugar(child.height, child, height, width, height, 0, 0, child.minHeight, child.maxHeight);
 				}
-				else if (!child.accessor.anchorTop.isNone &&  child.accessor.anchorBottom.isNone)
+				else if (!child.anchorTop.isNone &&  child.anchorBottom.isNone)
 				{
-					child.bounds.top = paddingTop + marginTop + toPixelsSugar(child.accessor.anchorTop, child, height);
-					child.bounds.bottom = child.bounds.top + toPixelsSugar(child.accessor.height, child, height, width, height, 0, 0, child.accessor.minHeight, child.accessor.maxHeight);
+					child.bounds.top = paddingTop + marginTop + toPixelsSugar(child.anchorTop, child, height);
+					child.bounds.bottom = child.bounds.top + toPixelsSugar(child.height, child, height, width, height, 0, 0, child.minHeight, child.maxHeight);
 				}
-				else if (!child.accessor.anchorTop.isNone && !child.accessor.anchorBottom.isNone)
+				else if (!child.anchorTop.isNone && !child.anchorBottom.isNone)
 				{
 					var deltaHeight:Number = paddingTop + marginTop + paddingBottom + marginBottom;
-					child.bounds.top = paddingTop + marginTop + toPixelsSugar(child.accessor.anchorTop, child, height - deltaHeight);
-					child.bounds.bottom = paddingBottom - marginBottom + toPixelsSugar(child.accessor.anchorBottom, child, height - deltaHeight);
+					child.bounds.top = paddingTop + marginTop + toPixelsSugar(child.anchorTop, child, height - deltaHeight);
+					child.bounds.bottom = paddingBottom - marginBottom + toPixelsSugar(child.anchorBottom, child, height - deltaHeight);
 				}
 
 				child.commit();
@@ -100,16 +100,16 @@ package talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				if (!StringParseUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBLE))) continue;
+				if (!ParseUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBLE))) continue;
 
-				var childWidth:int = toPixelsSugar(child.accessor.width, child, 0, Infinity, availableHeight, 0, 0, child.accessor.minWidth, child.accessor.maxWidth);
-				childWidth += toPixelsSugar(child.accessor.marginLeft, child);
-				childWidth += toPixelsSugar(child.accessor.marginRight, child);
+				var childWidth:int = toPixelsSugar(child.width, child, 0, Infinity, availableHeight, 0, 0, child.minWidth, child.maxWidth);
+				childWidth += toPixelsSugar(child.marginLeft, child);
+				childWidth += toPixelsSugar(child.marginRight, child);
 
 				resultWidth = Math.max(resultWidth, childWidth);
 			}
 
-			return resultWidth + toPixelsSugar(node.accessor.paddingRight, node) + toPixelsSugar(node.accessor.paddingLeft, node);
+			return resultWidth + toPixelsSugar(node.paddingRight, node) + toPixelsSugar(node.paddingLeft, node);
 		}
 
 		public override function measureHeight(node:Node, availableWidth:Number):Number
@@ -119,16 +119,16 @@ package talon.layout
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				if (!StringParseUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBLE))) continue;
+				if (!ParseUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBLE))) continue;
 
-				var childHeight:int = toPixelsSugar(child.accessor.height, child, 0, availableWidth, Infinity, 0, 0, child.accessor.minHeight, child.accessor.maxHeight);
-				childHeight += toPixelsSugar(child.accessor.marginTop, child);
-				childHeight += toPixelsSugar(child.accessor.marginBottom, child);
+				var childHeight:int = toPixelsSugar(child.height, child, 0, availableWidth, Infinity, 0, 0, child.minHeight, child.maxHeight);
+				childHeight += toPixelsSugar(child.marginTop, child);
+				childHeight += toPixelsSugar(child.marginBottom, child);
 
 				resultHeight = Math.max(resultHeight, childHeight);
 			}
 
-			return resultHeight + toPixelsSugar(node.accessor.paddingTop, node) + toPixelsSugar(node.accessor.paddingBottom, node);
+			return resultHeight + toPixelsSugar(node.paddingTop, node) + toPixelsSugar(node.paddingBottom, node);
 		}
 
 		/**

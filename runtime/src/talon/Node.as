@@ -6,9 +6,8 @@ package talon
 	import flash.utils.Dictionary;
 
 	import talon.layout.Layout;
-	import talon.utils.Accessor;
 	import talon.utils.AttributeGauge;
-	import talon.utils.ITalonElement;
+	import talon.utils.AttributeStringSet;
 	import talon.utils.Trigger;
 
 	/** Any attribute changed. */
@@ -26,8 +25,9 @@ package talon
 		// Private properties
 		//
 		private var _attributes:Dictionary = new Dictionary();
-		private var _accessor:Accessor;
 		private var _style:StyleSheet;
+		private var _styleTouches:Dictionary = new Dictionary();
+		private var _styleTouch:int = -1;
 		private var _resources:Object;
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
@@ -36,9 +36,6 @@ package talon
 		private var _ppdp:Number;
 		private var _ppmm:Number;
 		private var _invalidated:Boolean;
-
-		private var _touches:Dictionary = new Dictionary();
-		private var _touch:int = -1;
 
 		/** @private */
 		public function Node():void
@@ -54,20 +51,56 @@ package talon
 			// Listen attribute change
 			addTriggerListener(Event.CHANGE, onSelfAttributeChange);
 
-			// Setup width/height layout callbacks
-			_accessor = new Accessor(this);
-			_accessor.width.auto = measureAutoWidth;
-			_accessor.height.auto = measureAutoHeight;
-			_accessor.states.change.addListener(refreshStyle);
-			_accessor.classes.change.addListener(refreshStyle);
+			// Setup typed attributes
+			width.auto = measureAutoWidth;
+			height.auto = measureAutoHeight;
+			states.change.addListener(refreshStyle);
+			classes.change.addListener(refreshStyle);
 		}
+
+		//
+		// Strong typed attributes wrappers:
+		// For internal/layouts usage only.
+		//
+		/** @private */ public const width:AttributeGauge = new AttributeGauge(this, Attribute.WIDTH);
+		/** @private */ public const height:AttributeGauge = new AttributeGauge(this, Attribute.HEIGHT);
+
+		/** @private */ public const minWidth:AttributeGauge = new AttributeGauge(this, Attribute.MIN_WIDTH);
+		/** @private */ public const minHeight:AttributeGauge = new AttributeGauge(this, Attribute.MIN_HEIGHT);
+
+		/** @private */ public const maxWidth:AttributeGauge = new AttributeGauge(this, Attribute.MAX_WIDTH);
+		/** @private */ public const maxHeight:AttributeGauge = new AttributeGauge(this, Attribute.MAX_HEIGHT);
+
+		/** @private */ public const marginTop:AttributeGauge = new AttributeGauge(this, Attribute.MARGIN_TOP);
+		/** @private */ public const marginRight:AttributeGauge = new AttributeGauge(this, Attribute.MARGIN_RIGHT);
+		/** @private */ public const marginBottom:AttributeGauge = new AttributeGauge(this, Attribute.MARGIN_BOTTOM);
+		/** @private */ public const marginLeft:AttributeGauge = new AttributeGauge(this, Attribute.MARGIN_LEFT);
+
+		/** @private */ public const paddingTop:AttributeGauge = new AttributeGauge(this, Attribute.PADDING_TOP);
+		/** @private */ public const paddingRight:AttributeGauge = new AttributeGauge(this, Attribute.PADDING_RIGHT);
+		/** @private */ public const paddingBottom:AttributeGauge = new AttributeGauge(this, Attribute.PADDING_BOTTOM);
+		/** @private */ public const paddingLeft:AttributeGauge = new AttributeGauge(this, Attribute.PADDING_LEFT);
+
+		/** @private */ public const anchorTop:AttributeGauge = new AttributeGauge(this, Attribute.ANCHOR_TOP);
+		/** @private */ public const anchorRight:AttributeGauge = new AttributeGauge(this, Attribute.ANCHOR_RIGHT);
+		/** @private */ public const anchorBottom:AttributeGauge = new AttributeGauge(this, Attribute.ANCHOR_BOTTOM);
+		/** @private */ public const anchorLeft:AttributeGauge = new AttributeGauge(this, Attribute.ANCHOR_LEFT);
+
+		/** @private */ public const x:AttributeGauge = new AttributeGauge(this, Attribute.X);
+		/** @private */ public const y:AttributeGauge = new AttributeGauge(this, Attribute.Y);
+
+		/** @private */ public const pivotX:AttributeGauge = new AttributeGauge(this, Attribute.PIVOT_X);
+		/** @private */ public const pivotY:AttributeGauge = new AttributeGauge(this, Attribute.PIVOT_Y);
+
+		/** @private */ public const originX:AttributeGauge = new AttributeGauge(this, Attribute.ORIGIN_X);
+		/** @private */ public const originY:AttributeGauge = new AttributeGauge(this, Attribute.ORIGIN_Y);
+
+		/** @private */ public const classes:AttributeStringSet = new AttributeStringSet(this, Attribute.CLASS);
+		/** @private */ public const states:AttributeStringSet = new AttributeStringSet(this, Attribute.STATE);
 
 		//
 		// Attributes
 		//
-		/** Set of often used strong-typed attributes accessors. */
-		public function get accessor():Accessor { return _accessor; }
-
 		/** Get attribute <strong>cached</strong> value. */
 		public function getAttributeCache(name:String):* { return getOrCreateAttribute(name).valueCache; }
 
@@ -114,19 +147,19 @@ package talon
 		{
 			var style:Object = getStyle(this);
 
-			_touch++;
+			_styleTouch++;
 
 			// Set styled values (NB! Order is important)
 			for (var name:String in style)
 			{
 				getOrCreateAttribute(name).styled = style[name];
-				_touches[name] = _touch;
+				_styleTouches[name] = _styleTouch;
 			}
 
 			// Clear all previous styles
 			for each (var attribute:Attribute in _attributes)
 			{
-				if (_touches[attribute.name] != _touch)
+				if (_styleTouches[attribute.name] != _styleTouch)
 					attribute.styled = null;
 			}
 
@@ -185,7 +218,7 @@ package talon
 				_invalidated = true;
 				dispatch(Event.CHANGE); // FIXME: Change event type (CHANGE used for attribute changing)
 
-				if (_parent && (accessor.width.isNone||accessor.height.isNone))
+				if (_parent && (width.isNone||height.isNone))
 					_parent.invalidate();
 			}
 		}

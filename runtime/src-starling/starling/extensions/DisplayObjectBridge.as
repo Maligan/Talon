@@ -24,7 +24,7 @@ package starling.extensions
 	import talon.Node;
 	import talon.enums.TouchMode;
 	import talon.utils.AttributeGauge;
-	import talon.utils.StringParseUtil;
+	import talon.utils.ParseUtil;
 
 	/** Provide method for synchronize starling display tree and talon tree. */
 	public class DisplayObjectBridge
@@ -96,7 +96,7 @@ package starling.extensions
 			else
 			{
 				_background.texture = null;
-				_background.color = StringParseUtil.parseColor(value, Color.WHITE);
+				_background.color = ParseUtil.parseColor(value, Color.WHITE);
 				_background.transparent = value == Attribute.NONE;
 			}
 		}
@@ -135,7 +135,7 @@ package starling.extensions
 		// Listeners: Common
 		//
 		private function onIDChange():void { _target.name = _node.getAttributeCache(Attribute.ID); }
-		private function onVisibleChange():void { _target.visible = StringParseUtil.parseBoolean(_node.getAttributeCache(Attribute.VISIBLE)); }
+		private function onVisibleChange():void { _target.visible = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.VISIBLE)); }
 		private function onAlphaChange():void { _target.alpha = parseFloat(_node.getAttributeCache(Attribute.ALPHA)); }
 		private function onBlendModeChange():void { _target.blendMode = _node.getAttributeCache(Attribute.BLEND_MODE); }
 
@@ -148,7 +148,7 @@ package starling.extensions
 			var nextFilter:FragmentFilter = null;
 
 			var func:String = _node.getAttributeCache(Attribute.FILTER);
-			var funcSplit:Array = StringParseUtil.parseFunction(func);
+			var funcSplit:Array = ParseUtil.parseFunction(func);
 			if (funcSplit)
 			{
 				var funcName:String = funcSplit.shift();
@@ -187,7 +187,7 @@ package starling.extensions
 		private function onTouchEventsChange():void
 		{
 			var touchEventsValue:String = _node.getAttributeCache(Attribute.TOUCH_EVENTS);
-			var touchEvents:Boolean = StringParseUtil.parseBoolean(touchEventsValue);
+			var touchEvents:Boolean = ParseUtil.parseBoolean(touchEventsValue);
 
 			if (touchEvents) _target.addEventListener(TouchEvent.TOUCH, onTouch_States);
 			else _target.removeEventListener(TouchEvent.TOUCH, onTouch_States);
@@ -204,43 +204,43 @@ package starling.extensions
 		{
 			var touch:Touch = e.getTouch(_target);
 
-			_node.accessor.states.lock();
+			_node.states.lock();
 
 			if (touch == null)
 			{
-				_node.accessor.states.remove("hover");
-				_node.accessor.states.remove("active");
+				_node.states.remove("hover");
+				_node.states.remove("active");
 			}
 			else if (touch.phase == TouchPhase.HOVER)
 			{
-				_node.accessor.states.insert("hover");
+				_node.states.insert("hover");
 			}
-			else if (touch.phase == TouchPhase.BEGAN && !_node.accessor.states.contains("active"))
+			else if (touch.phase == TouchPhase.BEGAN && !_node.states.contains("active"))
 			{
-				_node.accessor.states.insert("active");
+				_node.states.insert("active");
 			}
 			else if (touch.phase == TouchPhase.MOVED)
 			{
 				var isWithinBounds:Boolean = _target.getBounds(_target.stage).contains(touch.globalX, touch.globalY);
 
-				if (_node.accessor.states.contains("active") && !isWithinBounds)
+				if (_node.states.contains("active") && !isWithinBounds)
 				{
-					_node.accessor.states.remove("hover");
-					_node.accessor.states.remove("active");
+					_node.states.remove("hover");
+					_node.states.remove("active");
 				}
-				else if (!_node.accessor.states.contains("active") && isWithinBounds)
+				else if (!_node.states.contains("active") && isWithinBounds)
 				{
-					_node.accessor.states.insert("hover");
-					_node.accessor.states.insert("active");
+					_node.states.insert("hover");
+					_node.states.insert("active");
 				}
 			}
 			else if (touch.phase == TouchPhase.ENDED)
 			{
-				_node.accessor.states.remove("hover");
-				_node.accessor.states.remove("active");
+				_node.states.remove("hover");
+				_node.states.remove("active");
 			}
 
-			_node.accessor.states.unlock();
+			_node.states.unlock();
 		}
 
 		//

@@ -8,7 +8,7 @@ package talon.browser.platform.utils
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
-	import talon.utils.StringParseUtil;
+	import talon.utils.ParseUtil;
 
 	public class Storage extends EventDispatcher
 	{
@@ -37,7 +37,7 @@ package talon.browser.platform.utils
 			var storage:Storage = new Storage();
 			var bytes:ByteArray = readFile(file);
 			var string:String = bytes.toString();
-			storage._inner = StringParseUtil.parseProperties(string);
+			storage._inner = ParseUtil.parseProperties(string);
 			return storage;
 		}
 

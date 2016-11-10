@@ -6,9 +6,9 @@ package starling.extensions
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
 
-	import talon.utils.TalonFactory;
+	import talon.utils.TMLFactory;
 
-	public class StarlingTalonFactory extends TalonFactory
+	public class StarlingTalonFactory extends TMLFactory
 	{
 		public function StarlingTalonFactory()
 		{
@@ -31,7 +31,7 @@ package starling.extensions
 			parentAsDisplayObject.addChild(childAsDisplayObject);
 		}
 
-		public override function addArchiveContentAsync(bytes:ByteArray, complete:Function):void
+		public function addArchiveContentAsync(bytes:ByteArray, complete:Function):void
 		{
 			var hasFZipLibrary:Boolean = ApplicationDomain.currentDomain.hasDefinition("deng.fzip.FZip");
 			if (hasFZipLibrary == false) throw new Error("FZip library required for archive import");
@@ -59,7 +59,7 @@ package starling.extensions
 			var textureIds:Vector.<String> = manager.getTextureNames();
 			for each (var textureId:String in textureIds)
 			{
-				addResource(textureId, manager.getTexture(textureId));
+				addResourceToScope(textureId, manager.getTexture(textureId));
 			}
 
 			var styleIds:Vector.<String> = manager.getCssNames();
@@ -83,7 +83,7 @@ package starling.extensions
 				for (var propertyName:String in properties)
 				{
 					var propertyValue:String = properties[propertyName];
-					addResource(propertyName, propertyValue);
+					addResourceToScope(propertyName, propertyValue);
 				}
 			}
 		}
@@ -105,7 +105,7 @@ import starling.events.Event;
 import starling.utils.AssetManager;
 import starling.utils.SystemUtil;
 
-import talon.utils.StringParseUtil;
+import talon.utils.ParseUtil;
 
 class AssetManagerExtended extends AssetManager
 {
@@ -205,7 +205,7 @@ class AssetManagerExtended extends AssetManager
 					}
 					else if (asset in mPropertiesGuess)
 					{
-						addProperties(mPropertiesGuess[asset],  StringParseUtil.parseProperties(asset.toString()));
+						addProperties(mPropertiesGuess[asset],  ParseUtil.parseProperties(asset.toString()));
 						delete mPropertiesGuess[asset];
 						original(null);
 					}

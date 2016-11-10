@@ -218,9 +218,9 @@ package talon.browser.desktop.popups
 			for (var i:int = 0; i < _labels.length; i++)
 			{
 				if (_cursor == _labelsShift + i)
-					_labels[i].node.accessor.classes.insert("selected");
+					_labels[i].node.classes.insert("selected");
 				else
-					_labels[i].node.accessor.classes.remove("selected");
+					_labels[i].node.classes.remove("selected");
 			}
 		}
 

@@ -3,7 +3,7 @@ package talon.utils
 	import starling.utils.Color;
 
 	/** This is utility method to work with strings in different formats and notation. */
-	public final class StringParseUtil
+	public final class ParseUtil
 	{
 		/**
 		 * Parse color strings:
@@ -11,25 +11,25 @@ package talon.utils
 		 * #FFFFFF
 		 * rbg(255, 255, 255)
 		 */
-		public static function parseColor(string:String, rollback:Number = NaN):Number
+		public static function parseColor(string:String, fallback:Number = NaN):Number
 		{
 			var rgb:Array;
 
-			if (string == null) return rollback;
+			if (string == null) return fallback;
 			if (string.indexOf("#") == 0) return parseInt(string.substr(1), 16);
 			if (Color[string.toUpperCase()] is uint) return Color[string.toUpperCase()];
 
 			var method:Array = parseFunction(string);
 			if (method && method[0]=="rgb" && method.length > 3) return (parseInt(method[1]) << 16) | (parseInt(method[2]) << 8) | parseInt(method[3]);
 
-			return rollback;
+			return fallback;
 		}
 
-		public static function parseAngle(string:String, rollback:Number = NaN):Number
+		public static function parseAngle(string:String, fallback:Number = NaN):Number
 		{
 			var pattern:RegExp = /^(-?\d*\.?\d+)(deg|rad|)$/;
 			var split:Array = pattern.exec(string);
-			if (split == null) return rollback;
+			if (split == null) return fallback;
 
 			var amount:Number = parseFloat(split[1]);
 			var unit:String = split[2];

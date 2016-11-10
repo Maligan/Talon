@@ -4,8 +4,8 @@ package talon.browser.desktop.filetypes
 
 	import talon.browser.platform.document.log.DocumentMessage;
 
-	import talon.utils.StringParseUtil;
-	import talon.utils.TalonFactory;
+	import talon.utils.ParseUtil;
+	import talon.utils.TMLFactory;
 
 	public class XMLLibraryAsset extends Asset
 	{
@@ -25,15 +25,15 @@ package talon.browser.desktop.filetypes
 
 				switch (childType)
 				{
-					case TalonFactory.TAG_STYLE:
+					case TMLFactory.TAG_STYLE:
 						addCSS(child.text());
 						break;
 
-					case TalonFactory.TAG_TEMPLATE:
+					case TMLFactory.TAG_TEMPLATE:
 						addTemplate(child);
 						break;
 
-					case TalonFactory.TAG_PROPERTIES:
+					case TMLFactory.TAG_PROPERTIES:
 						addProperties(child.text());
 
 					default:
@@ -73,8 +73,8 @@ package talon.browser.desktop.filetypes
 
 		private function addProperties(properties:String):void
 		{
-			StringParseUtil.parseProperties(properties, _properties);
-			document.factory.addResourcesFromObject(_properties);
+			ParseUtil.parseProperties(properties, _properties);
+			document.factory.addResourcesToScope(_properties);
 		}
 
 		override protected function deactivate():void

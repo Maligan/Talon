@@ -93,6 +93,10 @@ package talon
 		public static const PIVOT_Y:String                         = registerAttribute("pivotY",              ZERO);
 		public static const PIVOT:String                           = registerComposite("pivot",               [PIVOT_X, PIVOT_Y]);
 
+		[Deprecated] public static const ORIGIN_X:String           = registerAttribute("originX",              NONE);
+		[Deprecated] public static const ORIGIN_Y:String           = registerAttribute("originY",              NONE);
+		[Deprecated] public static const ORIGIN:String             = registerComposite("origin",               [ORIGIN_X, ORIGIN_Y]);
+
 		public static const HALIGN:String                          = registerAttribute("halign",              LEFT);
 		public static const VALIGN:String                          = registerAttribute("valign",              TOP);
 		public static const ALIGN:String                           = registerComposite("align",               [HALIGN, VALIGN]);
@@ -245,7 +249,7 @@ package talon
                 // FIXME: Stack overflow (loops)
 				while (_valueCache is String)
 				{
-					var key:String = StringParseUtil.parseResource(_valueCache);
+					var key:String = ParseUtil.parseResource(_valueCache);
 					if (key == null) break;
 
 					_valueCacheIsResource = true;

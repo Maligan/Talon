@@ -4,18 +4,18 @@ package
 
 	import talon.utils.OrderedObject;
 
-	import talon.utils.StringParseUtil;
+	import talon.utils.ParseUtil;
 
 	public class UtilTest
 	{
 		[Test]
 		public function testParseFunction():void
 		{
-			Assert.assertNull(StringParseUtil.parseFunction(null));
-			Assert.assertNull(StringParseUtil.parseFunction("identifier"));
-			Assert.assertEquals(1, StringParseUtil.parseFunction("key()").length);
-			Assert.assertEquals(2, StringParseUtil.parseFunction("key(arg1)").length);
-			Assert.assertEquals(3, StringParseUtil.parseFunction("key(arg1, arg2)").length);
+			Assert.assertNull(ParseUtil.parseFunction(null));
+			Assert.assertNull(ParseUtil.parseFunction("identifier"));
+			Assert.assertEquals(1, ParseUtil.parseFunction("key()").length);
+			Assert.assertEquals(2, ParseUtil.parseFunction("key(arg1)").length);
+			Assert.assertEquals(3, ParseUtil.parseFunction("key(arg1, arg2)").length);
 		}
 
 		[Test]

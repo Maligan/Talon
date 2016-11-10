@@ -160,9 +160,9 @@ package talon.browser.platform.document
 			dispatchChange();
 		}
 
-		public override function addResource(id:String, resource:*):void
+		public override function addResourceToScope(id:String, resource:*):void
 		{
-			super.addResource(id, resource);
+			super.addResourceToScope(id, resource);
 			dispatchChange();
 		}
 

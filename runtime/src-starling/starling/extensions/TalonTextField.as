@@ -14,7 +14,7 @@ package starling.extensions
 	import talon.Node;
 	import talon.layout.Layout;
 	import talon.utils.ITalonElement;
-	import talon.utils.StringParseUtil;
+	import talon.utils.ParseUtil;
 
 	public class TalonTextField extends TextField implements ITalonElement
 	{
@@ -32,8 +32,8 @@ package starling.extensions
 
 			_node = new Node();
 			_node.addTriggerListener(Event.RESIZE, onNodeResize);
-			_node.accessor.width.auto = measureWidth;
-			_node.accessor.height.auto = measureHeight;
+			_node.width.auto = measureWidth;
+			_node.height.auto = measureHeight;
 
 			// Bridge
 			_bridge = new DisplayObjectBridge(this, node);
@@ -61,8 +61,8 @@ package starling.extensions
 			var result:Rectangle = super.getBounds(this);
 
 			// Add paddings
-			result.width  += node.accessor.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp, 0) + node.accessor.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-			result.height += node.accessor.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0)  + node.accessor.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+			result.width  += node.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp, 0) + node.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+			result.height += node.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0)  + node.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 
 			// Remove native flash / starling hardcoded 2px padding
 			result.width -= NATIVE_TEXT_FIELD_PADDING*2;
@@ -108,24 +108,24 @@ package starling.extensions
 				super.getBounds(this, _helperRect);
 
 				// Add horizontal padding
-				var paddingLeft:Number = node.accessor.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-				var paddingRight:Number = node.accessor.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				var paddingLeft:Number = node.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				var paddingRight:Number = node.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 
 				var isHorizontalAutoSize:Boolean = super.autoSize == TextFieldAutoSize.HORIZONTAL || super.autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
 				if (isHorizontalAutoSize)
-					meshBatch.x += Layout.pad(width, meshBounds.width, paddingLeft - NATIVE_TEXT_FIELD_PADDING, paddingRight - NATIVE_TEXT_FIELD_PADDING, StringParseUtil.parseAlign(format.horizontalAlign));
+					meshBatch.x += Layout.pad(width, meshBounds.width, paddingLeft - NATIVE_TEXT_FIELD_PADDING, paddingRight - NATIVE_TEXT_FIELD_PADDING, ParseUtil.parseAlign(format.horizontalAlign));
 				else
-					meshBatch.x += Layout.pad(0, 0, paddingLeft, paddingRight, StringParseUtil.parseAlign(format.horizontalAlign));
+					meshBatch.x += Layout.pad(0, 0, paddingLeft, paddingRight, ParseUtil.parseAlign(format.horizontalAlign));
 
 				// Add vertical padding
-				var paddingTop:Number = node.accessor.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-				var paddingBottom:Number = node.accessor.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				var paddingTop:Number = node.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				var paddingBottom:Number = node.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
 
 				var isVerticalAutoSize:Boolean = super.autoSize == TextFieldAutoSize.VERTICAL || super.autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
 				if (isVerticalAutoSize)
-					meshBatch.y += Layout.pad(height, meshBounds.height, paddingTop - NATIVE_TEXT_FIELD_PADDING, paddingBottom - NATIVE_TEXT_FIELD_PADDING, StringParseUtil.parseAlign(format.verticalAlign));
+					meshBatch.y += Layout.pad(height, meshBounds.height, paddingTop - NATIVE_TEXT_FIELD_PADDING, paddingBottom - NATIVE_TEXT_FIELD_PADDING, ParseUtil.parseAlign(format.verticalAlign));
 				else
-					meshBatch.y += Layout.pad(0, 0, paddingTop, paddingBottom, StringParseUtil.parseAlign(format.verticalAlign));
+					meshBatch.y += Layout.pad(0, 0, paddingTop, paddingBottom, ParseUtil.parseAlign(format.verticalAlign));
 			}
 		}
 
@@ -166,13 +166,13 @@ package starling.extensions
 		//
 
 		// TODO: sharpness, gridFitType
-		private function onFontColorChange():void { format.color = StringParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
+		private function onFontColorChange():void { format.color = ParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
 		private function onFontSizeChange():void { format.size = node.ppem }
 		private function onFontNameChange():void { format.font = node.getAttributeCache(Attribute.FONT_NAME) || BitmapFont.MINI; }
 		private function onHAlignChange():void { format.horizontalAlign = _node.getAttributeCache(Attribute.HALIGN) }
 		private function onVAlignChange():void { format.verticalAlign = _node.getAttributeCache(Attribute.VALIGN) }
 		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); node.invalidate(); } // TODO: What about invalidate()?
-		private function onAutoScaleChange():void { super.autoScale = StringParseUtil.parseBoolean(_node.getAttributeCache(Attribute.FONT_AUTO_SCALE)); }
+		private function onAutoScaleChange():void { super.autoScale = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.FONT_AUTO_SCALE)); }
 
 		//
 		// Properties
@@ -182,7 +182,7 @@ package starling.extensions
 		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
 		public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.FONT_AUTO_SCALE, value.toString()); }
 
-		public override function get autoSize():String { return getAutoSize(node.accessor.width.isNone, node.accessor.height.isNone); }
+		public override function get autoSize():String { return getAutoSize(node.width.isNone, node.height.isNone); }
 		public override function set autoSize(value:String):void { trace("[TalonTextFiled]", "Ignore autoSize value, this value defined via node width/height == 'none'"); }
 
 		public override function get border():Boolean { return false; }

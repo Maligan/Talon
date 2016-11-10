@@ -255,7 +255,7 @@ class StyleSelector
 	{
 		for each (var className:String in _classes)
 		{
-			if (!node.accessor.classes.contains(className)) return false;
+			if (!node.classes.contains(className)) return false;
 		}
 
 		return true;
@@ -268,7 +268,7 @@ class StyleSelector
 			if (state is String)
 			{
 				var stateName:String = state as String;
-				if (node.accessor.states.contains(stateName) == false) return false;
+				if (node.states.contains(stateName) == false) return false;
 			}
 			else if (state is NthToken)
 			{

@@ -39,8 +39,8 @@ package talon.browser.desktop.plugins
 	import talon.browser.platform.utils.DeviceProfile;
 	import talon.layout.Layout;
 	import talon.utils.ITalonElement;
-	import talon.utils.StringParseUtil;
-	import talon.utils.TalonFactory;
+	import talon.utils.ParseUtil;
+	import talon.utils.TMLFactory;
 
 	public class PluginDesktopUI extends EventDispatcher implements IPlugin
 	{
@@ -86,7 +86,7 @@ package talon.browser.desktop.plugins
 			if (fileLocale.exists)
 			{
 				var localeFile:String = readFile(fileLocale).toString();
-				var localeProperties:Object = StringParseUtil.parseProperties(localeFile);
+				var localeProperties:Object = ParseUtil.parseProperties(localeFile);
 				_platform.locale.merge(localeProperties, "en_US");
 				_platform.locale.language = "en_US";
 				_locale = _platform.locale.values;
@@ -113,7 +113,7 @@ package talon.browser.desktop.plugins
 			_factory = _platform.factory;
 			_factory.addTerminal("input");
 			_factory.setLinkage("input", TalonFeatherTextInput);
-			_factory.addResourcesFromObject(_locale);
+			_factory.addResourcesToScope(_locale);
 			_factory.addArchiveContentAsync(readFile(fileInterface), onFactoryComplete);
 
 			// Windows
@@ -297,7 +297,7 @@ package talon.browser.desktop.plugins
 		private function onBackgroundChange(e:Event):void
 		{
 			var styleName:String = _platform.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
-			_interface.node.accessor.classes.parse(styleName);
+			_interface.node.classes.parse(styleName);
 			_platform.stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[styleName];
 		}
 
@@ -460,7 +460,7 @@ package talon.browser.desktop.plugins
 		//
 		public function get host():DisplayObjectContainer { return _platform.starling.root as DisplayObjectContainer }
 
-		public function get factory():TalonFactory { return _factory; }
+		public function get factory():TMLFactory { return _factory; }
 		public function get template():DisplayObject { return _template; }
 		public function get updater():Updater { return _updater; }
 

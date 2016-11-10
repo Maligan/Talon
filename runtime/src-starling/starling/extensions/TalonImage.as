@@ -28,8 +28,8 @@ package starling.extensions
 			}
 
 			_node = new Node();
-			_node.accessor.width.auto = measureWidth;
-			_node.accessor.height.auto = measureHeight;
+			_node.width.auto = measureWidth;
+			_node.height.auto = measureHeight;
 			_node.addTriggerListener(Event.RESIZE, onNodeResize);
 
 			_bridge = new DisplayObjectBridge(this, node);
@@ -63,8 +63,8 @@ package starling.extensions
 			var rotationStash:Number = rotation;
 			if (rotationStash) rotation = 0;
 
-			pivotX = node.accessor.pivotX.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width);
-			pivotY = node.accessor.pivotY.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width);
+			pivotX = node.pivotX.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width);
+			pivotY = node.pivotY.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width);
 
 			x = node.bounds.x + pivotX;
 			y = node.bounds.y + pivotY;

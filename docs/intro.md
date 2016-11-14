@@ -11,7 +11,7 @@
 	</def>
 	```
 
-5. Откройте шаблон `hello` в браузере (`Navigate -> Go To Template` или <kbd>Ctrl + P</kbd>) и вы увидите:  
+5. Откройте шаблон `hello` в браузере (`Navigate -> Go To Template` или <kbd>Ctrl</kbd> + <kbd>P</kbd>) и вы увидите:  
 
 	![Screenshot1](img/screen_1.png)
 

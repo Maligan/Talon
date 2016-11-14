@@ -169,8 +169,8 @@ package talon.utils
 		/** Add template (non terminal symbol) definition. Template name equals @id attribute. */
 		public function addTemplate(xml:XML):void
 		{
-			var type:String = xml.name();
-			if (type != TAG_TEMPLATE) throw new ArgumentError("Root node must be <" + TAG_TEMPLATE + ">");
+			var tag:String = xml.name();
+			if (tag != TAG_TEMPLATE) throw new ArgumentError("Root node must be <" + TAG_TEMPLATE + ">");
 
 			var id:String = xml.attribute(ATT_ID);
 			if (id == null) throw new ArgumentError("Template must contains " + ATT_ID + " attribute");

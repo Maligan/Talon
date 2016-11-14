@@ -1,9 +1,9 @@
 * {
+	fontName: Source_Sans_Pro;
 	fontSize: 13px;
 }
 
 .popup {
-	fontName: Source_Sans_Pro;
 	fontSize: 13px;
 	fontColor: white;
 	fontSharpness: -1;
@@ -21,7 +21,6 @@
 	width: *;
 	height: 35px;
 	cursor: button;
-	fontName: Source_Sans_Pro;
 
 	touchMode: leaf;
 	touchEvents: true;
@@ -65,7 +64,6 @@ button {
 	cursor: button;
 
 	fontSize: 13px;
-	fontName: Source_Sans_Pro;
 	fontColor: #F0F1F1;
 	height: 2em;
 
@@ -102,7 +100,6 @@ button.action:active {
 }
 
 checkbox label {
-	fontName: Source_Sans_Pro;
 	fontColor: #FFFFFF;
 	marginTop: -2px;
 	ivalign: center;

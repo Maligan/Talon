@@ -11,6 +11,7 @@ package talon.utils
 		public static const EVENT_END:String = "elementEnd";
 
 		// Special keyword-tags
+		private static const TAG_USE:String = "use";
 		private static const TAG_REWRITE:String = "rewrite";
 
 		// Special keyword-attributes
@@ -57,7 +58,7 @@ package talon.utils
 
 			_tags[_tags.length] = tag;
 
-			// If node can't be expanded - create node
+			// If node is terminal - it can't be expanded - create node
 			var isTerminal:Boolean = _terminals.indexOf(tag) != -1;
 			if (isTerminal)
 			{
@@ -76,6 +77,10 @@ package talon.utils
 					// TODO: May be _tags.pop() ?
 					parseInternal(replacer, attributes, rewrites);
 				}
+			}
+			else if (tag == TAG_USE)
+			{
+				parseInternal(getTemplateOrDie(xml.@ref), null, fetchRewrites(xml, rewrites));
 			}
 			// Else if node is template
 			else

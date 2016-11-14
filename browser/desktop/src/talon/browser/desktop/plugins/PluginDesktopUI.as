@@ -419,7 +419,7 @@ package talon.browser.desktop.plugins
 					var messageData:DocumentMessage = _platform.document.messages.getMessageAt(i);
 					var messageView:TalonTextField = _factory.create("Message");
 					messageView.node.setAttribute(Attribute.TEXT, messageData.text);
-					messageView.node.setAttribute(Attribute.FONT_COLOR, "#FFFF88");
+					messageView.node.setAttribute(Attribute.CLASS, messageData.level==2?"error":"warning");
 					_messages.addChild(messageView);
 				}
 			}

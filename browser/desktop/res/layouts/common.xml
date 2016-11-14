@@ -108,18 +108,8 @@
 		</node>
 	</template>
 
-	<template id="MessageList" type="messages"> <!-- FIXME: tempalte -->
-		<node width="100%" orientation="vertical" gap="1px">
-			<message />
-			<message />
-			<message />
-			<message />
-			<message />
-		</node>
-	</template>
-
 	<template id="Message" type="message">
-		<label />
+		<label type="message" />
 	</template>
 
 	<template id="Input" type="input">

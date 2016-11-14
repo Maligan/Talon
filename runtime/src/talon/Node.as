@@ -5,7 +5,8 @@ package talon
 	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
 
-	import talon.layout.Layout;
+	import talon.layouts.Layout;
+	import talon.styles.StyleSheet;
 	import talon.utils.AttributeGauge;
 	import talon.utils.AttributeStringSet;
 	import talon.utils.Trigger;

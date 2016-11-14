@@ -197,7 +197,7 @@ import flash.utils.Dictionary;
 import flash.utils.Proxy;
 import flash.utils.flash_proxy;
 
-import talon.StyleSheet;
+import talon.styles.StyleSheet;
 
 namespace resource_proxy;
 

@@ -1,8 +1,10 @@
 package talon.browser.desktop.filetypes
 {
 	import flash.display.Loader;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.utils.ByteArray;
 
 	import starling.textures.AtfData;
@@ -20,7 +22,7 @@ package talon.browser.desktop.filetypes
 		//
 		override protected function activate():void
 		{
-			var bytes:ByteArray = readFileBytesOrReport();
+			var bytes:ByteArray = readFileBytesOrReportAndNull();
 			if (bytes == null) return;
 
 			var isATF:Boolean = AtfData.isAtfData(bytes);
@@ -34,12 +36,12 @@ package talon.browser.desktop.filetypes
 
 				decode(bytes, onComplete);
 
-				function onComplete(result:*):void
+				function onComplete(result:*, reason:String):void
 				{
 					if (document)
 					{
 						if (result) addTexture(result);
-						else reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_IMAGE_FORMAT, file.url);
+						else reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_IMAGE_FORMAT, file.path, reason);
 					}
 
 					taskEnd();
@@ -53,22 +55,25 @@ package talon.browser.desktop.filetypes
 			{
 				var loader:Loader = new Loader();
 				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
-				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
+				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onError);
+				loader.contentLoaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onError);
 				loader.loadBytes(bytes);
 			}
 			else
 			{
-				onIOError();
+				onError();
 			}
 
 			function onComplete(e:*):void
 			{
-				complete(loader.content);
+				complete(loader.content, null);
 			}
 
-			function onIOError(e:* = null):void
+			function onError(e:ErrorEvent = null):void
 			{
-				complete(null);
+				if (e is IOErrorEvent) complete(null, IOErrorEvent(e).text);
+				else if (e is SecurityErrorEvent) complete(null, SecurityErrorEvent(e).text);
+				else complete(null, "#" + e.errorID);
 			}
 		}
 
@@ -76,13 +81,13 @@ package talon.browser.desktop.filetypes
 		{
 			try
 			{
-				_id = document.factory.getResourceId(file.url);
+				_id = document.factory.getResourceId(file.path);
 				_texture = Texture.fromData(data);
 				document.factory.addResourceToScope(_id, _texture);
 			}
 			catch (e:Error)
 			{
-				reportMessage(DocumentMessage.TEXTURE_ERROR, file.url, e.message);
+				reportMessage(DocumentMessage.TEXTURE_ERROR, file.path, e.message);
 			}
 		}
 

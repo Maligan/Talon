@@ -119,29 +119,45 @@ checkbox {
 checkbox #flag { src: $checkbox_unckecked_normal; }
 checkbox:active #flag { src: $checkbox_unckecked_down; }
 
-#interface.dark #container  { fill: $('bg_dark'); }
-#interface.light #container { fill: $('bg_light'); }
 #interface #container { fillMode: repeat; }
-
-
-#interface.dark #bsod  { fontColor: white; }
-#interface.white #bsod { fontColor: black; }
-#interface #bsod {
-	fill: #ff0000;
-	alpha: 0.0;
-
-	fontName: Consolas;
-	fontSize: 128px;
-
-	width: 100%;
-	height: 100%;
-	halign: center;
-	valign: center;
-	orientation: vertical;
-}
-
-
 #interface #drag.active {
 	fill: $drag;
 	fillStretchGrid: 8px;
+}
+
+#interface.dark #container  { fill: $('bg_dark'); }
+#interface.light #container { fill: $('bg_light'); }
+
+/* Messages */
+
+message {
+	width: 100%;
+	padding: 1em;
+	fill: #000000;
+}
+
+.dark message {
+	fill: #FFFFFF;
+	fillAlpha: 0.4;
+}
+
+.dark message.error {
+	fontColor: #FF6600;
+}
+
+.dark message.warning {
+	fontColor: #FFFF00;
+}
+
+.light message {
+	fill: #000000;
+	fillAlpha: 0.7;
+}
+
+.light message.error {
+	fontColor: #FF9999;
+}
+
+.light message.warning {
+	fontColor: #FFFF99;
 }

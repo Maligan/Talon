@@ -1,4 +1,4 @@
-package talon.layout
+package talon.layouts
 {
 	import talon.Attribute;
 	import talon.Node;

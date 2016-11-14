@@ -19,7 +19,9 @@ package talon.browser.desktop.plugins
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.extensions.StarlingTalonFactory;
+	import starling.extensions.TalonQuery;
 	import starling.extensions.TalonSprite;
+	import starling.extensions.TalonTextField;
 	import starling.filters.BlurFilter;
 	import starling.utils.Align;
 	import starling.utils.Color;
@@ -37,7 +39,7 @@ package talon.browser.desktop.plugins
 	import talon.browser.platform.plugins.IPlugin;
 	import talon.browser.platform.popups.PopupManager;
 	import talon.browser.platform.utils.DeviceProfile;
-	import talon.layout.Layout;
+	import talon.layouts.Layout;
 	import talon.utils.ITalonElement;
 	import talon.utils.ParseUtil;
 	import talon.utils.TMLFactory;
@@ -51,20 +53,28 @@ package talon.browser.desktop.plugins
 
 		private var _locale:Object;
 		private var _factory:StarlingTalonFactory;
+
 		private var _interface:TalonSprite;
-		private var _errorPage:TalonSprite;
 		private var _isolatorContainer:TalonSprite;
 		private var _isolator:DisplayObjectContainer;
 		private var _container:TalonSprite;
+		private var _messages:TalonSprite;
 
 		private var _template:DisplayObject;
 		private var _templateProduceMessage:DocumentMessage;
 		private var _locked:Boolean;
 
+		private var _query:TalonQuery;
+
 		public function get id():String { return "UI"; }
 		public function get version():String{ return "1.0.0"; }
 		public function get versionAPI():String { return "1.0.0"; }
 		public function detach():void { }
+
+		private function select(selector:String):TalonQuery
+		{
+			return _query.reset(_interface).select(selector);
+		}
 
 		/** Call after starling initialize completed. */
 		public function attach(platform:AppPlatform):void
@@ -81,6 +91,8 @@ package talon.browser.desktop.plugins
 			_platform.profile.addEventListener(Event.CHANGE, onProfileChange);
 
 			_updater = new Updater(AppConstants.APP_UPDATE_URL, AppConstants.APP_VERSION);
+
+			_query = new TalonQuery();
 
 			var fileLocale:File = File.applicationDirectory.resolvePath("locales/en_US.properties");
 			if (fileLocale.exists)
@@ -246,7 +258,9 @@ package talon.browser.desktop.plugins
 			_platform.addEventListener(DocumentEvent.CHANGE, refreshCurrentTemplate);
 
 			_interface = _factory.create("Interface") as TalonSprite;
-			host.addChild(_interface);
+			DisplayObjectContainer(_platform.starling.root).addChild(_interface);
+
+			_messages = select("#messages").getElementAt(0) as TalonSprite;
 
 			_popups.host = _interface.getChildByName("popups") as DisplayObjectContainer;
 			_popups.addEventListener(Event.CHANGE, onPopupManagerChange);
@@ -261,9 +275,6 @@ package talon.browser.desktop.plugins
 			_isolator.name = "Isolator";
 			_isolator.addChild(_container);
 
-			_errorPage = _interface.getChildByName("bsod") as TalonSprite || new TalonSprite();
-			_errorPage.visible = false;
-
 			_isolatorContainer = _interface.getChildByName("container") as TalonSprite;
 			_isolatorContainer.addEventListener(TouchEvent.TOUCH, onIsolatorTouch);
 			_isolatorContainer.addChild(_isolator);
@@ -275,7 +286,6 @@ package talon.browser.desktop.plugins
 			_platform.settings.addPropertyListener(AppConstants.SETTING_ALWAYS_ON_TOP, onAlwaysOnTopChange); onAlwaysOnTopChange(null);
 
 			resizeTo(_platform.profile.width, _platform.profile.height);
-
 			refreshCurrentTemplate();
 		}
 
@@ -377,7 +387,6 @@ package talon.browser.desktop.plugins
 			canShow &&= _platform.document.tasks.isBusy == false;
 			canShow &&= _platform.document.factory.hasTemplate(_platform.templateId);
 
-			_errorPage.visible = false;
 			_container.removeChildren();
 			_platform.document && _platform.document.messages.removeMessage(_templateProduceMessage);
 			_templateProduceMessage = null;
@@ -385,12 +394,7 @@ package talon.browser.desktop.plugins
 			_template && _template.removeFromParent(true);
 			_template = canShow ? produce(_platform.templateId) : null;
 
-			// Show state
-			if (_platform.document && _platform.document.messages.numMessages != 0)
-			{
-				_errorPage.visible = true;
-			}
-			else if (_template != null)
+			if (_template != null)
 			{
 				_container.node.ppmm = ITalonElement(_template).node.ppmm;
 				_container.node.ppdp = ITalonElement(_template).node.ppdp;
@@ -398,8 +402,27 @@ package talon.browser.desktop.plugins
 				resizeTo(_platform.profile.width, _platform.profile.height);
 			}
 
+			refreshMessages();
 			refreshOutline(_template);
+
 			dispatchEventWith(Event.CHANGE);
+		}
+
+		private function refreshMessages():void
+		{
+			_messages.removeChildren();
+
+			if (_platform.document)
+			{
+				for (var i:int = 0; i < _platform.document.messages.numMessages; i++)
+				{
+					var messageData:DocumentMessage = _platform.document.messages.getMessageAt(i);
+					var messageView:TalonTextField = _factory.create("Message");
+					messageView.node.setAttribute(Attribute.TEXT, messageData.text);
+					messageView.node.setAttribute(Attribute.FONT_COLOR, "#FFFF88");
+					_messages.addChild(messageView);
+				}
+			}
 		}
 
 		private function refreshOutline(displayObject:DisplayObject):void
@@ -444,7 +467,7 @@ package talon.browser.desktop.plugins
 			}
 			catch (e:Error)
 			{
-				_templateProduceMessage = new DocumentMessage(DocumentMessage.PRODUCE_ERROR, [templateId, e.getStackTrace()]);
+				_templateProduceMessage = new DocumentMessage(DocumentMessage.TEMPLATE_INSTANTIATE_ERROR, [templateId, "Error: " + e.message + "."]);
 				_platform.document.messages.addMessage(_templateProduceMessage);
 			}
 
@@ -458,8 +481,6 @@ package talon.browser.desktop.plugins
 		//
 		// Properties
 		//
-		public function get host():DisplayObjectContainer { return _platform.starling.root as DisplayObjectContainer }
-
 		public function get factory():TMLFactory { return _factory; }
 		public function get template():DisplayObject { return _template; }
 		public function get updater():Updater { return _updater; }

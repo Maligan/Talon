@@ -1,6 +1,6 @@
 package talon.browser.desktop.filetypes
 {
-	import talon.StyleSheet;
+	import talon.styles.StyleSheet;
 	import talon.browser.platform.document.log.DocumentMessage;
 
 	public class CSSAsset extends Asset
@@ -26,14 +26,14 @@ package talon.browser.desktop.filetypes
 			if (source == null) return;
 
 			if (isCSS(source) == true)
-				document.factory.addStyleSheetWithId(file.url, source);
+				document.factory.addStyleSheetWithId(file.path, source);
 			else
-				reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_CSS, file.url);
+				reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_CSS, file.path);
 		}
 
 		override protected function deactivate():void
 		{
-			document.factory.removeStyleSheetWithId(file.url);
+			document.factory.removeStyleSheetWithId(file.path);
 		}
 	}
 }

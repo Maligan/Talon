@@ -12,7 +12,7 @@ package starling.extensions
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.layout.Layout;
+	import talon.layouts.Layout;
 	import talon.utils.ITalonElement;
 	import talon.utils.ParseUtil;
 

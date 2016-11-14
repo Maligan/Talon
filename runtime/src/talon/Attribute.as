@@ -1,10 +1,7 @@
 package talon
 {
-	import flash.utils.setInterval;
-	import flash.utils.setTimeout;
-
 	import talon.enums.*;
-	import talon.layout.Layout;
+	import talon.layouts.Layout;
 	import talon.utils.*;
 
 	public final class Attribute
@@ -313,6 +310,7 @@ package talon
 }
 
 import flash.events.Event;
+
 import talon.Attribute;
 import talon.utils.Trigger;
 
@@ -421,6 +419,14 @@ class InheritableSolver extends SimpleSolver
 
 	private function onRemoved():void
 	{
+		// FIXME: Double call?
+		// Open 'ProfilePopup'
+		// Erase from common.xml '<' from <input>
+		// Save
+		// Restore '<'
+		// Save
+		// Save
+		// PROFIT!
 		_parent.change.removeListener(onParentChange);
 		_parent = null;
 		if (super.value == Attribute.INHERIT) change.dispatch();
@@ -433,9 +439,9 @@ class InheritableSolver extends SimpleSolver
 
 	public override function get value():String
 	{
-		// If value == 'inherit' and there is parent and return parent value
+		// If value == 'inherit' and there is a parent - return parent value
 		if (isInherit) return _parent.value;
-		// If value == 'inherit' but there is no parent return basic value
+		// If value == 'inherit' but there is no parent - return basic value
 		if (super.value == Attribute.INHERIT) return _based;
 		// Else return self value
 		return super.value;

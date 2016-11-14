@@ -1,4 +1,4 @@
-package talon.layout
+package talon.layouts
 {
 	import flash.geom.Rectangle;
 
@@ -153,7 +153,7 @@ import flash.utils.Dictionary;
 
 import talon.enums.BreakMode;
 import talon.enums.Orientation;
-import talon.layout.Layout;
+import talon.layouts.Layout;
 
 class Flow
 {

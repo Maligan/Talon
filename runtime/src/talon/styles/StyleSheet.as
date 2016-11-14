@@ -1,5 +1,6 @@
-package talon
+package talon.styles
 {
+	import talon.*;
 	import flash.utils.Dictionary;
 	import talon.utils.OrderedObject;
 

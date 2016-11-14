@@ -18,7 +18,7 @@ package talon.browser.desktop.filetypes
 
 		override protected function activate():void
 		{
-			_xml = readFileXMLOrReport();
+			_xml = readFileXMLOrReportAndNull();
 			if (_xml == null) return;
 
 			document.addEventListener(DocumentEvent.CHANGING, onDocumentChanging);
@@ -47,7 +47,7 @@ package talon.browser.desktop.filetypes
 			var texture:Texture = document.factory.getResource(textureId);
 			if (texture == null)
 			{
-				reportMessage(DocumentMessage.FONT_IMAGE_MISSED, file.url, textureId);
+				reportMessage(DocumentMessage.TEXTURE_MISS_FONT, file.path, textureId);
 				return;
 			}
 

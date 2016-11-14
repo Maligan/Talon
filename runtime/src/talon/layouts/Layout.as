@@ -1,4 +1,4 @@
-package talon.layout
+package talon.layouts
 {
 	import flash.utils.Dictionary;
 

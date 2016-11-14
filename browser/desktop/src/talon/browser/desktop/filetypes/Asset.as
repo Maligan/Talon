@@ -34,25 +34,31 @@ package talon.browser.desktop.filetypes
 				document.messages.removeMessage(_messages.pop());
 		}
 
-		public final function readFileBytesOrReport():ByteArray
+		public final function readFileBytesOrReportAndNull():ByteArray
 		{
-			if (file.bytes == null)
-				reportMessage(DocumentMessage.FILE_READ_ERROR, file.url);
+			if (file.cacheError != null)
+			{
+				reportMessage(DocumentMessage.FILE_READ_ERROR, file.path, file.cacheError.message);
+				return null;
+			}
 
-			return file.bytes;
+			return file.cacheBytes;
 		}
 
-		public final function readFileXMLOrReport():XML
+		public final function readFileXMLOrReportAndNull():XML
 		{
-			if (file.xml == null)
-				reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_XML, file.url);
+			if (file.cacheBytesAsXML == null)
+			{
+				reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_XML, file.path);
+				return null;
+			}
 
-			return file.xml;
+			return file.cacheBytesAsXML;
 		}
 
 		public final function readFileStringOrReport():String
 		{
-			var bytes:ByteArray = readFileBytesOrReport();
+			var bytes:ByteArray = readFileBytesOrReportAndNull();
 			return bytes ? bytes.toString() : null;
 		}
 

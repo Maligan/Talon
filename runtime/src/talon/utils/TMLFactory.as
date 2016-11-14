@@ -6,7 +6,7 @@ package talon.utils
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.StyleSheet;
+	import talon.styles.StyleSheet;
 
 	public class TMLFactory
 	{

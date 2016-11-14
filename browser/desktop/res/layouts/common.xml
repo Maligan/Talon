@@ -3,11 +3,14 @@
 	<template id="Interface">
 		<node id="interface" width="100%" height="100%" layout="abs" class="dark">
 			<node id="container" width="100%" height="100%" />
-			<node id="bsod" width="100%" height="100%"><label width="100%" height="100%" autoScale="true" text="¯\_(ツ)_/¯" /></node>
+			<node id="messages" width="100%" orientation="vertical" gap="1px">
+				<!--<message class="error" text="From file /root.txt you can read about this error" />-->
+				<!--<message class="error" text="Error while processing file /tmp/trash.zip" />-->
+				<!--<message class="warning" text="Hold down this warning, you never complete Talon" />-->
+				<!--<message class="error" text="Yes, and after all this shit, I finish message system" />-->
+			</node>
 			<node id="popups" width="100%" height="100%" layout="flow" halign="center" valign="center"/>
-			<image src="$error" width="48px" height="48px" anchor="0px 100% none none" margin="10px" />
 			<node id="drag" width="100%" height="100%" />
-			<!--<messages id="messages" width="100%" anchor="none none none none" />-->
 		</node>
 	</template>
 
@@ -106,7 +109,8 @@
 	</template>
 
 	<template id="MessageList" type="messages"> <!-- FIXME: tempalte -->
-		<node width="100%" orientation="vertical">
+		<node width="100%" orientation="vertical" gap="1px">
+			<message />
 			<message />
 			<message />
 			<message />
@@ -115,7 +119,7 @@
 	</template>
 
 	<template id="Message" type="message">
-		<label text="Error Message" />
+		<label />
 	</template>
 
 	<template id="Input" type="input">

@@ -1,46 +1,40 @@
 package talon.browser.desktop.filetypes
 {
+	import flash.events.FileListEvent;
+	import flash.events.IOErrorEvent;
 	import flash.filesystem.File;
 
-	import talon.browser.desktop.utils.DesktopDocumentProperty;
-
 	import talon.browser.desktop.utils.DesktopFileReference;
-	import talon.browser.platform.document.files.IFileReference;
 	import talon.browser.platform.document.log.DocumentMessage;
-	import talon.browser.platform.utils.Glob;
 
 	public class DirectoryAsset extends Asset
 	{
-		override protected function activate():void
+		protected override function activate():void
 		{
 			document.tasks.begin();
+			file.target.addEventListener(FileListEvent.DIRECTORY_LISTING, onDirectoryListing);
+			file.target.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
+			file.target.getDirectoryListingAsync();
+		}
 
-			var children:Vector.<File> = getListing(file.target);
+		protected override function deactivate():void
+		{
+			file.target.removeEventListener(FileListEvent.DIRECTORY_LISTING, onDirectoryListing);
+			file.target.removeEventListener(IOErrorEvent.IO_ERROR, onIOError);
+		}
 
-			for each (var child:File in children)
+		private function onDirectoryListing(e:FileListEvent):void
+		{
+			for each (var child:File in e.files)
 				document.files.addReference(new DesktopFileReference(child, file.root));
 
 			document.tasks.end();
 		}
 
-		private function getListing(dir:File):Vector.<File>
+		private function onIOError(e:IOErrorEvent):void
 		{
-			var result:Vector.<File> = new <File>[];
-
-			try
-			{
-				var children:Array = dir.getDirectoryListing();
-				for each (var child:File in children)
-					if (child.exists) result.push(child);
-			}
-			catch (e:Error)
-			{
-				reportMessage(DocumentMessage.FILE_LISTING_ERROR, dir.url);
-			}
-			finally
-			{
-				return result;
-			}
+			reportMessage(DocumentMessage.FILE_LISTING_ERROR, file.path, e.text);
+			document.tasks.end();
 		}
 	}
 }

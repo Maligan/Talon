@@ -11,7 +11,7 @@ package talon.browser.desktop.filetypes
 
 		override protected function activate():void
 		{
-			_xml = readFileXMLOrReport();
+			_xml = readFileXMLOrReportAndNull();
 			if (_xml == null) return;
 
 			try
@@ -21,7 +21,7 @@ package talon.browser.desktop.filetypes
 			}
 			catch (e:ArgumentError)
 			{
-				reportMessage(DocumentMessage.TEMPLATE_ERROR, file.url, e.message);
+				reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_TEMPLATE, file.path, e.message);
 			}
 		}
 

@@ -4,7 +4,7 @@ package
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.layout.Layout;
+	import talon.layouts.Layout;
 
 	public class LayoutAbsTest
 	{

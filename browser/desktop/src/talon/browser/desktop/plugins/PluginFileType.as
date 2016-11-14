@@ -63,25 +63,25 @@ package talon.browser.desktop.plugins
 		private function checkXMLTemplate(ref:DesktopFileReference):Boolean
 		{
 			return ref.checkFirstMeaningfulChar("<")
-				&& ref.xml
-				&& ref.xml.name()
-				&& ref.xml.name().toString() == TMLFactory.TAG_TEMPLATE;
+				&& ref.cacheBytesAsXML
+				&& ref.cacheBytesAsXML.name()
+				&& ref.cacheBytesAsXML.name().toString() == TMLFactory.TAG_TEMPLATE;
 		}
 
 		private function checkXMLLibrary(ref:DesktopFileReference):Boolean
 		{
 			return ref.checkFirstMeaningfulChar("<")
-				&& ref.xml
-				&& ref.xml.name()
-				&& ref.xml.name().toString() == TMLFactory.TAG_LIBRARY;
+				&& ref.cacheBytesAsXML
+				&& ref.cacheBytesAsXML.name()
+				&& ref.cacheBytesAsXML.name().toString() == TMLFactory.TAG_LIBRARY;
 		}
 
 		private function checkXMLAtlas(ref:DesktopFileReference):Boolean
 		{
 			return ref.checkFirstMeaningfulChar("<")
-				&& ref.xml
-				&& ref.xml.name()
-				&& ref.xml.name().toString() == "TextureAtlas";
+				&& ref.cacheBytesAsXML
+				&& ref.cacheBytesAsXML.name()
+				&& ref.cacheBytesAsXML.name().toString() == "TextureAtlas";
 		}
 
 		private function checkXMLFont(ref:DesktopFileReference):Boolean
@@ -89,8 +89,8 @@ package talon.browser.desktop.plugins
 			if (ref.extension == "fnt") return true;
 
 			return ref.checkFirstMeaningfulChar("<")
-				&& ref.xml
-				&& ref.xml.name() == "font";
+				&& ref.cacheBytesAsXML
+				&& ref.cacheBytesAsXML.name() == "font";
 		}
 
 		private function checkProperties(ref:DesktopFileReference):Boolean

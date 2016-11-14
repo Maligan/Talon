@@ -19,12 +19,15 @@ package talon.browser.desktop.utils
 		private var _root:File;
 		private var _target:File;
 		private var _monitor:FileMonitor;
-		private var _bytes:ByteArray;
-		private var _xml:XML;
+
+		private var _cacheBytes:ByteArray;
+		private var _cacheBytesAsXML:XML;
+		private var _cacheError:Error;
 
 		public function DesktopFileReference(target:File, root:File)
 		{
 			if (!target) throw new ArgumentError("File must be non null");
+			if (!root) throw new ArgumentError("Root must be non null");
 
 			_root = root;
 			_target = target;
@@ -35,46 +38,41 @@ package talon.browser.desktop.utils
 
 		private function onFileChange(e:*):void
 		{
-			_bytes && _bytes.clear();
-			_bytes = null;
-			_xml && System.disposeXML(_xml);
-			_xml = null;
+			_cacheBytes && _cacheBytes.clear();
+			_cacheBytes = null;
+			_cacheBytesAsXML && System.disposeXML(_cacheBytesAsXML);
+			_cacheBytesAsXML = null;
+			_cacheError = null;
 
 			dispatchEvent(new Event(Event.CHANGE));
 		}
 
+		//
+		// Format definition methods
+		//
 		public function checkFirstMeaningfulChar(char:String):Boolean
 		{
-			if (bytes == null) return false;
-			var starts:Boolean = byteArrayStartsWith(bytes, char);
+			if (cacheBytes == null) return false;
+			var starts:Boolean = byteArrayStartsWith(cacheBytes, char);
 
 			return starts;
 		}
 
 		public function checkSignature(signature:String):Boolean
 		{
-			if (bytes == null) return false;
-			if (bytes.bytesAvailable < signature.length) return false;
+			if (cacheBytes == null) return false;
+			if (cacheBytes.bytesAvailable < signature.length) return false;
 
 			for (var i:int = 0; i < signature.length; i++)
 			{
-				if (signature.charCodeAt(i) != bytes[i]) return false;
+				if (signature.charCodeAt(i) != cacheBytes[i]) return false;
 			}
 
 			return true;
 		}
-
-		//
-		// Names
-		//
-		public function get url():String
-		{
-			return _target.url;
-		}
-
 		public function get extension():String
 		{
-			var matches:Array = NAME_REGEX.exec(url);
+			var matches:Array = NAME_REGEX.exec(path);
 			if (matches && matches.length > 0) return matches[2];
 			else return null;
 		}
@@ -84,7 +82,7 @@ package talon.browser.desktop.utils
 		//
 		public function get path():String { return root.getRelativePath(target) + (target.isDirectory ? "/" : ""); }
 
-		public function get data():ByteArray { return _target.exists ? bytes : null; }
+		public function get data():ByteArray { return _target.exists ? cacheBytes : null; }
 
 		//
 		// Properties
@@ -93,21 +91,11 @@ package talon.browser.desktop.utils
 
 		public function get root():File { return _root; }
 
-		public function get bytes():ByteArray
-		{
-			if (_bytes == null)
-				_bytes = readBytes();
+		public function get cacheBytes():ByteArray { return _cacheBytes ||= readBytes(); }
 
-			return _bytes;
-		}
+		public function get cacheBytesAsXML():XML { return _cacheBytesAsXML ||= readXML(); }
 
-		public function get xml():XML
-		{
-			if (_xml == null)
-				_xml = readXML();
-
-			return _xml;
-		}
+		public function get cacheError():Error { return _cacheError; }
 
 		//
 		// Read
@@ -125,6 +113,7 @@ package talon.browser.desktop.utils
 			}
 			catch (e:Error)
 			{
+				_cacheError = e;
 				result = new ByteArray();
 			}
 			finally
@@ -136,16 +125,8 @@ package talon.browser.desktop.utils
 
 		private function readXML():XML
 		{
-			var bytes:ByteArray = readBytes();
-
-			try
-			{
-				return new XML(bytes);
-			}
-			catch (e:Error)
-			{
-				return null;
-			}
+			try { return new XML(cacheBytes); }
+			catch (e:Error) { return null; }
 		}
 	}
 }

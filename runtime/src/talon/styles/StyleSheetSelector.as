@@ -1,8 +1,9 @@
-package talon.utils
+package talon.styles
 {
 	import flash.utils.Dictionary;
 
 	import talon.Node;
+	import talon.utils.ParseUtil;
 
 	public class StyleSheetSelector
 	{
@@ -41,7 +42,7 @@ package talon.utils
 	}
 }
 
-import talon.utils.StyleSheetSelector;
+import talon.styles.StyleSheetSelector;
 
 class ComplexSelector extends StyleSheetSelector { }
 class AttributeSelector extends StyleSheetSelector { }

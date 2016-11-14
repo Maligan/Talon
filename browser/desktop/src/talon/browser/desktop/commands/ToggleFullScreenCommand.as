@@ -26,6 +26,7 @@ package talon.browser.desktop.commands
 		{
 			if (isActive) platform.stage.displayState = StageDisplayState.NORMAL;
 			else platform.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
+			platform.starling.nextFrame();
 		}
 
 		public override function get isActive():Boolean

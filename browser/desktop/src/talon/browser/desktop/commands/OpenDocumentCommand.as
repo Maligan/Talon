@@ -69,9 +69,9 @@ package talon.browser.desktop.commands
 			// Set active document
 
 			// Try open first template
-			var templates:Vector.<String> = platform.document.factory.templateIds;
-			var template:String = templates.shift();
-			if (template) platform.templateId = template;
+			//var templates:Vector.<String> = platform.document.factory.templateIds;
+			//var template:String = templates.shift();
+			//if (template) platform.templateId = template;
 
 			// Add document to recent list
 			var recent:Array = platform.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);

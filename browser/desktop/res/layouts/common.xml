@@ -1,10 +1,11 @@
-<library>
+<lib>
 
-	<template id="Interface">
+	<def ref="Interface">
 		<node id="interface" width="100%" height="100%" layout="abs" class="dark">
 			<node id="container" width="100%" height="100%" />
 			<node id="messages" width="100%" orientation="vertical" gap="1px">
 				<!--<message class="error" text="From file /root.txt you can read about this error" />-->
+				<!--<use ref="Message" />-->
 				<!--<message class="error" text="Error while processing file /tmp/trash.zip" />-->
 				<!--<message class="warning" text="Hold down this warning, you never complete Talon" />-->
 				<!--<message class="error" text="Yes, and after all this shit, I finish message system" />-->
@@ -12,9 +13,9 @@
 			<node id="popups" width="100%" height="100%" layout="flow" halign="center" valign="center"/>
 			<node id="drag" width="100%" height="100%" />
 		</node>
-	</template>
+	</def>
 
-	<template id="ProfilePopup">
+	<def ref="ProfilePopup">
 		<node class="popup" layout="flow" orientation="vertical"> 
 
 			<label text="$dialog.profile.title" padding="8px" /> <!-- width="*" -->
@@ -44,15 +45,15 @@
 			</node>
 
 		</node>
-	</template>
+	</def>
 
-	<template id="BoxModel">
+	<def ref="BoxModel">
 		<node fill="gray" layout="abs" width="100" height="100">
 			<node width="32" height="32" position="100" />
 		</node>
-	</template>
+	</def>
 
-	<template id="UpdatePopup">
+	<def ref="UpdatePopup">
 		<node class="popup" orientation="vertical" width="300px">
 
 			<label text="$dialog.updater.title" margin="8px" />
@@ -71,10 +72,10 @@
 			</node>
 
 		</node>
-	</template>
+	</def>
 
 	<!--
-	<template id="PreferencesPopup">
+	<def ref="PreferencesPopup">
 		<node class="popup" layout="flow" orientation="vertical"> 
 
 			<label text="$dialog.preferences.title" width="*" padding="8px" />
@@ -93,10 +94,10 @@
 			</node>
 
 		</node>
-	</template>
+	</def>
 	-->
 
-	<template id="GoToPopup">
+	<def ref="GoToPopup">
 		<node class="popup" id="goto" orientation="vertical"> 
 			<input width="300px" margin="4px"/>
 			<label />
@@ -106,25 +107,25 @@
 			<label />
 			<label />
 		</node>
-	</template>
+	</def>
 
-	<template id="Message" type="message">
+	<def ref="Message" type="message">
 		<label type="message" />
-	</template>
+	</def>
 
-	<template id="Input" type="input">
+	<def ref="Input" type="input">
 		<label type="input" />
-	</template>
+	</def>
 
-	<template id="Button" type="button">
+	<def ref="Button" type="button">
 		<label type="button" text="@label" />
-	</template>
+	</def>
 
-	<template id="Checkbox" type="checkbox">
+	<def ref="Checkbox" type="checkbox">
 		<node type="checkbox" label="Checkbox">
 			<image id="flag" />
 			<label text="@label" halign="left" />
 		</node>
-	</template>
+	</def>
 
-</library>
+</lib>

@@ -46,7 +46,7 @@ package talon.browser.desktop.filetypes
 		{
 			try
 			{
-				var templateId:String = xml.@id;
+				var templateId:String = xml.attribute(TMLFactory.ATT_REF);
 				document.factory.addTemplate(xml);
 				_templates.push(templateId);
 			}

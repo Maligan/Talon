@@ -72,8 +72,8 @@ package starling.extensions
 			for each (var xmlId:String in xmlIds)
 			{
 				var xml:XML = manager.getXml(xmlId);
-				if (xml.name() == "template") addTemplate(xml);
-				if (xml.name() == "library") addLibrary(xml);
+				if (xml.name() == TMLFactory.TAG_TEMPLATE) addTemplate(xml);
+				if (xml.name() == TMLFactory.TAG_LIBRARY) addLibrary(xml);
 			}
 
 			var propertiesIds:Vector.<String> = manager.getPropertiesNames();

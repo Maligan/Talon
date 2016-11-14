@@ -31,16 +31,18 @@ package talon.utils
 		//
 		// Implementation
 		//
-		private var _templates:Object;
+		private var _templatesXML:Object;
+		private var _templatesTag:Object;
 		private var _terminals:Vector.<String>;
 		private var _tags:Vector.<String>;
 		private var _attributes:Object;
 
 		/** @private */
-		public function TMLParser(terminals:Vector.<String> = null, templates:Object = null)
+		public function TMLParser(terminals:Vector.<String> = null, templatesXML:Object = null, templatesTag:Object = null)
 		{
 			_terminals = terminals || new Vector.<String>();
-			_templates = templates || new Object();
+			_templatesXML = templatesXML || new Object();
+			_templatesTag = templatesTag || new Object();
 			_tags = new Vector.<String>();
 		}
 
@@ -56,8 +58,6 @@ package talon.utils
 
 			if (_tags.indexOf(tag) != -1) throw new Error("Template is recursive nested");
 
-			_tags[_tags.length] = tag;
-
 			// If node is terminal - it can't be expanded - create node
 			var isTerminal:Boolean = _terminals.indexOf(tag) != -1;
 			if (isTerminal)
@@ -65,6 +65,7 @@ package talon.utils
 				var replacer:XML = getRewritesReplace(xml, rewrites);
 				if (replacer == null)
 				{
+					_tags[_tags.length] = tag;
 					attributes = mergeAttributes(fetchAttributes(xml), getRewritesAttributes(xml, rewrites), attributes);
 					dispatchBegin(attributes);
 					_tags.length = 0;
@@ -74,29 +75,31 @@ package talon.utils
 				// If node must be replaced (by parent node rewrites) to another XML
 				else if (replacer != EMPTY_XML)
 				{
-					// TODO: May be _tags.pop() ?
 					parseInternal(replacer, attributes, rewrites);
 				}
 			}
-			else if (tag == TAG_USE)
-			{
-				parseInternal(getTemplateOrDie(xml.@ref), null, fetchRewrites(xml, rewrites));
-			}
-			// Else if node is template
 			else
 			{
-				parseInternal(getTemplateOrDie(tag), mergeAttributes(fetchAttributes(xml), attributes), fetchRewrites(xml, rewrites));
-			}
-		}
+				var ref:String = null;
 
-		//
-		// Utility methods
-		//
-		private function getTemplateOrDie(id:String):XML
-		{
-			var template:XML = _templates[id];
-			if (template == null) throw new Error("Template with type '" + id + "' not found");
-			return template;
+				if (tag == TAG_USE)
+				{
+					ref = xml.attribute(ATT_REF);
+					if (ref == null) throw new Error("Tag '" + TAG_USE + "' must contains '" + ATT_REF + "' attribute");
+					rewrites = fetchRewrites(xml, rewrites);
+				}
+				else
+				{
+					ref = _templatesTag[tag];
+					if (ref == null) throw new Error("Tag '" + tag + "' doesn't match any template");
+					attributes = mergeAttributes(fetchAttributes(xml), attributes);
+					_tags[_tags.length] = tag;
+				}
+
+				var template:XML = _templatesXML[ref];
+				if (template == null) throw new Error("Template with " + ATT_REF + " = '" + ref + "' not found");
+				parseInternal(template, attributes, rewrites);
+			}
 		}
 
 		//
@@ -212,7 +215,10 @@ package talon.utils
 		// Properties
 		//
 		/** Set of non terminal symbols (key - string, value - xml) */
-		public function get templates():Object { return _templates; }
+		public function get templatesXML():Object { return _templatesXML; }
+
+		/** Mapping from tag to terminal key. */
+		public function get templatesTag():Object { return _templatesTag; }
 
 		/** Set of terminal symbols */
 		public function get terminals():Vector.<String> { return _terminals; }

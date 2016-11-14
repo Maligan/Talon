@@ -86,7 +86,7 @@ package talon.browser.platform.document
 		//
 		public function hasTemplate(id:String):Boolean
 		{
-			return _templates[id] != null;
+			return _parser.templatesXML[id] != null;
 		}
 
 		public override function addTemplate(xml:XML):void
@@ -104,7 +104,7 @@ package talon.browser.platform.document
 		public function get templateIds():Vector.<String>
 		{
 			var result:Vector.<String> = new Vector.<String>();
-			for (var id:String in _templates) result[result.length] = id;
+			for (var id:String in _parser.templatesXML) result[result.length] = id;
 			return result.sort(byName);
 		}
 

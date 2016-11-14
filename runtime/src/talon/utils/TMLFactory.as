@@ -10,12 +10,12 @@ package talon.utils
 
 	public class TMLFactory
 	{
-		public static const TAG_LIBRARY:String = "library";
-		public static const TAG_TEMPLATE:String = "template";
+		public static const TAG_LIBRARY:String = "lib";
+		public static const TAG_TEMPLATE:String = "def";
 		public static const TAG_PROPERTIES:String = "properties";
 		public static const TAG_STYLE:String = "style";
 
-		public static const ATT_ID:String = "id";
+		public static const ATT_REF:String = "ref";
 		public static const ATT_TYPE:String = "type";
 
 		protected var _parser:TMLParser;
@@ -26,7 +26,6 @@ package talon.utils
 		protected var _linkageByDefault:Class;
 		protected var _linkage:Dictionary = new Dictionary();
 		protected var _resources:Object = new Dictionary();
-		protected var _templates:Object = new Dictionary();
 		protected var _style:StyleSheet = new StyleSheet();
 
 		public function TMLFactory(linkageByDefault:Class):void
@@ -34,7 +33,7 @@ package talon.utils
 			_linkageByDefault = linkageByDefault;
 			_parserStack = new Array();
 
-			_parser = new TMLParser(null, null);
+			_parser = new TMLParser();
 			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
 			_parser.addEventListener(TMLParser.EVENT_END, onElementEnd);
 		}
@@ -44,7 +43,7 @@ package talon.utils
 		//
 		public function create(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
 		{
-			var template:XML = _templates[id];
+			var template:XML = _parser.templatesXML[id];
 			if (template == null) throw new ArgumentError("Template with id: " + id + " doesn't exist");
 
 			// Parse template, while parsing events dispatched (onElementBegin, onElementEnd)
@@ -172,35 +171,32 @@ package talon.utils
 			var tag:String = xml.name();
 			if (tag != TAG_TEMPLATE) throw new ArgumentError("Root node must be <" + TAG_TEMPLATE + ">");
 
-			var id:String = xml.attribute(ATT_ID);
-			if (id == null) throw new ArgumentError("Template must contains " + ATT_ID + " attribute");
-			if (id in _templates) throw new ArgumentError("Template with " + ATT_ID + " already exists, removeTemplate() first");
+			var ref:String = xml.attribute(ATT_REF);
+			if (ref == null) throw new ArgumentError("Template must contains " + ATT_REF + " attribute");
+			if (ref in _parser.templatesXML) throw new ArgumentError("Template with " + ATT_REF + " = '" + ref + "' already exists");
 
 			var children:XMLList = xml.children();
-			if (children.length() != 1) throw new ArgumentError("Template must contains one child");
-			var template:XML = children[0];
+			if (children.length() != 1) throw new ArgumentError("Template '" + ref + "' must contains one child");
+			var tree:XML = children[0];
 
-			// Registry by template id
-			_templates[id] = template;
-
-			// Registry by type for reusable templates
 			var type:String = xml.attribute(ATT_TYPE);
-			if (type == null) throw new ArgumentError("Template must contains " + ATT_TYPE + " attribute");
-			_parser.templates[type] = template;
+			if (type != null) _parser.templatesTag[type] = ref;
+
+			_parser.templatesXML[ref] = tree;
 		}
 
 		public function removeTemplate(id:String):void
 		{
-			var template:XML = _templates[id];
+			var template:XML = _parser.templatesXML[id];
 			if (template == null) return;
 
-			delete _templates[id];
+			delete _parser.templatesXML[id];
 
-			for (var tag:String in _parser.templates)
+			for (var tag:String in _parser.templatesTag)
 			{
-				if (template == _parser.templates[tag])
+				if (_parser.templatesTag[tag] == id)
 				{
-					delete _parser.templates[tag];
+					delete _parser.templatesTag[tag];
 					break;
 				}
 			}

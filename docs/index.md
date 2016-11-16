@@ -1,9 +1,9 @@
 # Table of content
 
 ## Theory
-1. [Basics](basics.md)
+1. [Core](core.md)
 	* Node
-	* Styles/Resources
+	* Styles & Resources
 	* Attribute
 2. [Background](background.md)
 	* Fill Model

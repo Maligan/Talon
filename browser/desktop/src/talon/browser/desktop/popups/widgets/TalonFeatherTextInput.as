@@ -11,6 +11,8 @@ package talon.browser.desktop.popups.widgets
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 
+	import starling.display.DisplayObject;
+
 	import starling.events.Event;
 	import starling.extensions.DisplayObjectBridge;
 	import starling.rendering.Painter;
@@ -21,7 +23,7 @@ package talon.browser.desktop.popups.widgets
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.utils.ITalonElement;
+	import starling.extensions.ITalonElement;
 	import talon.utils.ParseUtil;
 
 	public class TalonFeatherTextInput extends TextInput implements ITalonElement
@@ -112,6 +114,11 @@ package talon.browser.desktop.popups.widgets
 		public function get node():Node
 		{
 			return _node;
+		}
+
+		public function get self():DisplayObject
+		{
+			return this;
 		}
 	}
 }

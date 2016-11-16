@@ -8,7 +8,6 @@ package starling.extensions
 
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
-	import starling.display.DisplayObjectTraitor;
 	import starling.events.EnterFrameEvent;
 	import starling.events.Event;
 	import starling.events.Touch;
@@ -270,7 +269,7 @@ package starling.extensions
 
 		public function renderChildrenWithZIndex(painter:Painter):void
 		{
-			DisplayObjectTraitor;
+			// nop
 		}
 
 		public function getBoundsCustom(base:Function, targetSpace:DisplayObject, resultRect:Rectangle):Rectangle

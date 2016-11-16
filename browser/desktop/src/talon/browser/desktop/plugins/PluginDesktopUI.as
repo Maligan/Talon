@@ -18,10 +18,10 @@ package talon.browser.desktop.plugins
 	import starling.events.EventDispatcher;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
-	import starling.extensions.StarlingTalonFactory;
+	import starling.extensions.ITalonElement;
+	import starling.extensions.TMLFactoryStarling;
 	import starling.extensions.TalonQuery;
 	import starling.extensions.TalonSprite;
-	import starling.extensions.TalonTextField;
 	import starling.filters.BlurFilter;
 	import starling.utils.Align;
 	import starling.utils.Color;
@@ -40,7 +40,6 @@ package talon.browser.desktop.plugins
 	import talon.browser.platform.popups.PopupManager;
 	import talon.browser.platform.utils.DeviceProfile;
 	import talon.layouts.Layout;
-	import talon.utils.ITalonElement;
 	import talon.utils.ParseUtil;
 	import talon.utils.TMLFactory;
 
@@ -52,13 +51,13 @@ package talon.browser.desktop.plugins
 		private var _updater:Updater;
 
 		private var _locale:Object;
-		private var _factory:StarlingTalonFactory;
+		private var _factory:TMLFactoryStarling;
 
 		private var _interface:TalonSprite;
 		private var _isolatorContainer:TalonSprite;
 		private var _isolator:DisplayObjectContainer;
-		private var _container:TalonSprite;
 		private var _messages:TalonSprite;
+		private var _templateContainer:TalonSprite;
 
 		private var _template:DisplayObject;
 		private var _templateProduceMessage:DocumentMessage;
@@ -123,8 +122,7 @@ package talon.browser.desktop.plugins
 
 			_popups = _platform.popups;
 			_factory = _platform.factory;
-			_factory.addTerminal("input");
-			_factory.setLinkage("input", TalonFeatherTextInput);
+			_factory.addTerminal("input", TalonFeatherTextInput);
 			_factory.addResourcesToScope(_locale);
 			_factory.addArchiveContentAsync(readFile(fileInterface), onFactoryComplete);
 
@@ -253,38 +251,41 @@ package talon.browser.desktop.plugins
 		//
 		private function onFactoryComplete():void
 		{
+			_interface = _factory.createElement("Interface") as TalonSprite;
+			DisplayObjectContainer(_platform.starling.root).addChild(_interface.self);
+
+			// popups container
+			_popups.host = select("#popups").getElementAt(0) as DisplayObjectContainer;
+			_popups.addEventListener(Event.CHANGE, onPopupManagerChange);
+
+			// messages container
+			_messages = select("#messages").getElementAt(0) as TalonSprite;
+
+			// template container - split hierarchy with isolator for stopping style/resource inheritance
+			_templateContainer = new TalonSprite();
+			_templateContainer.node.setAttribute(Attribute.LAYOUT, Layout.FLOW);
+			_templateContainer.node.setAttribute(Attribute.VALIGN, Align.CENTER);
+			_templateContainer.node.setAttribute(Attribute.HALIGN, Align.CENTER);
+
+			_isolator.alignPivot();
+			_isolator.addChild(_templateContainer);
+
+			_isolatorContainer = select("#container").getElementAt(0) as TalonSprite;
+			_isolatorContainer.addEventListener(TouchEvent.TOUCH, onIsolatorTouch);
+			_isolatorContainer.addChild(_isolator);
+
+			// listeners
+			_platform.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, onBackgroundChange); 		onBackgroundChange(null);
+			_platform.settings.addPropertyListener(AppConstants.SETTING_STATS, onStatsChange); 					onStatsChange(null);
+			_platform.settings.addPropertyListener(AppConstants.SETTING_OUTLINE, onOutlineChange); 				onOutlineChange(null);
+			_platform.settings.addPropertyListener(AppConstants.SETTING_ZOOM, onZoomChange); 					onZoomChange(null);
+			_platform.settings.addPropertyListener(AppConstants.SETTING_ALWAYS_ON_TOP, onAlwaysOnTopChange); 	onAlwaysOnTopChange(null);
+
 			_platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, refreshCurrentTemplate);
 			_platform.addEventListener(AppPlatformEvent.TEMPLATE_CHANGE, refreshCurrentTemplate);
 			_platform.addEventListener(DocumentEvent.CHANGE, refreshCurrentTemplate);
 
-			_interface = _factory.create("Interface") as TalonSprite;
-			DisplayObjectContainer(_platform.starling.root).addChild(_interface);
-
-			_messages = select("#messages").getElementAt(0) as TalonSprite;
-
-			_popups.host = _interface.getChildByName("popups") as DisplayObjectContainer;
-			_popups.addEventListener(Event.CHANGE, onPopupManagerChange);
-
-			_container = new TalonSprite();
-			_container.node.setAttribute(Attribute.LAYOUT, Layout.FLOW);
-			_container.node.setAttribute(Attribute.VALIGN, Align.CENTER);
-			_container.node.setAttribute(Attribute.HALIGN, Align.CENTER);
-			_container.node.setAttribute(Attribute.ID, "IsolatedContainer");
-
-			_isolator.alignPivot();
-			_isolator.name = "Isolator";
-			_isolator.addChild(_container);
-
-			_isolatorContainer = _interface.getChildByName("container") as TalonSprite;
-			_isolatorContainer.addEventListener(TouchEvent.TOUCH, onIsolatorTouch);
-			_isolatorContainer.addChild(_isolator);
-
-			_platform.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, onBackgroundChange); onBackgroundChange(null);
-			_platform.settings.addPropertyListener(AppConstants.SETTING_STATS, onStatsChange); onStatsChange(null);
-			_platform.settings.addPropertyListener(AppConstants.SETTING_OUTLINE, onOutlineChange); onOutlineChange(null);
-			_platform.settings.addPropertyListener(AppConstants.SETTING_ZOOM, onZoomChange); onZoomChange(null);
-			_platform.settings.addPropertyListener(AppConstants.SETTING_ALWAYS_ON_TOP, onAlwaysOnTopChange); onAlwaysOnTopChange(null);
-
+			// ready
 			resizeTo(_platform.profile.width, _platform.profile.height);
 			refreshCurrentTemplate();
 		}
@@ -339,10 +340,10 @@ package talon.browser.desktop.plugins
 				_interface.node.invalidate();
 			}
 
-			if (_container)
+			if (_templateContainer)
 			{
-				_container.node.bounds.setTo(0, 0, width/zoom, height/zoom);
-				_container.node.commit();
+				_templateContainer.node.bounds.setTo(0, 0, width/zoom, height/zoom);
+				_templateContainer.node.commit();
 				refreshOutline(_template);
 			}
 		}
@@ -387,7 +388,7 @@ package talon.browser.desktop.plugins
 			canShow &&= _platform.document.tasks.isBusy == false;
 			canShow &&= _platform.document.factory.hasTemplate(_platform.templateId);
 
-			_container.removeChildren();
+			_templateContainer.removeChildren();
 			_platform.document && _platform.document.messages.removeMessage(_templateProduceMessage);
 			_templateProduceMessage = null;
 
@@ -396,9 +397,9 @@ package talon.browser.desktop.plugins
 
 			if (_template != null)
 			{
-				_container.node.ppmm = ITalonElement(_template).node.ppmm;
-				_container.node.ppdp = ITalonElement(_template).node.ppdp;
-				_container.addChild(_template);
+				_templateContainer.node.ppmm = ITalonElement(_template).node.ppmm;
+				_templateContainer.node.ppdp = ITalonElement(_template).node.ppdp;
+				_templateContainer.addChild(_template);
 				resizeTo(_platform.profile.width, _platform.profile.height);
 			}
 
@@ -417,10 +418,10 @@ package talon.browser.desktop.plugins
 				for (var i:int = 0; i < _platform.document.messages.numMessages; i++)
 				{
 					var messageData:DocumentMessage = _platform.document.messages.getMessageAt(i);
-					var messageView:TalonTextField = _factory.create("Message");
+					var messageView:ITalonElement = _factory.createElement("Message");
 					messageView.node.setAttribute(Attribute.TEXT, messageData.text);
 					messageView.node.setAttribute(Attribute.CLASS, messageData.level==2?"error":"warning");
-					_messages.addChild(messageView);
+					_messages.addChild(messageView.self);
 				}
 			}
 		}
@@ -463,7 +464,7 @@ package talon.browser.desktop.plugins
 
 			try
 			{
-				result = _platform.document.factory.create(templateId);
+				result = _platform.document.factory.createElement(templateId).self;
 			}
 			catch (e:Error)
 			{
@@ -520,22 +521,7 @@ import flash.display.NativeWindow;
 import flash.filesystem.File;
 import flash.ui.Keyboard;
 
-import talon.browser.desktop.commands.ChangeProfileCommand;
-import talon.browser.desktop.commands.ChangeSettingCommand;
-import talon.browser.desktop.commands.ChangeZoomCommand;
-import talon.browser.desktop.commands.CloseDocumentCommand;
-import talon.browser.desktop.commands.CloseWindowCommand;
-import talon.browser.desktop.commands.CreateDocumentCommand;
-import talon.browser.desktop.commands.OpenDocumentCommand;
-import talon.browser.desktop.commands.OpenDocumentFolderCommand;
-import talon.browser.desktop.commands.OpenGoToPopupCommand;
-import talon.browser.desktop.commands.OpenOnlineDocumentationCommand;
-import talon.browser.desktop.commands.OpenPopupCommand;
-import talon.browser.desktop.commands.PublishCommand;
-import talon.browser.desktop.commands.PublishScreenshotCommand;
-import talon.browser.desktop.commands.RotateCommand;
-import talon.browser.desktop.commands.ToggleFullScreenCommand;
-import talon.browser.desktop.commands.UpdateCommand;
+import talon.browser.desktop.commands.*;
 import talon.browser.desktop.plugins.PluginDesktopUI;
 import talon.browser.desktop.popups.ProfilePopup;
 import talon.browser.desktop.popups.UpdatePopup;
@@ -558,12 +544,8 @@ class AppUINativeMenu
 		_locale = locale;
 		_menu = new NativeMenuAdapter();
 
-		// new CreateWindowCommand(),              "n", [Keyboard.CONTROL, Keyboard.SHIFT]);
-
 		// File
 		insert("file");
-		//insert("file/newDocument",             new  CreateDocumentCommand(_platform), "ctrl-n");
-		//insert("file/-");
 		insert("file/openDocument",            new  OpenDocumentCommand(_platform), "ctrl-o");
 		insert("file/recent");
 		insert("file/-");

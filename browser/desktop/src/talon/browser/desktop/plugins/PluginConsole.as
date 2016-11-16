@@ -9,7 +9,7 @@ package talon.browser.desktop.plugins
 	import talon.browser.platform.plugins.IPlugin;
 	import talon.browser.platform.plugins.PluginStatus;
 	import talon.browser.platform.utils.Console;
-	import talon.utils.ITalonElement;
+	import starling.extensions.ITalonElement;
 
 	public class PluginConsole implements IPlugin
 	{

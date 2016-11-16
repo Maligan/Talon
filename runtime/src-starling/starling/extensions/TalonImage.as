@@ -1,5 +1,6 @@
 package starling.extensions
 {
+	import starling.display.DisplayObject;
 	import starling.display.Image;
 	import starling.display.Quad;
 	import starling.events.Event;
@@ -8,7 +9,7 @@ package starling.extensions
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.utils.ITalonElement;
+	import starling.extensions.ITalonElement;
 
 	public class TalonImage extends Quad implements ITalonElement
 	{
@@ -98,6 +99,11 @@ package starling.extensions
 		public function get node():Node
 		{
 			return _node;
+		}
+
+		public function get self():DisplayObject
+		{
+			return this;
 		}
 	}
 }

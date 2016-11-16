@@ -7,21 +7,21 @@ package starling.extensions
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 
-	import talon.utils.ITalonElement;
+	import starling.extensions.ITalonElement;
 
 	public class TalonQuery
 	{
-		private var _elements:Vector.<DisplayObject>;
-		private var _elementsBackBuffer:Vector.<DisplayObject>;
+		private var _elements:Vector.<ITalonElement>;
+		private var _elementsBackBuffer:Vector.<ITalonElement>;
 
-		public function TalonQuery(element:DisplayObject = null):void
+		public function TalonQuery(element:ITalonElement = null):void
 		{
-			_elements = new <DisplayObject>[];
-			_elementsBackBuffer = new <DisplayObject>[];
+			_elements = new <ITalonElement>[];
+			_elementsBackBuffer = new <ITalonElement>[];
 			if (element) reset(element);
 		}
 
-		public function reset(element:DisplayObject = null):TalonQuery
+		public function reset(element:ITalonElement = null):TalonQuery
 		{
 			_elements.length = 0;
 			_elementsBackBuffer.length = 0;
@@ -35,9 +35,9 @@ package starling.extensions
 		public function select(selector:String):TalonQuery
 		{
 			// Select
-			var result:Vector.<DisplayObject> = _elementsBackBuffer;
+			var result:Vector.<ITalonElement> = _elementsBackBuffer;
 
-			for each (var element:DisplayObject in _elements)
+			for each (var element:ITalonElement in _elements)
 				selectInternal(element, selector, result);
 
 			// Swap
@@ -48,8 +48,10 @@ package starling.extensions
 			return this;
 		}
 
-		private function selectInternal(element:DisplayObject, selector:String, result:Vector.<DisplayObject>):void
+		private function selectInternal(element:ITalonElement, selector:String, result:Vector.<ITalonElement>):void
 		{
+			if (element == null) return;
+
 			// Check self
 			if (isMatch(selector, element))
 				result[result.length] = element;
@@ -58,12 +60,12 @@ package starling.extensions
 			var elementAsContainer:DisplayObjectContainer = element as DisplayObjectContainer;
 			if (elementAsContainer)
 				for (var i:int = 0; i < elementAsContainer.numChildren; i++)
-					selectInternal(elementAsContainer.getChildAt(i), selector, result);
+					selectInternal(elementAsContainer.getChildAt(i) as ITalonElement, selector, result);
 		}
 
-		private function isMatch(selector:String, element:DisplayObject):Boolean
+		private function isMatch(selector:String, element:ITalonElement):Boolean
 		{
-			var id:String = element.name;
+			var id:String = element.self.name;
 			if (id == null) return false;
 			return id.indexOf(selector.substr(1)) == 0;
 		}
@@ -72,19 +74,16 @@ package starling.extensions
 		// Enumeration
 		//
 		public function get numElements():int { return _elements.length; }
-		public function getElementAt(index:int):DisplayObject { return (index>-1 && index<_elements.length) ? _elements[index] : null; }
-		public function getElementIndex(element:DisplayObject):int { return _elements.indexOf(element); }
+		public function getElementAt(index:int):ITalonElement { return (index>-1 && index<_elements.length) ? _elements[index] : null; }
+		public function getElementIndex(element:ITalonElement):int { return _elements.indexOf(element); }
 
 		//
 		// Common
 		//
 		public function setAttribute(name:String, value:*):TalonQuery
 		{
-			for each (var element:DisplayObject in _elements)
-			{
-				var talonElement:ITalonElement = element as ITalonElement;
-				if (talonElement) talonElement.node.setAttribute(name, value);
-			}
+			for each (var element:ITalonElement in _elements)
+				element.node.setAttribute(name, value);
 
 			return this;
 		}
@@ -94,8 +93,8 @@ package starling.extensions
 		   if (juggler == null)
 		       juggler = Starling.juggler;
 
-		   for each (var object:DisplayObject in _elements)
-		       juggler.tween(object, time, properties);
+		   for each (var element:ITalonElement in _elements)
+		       juggler.tween(element.self, time, properties);
 
 			return this;
 		}
@@ -105,8 +104,8 @@ package starling.extensions
 			if (juggler == null)
 				juggler = Starling.juggler;
 
-			for each (var object:DisplayObject in _elements)
-				juggler.removeTweens(object);
+			for each (var element:ITalonElement in _elements)
+				juggler.removeTweens(element.self);
 
 			return this;
 		}
@@ -123,8 +122,8 @@ package starling.extensions
 		//
 		public function onEvent(type:String, listener:Function):TalonQuery
 		{
-			for each (var element:DisplayObject in _elements)
-				element.addEventListener(type, listener);
+			for each (var element:ITalonElement in _elements)
+				element.self.addEventListener(type, listener);
 
 			return this;
 		}

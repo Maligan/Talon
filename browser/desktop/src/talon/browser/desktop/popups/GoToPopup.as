@@ -48,7 +48,7 @@ package talon.browser.desktop.popups
 
 		protected override function initialize():void
 		{
-			var view:DisplayObjectContainer = manager.factory.create("GoToPopup");
+			var view:DisplayObjectContainer = manager.factory.createElement("GoToPopup") as DisplayObjectContainer;
 			addChild(view);
 
 			_app = data as AppPlatform;

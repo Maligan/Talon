@@ -6,22 +6,30 @@ package starling.extensions
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
 
+	import talon.Node;
+	import starling.extensions.ITalonElement;
+
 	import talon.utils.TMLFactory;
 
-	public class StarlingTalonFactory extends TMLFactory
+	public class TMLFactoryStarling extends TMLFactory
 	{
-		public function StarlingTalonFactory()
+		public function TMLFactoryStarling()
 		{
-			super(TalonSprite);
+			addTerminal("node", TalonSprite);
+			addTerminal("label", TalonTextField);
+			addTerminal("image", TalonImage);
+		}
 
-			addTerminal("node");
-			setLinkage ("node", TalonSprite);
+		public function createElement(source:Object, includeStyleSheet:Boolean = true, includeResources:Boolean = true):ITalonElement
+		{
+			return create(source, includeStyleSheet, includeResources) as ITalonElement;
+		}
 
-			addTerminal("label");
-			setLinkage ("label", TalonTextField);
+		// template methods
 
-			addTerminal("image");
-			setLinkage ("image", TalonImage);
+		protected override function getElementNode(element:*):Node
+		{
+			return ITalonElement(element).node;
 		}
 
 		protected override function addChild(parent:*, child:*):void
@@ -30,6 +38,8 @@ package starling.extensions
 			var childAsDisplayObject:DisplayObject = DisplayObject(child);
 			parentAsDisplayObject.addChild(childAsDisplayObject);
 		}
+
+		// integration with starling asset manager
 
 		public function addArchiveContentAsync(bytes:ByteArray, complete:Function):void
 		{

@@ -1,7 +1,6 @@
 package talon.utils
 {
 	import flash.events.Event;
-	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 
 	import talon.Attribute;
@@ -23,16 +22,13 @@ package talon.utils
 		protected var _parserProduct:*;
 		protected var _parserLastTemplateRoot:Node;
 
-		protected var _linkageByDefault:Class;
 		protected var _linkage:Dictionary = new Dictionary();
 		protected var _resources:Object = new Dictionary();
 		protected var _style:StyleSheet = new StyleSheet();
 
-		public function TMLFactory(linkageByDefault:Class):void
+		public function TMLFactory():void
 		{
-			_linkageByDefault = linkageByDefault;
 			_parserStack = new Array();
-
 			_parser = new TMLParser();
 			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
 			_parser.addEventListener(TMLParser.EVENT_END, onElementEnd);
@@ -41,23 +37,29 @@ package talon.utils
 		//
 		// Factory
 		//
-		public function create(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
+		public function create(source:Object, includeStyleSheet:Boolean, includeResources:Boolean):Object
 		{
-			var template:XML = _parser.templatesXML[id];
-			if (template == null) throw new ArgumentError("Template with id: " + id + " doesn't exist");
+			var template:XML = null;
+
+			if (source is XML) template = source as XML;
+			else
+			{
+				template = _parser.templatesXML[source];
+				if (template == null) throw new ArgumentError("Template with id: " + source + " doesn't exist");
+			}
 
 			// Parse template, while parsing events dispatched (onElementBegin, onElementEnd)
 			_parser.parse(template);
 			var result:* = _parserProduct;
-			var resultAsTalonElement:ITalonElement = result as ITalonElement;
+			var resultNode:Node = getElementNode(result);
 			_parserLastTemplateRoot = null;
 			_parserProduct = null;
 
 			// Add style and resources
-			if (resultAsTalonElement)
+			if (resultNode)
 			{
-				if (includeResources) resultAsTalonElement.node.setResources(_resources);
-				if (includeStyleSheet) resultAsTalonElement.node.setStyleSheet(_style);
+				if (includeResources) resultNode.setResources(_resources);
+				if (includeStyleSheet) resultNode.setStyleSheet(_style);
 			}
 
 			return result;
@@ -97,11 +99,6 @@ package talon.utils
 			_parserStack.push(element);
 		}
 
-		protected function getElementNode(element:*):Node
-		{
-			return element is ITalonElement ? ITalonElement(element).node : null;
-		}
-
 		protected function getLinkageClass(types:Vector.<String>):Class
 		{
 			for (var i:int = 0; i < types.length; i++)
@@ -110,7 +107,10 @@ package talon.utils
 				if (result) return result;
 			}
 
-			return _linkageByDefault;
+			// This is not an error this is assert
+			// you can catch it only via manual erase
+			// classes from linkage dictionary
+			throw new Error("Can't find any linkage for chain: " + types.join());
 		}
 
 		protected function setNodeAttribute(node:Node, attributeName:String, value:String):void
@@ -131,9 +131,14 @@ package talon.utils
 			}
 		}
 
+		protected function getElementNode(element:*):Node
+		{
+			throw new Error("Not implemented");
+		}
+
 		protected function addChild(parent:*, child:*):void
 		{
-			throw new ArgumentError("Not implemented");
+			throw new Error("Not implemented");
 		}
 
 		protected function onElementEnd(e:Event):void
@@ -163,7 +168,7 @@ package talon.utils
 		public function addStyleSheet(css:String):void { _style.parse(css); }
 
 		/** Define type as terminal (see TML specification) */
-		public function addTerminal(type:String):void { _parser.terminals.push(type); }
+		public function addTerminal(type:String, typeClass:Class):void { _parser.terminals.push(type); setLinkage(type, typeClass); }
 
 		/** Add template (non terminal symbol) definition. Template name equals @id attribute. */
 		public function addTemplate(xml:XML):void

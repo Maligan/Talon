@@ -3,12 +3,14 @@ package talon.browser.platform.document
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 
-	import starling.extensions.StarlingTalonFactory;
+	import starling.extensions.ITalonElement;
+
+	import starling.extensions.TMLFactoryStarling;
 
 	import talon.Node;
 
 	/** Extended version of TalonFactory for browser purpose. */
-	public final class DocumentTalonFactory extends StarlingTalonFactory
+	public final class DocumentTalonFactory extends TMLFactoryStarling
 	{
 		private var _document:Document;
 		private var _styles:StyleSheetCollection;
@@ -40,12 +42,12 @@ package talon.browser.platform.document
 			_document.tasks.end();
 		}
 
-		public override function create(id:String, includeStyleSheet:Boolean = true, includeResources:Boolean = true):*
+		public override function createElement(source:Object, includeStyleSheet:Boolean = true, includeResources:Boolean = true):ITalonElement
 		{
 			resources.resource_proxy::reset();
 			_style = _styles.getMergedStyleSheet();
 
-			return super.create(id, includeStyleSheet, includeResources);
+			return super.createElement(source, includeStyleSheet, includeResources);
 		}
 
 		protected override function getElementNode(element:*):Node

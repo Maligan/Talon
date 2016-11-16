@@ -11,7 +11,7 @@ package starling.extensions
 	import talon.Attribute;
 	import talon.Node;
 	import talon.enums.TouchMode;
-	import talon.utils.ITalonElement;
+	import starling.extensions.ITalonElement;
 
 	public class TalonSprite extends Sprite implements ITalonElement
 	{
@@ -120,6 +120,11 @@ package starling.extensions
 		public function get node():Node
 		{
 			return _node;
+		}
+
+		public function get self():DisplayObject
+		{
+			return this;
 		}
 	}
 }

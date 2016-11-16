@@ -7,7 +7,7 @@ package talon.browser.platform.popups
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 	import starling.events.KeyboardEvent;
-	import starling.extensions.StarlingTalonFactory;
+	import starling.extensions.TMLFactoryStarling;
 
 	import talon.browser.platform.AppPlatform;
 
@@ -94,7 +94,7 @@ package talon.browser.platform.popups
 			}
 		}
 
-		public function get factory():StarlingTalonFactory
+		public function get factory():TMLFactoryStarling
 		{
 			return _platform.factory;
 		}

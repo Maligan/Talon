@@ -19,9 +19,9 @@ package talon.browser.desktop.plugins
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.extensions.ITalonElement;
-	import starling.extensions.TMLFactoryStarling;
+	import starling.extensions.TalonFactory;
 	import starling.extensions.TalonQuery;
-	import starling.extensions.TalonSprite;
+	import starling.extensions.TalonSpriteElement;
 	import starling.filters.BlurFilter;
 	import starling.utils.Align;
 	import starling.utils.Color;
@@ -51,13 +51,13 @@ package talon.browser.desktop.plugins
 		private var _updater:Updater;
 
 		private var _locale:Object;
-		private var _factory:TMLFactoryStarling;
+		private var _factory:TalonFactory;
 
-		private var _interface:TalonSprite;
-		private var _isolatorContainer:TalonSprite;
+		private var _interface:TalonSpriteElement;
+		private var _isolatorContainer:TalonSpriteElement;
 		private var _isolator:DisplayObjectContainer;
-		private var _messages:TalonSprite;
-		private var _templateContainer:TalonSprite;
+		private var _messages:TalonSpriteElement;
+		private var _templateContainer:TalonSpriteElement;
 
 		private var _template:DisplayObject;
 		private var _templateProduceMessage:DocumentMessage;
@@ -251,7 +251,7 @@ package talon.browser.desktop.plugins
 		//
 		private function onFactoryComplete():void
 		{
-			_interface = _factory.createElement("Interface") as TalonSprite;
+			_interface = _factory.createElement("Interface") as TalonSpriteElement;
 			DisplayObjectContainer(_platform.starling.root).addChild(_interface.self);
 
 			// popups container
@@ -259,10 +259,10 @@ package talon.browser.desktop.plugins
 			_popups.addEventListener(Event.CHANGE, onPopupManagerChange);
 
 			// messages container
-			_messages = select("#messages").getElementAt(0) as TalonSprite;
+			_messages = select("#messages").getElementAt(0) as TalonSpriteElement;
 
 			// template container - split hierarchy with isolator for stopping style/resource inheritance
-			_templateContainer = new TalonSprite();
+			_templateContainer = new TalonSpriteElement();
 			_templateContainer.node.setAttribute(Attribute.LAYOUT, Layout.FLOW);
 			_templateContainer.node.setAttribute(Attribute.VALIGN, Align.CENTER);
 			_templateContainer.node.setAttribute(Attribute.HALIGN, Align.CENTER);
@@ -270,7 +270,7 @@ package talon.browser.desktop.plugins
 			_isolator.alignPivot();
 			_isolator.addChild(_templateContainer);
 
-			_isolatorContainer = select("#container").getElementAt(0) as TalonSprite;
+			_isolatorContainer = select("#container").getElementAt(0) as TalonSpriteElement;
 			_isolatorContainer.addEventListener(TouchEvent.TOUCH, onIsolatorTouch);
 			_isolatorContainer.addChild(_isolator);
 

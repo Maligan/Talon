@@ -16,17 +16,17 @@ package starling.extensions
 	import starling.extensions.ITalonElement;
 	import talon.utils.ParseUtil;
 
-	public class TalonTextField extends TextField implements ITalonElement
+	public class TalonTextFieldElement extends TextField implements ITalonElement
 	{
 		private static const NATIVE_TEXT_FIELD_PADDING:int = 2;
 
 		private static var _helperRect:Rectangle = new Rectangle();
 
 		private var _node:Node;
-		private var _bridge:DisplayObjectBridge;
+		private var _bridge:TalonDisplayObjectBridge;
 		private var _requiresRecomposition:Boolean;
 
-		public function TalonTextField()
+		public function TalonTextFieldElement()
 		{
 			super(0, 0, null);
 
@@ -36,7 +36,7 @@ package starling.extensions
 			_node.height.auto = measureHeight;
 
 			// Bridge
-			_bridge = new DisplayObjectBridge(this, node);
+			_bridge = new TalonDisplayObjectBridge(this, node);
 			_bridge.addAttributeChangeListener(Attribute.TEXT, onTextChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_AUTO_SCALE, onAutoScaleChange);
 			_bridge.addAttributeChangeListener(Attribute.HALIGN, onHAlignChange, true);
@@ -89,7 +89,7 @@ package starling.extensions
 		}
 
 		//
-		// DisplayObjectBridge customization
+		// TalonDisplayObjectBridge customization
 		//
 		protected override function setRequiresRecomposition():void
 		{

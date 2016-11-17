@@ -11,13 +11,13 @@ package starling.extensions
 
 	import talon.utils.TMLFactory;
 
-	public class TMLFactoryStarling extends TMLFactory
+	public class TalonFactory extends TMLFactory
 	{
-		public function TMLFactoryStarling()
+		public function TalonFactory()
 		{
-			addTerminal("node", TalonSprite);
-			addTerminal("label", TalonTextField);
-			addTerminal("image", TalonImage);
+			addTerminal("node", TalonSpriteElement);
+			addTerminal("label", TalonTextFieldElement);
+			addTerminal("image", TalonImageElement);
 		}
 
 		public function createElement(source:Object, includeStyleSheet:Boolean = true, includeResources:Boolean = true):ITalonElement

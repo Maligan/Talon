@@ -11,14 +11,14 @@ package starling.extensions
 	import talon.Node;
 	import starling.extensions.ITalonElement;
 
-	public class TalonImage extends Quad implements ITalonElement
+	public class TalonImageElement extends Quad implements ITalonElement
 	{
 		private static var _emptyTexture:Texture;
 
-		private var _bridge:DisplayObjectBridge;
+		private var _bridge:TalonDisplayObjectBridge;
 		private var _node:Node;
 
-		public function TalonImage()
+		public function TalonImageElement()
 		{
 			super(1, 1);
 
@@ -33,7 +33,7 @@ package starling.extensions
 			_node.height.auto = measureHeight;
 			_node.addTriggerListener(Event.RESIZE, onNodeResize);
 
-			_bridge = new DisplayObjectBridge(this, node);
+			_bridge = new TalonDisplayObjectBridge(this, node);
 			_bridge.addAttributeChangeListener(Attribute.SOURCE, onSourceChange);
 
 			texture = _emptyTexture;

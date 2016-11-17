@@ -5,12 +5,12 @@ package talon.browser.platform.document
 
 	import starling.extensions.ITalonElement;
 
-	import starling.extensions.TMLFactoryStarling;
+	import starling.extensions.TalonFactory;
 
 	import talon.Node;
 
 	/** Extended version of TalonFactory for browser purpose. */
-	public final class DocumentTalonFactory extends TMLFactoryStarling
+	public final class DocumentTalonFactory extends TalonFactory
 	{
 		private var _document:Document;
 		private var _styles:StyleSheetCollection;

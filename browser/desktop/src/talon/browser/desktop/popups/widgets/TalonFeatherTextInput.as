@@ -14,7 +14,7 @@ package talon.browser.desktop.popups.widgets
 	import starling.display.DisplayObject;
 
 	import starling.events.Event;
-	import starling.extensions.DisplayObjectBridge;
+	import starling.extensions.TalonDisplayObjectBridge;
 	import starling.rendering.Painter;
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
@@ -31,14 +31,14 @@ package talon.browser.desktop.popups.widgets
 		private static const STATE_FOCUS:String = "focus";
 
 		private var _node:Node;
-		private var _bridge:DisplayObjectBridge;
+		private var _bridge:TalonDisplayObjectBridge;
 
 		public function TalonFeatherTextInput()
 		{
 			_node = new Node();
 			_node.addTriggerListener(Event.RESIZE, onResize);
 
-			_bridge = new DisplayObjectBridge(this, _node);
+			_bridge = new TalonDisplayObjectBridge(this, _node);
 			_bridge.addAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);

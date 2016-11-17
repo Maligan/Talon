@@ -9,7 +9,7 @@ package talon.browser.desktop.plugins
 	import flash.filesystem.File;
 
 	import starling.display.DisplayObjectContainer;
-	import starling.extensions.TalonSprite;
+	import starling.extensions.TalonSpriteElement;
 
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;
@@ -49,13 +49,13 @@ package talon.browser.desktop.plugins
 
 		private function activate():void
 		{
-			var overlay:TalonSprite = DisplayTreeUtil.findChildByName(_platform.starling.root as DisplayObjectContainer, "drag") as TalonSprite;
+			var overlay:TalonSpriteElement = DisplayTreeUtil.findChildByName(_platform.starling.root as DisplayObjectContainer, "drag") as TalonSpriteElement;
 			if (overlay) overlay.node.classes.insert("active");
 		}
 
 		private function deactivate():void
 		{
-			var overlay:TalonSprite = DisplayTreeUtil.findChildByName(_platform.starling.root as DisplayObjectContainer, "drag") as TalonSprite;
+			var overlay:TalonSpriteElement = DisplayTreeUtil.findChildByName(_platform.starling.root as DisplayObjectContainer, "drag") as TalonSpriteElement;
 			if (overlay) overlay.node.classes.remove("active");
 		}
 

@@ -4,11 +4,11 @@ package talon.browser.platform.popups
 	import starling.errors.AbstractMethodError;
 	import starling.events.KeyboardEvent;
 	import starling.extensions.TalonQuery;
-	import starling.extensions.TalonSprite;
+	import starling.extensions.TalonSpriteElement;
 
 	import talon.Attribute;
 
-	public class Popup extends TalonSprite
+	public class Popup extends TalonSpriteElement
 	{
 		private var _manager:PopupManager;
 		private var _data:Object;

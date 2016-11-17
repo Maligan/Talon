@@ -62,6 +62,8 @@ Lets create more complex example. For this add next three files into `helloworld
 	}
 	```
 
+	Do not try to understand all of properties just now, they are explained in [other articles](#whats-next).
+
 3. And this carefully picked up coin image `coin.png`
 
 	![coin](img/coin.png)
@@ -129,7 +131,7 @@ Look at result:
 ```actionscript
 import starling.display.Sprite;
 
-import talon.utils.TMLFactoryStarling;
+import talon.utils.TalonFactory;
 
 public class Game extends Sprite
 {
@@ -138,7 +140,7 @@ public class Game extends Sprite
 
     public function Game()
     {
-		var factory:TMLFactoryStarling = new TMLFactoryStarling();
+		var factory:TalonFactory = new TalonFactory();
 
 		// factory has deep integration with starling's AssetManager
 		factory.assets.enqueue(new helloworld_zip());
@@ -159,7 +161,7 @@ public class Game extends Sprite
 
 ![Screenshot1](img/browser_1.png)
 
-Браво! Разве не этого мы и добивались?
+Easy.
 
 ## What's next?
 After this introduction article I recommend you checkout detailed [documentation](./index.md). For quick explore talon's features you can read next part of documentation first:

@@ -18,7 +18,7 @@ package talon.browser.desktop.popups
 	import starling.events.KeyboardEvent;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
-	import starling.extensions.TalonTextField;
+	import starling.extensions.TalonTextFieldElement;
 	import starling.styles.MeshStyle;
 	import starling.utils.Color;
 
@@ -39,7 +39,7 @@ package talon.browser.desktop.popups
 
 		// View
 		private var _input:TalonFeatherTextInput;
-		private var _labels:Vector.<TalonTextField>;
+		private var _labels:Vector.<TalonTextFieldElement>;
 		private var _labelsShift:int;
 
 		// Controller
@@ -59,16 +59,16 @@ package talon.browser.desktop.popups
 			for each (var template:String in source) _items.push(template);
 
 			// ---------------------------------------------------------------------------
-			_labels = new <TalonTextField>[];
+			_labels = new <TalonTextFieldElement>[];
 
 			for (var i:int = 0; i < view.numChildren; i++)
 			{
 				var child:DisplayObject = view.getChildAt(i);
-				if (child is TalonTextField) _labels.push(child as TalonTextField);
+				if (child is TalonTextFieldElement) _labels.push(child as TalonTextFieldElement);
 				else if (child is TalonFeatherTextInput) _input = child as TalonFeatherTextInput;
 			}
 
-			for each (var field:TalonTextField in _labels)
+			for each (var field:TalonTextFieldElement in _labels)
 			{
 				field.isHtmlText = true;
 				field.addEventListener(TouchEvent.TOUCH, onLabelTouch);
@@ -129,7 +129,7 @@ package talon.browser.desktop.popups
 		{
 			if (e.getTouch(e.target as DisplayObject, TouchPhase.ENDED))
 			{
-				var labelIndex:int = _labels.indexOf(e.currentTarget as TalonTextField);
+				var labelIndex:int = _labels.indexOf(e.currentTarget as TalonTextFieldElement);
 				var itemIndex:int = _labelsShift + labelIndex;
 				var templateId:String = _queryItems[itemIndex];
 				if (templateId) commit(templateId);
@@ -178,7 +178,7 @@ package talon.browser.desktop.popups
 		{
 			for (var i:int = 0; i < _labels.length; i++)
 			{
-				var label:TalonTextField = _labels[i];
+				var label:TalonTextFieldElement = _labels[i];
 				var labelStyle:MeshStyle = label.style;
 
 				var itemIndex:int = _labelsShift + i;

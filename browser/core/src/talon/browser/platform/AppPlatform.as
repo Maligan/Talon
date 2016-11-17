@@ -10,7 +10,7 @@ package talon.browser.platform
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
-	import starling.extensions.TMLFactoryStarling;
+	import starling.extensions.TalonFactory;
 
 	import talon.browser.platform.document.Document;
 	import talon.browser.platform.document.DocumentEvent;
@@ -29,7 +29,7 @@ package talon.browser.platform
 		private var _settings:Storage;
 		private var _profile:DeviceProfile;
 		private var _starling:Starling;
-		private var _factory:TMLFactoryStarling;
+		private var _factory:TalonFactory;
 		private var _plugins:PluginManager;
 		private var _popups:PopupManager;
 		private var _locale:Locale;
@@ -46,7 +46,7 @@ package talon.browser.platform
 			_lastInvokeArgs = [];
 			_settings = Storage.fromSharedObject("settings");
 			_profile = _settings.getValueOrDefault(AppConstants.SETTING_PROFILE, DeviceProfile) || new DeviceProfile(stage.stageWidth, stage.stageHeight, 1, Capabilities.screenDPI);
-			_factory = new TMLFactoryStarling();
+			_factory = new TalonFactory();
 			_plugins = new PluginManager(this);
 			_popups = new PopupManager(this);
 			_locale = new Locale();
@@ -128,7 +128,7 @@ package talon.browser.platform
 		public function get locale():Locale { return _locale; }
 
 		/** Talon factory for all browser UI. */
-		public function get factory():TMLFactoryStarling { return _factory; }
+		public function get factory():TalonFactory { return _factory; }
 
 	    /** Current opened document or null. */
 	    public function get document():Document { return _document; }

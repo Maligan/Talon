@@ -26,7 +26,7 @@ package starling.extensions
 	import talon.utils.ParseUtil;
 
 	/** Provide method for synchronize starling display tree and talon tree. */
-	public class DisplayObjectBridge
+	public class TalonDisplayObjectBridge
 	{
 		private const MATRIX:Matrix = new Matrix();
 		private const POINT:Point = new Point();
@@ -35,7 +35,7 @@ package starling.extensions
 		private var _node:Node;
 		private var _background:FillModeMesh;
 
-		public function DisplayObjectBridge(target:DisplayObject, node:Node):void
+		public function TalonDisplayObjectBridge(target:DisplayObject, node:Node):void
 		{
 			_target = target;
 			_target.addEventListener(EnterFrameEvent.ENTER_FRAME, onEnterFrame);
@@ -140,7 +140,7 @@ package starling.extensions
 
 		private function onFilterChange():void
 		{
-			trace("[DisplayObjectBridge]", "Filters are disabled in Starling 2.0");
+			trace("[TalonDisplayObjectBridge]", "Filters are disabled in Starling 2.0");
 			return;
 
 			var prevFilter:FragmentFilter = _target.filter;

@@ -4,7 +4,7 @@ package starling.extensions
 	import starling.filters.FilterChain;
 	import starling.filters.FragmentFilter;
 
-	public class StarlingFilterAdapter
+	public class TalonFilterAdapter
 	{
 		private static var _initialized:Boolean;
 		private static var _parsers:Object;
@@ -36,7 +36,7 @@ package starling.extensions
 			if (parser == null)
 			{
 				parser = parserEmpty;
-				trace("[StarlingFilterAdapter]", "Parser for '" + name + "' is not registered");
+				trace("[TalonFilterAdapter]", "Parser for '" + name + "' is not registered");
 			}
 
 			return parser;

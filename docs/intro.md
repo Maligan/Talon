@@ -17,7 +17,7 @@
 
 	Awesome! You did it!
 
-## How browser works
+## How browser works?
 
 > Talon Browser follow [interactive programming](https://en.wikipedia.org/wiki/Interactive_programming) approach — it start watch any file within opened folder (recursively).  
 And after any changes browser try to reload file and refresh result.
@@ -35,7 +35,7 @@ Lets create more complex example. For this add next three files into `helloworld
 		</node>
 	</def>
 	```
-2. Stylesheet `style.css`
+2. Stylesheet `button.css`
 
 	```css
 	.button {
@@ -75,7 +75,48 @@ Look at result:
 ## Templating
 Основное приемущество шаблонов в том что при [правильном](https://en.wikipedia.org/wiki/Code_reuse#Criticism) использовании они могут значительно упростить приложение, а значит увеличить скорость разработки и что самое, на мой взгляд важное - сохранить нервы разработчиков.
 
-В TML есть два способа указать на переиспользования шаблона - *полный* и *упрощёный*, здесь мы с вами рассмотрим только *упрощёный* метод.
+Под шаблоном подразумевается любой дерево элементов (даже пустое). Шаблон можно поставить на место любого **листового** узла в другом дереве:
+
+![Screenshot2](img/template_1.png)
+
+В TML есть два способа указать на переиспользования шаблона - *полный* и *упрощёный*, здесь мы с вами рассмотрим только *упрощёный* метод.  
+Для этого нужно связать какое-либо тег с шаблоном, посмотрире обновлённую версию `button.xml`:
+
+```xml
+<def ref="Button" tag="button">
+	<node class="button" label="Label">
+		<label text="@label" />
+		<image source="@icon" />
+		<label text="@count" />
+	</node>
+</def>
+```
+
+Здесь по мимо добавление нового свойства `tag` вы могли заметить связывание аттрибутов (через *@-нотацию*). Для тех кто знаком со связыванием это будет понятно, для тех кто нет - прочтите названия атрибутов ещё раз, думаю вы сможете понять связь между ними. В целом *@-нотация* связывает значения аттрибута с *корневым* элементом шаблона.
+
+Ну и теперь давайте созданить ещё один шаблон `popup.xml`:
+
+```xml
+<def ref="Popup">
+	<node class="popup">
+		<label text="You sure want buy Vorpal Blade?" />
+		<button label="Buy" icon="$coin" count="30" />
+		<button label="Cancel" />
+	</node>
+</def>
+```
+
+И чтобы всё приняло божеский вид нужно добавить стили `popup.css`:
+
+```css
+.popup {
+	fill: gray;
+}
+```
+
+И вот как это должно выглядить:
+
+![Screenshot2](img/browser_1.png)
 
 ## Import layouts into apps
 
@@ -92,20 +133,26 @@ import talon.utils.TMLFactoryStarling;
 
 public class Game extends Sprite
 {
-	private var _factory:TMLFactoryStarling;
-	private var _menu:TalonSprite;
+	[Embed(source="helloworld.zip")]
+	private static const helloworld_zip:Class;
 
     public function Game()
     {
-		_factory = new TMLFactoryStarling();
+		var factory:TMLFactoryStarling = new TMLFactoryStarling();
 
-		// ... initialize factory with resources
+		// factory has deep integration with starling's AssetManager
+		factory.assets.enqueue(new helloworld_zip());
+		factory.assets.loadQueue(function(progress:Number):void
+		{
+			if (progress == 1)
+			{
+				var popup:ITalonElement = _factory.createElement("Menu");
+				popup.node.bounds.setTo(0, 0, stage.stageWidth, stage.stageHeight);
+				popup.node.commit();
 
-		_menu = _factory.createElement("Menu");
-		_menu.node.bounds.setTo(0, 0, stage.stageWidth, stage.stageHeight);
-		_menu.node.commit();
-
-		addChild(_menu.self);
+				addChild(popup as Sprite);
+			}
+		});
     }
 }
 ```

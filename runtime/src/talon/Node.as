@@ -32,19 +32,15 @@ package talon
 		private var _resources:Object;
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
-		private var _bounds:Rectangle = new Rectangle();
+		private var _bounds:Rectangle = new Rectangle(0, 0, NaN, NaN);
 		private var _triggers:Dictionary = new Dictionary();
-		private var _ppdp:Number;
-		private var _ppmm:Number;
-		private var _invalidated:Boolean;
+		private var _ppdp:Number = 1;
+		private var _ppmm:Number = Capabilities.screenDPI / 25.4;  // 25.4mm in 1 inch
+		private var _invalidated:Boolean = true;
 
 		/** @private */
 		public function Node():void
 		{
-			_ppdp = 1;
-			_ppmm = Capabilities.screenDPI / 25.4; // 25.4mm in 1 inch
-			_invalidated = true;
-
 			// Initialize all inheritable attributes (initialize theirs listeners)
 			for each (var attributeName:String in Attribute.getInheritableAttributeNames())
 				getOrCreateAttribute(attributeName);

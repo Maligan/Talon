@@ -99,7 +99,7 @@ Look at result:
 ```xml
 <def ref="Popup">
 	<node class="popup">
-		<label text="You sure want buy Vorpal Blade?" />
+		<label text="You sure want to buy Vorpal Blade?" />
 		<button label="Buy" icon="$coin" count="30" />
 		<button label="Cancel" />
 	</node>
@@ -146,9 +146,7 @@ public class Game extends Sprite
 		{
 			if (progress == 1)
 			{
-				var popup:ITalonElement = _factory.createElement("Menu");
-				popup.node.bounds.setTo(0, 0, stage.stageWidth, stage.stageHeight);
-				popup.node.commit();
+				var popup:ITalonElement = _factory.createElement("Popup");
 
 				addChild(popup as Sprite);
 			}

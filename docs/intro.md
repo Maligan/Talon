@@ -13,7 +13,7 @@
 4. Open folder with browser (via `File -> Open`)
 5. Open file with browser (`Navigate -> Go To Template` or <kbd>Ctrl</kbd> + <kbd>P</kbd>) and you will see:  
 
-	![Screenshot1](img/browser_1.png)
+	![](img/intro_1.png)
 
 	Awesome! You did it!
 
@@ -72,14 +72,14 @@ Each of files will be loaded and processed according to theirs content. From `bu
 
 Look at result:
 
-![Screenshot2](img/browser_1.png)
+![](img/intro_2.png)
 
 ## Templating
 Основное приемущество шаблонов в том что при [правильном](https://en.wikipedia.org/wiki/Code_reuse#Criticism) использовании они могут значительно упростить приложение, а значит увеличить скорость разработки и что самое, на мой взгляд важное - сохранить нервы разработчиков.
 
 Под шаблоном подразумевается любой дерево элементов (даже пустое). Шаблон можно поставить на место любого **листового** узла в другом дереве:
 
-![Screenshot2](img/template_1.png)
+![Screenshot2](img/intro_4.png)
 
 В TML есть два способа указать на переиспользования шаблона - *полный* и *упрощёный*, здесь мы с вами рассмотрим только *упрощёный* метод.  
 Для этого нужно связать какое-либо тег с шаблоном, посмотрире обновлённую версию `button.xml`:
@@ -118,7 +118,7 @@ Look at result:
 
 И вот как это должно выглядить:
 
-![Screenshot2](img/browser_1.png)
+![Screenshot2](img/intro_3.png)
 
 ## Import layouts into apps
 
@@ -159,7 +159,7 @@ public class Game extends Sprite
 
 Собрите и запустите приложение, при должной сноровке у вас должно получится:
 
-![Screenshot1](img/browser_1.png)
+![](img/intro_5.png)
 
 Easy.
 

@@ -254,6 +254,7 @@ package talon.browser.desktop.plugins
 			_interface = _factory.createElement("Interface") as TalonSpriteElement;
 			DisplayObjectContainer(_platform.starling.root).addChild(_interface.self);
 
+			
 			// popups container
 			_popups.host = select("#popups").getElementAt(0) as DisplayObjectContainer;
 			_popups.addEventListener(Event.CHANGE, onPopupManagerChange);

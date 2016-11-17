@@ -252,13 +252,13 @@ package starling.extensions
 		{
 			if (_node.invalidated && (_node.parent == null || !_node.parent.invalidated))
 			{
-				// For first validation - while width and height is NaN
-				// isNaN(_node.bounds.width) && isNaN(_node.bounds.height)
-				if (_node.bounds.width!=_node.bounds.width && _node.bounds.height!=_node.bounds.height)
-				{
+				// FIXME: For auto, calc width/height priority
+				// TODO:  What about percentage?
+				if (_node.bounds.width != _node.bounds.width)
 					_node.bounds.width = _node.width.toPixels(_node.ppmm, _node.ppem, _node.ppdp, 0);
+
+				if (_node.bounds.height != _node.bounds.height)
 					_node.bounds.height = _node.height.toPixels(_node.ppmm, _node.ppem, _node.ppdp, 0);
-				}
 
 				_node.commit();
 			}

@@ -231,7 +231,7 @@ package talon
 		public function commit():void
 		{
 			// Update self view object attached to node
-			dispatch(Event.RESIZE);
+			dispatch(Event.RESIZE); // FIXME: Split to position/size change
 
 			// Update children nodes
 			layout.arrange(this, bounds.width, bounds.height);

@@ -126,6 +126,10 @@ package talon.browser.desktop.plugins
 			_factory.addResourcesToScope(_locale);
 			_factory.addArchiveContentAsync(readFile(fileInterface), onFactoryComplete);
 
+
+			_factory.assets.process({});
+
+
 			// Windows
 			_platform.stage.nativeWindow.minSize = new Point(200, 100);
 			_platform.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.MOVE, onWindowMove);
@@ -254,7 +258,7 @@ package talon.browser.desktop.plugins
 			_interface = _factory.createElement("Interface") as TalonSpriteElement;
 			DisplayObjectContainer(_platform.starling.root).addChild(_interface.self);
 
-			
+
 			// popups container
 			_popups.host = select("#popups").getElementAt(0) as DisplayObjectContainer;
 			_popups.addEventListener(Event.CHANGE, onPopupManagerChange);

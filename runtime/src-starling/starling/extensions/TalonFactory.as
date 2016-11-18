@@ -7,12 +7,12 @@ package starling.extensions
 	import starling.display.DisplayObjectContainer;
 
 	import talon.Node;
-	import starling.extensions.ITalonElement;
-
 	import talon.utils.TMLFactory;
 
 	public class TalonFactory extends TMLFactory
 	{
+		private var _assets:AssetManager;
+
 		public function TalonFactory()
 		{
 			addTerminal("node", TalonSpriteElement);
@@ -40,6 +40,11 @@ package starling.extensions
 		}
 
 		// integration with starling asset manager
+
+		public function get assets():AssetManager
+		{
+			return _assets;
+		}
 
 		public function addArchiveContentAsync(bytes:ByteArray, complete:Function):void
 		{

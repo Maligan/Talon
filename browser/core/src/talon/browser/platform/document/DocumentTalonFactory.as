@@ -4,7 +4,6 @@ package talon.browser.platform.document
 	import flash.utils.Timer;
 
 	import starling.extensions.ITalonElement;
-
 	import starling.extensions.TalonFactory;
 
 	import talon.Node;
@@ -97,9 +96,26 @@ package talon.browser.platform.document
 			dispatchChange();
 		}
 
-		public override function removeTemplate(id:String):void
+
+		public function removeTemplate(id:String):void
 		{
-			super.removeTemplate(id);
+			var template:XML = _parser.templatesXML[id];
+			if (template == null)
+			{
+				return;
+			}
+
+			delete _parser.templatesXML[id];
+
+			for (var tag:String in _parser.templatesTag)
+			{
+				if (_parser.templatesTag[tag] == id)
+				{
+					delete _parser.templatesTag[tag];
+					break;
+				}
+			}
+
 			dispatchChange();
 		}
 

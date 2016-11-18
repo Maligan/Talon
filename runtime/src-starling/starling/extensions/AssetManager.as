@@ -93,7 +93,7 @@ package starling.extensions
 			return h1.priority - h2.priority
 		}
 
-		public function handle(asset:Object, key:String = null, options:Object = null):int
+		public function process(asset:Object, key:String = null, options:Object = null):int
 		{
 			for each (var handler:Handler in _handlers)
 			{
@@ -121,13 +121,13 @@ package starling.extensions
 		{
 			download(value, DOWNLOAD_TRIES, function (bytes:ByteArray):void
 			{
-				handle(bytes, key || getName(value.url), options);
+				process(bytes, key || getName(value.url), options);
 			});
 		}
 
 		protected function decodeStringToURLRequest(value:String, key:String, options:Object):void
 		{
-			handle(new URLRequest(value), key, options);
+			process(new URLRequest(value), key, options);
 		}
 
 		protected function decodeByteArrayToTexture(value:ByteArray, key:String, options:Object):void
@@ -167,7 +167,7 @@ package starling.extensions
 							}
 
 							addAsset(Texture, key, texture);
-							handle(texture, key, options);
+							process(texture, key, options);
 						}
 						else 
 						{
@@ -183,7 +183,7 @@ package starling.extensions
 			{
 				texture = Texture.fromData(value, options as TextureOptions);
 				addAsset(Texture, key, texture);
-				handle(texture, key);
+				process(texture, key);
 			}
 		}
 
@@ -199,7 +199,7 @@ package starling.extensions
 				if (xml)
 				{
 					addAsset(XML, key, xml);
-					handle(xml, key);
+					process(xml, key);
 				}
 			}
 		}
@@ -216,7 +216,7 @@ package starling.extensions
 				if (object)
 				{
 					addAsset(Object, key, object);
-					handle(object, key);
+					process(object, key);
 				}
 			}
 		}

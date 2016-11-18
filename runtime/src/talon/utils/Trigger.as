@@ -18,48 +18,32 @@ package talon.utils
 	{
 		private var _context:*;
 		private var _listeners:Vector.<Function>;
-		private var _listenersIndex:Dictionary;
 
 		/** @param context - default value send to listeners while dispatch(). */
 		public function Trigger(context:* = null)
 		{
 			_context = context;
 			_listeners = new Vector.<Function>();
-			_listenersIndex = new Dictionary();
 		}
 
 		/** Add listener to list which invoked by dispatch(). */
 		public function addListener(listener:Function):void
 		{
-			var indexOf:int = _listenersIndex[listener] || -1;
-			if (indexOf == -1)
-			{
-				var index:int = _listeners.length;
-				_listeners[index] = listener;
-				_listenersIndex[listener] = index;
-			}
+			var indexOf:int = _listeners.indexOf(listener);
+			if (indexOf == -1) _listeners[_listeners.length] = listener;
 		}
 
 		/** Remove listener from list which invoked by dispatch(). */
 		public function removeListener(listener:Function):void
 		{
-			var indexOf:int = _listenersIndex[listener] || -1;
-			if (indexOf != -1)
-			{
-				var lastIndex:int = _listeners.length - 1;
-				var lastListener:Function = _listeners[lastIndex];
-				_listeners[indexOf] = lastListener;
-				_listeners.length--;
-				_listenersIndex[lastListener] = indexOf;
-				delete _listenersIndex[listener];
-			}
+			var indexOf:int = _listeners.indexOf(listener);
+			if (indexOf != -1) _listeners.removeAt(indexOf);
 		}
 
 		/** Remove all listeners. */
 		public function removeListeners():void
 		{
 			_listeners.length = 0;
-			_listenersIndex = new Dictionary();
 		}
 
 		/** Invoke all listeners with argument - context (or default context setted from ctor).

@@ -109,19 +109,19 @@
 		</node>
 	</def>
 
-	<def ref="Message" type="message">
+	<def ref="Message" tag="message">
 		<label type="message" />
 	</def>
 
-	<def ref="Input" type="input">
+	<def ref="Input" tag="input">
 		<label type="input" />
 	</def>
 
-	<def ref="Button" type="button">
+	<def ref="Button" tag="button">
 		<label type="button" text="@label" />
 	</def>
 
-	<def ref="Checkbox" type="checkbox">
+	<def ref="Checkbox" tag="checkbox">
 		<node type="checkbox" label="Checkbox">
 			<image id="flag" />
 			<label text="@label" halign="left" />

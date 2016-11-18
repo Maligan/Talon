@@ -1,7 +1,6 @@
 package talon.utils
 {
 	import flash.events.Event;
-	import flash.utils.Dictionary;
 
 	import talon.Attribute;
 	import talon.Node;
@@ -15,19 +14,23 @@ package talon.utils
 		public static const TAG_STYLE:String = "style";
 
 		public static const ATT_REF:String = "ref";
-		public static const ATT_TYPE:String = "type";
+		public static const ATT_TAG:String = "tag";
 
 		protected var _parser:TMLParser;
 		protected var _parserStack:Array;
 		protected var _parserProduct:*;
 		protected var _parserLastTemplateRoot:Node;
 
-		protected var _linkage:Dictionary = new Dictionary();
-		protected var _resources:Object = new Dictionary();
-		protected var _style:StyleSheet = new StyleSheet();
+		protected var _resources:Object;
+		protected var _linkage:Object;
+		protected var _style:StyleSheet;
 
-		public function TMLFactory():void
+		public function TMLFactory(resource:Object = null):void
 		{
+			_resources = resource || {};
+			_linkage = {};
+			_style = new StyleSheet();
+
 			_parserStack = new Array();
 			_parser = new TMLParser();
 			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
@@ -155,9 +158,6 @@ package talon.utils
 		//
 		// Library
 		//
-		/** Setup specific object as resource source. */
-		public function setResourceScope(scope:Object):void { _resources = scope || {}; }
-
 		/** Add resource (image, string, etc.) to global factory scope. */
 		public function addResourceToScope(id:String, resource:*):void { _resources[id] = resource; }
 
@@ -170,7 +170,7 @@ package talon.utils
 		/** Define type as terminal (see TML specification) */
 		public function addTerminal(type:String, typeClass:Class):void { _parser.terminals.push(type); setLinkage(type, typeClass); }
 
-		/** Add template (non terminal symbol) definition. Template name equals @id attribute. */
+		/** Add template (non terminal symbol) definition. Template name equals @res attribute. */
 		public function addTemplate(xml:XML):void
 		{
 			var tag:String = xml.name();
@@ -184,27 +184,10 @@ package talon.utils
 			if (children.length() != 1) throw new ArgumentError("Template '" + ref + "' must contains one child");
 			var tree:XML = children[0];
 
-			var type:String = xml.attribute(ATT_TYPE);
-			if (type != null) _parser.templatesTag[type] = ref;
+			var tag:String = xml.attribute(ATT_TAG);
+			if (tag != null) _parser.templatesTag[tag] = ref;
 
 			_parser.templatesXML[ref] = tree;
-		}
-
-		public function removeTemplate(id:String):void
-		{
-			var template:XML = _parser.templatesXML[id];
-			if (template == null) return;
-
-			delete _parser.templatesXML[id];
-
-			for (var tag:String in _parser.templatesTag)
-			{
-				if (_parser.templatesTag[tag] == id)
-				{
-					delete _parser.templatesTag[tag];
-					break;
-				}
-			}
 		}
 
 		/** Add all templates and style sheets from library xml. */

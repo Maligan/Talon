@@ -9,6 +9,7 @@ package talon.browser.desktop.plugins
 	import talon.browser.desktop.filetypes.XMLAtlasAsset;
 	import talon.browser.desktop.filetypes.XMLFontAsset;
 	import talon.browser.desktop.filetypes.XMLLibraryAsset;
+	import talon.browser.desktop.filetypes.XMLMalformedAsset;
 	import talon.browser.desktop.filetypes.XMLTemplateAsset;
 	import talon.browser.desktop.utils.DesktopFileReference;
 	import talon.browser.platform.AppConstants;
@@ -49,6 +50,7 @@ package talon.browser.desktop.plugins
 				registerChecker(checkXMLLibrary,    XMLLibraryAsset);
 				registerChecker(checkXMLAtlas,      XMLAtlasAsset);
 				registerChecker(checkXMLFont,       XMLFontAsset);
+				registerChecker(checkXMLMalformed,  XMLMalformedAsset);
 			}
 		}
 
@@ -91,6 +93,12 @@ package talon.browser.desktop.plugins
 			return ref.checkFirstMeaningfulChar("<")
 				&& ref.cacheBytesAsXML
 				&& ref.cacheBytesAsXML.name() == "font";
+		}
+
+		private function checkXMLMalformed(ref:DesktopFileReference):Boolean
+		{
+			return ref.checkFirstMeaningfulChar("<")
+				&& ref.cacheBytesAsXML == null;
 		}
 
 		private function checkProperties(ref:DesktopFileReference):Boolean

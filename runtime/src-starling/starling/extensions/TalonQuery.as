@@ -3,6 +3,8 @@ package starling.extensions
 	import starling.animation.Juggler;
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
+	import starling.display.DisplayObject;
+	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
@@ -65,7 +67,7 @@ package starling.extensions
 
 		private function isMatch(selector:String, element:ITalonElement):Boolean
 		{
-			var id:String = element.self.name;
+			var id:String = DisplayObject(element).name;
 			if (id == null) return false;
 			return id.indexOf(selector.substr(1)) == 0;
 		}
@@ -94,7 +96,7 @@ package starling.extensions
 		       juggler = Starling.juggler;
 
 		   for each (var element:ITalonElement in _elements)
-		       juggler.tween(element.self, time, properties);
+		       juggler.tween(element, time, properties);
 
 			return this;
 		}
@@ -105,7 +107,7 @@ package starling.extensions
 				juggler = Starling.juggler;
 
 			for each (var element:ITalonElement in _elements)
-				juggler.removeTweens(element.self);
+				juggler.removeTweens(element);
 
 			return this;
 		}
@@ -123,7 +125,7 @@ package starling.extensions
 		public function onEvent(type:String, listener:Function):TalonQuery
 		{
 			for each (var element:ITalonElement in _elements)
-				element.self.addEventListener(type, listener);
+				DisplayObject(element).addEventListener(type, listener);
 
 			return this;
 		}

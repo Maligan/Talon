@@ -306,11 +306,15 @@ package talon
 			_valueCached = false;
 			change.dispatch();
 		}
+
+		public function toString():String
+		{
+			return '[Attribute name="' + name + '", value="' + value + '"]';
+		}
 	}
 }
 
 import flash.events.Event;
-import flash.utils.getTimer;
 
 import talon.Attribute;
 import talon.utils.Trigger;
@@ -403,8 +407,6 @@ class InheritableSolver extends SimpleSolver
 	private var _parent:Attribute;
 	private var _based:String;
 
-	private var _queue:Array = [];
-
 	public function InheritableSolver(attribute:Attribute, based:String)
 	{
 		_based = based;
@@ -415,33 +417,18 @@ class InheritableSolver extends SimpleSolver
 
 	private function onAdded():void
 	{
-		_queue.push({type: "onAdded", time: getTimer(), stack: getStackTrace()});
+		var prev:String = value;
 		_parent = _attribute.node.parent.getOrCreateAttribute(_attribute.name);
 		_parent.change.addListener(onParentChange);
-		if (super.value == Attribute.INHERIT) change.dispatch();
+		if (prev != value) change.dispatch();
 	}
 
 	private function onRemoved():void
 	{
-		_queue.push({type: "onRemoved", time: getTimer(), stack: getStackTrace()});
-		// FIXME: Double call?
-		// Open 'ProfilePopup'
-		// Erase from common.xml '<' from <input>
-		// Save
-		// Restore '<'
-		// Save
-		// Save
-		// PROFIT!
+		var prev:String = value;
 		_parent.change.removeListener(onParentChange);
 		_parent = null;
-		if (super.value == Attribute.INHERIT) change.dispatch();
-	}
-
-	private function getStackTrace():String
-	{
-		try { throw new Error() }
-		catch (e:Error) { return e.getStackTrace() }
-		return null;
+		if (prev != value) change.dispatch();
 	}
 
 	private function onParentChange():void

@@ -48,7 +48,7 @@
 	</def>
 
 	<def ref="BoxModel">
-		<node fill="gray" layout="abs" width="100" height="100">
+		<node id="catcher" fill="gray" layout="abs" width="100" height="100">
 			<node width="32" height="32" position="100" />
 		</node>
 	</def>

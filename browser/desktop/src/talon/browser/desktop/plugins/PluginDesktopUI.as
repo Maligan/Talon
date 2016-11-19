@@ -127,9 +127,6 @@ package talon.browser.desktop.plugins
 			_factory.addArchiveContentAsync(readFile(fileInterface), onFactoryComplete);
 
 
-			_factory.assets.process({});
-
-
 			// Windows
 			_platform.stage.nativeWindow.minSize = new Point(200, 100);
 			_platform.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.MOVE, onWindowMove);
@@ -256,7 +253,7 @@ package talon.browser.desktop.plugins
 		private function onFactoryComplete():void
 		{
 			_interface = _factory.createElement("Interface") as TalonSpriteElement;
-			DisplayObjectContainer(_platform.starling.root).addChild(_interface.self);
+			DisplayObjectContainer(_platform.starling.root).addChild(_interface);
 
 
 			// popups container
@@ -393,11 +390,9 @@ package talon.browser.desktop.plugins
 			canShow &&= _platform.document.tasks.isBusy == false;
 			canShow &&= _platform.document.factory.hasTemplate(_platform.templateId);
 
-			_templateContainer.removeChildren();
+			_templateContainer.removeChildren(0, -1, true);
 			_platform.document && _platform.document.messages.removeMessage(_templateProduceMessage);
 			_templateProduceMessage = null;
-
-			_template && _template.removeFromParent(true);
 			_template = canShow ? produce(_platform.templateId) : null;
 
 			if (_template != null)
@@ -426,7 +421,7 @@ package talon.browser.desktop.plugins
 					var messageView:ITalonElement = _factory.createElement("Message");
 					messageView.node.setAttribute(Attribute.TEXT, messageData.text);
 					messageView.node.setAttribute(Attribute.CLASS, messageData.level==2?"error":"warning");
-					_messages.addChild(messageView.self);
+					_messages.addChild(messageView as DisplayObject);
 				}
 			}
 		}
@@ -469,7 +464,7 @@ package talon.browser.desktop.plugins
 
 			try
 			{
-				result = _platform.document.factory.createElement(templateId).self;
+				result = _platform.document.factory.createElement(templateId) as DisplayObject;
 			}
 			catch (e:Error)
 			{

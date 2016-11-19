@@ -10,6 +10,7 @@ package talon
 	import talon.utils.AttributeGauge;
 	import talon.utils.AttributeStringSet;
 	import talon.utils.Trigger;
+	import talon.utils.getMemoryAddress;
 
 	/** Any attribute changed. */
 	[Event(name="change")]
@@ -320,21 +321,23 @@ package talon
 		/** Adds a child to the container. */
 		public function addChild(child:Node):void
 		{
+			if (child._parent != null) throw new ArgumentError("Child must be free from parent");
+
 			_children[_children.length] = child;
 			child._parent = this;
             child.refreshStyle();
             child.refreshResource();
 			child.addTriggerListener(Event.CHANGE, onChildAttributeChange);
 			child.dispatch(Event.ADDED);
-            invalidate();
+			invalidate();
 		}
 
 		/** Removes a child from the container. If the object is not a child throws ArgumentError. */
 		public function removeChild(child:Node):void
 		{
-			var indexOf:int = _children.indexOf(child);
-			if (indexOf == -1) throw new ArgumentError("Supplied node must be a child of the caller");
-			_children.splice(indexOf, 1);
+			if (child._parent != this) throw new ArgumentError("Child must be child of node");
+
+			_children.removeAt(_children.indexOf(child));
 			child.removeTriggerListener(Event.CHANGE, onChildAttributeChange);
 			child.dispatch(Event.REMOVED);
 			child._parent = null;

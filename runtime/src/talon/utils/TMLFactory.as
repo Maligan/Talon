@@ -51,11 +51,16 @@ package talon.utils
 				if (template == null) throw new ArgumentError("Template with id: " + source + " doesn't exist");
 			}
 
+			_parserLastTemplateRoot = null;
+			_parserStack.length = 0;
+
 			// Parse template, while parsing events dispatched (onElementBegin, onElementEnd)
 			_parser.parse(template);
 			var result:* = _parserProduct;
 			var resultNode:Node = getElementNode(result);
+
 			_parserLastTemplateRoot = null;
+			_parserStack.length = 0;
 			_parserProduct = null;
 
 			// Add style and resources
@@ -173,8 +178,8 @@ package talon.utils
 		/** Add template (non terminal symbol) definition. Template name equals @res attribute. */
 		public function addTemplate(xml:XML):void
 		{
-			var tag:String = xml.name();
-			if (tag != TAG_TEMPLATE) throw new ArgumentError("Root node must be <" + TAG_TEMPLATE + ">");
+			var xmlName:String = xml.name();
+			if (xmlName != TAG_TEMPLATE) throw new ArgumentError("Root node must be <" + TAG_TEMPLATE + ">");
 
 			var ref:String = xml.attribute(ATT_REF);
 			if (ref == null) throw new ArgumentError("Template must contains " + ATT_REF + " attribute");

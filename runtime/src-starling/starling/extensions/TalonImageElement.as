@@ -100,10 +100,5 @@ package starling.extensions
 		{
 			return _node;
 		}
-
-		public function get self():DisplayObject
-		{
-			return this;
-		}
 	}
 }

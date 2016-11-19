@@ -8,6 +8,5 @@ package starling.extensions
 	public interface ITalonElement
 	{
 		function get node():Node
-		function get self():DisplayObject;
 	}
 }

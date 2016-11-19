@@ -54,8 +54,11 @@ package talon.utils
 
 		private function parseInternal(xml:XML, attributes:Object, rewrites:XMLList):void
 		{
-			var tag:String = xml.name();
+			var kind:String = xml.nodeKind();
+			if (kind == "text") throw new Error("Text elements doesn't supported - " + xml.valueOf());
+			if (kind != "element") return;
 
+			var tag:String = xml.name();
 			if (_tags.indexOf(tag) != -1) throw new Error("Template is recursive nested");
 
 			// If node is terminal - it can't be expanded - create node

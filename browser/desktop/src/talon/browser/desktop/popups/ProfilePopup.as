@@ -5,6 +5,8 @@ package talon.browser.desktop.popups
 
 	import flash.ui.Keyboard;
 
+	import starling.display.DisplayObject;
+
 	import starling.events.Event;
 
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
@@ -20,7 +22,7 @@ package talon.browser.desktop.popups
 
 		protected override function initialize():void
 		{
-			addChild(manager.factory.createElement("ProfilePopup").self);
+			addChild(manager.factory.createElement("ProfilePopup") as DisplayObject);
 
 			_profileSource = DeviceProfile(data);
 			_profileTemp = new DeviceProfile();

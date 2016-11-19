@@ -178,7 +178,6 @@ package starling.extensions
 		// Properties
 		//
 		public function get node():Node { return _node; }
-		public function get self():DisplayObject { return this; }
 
 		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
 		public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.FONT_AUTO_SCALE, value.toString()); }

@@ -31,26 +31,27 @@ package starling.extensions
 		// Children
 		//
 		/** @inherit */
-		public override function addChild(child:DisplayObject):DisplayObject
+		public override function addChildAt(child:DisplayObject, index:int):DisplayObject
 		{
-			if (child is ITalonElement) attachChildElement(child as ITalonElement);
-			return super.addChild(child);
+			child = super.addChildAt(child, index);
+			if (child is ITalonElement) addChildNode(child as ITalonElement);
+			return child;
 		}
 
 		/** @inherit */
 		public override function removeChildAt(index:int, dispose:Boolean = false):DisplayObject
 		{
-			var child:DisplayObject = getChildAt(index);
-			if (child is ITalonElement) detachChildElement(child as ITalonElement);
-			return super.removeChildAt(index, dispose);
+			var child:DisplayObject = super.removeChildAt(index, dispose);
+			if (child is ITalonElement) removeChildNode(child as ITalonElement);
+			return child;
 		}
 
-		private function attachChildElement(child:ITalonElement):void
+		private function addChildNode(child:ITalonElement):void
 		{
 			node.addChild(child.node);
 		}
 
-		private function detachChildElement(child:ITalonElement):void
+		private function removeChildNode(child:ITalonElement):void
 		{
 			node.removeChild(child.node);
 		}
@@ -120,11 +121,6 @@ package starling.extensions
 		public function get node():Node
 		{
 			return _node;
-		}
-
-		public function get self():DisplayObject
-		{
-			return this;
 		}
 	}
 }

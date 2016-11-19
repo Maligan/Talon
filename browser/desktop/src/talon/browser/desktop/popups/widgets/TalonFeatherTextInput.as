@@ -115,10 +115,5 @@ package talon.browser.desktop.popups.widgets
 		{
 			return _node;
 		}
-
-		public function get self():DisplayObject
-		{
-			return this;
-		}
 	}
 }

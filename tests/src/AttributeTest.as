@@ -85,7 +85,7 @@ package
 			Assert.assertFalse(attribute.isInherit);
 
 			// Added to 1 parent
-			node1.addChild(attribute.node);
+			node1.addChildAt(attribute.node);
 			Assert.assertTrue(attribute.isInherit);
 			Assert.assertEquals(node1.getOrCreateAttribute(attribute.name).value, attribute.value);
 
@@ -94,8 +94,8 @@ package
 			Assert.assertFalse(attribute.isInherit);
 
 			// Change parent form 1 to 2
-			node1.addChild(attribute.node);
-			node2.addChild(attribute.node);
+			node1.addChildAt(attribute.node);
+			node2.addChildAt(attribute.node);
 			Assert.assertTrue(attribute.isInherit);
 			Assert.assertEquals(node2.getOrCreateAttribute(attribute.name).value, attribute.value);
 		}
@@ -132,7 +132,7 @@ package
 			attribute.inited = "inited";
 			Assert.assertEquals(1, changes);
 
-			node1.addChild(attribute.node);
+			node1.addChildAt(attribute.node);
 			Assert.assertEquals(1, changes);
 
 			attribute.setted = Attribute.INHERIT;

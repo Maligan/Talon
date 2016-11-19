@@ -34,7 +34,7 @@ package starling.extensions
 		public override function addChildAt(child:DisplayObject, index:int):DisplayObject
 		{
 			child = super.addChildAt(child, index);
-			if (child is ITalonElement) addChildNode(child as ITalonElement);
+			if (child is ITalonElement) addChildNodeAt(child as ITalonElement, index);
 			return child;
 		}
 
@@ -46,9 +46,9 @@ package starling.extensions
 			return child;
 		}
 
-		private function addChildNode(child:ITalonElement):void
+		private function addChildNodeAt(child:ITalonElement, index:int):void
 		{
-			node.addChild(child.node);
+			node.addChildAt(child.node, index);
 		}
 
 		private function removeChildNode(child:ITalonElement):void

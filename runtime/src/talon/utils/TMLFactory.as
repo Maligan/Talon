@@ -20,6 +20,7 @@ package talon.utils
 		protected var _parserStack:Array;
 		protected var _parserProduct:*;
 		protected var _parserLastTemplateRoot:Node;
+		protected var _parserTag:String;
 
 		protected var _resources:Object;
 		protected var _linkage:Object;
@@ -48,6 +49,7 @@ package talon.utils
 			else
 			{
 				template = _parser.templatesXML[source];
+				_parserTag = _parser.templatesTag[source];
 				if (template == null) throw new ArgumentError("Template with id: " + source + " doesn't exist");
 			}
 
@@ -75,12 +77,11 @@ package talon.utils
 
 		protected function onElementBegin(e:Event):void
 		{
-			var type:String = _parser.cursorTags[0];
 			var attributes:Object = _parser.cursorAttributes;
-
-			// If template doesn't provide CSS type - use tag name
 			if (attributes[Attribute.TYPE] == null)
-				attributes[Attribute.TYPE] = type;
+				attributes[Attribute.TYPE] = _parserTag || _parser.cursorTags[0];
+
+			_parserTag = null;
 
 			// Create new element
 			var elementClass:Class = getLinkageClass(_parser.cursorTags);

@@ -75,14 +75,14 @@ Look at result:
 ![](img/intro_2.png)
 
 ## Templating
-Основное приемущество шаблонов в том что при [правильном](https://en.wikipedia.org/wiki/Code_reuse#Criticism) использовании они могут значительно упростить приложение, а значит увеличить скорость разработки и что самое, на мой взгляд важное - сохранить нервы разработчиков.
+Advantages of [wise templating](https://en.wikipedia.org/wiki/Code_reuse#Criticism) are simplicity in apps, speed up development and in my opinion main one - saving developers nerves.
 
-Под шаблоном подразумевается любой дерево элементов (даже пустое). Шаблон можно поставить на место любого **листового** узла в другом дереве:
+Template — reusable tree of elements. It can be *applied* at any **leaf** node of another template.
 
 ![Screenshot2](img/intro_4.png)
 
-В TML есть два способа указать на переиспользования шаблона - *полный* и *упрощёный*, здесь мы с вами рассмотрим только *упрощёный* метод.  
-Для этого нужно связать какое-либо тег с шаблоном, посмотрире обновлённую версию `button.xml`:
+There are two sintax way to apply template in TML — *full* and *simple*, here we look at *simple* method.  
+To do this, you need link template with tag name, see updated version of `button.xml`:
 
 ```xml
 <def ref="Button" tag="button">
@@ -94,9 +94,9 @@ Look at result:
 </def>
 ```
 
-Здесь по мимо добавление нового свойства `tag` вы могли заметить связывание аттрибутов (через *@-нотацию*). Для тех кто знаком со связыванием это будет понятно, для тех кто нет - прочтите названия атрибутов ещё раз, думаю вы сможете понять связь между ними. В целом *@-нотация* связывает значения аттрибута с *корневым* элементом шаблона.
+Beside new `def` attribute `tag` you can notice attriubtes *binding* (via *@-notation*). If you are not familiar with [data binding](https://en.wikipedia.org/wiki/Data_binding) technique it's not a problem — *@-notation* just bind attribute to *template root* attribute. Binded attributes changes together.
 
-Ну и теперь давайте созданить ещё один шаблон `popup.xml`:
+Lets create one more template `popup.xml`:
 
 ```xml
 <def ref="Popup">

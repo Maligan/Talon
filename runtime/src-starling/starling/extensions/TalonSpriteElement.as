@@ -48,7 +48,7 @@ package starling.extensions
 
 		private function addChildNodeAt(child:ITalonElement, index:int):void
 		{
-			node.addChildAt(child.node, index);
+			node.addChild(child.node, index);
 		}
 
 		private function removeChildNode(child:ITalonElement):void

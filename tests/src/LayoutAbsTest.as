@@ -20,7 +20,7 @@ package
 
 			parent = new Node();
 			parent.setAttribute(Attribute.LAYOUT, Layout.ABSOLUTE);
-			parent.addChildAt(child);
+			parent.addChild(child);
 			parent.bounds.setTo(0, 0, 1000, 1000);
 		}
 

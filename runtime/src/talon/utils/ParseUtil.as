@@ -19,7 +19,7 @@ package talon.utils
 			if (string.indexOf("#") == 0) return parseInt(string.substr(1), 16);
 			if (Color[string.toUpperCase()] is uint) return Color[string.toUpperCase()];
 
-			var method:Array = parseFunction(string);
+			var method:Array = parseFunction(string.toLowerCase());
 			if (method && method[0]=="rgb" && method.length > 3) return (parseInt(method[1]) << 16) | (parseInt(method[2]) << 8) | parseInt(method[3]);
 
 			return fallback;

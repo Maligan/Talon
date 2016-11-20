@@ -319,7 +319,7 @@ package talon
 		public function get numChildren():int { return _children.length; }
 
 		/** Adds a child to the container. */
-		public function addChildAt(child:Node, index:int = -1):void
+		public function addChild(child:Node, index:int = -1):void
 		{
 			if (child._parent != null) throw new ArgumentError("Child must be free from parent");
 			if (index < 0 || index > numChildren) index = numChildren;

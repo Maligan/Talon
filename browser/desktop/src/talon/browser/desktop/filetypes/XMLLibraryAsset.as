@@ -35,6 +35,7 @@ package talon.browser.desktop.filetypes
 
 					case TMLFactory.TAG_PROPERTIES:
 						addProperties(child.text());
+						break;
 
 					default:
 						reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_ELEMENT, file.path, childType);

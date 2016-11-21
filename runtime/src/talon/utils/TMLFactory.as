@@ -49,7 +49,16 @@ package talon.utils
 			else
 			{
 				template = _parser.templatesXML[source];
-				_parserTag = _parser.templatesTag[source];
+
+				for (var tag:String in _parser.templatesTag)
+				{
+					if (_parser.templatesTag[tag] == source)
+					{
+						_parserTag = tag;
+						break;
+					}
+				}
+
 				if (template == null) throw new ArgumentError("Template with id: " + source + " doesn't exist");
 			}
 
@@ -78,6 +87,8 @@ package talon.utils
 		protected function onElementBegin(e:Event):void
 		{
 			var attributes:Object = _parser.cursorAttributes;
+
+
 			if (attributes[Attribute.TYPE] == null)
 				attributes[Attribute.TYPE] = _parserTag || _parser.cursorTags[0];
 

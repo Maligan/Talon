@@ -62,7 +62,7 @@ Lets create more complex example. For this add next three files into `helloworld
 	}
 	```
 
-	Do not try to understand all of properties just now, they are explained in [other articles](#whats-next).
+	Do not try to understand all of properties just now (they are not same as in W3C CSS) they are explained in [other articles](#whats-next).
 
 3. And this carefully picked up coin image `coin.png`
 
@@ -108,7 +108,7 @@ Lets create one more template `popup.xml`:
 </def>
 ```
 
-И чтобы всё приняло божеский вид нужно добавить стили `popup.css`:
+And add same styles for beauty `popup.css`:
 
 ```css
 .popup {
@@ -116,17 +116,19 @@ Lets create one more template `popup.xml`:
 }
 ```
 
-И вот как это должно выглядить:
+This is result:
 
 ![Screenshot2](img/intro_3.png)
 
 ## Import layouts into apps
 
-Если вы не ставите себе цель только создания мокапов, то вам когда-нибудь понадобится перенести ваши наработки в игру. Есть много путей сделать это, но давайте рассмотрим самый быстрый:
+If you use talon not only for mockups, once you need import you layouts into app. There are many ways to do it, let show easiest:
 
-1. Упакуйте папку вашего проекта в zip архив выполнив `File -> Publish` или нажав <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd>
-2. Поместите архив в директорию с ассетами вашей игры и включите файл в сборку через мета-тег `[Embed]`
-3. Для примера возьмём тривиальное Starling приложение из раздела [First Steps: Create your Game](http://gamua.com/starling/first-steps/) и дополним его необходимым кодом
+1. Pack to zip-archive layouts folder via `File -> Publish` (or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd>)
+2. Place zip-archive into source path folder, add it to compile with `[Embed]` meta tag.
+3. Load embedded data to `starling.extensions.TalonFactory`, and use it to instantiate template.
+
+For example go change [Starling's First Steps: Create your Game](http://gamua.com/starling/first-steps/) application and expand it with talon facotry:
 
 ```actionscript
 import starling.display.Sprite;
@@ -157,7 +159,7 @@ public class Game extends Sprite
 }
 ```
 
-Собрите и запустите приложение, при должной сноровке у вас должно получится:
+Build and run the app, if you are lucky then you can see:
 
 ![](img/intro_5.png)
 

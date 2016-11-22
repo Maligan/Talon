@@ -18,7 +18,7 @@
 * `fillAlign`
 * `fillOffset`
 #### `fillMode = stretch`
-* `fillStretchGrid`
+* `fillStretchGrid` — если вы знакомы с тем как в Starling или Feathers задаётся 9-scale сетка, то тут всё по другому. Сетка задаётся 4 параметра, но они отвечают не за `x`, `y`, `width`, `height` прямоугольника, а они задают отступы от 4х сторон прямоугольника текстуры (ну как padding).
 #### `fillMode = repeat`
 * `fillAlign`
 * `fillOffset`

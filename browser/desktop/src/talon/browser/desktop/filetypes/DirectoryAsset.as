@@ -4,8 +4,12 @@ package talon.browser.desktop.filetypes
 	import flash.events.IOErrorEvent;
 	import flash.filesystem.File;
 
+	import talon.browser.desktop.utils.DesktopDocumentProperty;
+
 	import talon.browser.desktop.utils.DesktopFileReference;
+	import talon.browser.platform.document.files.IFileReference;
 	import talon.browser.platform.document.log.DocumentMessage;
+	import talon.browser.platform.utils.Glob;
 
 	public class DirectoryAsset extends Asset
 	{
@@ -26,9 +30,21 @@ package talon.browser.desktop.filetypes
 		private function onDirectoryListing(e:FileListEvent):void
 		{
 			for each (var child:File in e.files)
-				document.files.addReference(new DesktopFileReference(child, file.root));
+			{
+				var ref:IFileReference = new DesktopFileReference(child, file.root);
+				var refIncluded:Boolean = isIncluded(ref);
+				if (refIncluded)
+					document.files.addReference(ref);
+			}
 
 			document.tasks.end();
+		}
+
+		private function isIncluded(file:IFileReference):Boolean
+		{
+			var patterns:String = document.properties.getValueOrDefault(DesktopDocumentProperty.SOURCE_PATTERN, String);
+			if (patterns == null) return true;
+			return Glob.matchPattern(file.path, patterns);
 		}
 
 		private function onIOError(e:IOErrorEvent):void

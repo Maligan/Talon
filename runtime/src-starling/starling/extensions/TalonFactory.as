@@ -5,6 +5,7 @@ package starling.extensions
 
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
+	import starling.utils.AssetManager;
 
 	import talon.Node;
 	import talon.utils.TMLFactory;

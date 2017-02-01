@@ -10,7 +10,6 @@ package talon
 	import talon.utils.AttributeGauge;
 	import talon.utils.AttributeStringSet;
 	import talon.utils.Trigger;
-	import talon.utils.getMemoryAddress;
 
 	/** Any attribute changed. */
 	[Event(name="change")]

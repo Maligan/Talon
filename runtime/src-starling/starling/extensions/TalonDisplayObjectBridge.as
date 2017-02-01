@@ -52,6 +52,7 @@ package starling.extensions
 			addAttributeChangeListener(Attribute.FILL_MODE,      			onFillModeChange);
 			addAttributeChangeListener(Attribute.FILL_STRETCH_GRID,   		onFillStretchGridChange);
 			addAttributeChangeListener(Attribute.FILL_ALPHA,          		onFillAlphaChange);
+			addAttributeChangeListener(Attribute.FILL_SCALE,          		onFillScaleChange);
 			addAttributeChangeListener(Attribute.FILL_BLEND_MODE,			onFillBlendModeChange);
 
 			// Common options
@@ -109,6 +110,12 @@ package starling.extensions
 		private function onFillAlphaChange():void
 		{
 			_background.alpha = parseFloat(_node.getAttributeCache(Attribute.FILL_ALPHA));
+		}
+
+		private function onFillScaleChange():void
+		{
+			_background.horizontalScale = parseFloat(_node.getAttributeCache(Attribute.FILL_SCALE_HORIZONTAL));
+			_background.verticalScale = parseFloat(_node.getAttributeCache(Attribute.FILL_SCALE_VERTICAL));
 		}
 
 		private function onFillBlendModeChange():void

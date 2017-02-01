@@ -26,6 +26,8 @@ package starling.extensions
 		private var _verticalFillMode:String;
 		private var _horizontalAlign:String;
 		private var _verticalAlign:String;
+		private var _horizontalScale:Number;
+		private var _verticalScale:Number;
 		private var _stretchOffsets:Vector.<Number>;
 
 		private var _requiresRecomposition:Boolean;
@@ -41,6 +43,7 @@ package starling.extensions
 			_stretchOffsets[0] = _stretchOffsets[1] = _stretchOffsets[2] = _stretchOffsets[3] = 0;
 			_horizontalFillMode = _verticalFillMode = FillMode.STRETCH;
 			_horizontalAlign = Align.LEFT;
+			_horizontalScale = _verticalScale = 1;
 			_verticalAlign = Align.TOP;
 
 			_transparent = true;
@@ -158,6 +161,26 @@ package starling.extensions
 			}
 		}
 
+		public function get horizontalScale():Number { return _horizontalScale; }
+		public function set horizontalScale(value:Number):void
+		{
+			if (_horizontalScale != value)
+			{
+				_horizontalScale = value;
+				setRequiresRecomposition();
+			}
+		}
+
+		public function get verticalScale():Number { return _verticalScale; }
+		public function set verticalScale(value:Number):void
+		{
+			if (_verticalScale != value)
+			{
+				_verticalScale = value;
+				setRequiresRecomposition();
+			}
+		}
+
 		/** Define FillMode.STRETCH 9-scale grid for texture filling. */
 		public function setStretchOffsets(top:Number, right:Number, bottom:Number, left:Number):void
 		{
@@ -219,16 +242,16 @@ package starling.extensions
 			{
 				switch (horizontalFillMode)
 				{
-					case FillMode.STRETCH:  fillStretch(width, texture.width, _stretchOffsets[3], _stretchOffsets[1], horizontal); break;
-					case FillMode.REPEAT:   fillRepeat(width, texture.width, ParseUtil.parseAlign(horizontalAlign), horizontal); break;
-					case FillMode.NONE:     fillNone(width, texture.width, ParseUtil.parseAlign(horizontalAlign), horizontal); break;
+					case FillMode.STRETCH:  fillStretch(width, texture.width * _horizontalScale, _stretchOffsets[3] * _horizontalScale, _stretchOffsets[1] * _horizontalScale, horizontal); break;
+					case FillMode.REPEAT:   fillRepeat(width, texture.width * _horizontalScale, ParseUtil.parseAlign(horizontalAlign), horizontal); break;
+					case FillMode.NONE:     fillNone(width, texture.width * _horizontalScale, ParseUtil.parseAlign(horizontalAlign), horizontal); break;
 				}
 
 				switch (verticalFillMode)
 				{
-					case FillMode.STRETCH:  fillStretch(height, texture.height, _stretchOffsets[0], _stretchOffsets[2], vertical); break;
-					case FillMode.REPEAT:   fillRepeat(height, texture.height, ParseUtil.parseAlign(verticalAlign), vertical); break;
-					case FillMode.NONE:     fillNone(height, texture.height, ParseUtil.parseAlign(verticalAlign), vertical); break;
+					case FillMode.STRETCH:  fillStretch(height, texture.height * _verticalScale, _stretchOffsets[0] * _horizontalScale, _stretchOffsets[2] * _horizontalScale, vertical); break;
+					case FillMode.REPEAT:   fillRepeat(height, texture.height * _verticalScale, ParseUtil.parseAlign(verticalAlign), vertical); break;
+					case FillMode.NONE:     fillNone(height, texture.height * _verticalScale, ParseUtil.parseAlign(verticalAlign), vertical); break;
 				}
 			}
 			else if (!transparent)

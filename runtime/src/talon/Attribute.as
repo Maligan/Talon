@@ -58,6 +58,9 @@ package talon
 		public static const FILL_STRETCH_GRID_LEFT:String          = registerAttribute("fillStretchGridLeft",   NONE);
 		public static const FILL_STRETCH_GRID:String               = registerComposite("fillStretchGrid",       [FILL_STRETCH_GRID_TOP, FILL_STRETCH_GRID_RIGHT, FILL_STRETCH_GRID_BOTTOM, FILL_STRETCH_GRID_LEFT]);
 		public static const FILL_ALPHA:String                      = registerAttribute("fillAlpha",             ONE);
+		public static const FILL_SCALE_HORIZONTAL:String           = registerAttribute("fillScaleHorizontal",	ONE);
+		public static const FILL_SCALE_VERTICAL:String             = registerAttribute("fillScaleVertical",	    ONE);
+		public static const FILL_SCALE:String                      = registerComposite("fillScale",	    		[FILL_SCALE_HORIZONTAL, FILL_SCALE_VERTICAL]);
 		public static const FILL_MODE_HORIZONTAL:String            = registerAttribute("fillModeHorizontal",    FillMode.STRETCH);
 		public static const FILL_MODE_VERTICAL:String              = registerAttribute("fillModeVertical",      FillMode.STRETCH);
 		public static const FILL_MODE:String                       = registerComposite("fillMode",              [FILL_MODE_HORIZONTAL, FILL_MODE_VERTICAL]);

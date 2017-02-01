@@ -93,8 +93,7 @@ package
 			node1.removeChild(attribute.node);
 			Assert.assertFalse(attribute.isInherit);
 
-			// Change parent form 1 to 2
-			node1.addChild(attribute.node);
+			// Change parent to 2
 			node2.addChild(attribute.node);
 			Assert.assertTrue(attribute.isInherit);
 			Assert.assertEquals(node2.getOrCreateAttribute(attribute.name).value, attribute.value);

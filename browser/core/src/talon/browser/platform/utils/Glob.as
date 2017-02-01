@@ -2,55 +2,20 @@ package talon.browser.platform.utils
 {
 	public class Glob
 	{
-		public static function match(string:String, patterns:Array):Boolean
+		public static function parse(string:String):Glob
 		{
-			var result:Boolean = false;
-
-			for each (var pattern:String in patterns)
-			{
-				var glob:Glob = new Glob(pattern);
-				if (glob.match(string))
-				{
-					result = !glob.invert;
-					if (result == false) break;
-				}
-			}
-
-			return result;
+			var glob:Glob = new Glob();
+			glob.negative = string && string.length && string.charAt(0) == "!";
+			glob.regexp = regexp(glob.negative ? string.substr(1) : string);
+			return glob;
 		}
 
-		private var _source:String;
-		private var _regexp:RegExp;
-		private var _invert:Boolean;
-
-		public function Glob(source:String):void
+		private static function regexp(string:String):RegExp
 		{
-			_source = source;
-			_invert = source.length && source.charAt(0) == "!";
-			_regexp = parse(_invert ? source.substring(1) : source);
+			return new RegExp("^" + regexpQuote(string).replace(/\\\*/g, '.*').replace(/\\\?/g, '.') + "$");
 		}
 
-		public function match(string:String):Boolean
-		{
-			// Reset regexp inner counter
-			_regexp.lastIndex = 0;
-			return _regexp.test(string);
-		}
-
-		public function get invert():Boolean
-		{
-			return _invert;
-		}
-
-		//
-		// Parsing
-		//
-		private function parse(string:String):RegExp
-		{
-			return new RegExp("^" + preg_quote(string).replace(/\\\*/g, '.*').replace(/\\\?/g, '.') + "$", 'g');
-		}
-
-		private function preg_quote(string:String, delimiter:String = null):String
+		private static function regexpQuote(string:String, delimiter:String = null):String
 		{
 			// http://kevin.vanzonneveld.net
 			// +   original by: booeyOH
@@ -58,13 +23,30 @@ package talon.browser.platform.utils
 			// +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
 			// +   bugfixed by: Onno Marsman
 			// +   improved by: Brett Zamir (http://brett-zamir.me)
-			// *     example 1: preg_quote("$40");
+			// *     example 1: regexpQuote("$40");
 			// *     returns 1: '\$40'
-			// *     example 2: preg_quote("*RRRING* Hello?");
+			// *     example 2: regexpQuote("*RRRING* Hello?");
 			// *     returns 2: '\*RRRING\* Hello\?'
-			// *     example 3: preg_quote("\\.+*?[^]$(){}=!<>|:");
+			// *     example 3: regexpQuote("\\.+*?[^]$(){}=!<>|:");
 			// *     returns 3: '\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:'
 			return string.replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'), '\\$&');
 		}
+
+		public static function matchPattern(string:String, pattern:String, result:Boolean = true):Boolean
+		{
+			var array:Array = pattern.split(";");
+
+			for each (var pattern:String in array)
+			{
+				var glob:Glob = parse(pattern);
+				if (glob.regexp.exec(string))
+					return !glob.negative;
+			}
+
+			return result;
+		}
+
+		public var regexp:RegExp;
+		public var negative:Boolean;
 	}
 }

@@ -80,11 +80,10 @@ package talon.browser.desktop.commands
 			var fileController:IFileController = platform.document.files.getController(file.path);
 			if (fileController is DirectoryAsset) return true;
 
-			var patternsString:String = platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_IGNORE, String);
+			var patternsString:String = platform.document.properties.getValueOrDefault(DesktopDocumentProperty.SOURCE_PATTERN, String);
 			if (patternsString == null) return false;
 
-			var patterns:Array = patternsString.replace(/[\n\r\s]/, "").split(",");
-			return Glob.match(file.path, patterns);
+			return !Glob.matchPattern(file.path, patternsString);
 		}
 
 

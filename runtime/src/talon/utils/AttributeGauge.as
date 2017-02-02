@@ -95,7 +95,7 @@ package talon.utils
 		 * @param ppts pixels per total stars
 		 * @param ts total stars amount
 		 */
-		public function toPixels(ppmm:Number, ppem:Number, ppdp:Number, pp100p:Number, aa:Number = Infinity, ppts:Number = 0, ts:int = 0):Number
+		public function toPixels(ppmm:Number, ppem:Number, ppdp:Number, pp100p:Number = 0, aa:Number = Infinity, ppts:Number = 0, ts:int = 0):Number
 		{
 			switch (unit)
 			{

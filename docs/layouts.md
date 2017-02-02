@@ -4,5 +4,11 @@ This model must be respected by all layout algorithms, but but without fanaticis
 
 ![Talon Box Model](img/img6.png)
 
-#### Absolute
+#### Anchor
+В данном лейауте положения дочерних узлов не зависимы друг от друга. Если несколько идей по заданию позиции/размера узлов:
+
+* `top, left, bottom, right` 
+
+![Anchor Layout Attributes](img/layout_anchor.jpg)
+
 #### Flow

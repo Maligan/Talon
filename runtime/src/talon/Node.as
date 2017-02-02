@@ -78,16 +78,16 @@ package talon
 		/** @private */ public const paddingBottom:AttributeGauge = new AttributeGauge(this, Attribute.PADDING_BOTTOM);
 		/** @private */ public const paddingLeft:AttributeGauge = new AttributeGauge(this, Attribute.PADDING_LEFT);
 
-		/** @private */ public const anchorTop:AttributeGauge = new AttributeGauge(this, Attribute.ANCHOR_TOP);
-		/** @private */ public const anchorRight:AttributeGauge = new AttributeGauge(this, Attribute.ANCHOR_RIGHT);
-		/** @private */ public const anchorBottom:AttributeGauge = new AttributeGauge(this, Attribute.ANCHOR_BOTTOM);
-		/** @private */ public const anchorLeft:AttributeGauge = new AttributeGauge(this, Attribute.ANCHOR_LEFT);
-
-		/** @private */ public const x:AttributeGauge = new AttributeGauge(this, Attribute.X);
-		/** @private */ public const y:AttributeGauge = new AttributeGauge(this, Attribute.Y);
+		/** @private */ public const top:AttributeGauge = new AttributeGauge(this, Attribute.TOP);
+		/** @private */ public const right:AttributeGauge = new AttributeGauge(this, Attribute.RIGHT);
+		/** @private */ public const bottom:AttributeGauge = new AttributeGauge(this, Attribute.BOTTOM);
+		/** @private */ public const left:AttributeGauge = new AttributeGauge(this, Attribute.LEFT);
 
 		/** @private */ public const pivotX:AttributeGauge = new AttributeGauge(this, Attribute.PIVOT_X);
 		/** @private */ public const pivotY:AttributeGauge = new AttributeGauge(this, Attribute.PIVOT_Y);
+
+		/** @private */ public const x:AttributeGauge = new AttributeGauge(this, Attribute.X);
+		/** @private */ public const y:AttributeGauge = new AttributeGauge(this, Attribute.Y);
 
 		/** @private */ public const originX:AttributeGauge = new AttributeGauge(this, Attribute.ORIGIN_X);
 		/** @private */ public const originY:AttributeGauge = new AttributeGauge(this, Attribute.ORIGIN_Y);

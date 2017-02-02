@@ -36,7 +36,7 @@ package talon.layouts
 				//
 				// Horizontal (width/x/left/right)
 				//
-				/**/ if ( child.anchorLeft.isNone &&  child.anchorRight.isNone)
+				/**/ if ( child.left.isNone &&  child.right.isNone)
 				{
 					child.bounds.width = toPixelsSugar(child.width, child, width, width, height, 0, 0, child.minWidth, child.maxWidth);
 					child.bounds.x = originX;
@@ -44,27 +44,27 @@ package talon.layouts
 					child.bounds.x += toPixelsSugar(child.x, child, width);
 					child.bounds.x -= toPixelsSugar(child.pivotX, child, child.bounds.width);
 				}
-				else if ( child.anchorLeft.isNone && !child.anchorRight.isNone)
+				else if ( child.left.isNone && !child.right.isNone)
 				{
-					child.bounds.right = paddingRight - marginRight + toPixelsSugar(child.anchorRight, child, width);
+					child.bounds.right = paddingRight - marginRight + toPixelsSugar(child.right, child, width);
 					child.bounds.left = child.bounds.right - toPixelsSugar(child.width, child, width, width, height, 0, 0, child.minWidth, child.maxWidth);
 				}
-				else if (!child.anchorLeft.isNone &&  child.anchorRight.isNone)
+				else if (!child.left.isNone &&  child.right.isNone)
 				{
-					child.bounds.left = paddingLeft + marginRight + toPixelsSugar(child.anchorLeft, child, width);
+					child.bounds.left = paddingLeft + marginRight + toPixelsSugar(child.left, child, width);
 					child.bounds.right = child.bounds.left + toPixelsSugar(child.width, child, width, width, height, 0, 0, child.minWidth, child.maxWidth);
 				}
-				else if (!child.anchorLeft.isNone && !child.anchorRight.isNone)
+				else if (!child.left.isNone && !child.right.isNone)
 				{
 					var deltaWidth:Number = paddingLeft + marginLeft + paddingRight + marginRight;
-					child.bounds.left = paddingLeft + marginLeft + toPixelsSugar(child.anchorLeft, child, width - deltaWidth);
-					child.bounds.right = paddingRight - marginRight + toPixelsSugar(child.anchorRight, child, width - deltaWidth);
+					child.bounds.left = paddingLeft + marginLeft + toPixelsSugar(child.left, child, width - deltaWidth);
+					child.bounds.right = paddingRight - marginRight + toPixelsSugar(child.right, child, width - deltaWidth);
 				}
 
 				//
 				// Vertical (height/y/top/bottom)
 				//
-				/**/ if ( child.anchorTop.isNone &&  child.anchorBottom.isNone)
+				/**/ if ( child.top.isNone &&  child.bottom.isNone)
 				{
 					child.bounds.height = toPixelsSugar(child.height, child, height, width, height, 0, 0, child.minHeight, child.maxHeight);
 					child.bounds.y = originY;
@@ -72,21 +72,21 @@ package talon.layouts
 					child.bounds.y += toPixelsSugar(child.y, child, height);
 					child.bounds.y -= toPixelsSugar(child.pivotY, child, child.bounds.height);
 				}
-				else if ( child.anchorTop.isNone && !child.anchorBottom.isNone)
+				else if ( child.top.isNone && !child.bottom.isNone)
 				{
-					child.bounds.bottom = paddingBottom - marginBottom + toPixelsSugar(child.anchorBottom, child, height);
+					child.bounds.bottom = paddingBottom - marginBottom + toPixelsSugar(child.bottom, child, height);
 					child.bounds.top = child.bounds.bottom - toPixelsSugar(child.height, child, height, width, height, 0, 0, child.minHeight, child.maxHeight);
 				}
-				else if (!child.anchorTop.isNone &&  child.anchorBottom.isNone)
+				else if (!child.top.isNone &&  child.bottom.isNone)
 				{
-					child.bounds.top = paddingTop + marginTop + toPixelsSugar(child.anchorTop, child, height);
+					child.bounds.top = paddingTop + marginTop + toPixelsSugar(child.top, child, height);
 					child.bounds.bottom = child.bounds.top + toPixelsSugar(child.height, child, height, width, height, 0, 0, child.minHeight, child.maxHeight);
 				}
-				else if (!child.anchorTop.isNone && !child.anchorBottom.isNone)
+				else if (!child.top.isNone && !child.bottom.isNone)
 				{
 					var deltaHeight:Number = paddingTop + marginTop + paddingBottom + marginBottom;
-					child.bounds.top = paddingTop + marginTop + toPixelsSugar(child.anchorTop, child, height - deltaHeight);
-					child.bounds.bottom = paddingBottom - marginBottom + toPixelsSugar(child.anchorBottom, child, height - deltaHeight);
+					child.bounds.top = paddingTop + marginTop + toPixelsSugar(child.top, child, height - deltaHeight);
+					child.bounds.bottom = paddingBottom - marginBottom + toPixelsSugar(child.bottom, child, height - deltaHeight);
 				}
 
 				child.commit();

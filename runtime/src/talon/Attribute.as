@@ -12,10 +12,6 @@ package talon
         private static const AUTO:String         = "auto";
         private static const FALSE:String        = "false";
         private static const TRUE:String         = "true";
-        private static const ZERO:String         = "0px";
-        private static const ONE:String          = "1";
-        private static const LEFT:String         = "left";
-		private static const TOP:String          = "top";
 
 		//
 		// Standard Attribute list
@@ -33,23 +29,22 @@ package talon
 		public static const MIN_HEIGHT:String                      = registerAttribute("minHeight",           NONE);
 		public static const MAX_HEIGHT:String                      = registerAttribute("maxHeight",           NONE);
 
-		public static const MARGIN_TOP:String                      = registerAttribute("marginTop",           ZERO);
-		public static const MARGIN_RIGHT:String                    = registerAttribute("marginRight",         ZERO);
-		public static const MARGIN_BOTTOM:String                   = registerAttribute("marginBottom",        ZERO);
-		public static const MARGIN_LEFT:String                     = registerAttribute("marginLeft",          ZERO);
+		public static const MARGIN_TOP:String                      = registerAttribute("marginTop",           "0px");
+		public static const MARGIN_RIGHT:String                    = registerAttribute("marginRight",         "0px");
+		public static const MARGIN_BOTTOM:String                   = registerAttribute("marginBottom",        "0px");
+		public static const MARGIN_LEFT:String                     = registerAttribute("marginLeft",          "0px");
 		public static const MARGIN:String                          = registerComposite("margin",              [MARGIN_TOP, MARGIN_RIGHT, MARGIN_BOTTOM, MARGIN_LEFT]);
 
-		public static const PADDING_TOP:String                     = registerAttribute("paddingTop",          ZERO);
-		public static const PADDING_RIGHT:String                   = registerAttribute("paddingRight",        ZERO);
-		public static const PADDING_BOTTOM:String                  = registerAttribute("paddingBottom",       ZERO);
-		public static const PADDING_LEFT:String                    = registerAttribute("paddingLeft",         ZERO);
+		public static const PADDING_TOP:String                     = registerAttribute("paddingTop",          "0px");
+		public static const PADDING_RIGHT:String                   = registerAttribute("paddingRight",        "0px");
+		public static const PADDING_BOTTOM:String                  = registerAttribute("paddingBottom",       "0px");
+		public static const PADDING_LEFT:String                    = registerAttribute("paddingLeft",         "0px");
 		public static const PADDING:String                         = registerComposite("padding",             [PADDING_TOP, PADDING_RIGHT, PADDING_BOTTOM, PADDING_LEFT]);
 
-		public static const ANCHOR_TOP:String                      = registerAttribute("anchorTop",           NONE);
-		public static const ANCHOR_RIGHT:String                    = registerAttribute("anchorRight",         NONE);
-		public static const ANCHOR_BOTTOM:String                   = registerAttribute("anchorBottom",        NONE);
-		public static const ANCHOR_LEFT:String                     = registerAttribute("anchorLeft",          NONE);
-		public static const ANCHOR:String                          = registerComposite("anchor",              [ANCHOR_TOP, ANCHOR_RIGHT, ANCHOR_BOTTOM, ANCHOR_LEFT]);
+		public static const LEFT:String                     	   = registerAttribute("left",                NONE);
+		public static const TOP:String                      	   = registerAttribute("top",                 NONE);
+		public static const RIGHT:String                    	   = registerAttribute("right",               NONE);
+		public static const BOTTOM:String                   	   = registerAttribute("bottom",              NONE);
 
 		public static const FILL:String                            = registerAttribute("fill",                  NONE);
 		public static const FILL_STRETCH_GRID_TOP:String           = registerAttribute("fillStretchGridTop",    NONE);
@@ -57,9 +52,9 @@ package talon
 		public static const FILL_STRETCH_GRID_BOTTOM:String        = registerAttribute("fillStretchGridBottom", NONE);
 		public static const FILL_STRETCH_GRID_LEFT:String          = registerAttribute("fillStretchGridLeft",   NONE);
 		public static const FILL_STRETCH_GRID:String               = registerComposite("fillStretchGrid",       [FILL_STRETCH_GRID_TOP, FILL_STRETCH_GRID_RIGHT, FILL_STRETCH_GRID_BOTTOM, FILL_STRETCH_GRID_LEFT]);
-		public static const FILL_ALPHA:String                      = registerAttribute("fillAlpha",             ONE);
-		public static const FILL_SCALE_HORIZONTAL:String           = registerAttribute("fillScaleHorizontal",	ONE);
-		public static const FILL_SCALE_VERTICAL:String             = registerAttribute("fillScaleVertical",	    ONE);
+		public static const FILL_ALPHA:String                      = registerAttribute("fillAlpha",             "1");
+		public static const FILL_SCALE_HORIZONTAL:String           = registerAttribute("fillScaleHorizontal",	"1");
+		public static const FILL_SCALE_VERTICAL:String             = registerAttribute("fillScaleVertical",	    "1");
 		public static const FILL_SCALE:String                      = registerComposite("fillScale",	    		[FILL_SCALE_HORIZONTAL, FILL_SCALE_VERTICAL]);
 		public static const FILL_MODE_HORIZONTAL:String            = registerAttribute("fillModeHorizontal",    FillMode.STRETCH);
 		public static const FILL_MODE_VERTICAL:String              = registerAttribute("fillModeVertical",      FillMode.STRETCH);
@@ -76,36 +71,35 @@ package talon
 		public static const TOUCH_EVENTS:String                    = registerAttribute("touchEvents",         FALSE);
 		public static const CURSOR:String                          = registerAttribute("cursor",              AUTO);
 
-
-		public static const ALPHA:String                           = registerAttribute("alpha",               ONE);
+		public static const ALPHA:String                           = registerAttribute("alpha",               "1");
 		public static const CLIPPING:String                        = registerAttribute("clipping",            FALSE);
 		public static const BLEND_MODE:String                      = registerAttribute("blendMode",           AUTO);
 		public static const FILTER:String                          = registerAttribute("filter",              NONE);
-		public static const Z_INDEX:String                         = registerAttribute("zIndex",              ZERO);
+		public static const Z_INDEX:String                         = registerAttribute("zIndex",              "0px");
 		public static const VISIBLE:String                         = registerAttribute("visible",             TRUE);
 		public static const LAYOUT:String                          = registerAttribute("layout",              Layout.FLOW);
 
-		public static const X:String                               = registerAttribute("x",                   ZERO);
-		public static const Y:String                               = registerAttribute("y",                   ZERO);
-		public static const POSITION:String                        = registerComposite("position",            [X, Y]);
+		[Deprecated] public static const X:String                               = registerAttribute("x",                   "0px");
+		[Deprecated] public static const Y:String                               = registerAttribute("y",                   "0px");
+		[Deprecated] public static const POSITION:String                        = registerComposite("position",            [X, Y]);
 
-		public static const PIVOT_X:String                         = registerAttribute("pivotX",              ZERO);
-		public static const PIVOT_Y:String                         = registerAttribute("pivotY",              ZERO);
+		public static const PIVOT_X:String                         = registerAttribute("pivotX",              "0px");
+		public static const PIVOT_Y:String                         = registerAttribute("pivotY",              "0px");
 		public static const PIVOT:String                           = registerComposite("pivot",               [PIVOT_X, PIVOT_Y]);
 
 		[Deprecated] public static const ORIGIN_X:String           = registerAttribute("originX",              NONE);
 		[Deprecated] public static const ORIGIN_Y:String           = registerAttribute("originY",              NONE);
 		[Deprecated] public static const ORIGIN:String             = registerComposite("origin",               [ORIGIN_X, ORIGIN_Y]);
 
-		public static const HALIGN:String                          = registerAttribute("halign",              LEFT);
-		public static const VALIGN:String                          = registerAttribute("valign",              TOP);
+		public static const HALIGN:String                          = registerAttribute("halign",              "left");
+		public static const VALIGN:String                          = registerAttribute("valign",              "top");
 		public static const ALIGN:String                           = registerComposite("align",               [HALIGN, VALIGN]);
 
 		public static const ORIENTATION:String                     = registerAttribute("orientation",         Orientation.HORIZONTAL);
-		public static const IHALIGN:String                         = registerAttribute("ihalign",             LEFT);
-		public static const IVALIGN:String                         = registerAttribute("ivalign",             TOP);
-		public static const GAP:String                             = registerAttribute("gap",                 ZERO);
-		public static const INTERLINE:String                       = registerAttribute("interline",           ZERO);
+		public static const IHALIGN:String                         = registerAttribute("ihalign",             "left");
+		public static const IVALIGN:String                         = registerAttribute("ivalign",             "top");
+		public static const GAP:String                             = registerAttribute("gap",                 "0px");
+		public static const INTERLINE:String                       = registerAttribute("interline",           "0px");
 		public static const WRAP:String                            = registerAttribute("wrap",                FALSE);
 
 		public static const BREAK_BEFORE:String                    = registerAttribute("breakBefore",         BreakMode.SOFT);

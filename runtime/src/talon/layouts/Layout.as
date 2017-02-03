@@ -77,10 +77,10 @@ package talon.layouts
 		//
 		// Useful layout methods
 		//
-		public static function pad(containerSize:Number, contentSize:Number, paddingBefore:Number, paddingAfter:Number, k:Number):Number
+		public static function pad(parentSize:Number, childSize:Number, paddingBefore:Number, paddingAfter:Number, k:Number):Number
 		{
 			// NB! k in [0; 1]
-			return paddingBefore + (containerSize - paddingBefore - contentSize - paddingAfter) * k;
+			return paddingBefore + (parentSize - paddingBefore - childSize - paddingAfter) * k;
 		}
 
 		//

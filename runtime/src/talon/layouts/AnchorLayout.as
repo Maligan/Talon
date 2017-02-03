@@ -16,7 +16,7 @@ package talon.layouts
 			{
 				width += child.left.toPixels(child.ppmm, child.ppem, child.ppdp)
 					   + child.right.toPixels(child.ppmm, child.ppem, child.ppdp)
-					   + calcSize(child, child.width, child.height, 0, 0, child.minWidth, child.maxWidth);
+					   + calcSize(child, child.width, child.height, 0, 0, child.minWidth, child.maxWidth, 0);
 			}
 
 			return width;
@@ -33,7 +33,7 @@ package talon.layouts
 			{
 				height += child.top.toPixels(child.ppmm, child.ppem, child.ppdp)
 					+ child.bottom.toPixels(child.ppmm, child.ppem, child.ppdp)
-					+ calcSize(child, child.height, child.width, 0, 0, child.minHeight, child.maxHeight);
+					+ calcSize(child, child.height, child.width, 0, 0, child.minHeight, child.maxHeight, 0);
 			}
 
 			return height;
@@ -56,7 +56,7 @@ package talon.layouts
 				// x-axis
 				if (isRespectingSize(child.left, child.right))
 				{
-					child.bounds.width = calcSize(child, child.width, child.height, contentWidth, contentHeight, child.minWidth, child.maxWidth);
+					child.bounds.width = calcSize(child, child.width, child.height, contentWidth, contentHeight, child.minWidth, child.maxWidth, numStars(child.left) + numStars(child.width) + numStars(child.right));
 					child.bounds.x = calcOffset(child, child.bounds.width, child.left, child.right, width, paddingLeft, paddingRight);
 				}
 				else
@@ -68,7 +68,7 @@ package talon.layouts
 				// y-axis
 				if (isRespectingSize(child.top, child.bottom))
 				{
-					child.bounds.height = calcSize(child, child.height, child.width, contentHeight, contentWidth, child.maxHeight, child.maxHeight);
+					child.bounds.height = calcSize(child, child.height, child.width, contentHeight, contentWidth, child.maxHeight, child.maxHeight, numStars(child.top) + numStars(child.height) + numStars(child.bottom));
 					child.bounds.y = calcOffset(child, child.bounds.height, child.top, child.bottom, height, paddingTop, paddingBottom);
 				}
 				else
@@ -87,73 +87,47 @@ package talon.layouts
 				|| right.isNone || right.unit == AttributeGauge.STAR;
 		}
 
+		private function numStars(gauge:AttributeGauge):int
+		{
+			return gauge.unit == AttributeGauge.STAR ? gauge.amount : 0;
+		}
+
 		private function calcOffset(child:Node, childWidth:Number, childLeft:AttributeGauge, childRight:AttributeGauge, parentWidth:Number, paddingLeft:Number, paddingRight:Number):Number
 		{
 			var contentWidth:Number = parentWidth - paddingLeft - paddingRight;
 
-			var leftNone:Boolean = childLeft.isNone;
-			var leftStar:Boolean = childLeft.unit == AttributeGauge.STAR;
-			var leftRest:Boolean = !leftNone && !leftStar;
+			var totalPx:Number =  contentWidth - childWidth;
+			var totalStars:int = numStars(childLeft) + numStars(childRight);
 
-			var rightNone:Boolean = childRight.isNone;
-			var rightStar:Boolean = childRight.unit == AttributeGauge.STAR;
-			var rightRest:Boolean = !rightNone && !rightStar;
+			var leftPx:Number = childLeft.toPixels(child.ppem, child.ppem, child.ppdp, childWidth, 0, totalPx, totalStars);
+			var rightPx:Number = childRight.toPixels(child.ppmm, child.ppem, child.ppdp, contentWidth, 0, totalPx, totalStars);
 
-			// There are 8 (from 9 possible) cases:
-			/**/ if (leftNone && rightNone)
-				return Layout.pad(parentWidth, childWidth, paddingLeft, paddingRight, 0.5);
-			else if (leftNone && rightStar)
-				return Layout.pad(parentWidth, childWidth, paddingLeft, paddingRight, 0);
-			else if (leftNone && rightRest)
-				return Layout.pad(parentWidth, childWidth, paddingLeft, paddingRight + childRight.toPixels(child.ppmm, child.ppem, child.ppdp, contentWidth), 1);
-			else if (leftStar && rightNone)
-				return Layout.pad(parentWidth, childWidth, paddingLeft, paddingRight, 1);
-			else if (leftStar && rightStar)
-			{
-				var totalPx:Number = contentWidth - childWidth;
-				var total:Number = childLeft.amount + childRight.amount;
-				return Layout.pad(parentWidth, childWidth, totalPx * (childLeft.amount/total), totalPx * (childRight.amount/total), childLeft.amount/childRight.amount);
-			}
-			else if (leftStar && rightRest)
-				return Layout.pad(parentWidth, childWidth, paddingLeft, paddingRight + childRight.toPixels(child.ppmm, child.ppem, child.ppdp, contentWidth), 1);
-			else if (leftRest && rightNone)
-				return Layout.pad(parentWidth, childWidth, paddingLeft + childLeft.toPixels(child.ppmm, child.ppem, child.ppdp, contentWidth), paddingRight, 0);
-			else if (leftRest && rightStar)
-				return Layout.pad(parentWidth, childWidth, paddingLeft + childLeft.toPixels(child.ppmm, child.ppem, child.ppdp, contentWidth), paddingRight, 0);
+			var align:Number;
+			if (childLeft.isNone && !childRight.isNone) 		align = 1;
+			else if (!childLeft.isNone && childRight.isNone)	align = 0;
+			else												align = 0.5;
 
-			// There is an assertion - last one (leftRest && rightRest) must be handled outside this method
-			throw new Error();
+			return Layout.pad(parentWidth, childWidth, paddingLeft + leftPx, paddingRight + rightPx, align);
 		}
 
-		private function calcSize(child:Node, mS:AttributeGauge, cS:AttributeGauge, mCS:Number, cCS:Number, mMin:AttributeGauge, mMax:AttributeGauge):Number
+		private function calcSize(child:Node, mainSize:AttributeGauge, crossSize:AttributeGauge, mainContentSize:Number, crossContentSize:Number, mainMinSize:AttributeGauge, mainMaxSize:AttributeGauge, totalStars:int):Number
 		{
-			// FIXME: What about stars? (yes, size can be in stars)
-			// FIXME: mCS can be Infinity (set to zero?)
+			var valueIsDependent:Boolean = mainSize.isNone && !crossSize.isNone;
+			var valueAutoArg:Number = valueIsDependent ? crossSize.toPixels(child.ppmm, child.ppem, child.ppdp, crossContentSize) : Infinity;
+			var value:Number = mainSize.toPixels(child.ppmm, child.ppem, child.ppdp, mainContentSize, valueAutoArg, mainContentSize, totalStars);
 
-			// [Calculate]
-			var value:Number = 0;
-
-			/**/ if (!mS.isNone)
-				value = mS.toPixels(child.ppmm, child.ppem, child.ppdp, mCS);
-			else if (!cS.isNone)
-				value = mS.toPixels(child.ppmm, child.ppem, child.ppdp, mCS, cS.toPixels(child.ppmm, child.ppem, child.ppdp, cCS));
-			else
-				value = mS.toPixels(child.ppmm, child.ppem, child.ppdp, mCS, Infinity);
-
-			// [Restrain]
-			if (!mMin.isNone)
+			if (!mainMinSize.isNone)
 			{
-				var min:Number = mMin.toPixels(child.ppmm, child.ppem, child.ppdp, mCS);
+				var min:Number = mainMinSize.toPixels(child.ppmm, child.ppem, child.ppdp, mainContentSize);
 				if (min > value) return min;
 			}
 
-			if (!mMax.isNone)
+			if (!mainMaxSize.isNone)
 			{
-				var max:Number = mMax.toPixels(child.ppem, child.ppem, child.ppdp, mCS);
+				var max:Number = mainMaxSize.toPixels(child.ppem, child.ppem, child.ppdp, mainContentSize);
 				if (max < value) return max;
 			}
 
-			// [Result]
 			return value;
 		}
 	}

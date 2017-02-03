@@ -48,7 +48,7 @@ package talon.utils
 
 		private function initialize():void
 		{
-			if (_attribute == null && _node  && _attributeName)
+			if (_attribute == null && _node && _attributeName)
 			{
 				_attribute = _node.getOrCreateAttribute(_attributeName);
 				_attribute.change.addListener(onChange);

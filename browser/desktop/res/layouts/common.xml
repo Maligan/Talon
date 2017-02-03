@@ -1,7 +1,7 @@
 <lib>
 
 	<def ref="Interface">
-		<node id="interface" width="100%" height="100%" layout="abs" class="dark">
+		<node id="interface" width="100%" height="100%" layout="anchor" class="dark">
 			<node id="container" width="100%" height="100%" />
 			<node id="messages" top="0px" width="100%" orientation="vertical" gap="1px" />
 			<node id="popups" width="100%" height="100%" layout="flow" halign="center" valign="center"/>

@@ -14,11 +14,14 @@
 * `fillBlendMode` — режим смешивания, для старлинга используйте константы из `starling.display.BlendMode`.
 * `fillMode` — режим заполнения (тоже логично только для изображений).  
 Принимает значения — `none`, `stretch`, `repeat` расмотрим данные стратегии поближе.
-#### `fillMode = none`
-* `fillAlign`
-* `fillOffset`
-#### `fillMode = stretch`
-* `fillStretchGrid` — если вы знакомы с тем как в Starling или Feathers задаётся 9-scale сетка, то тут всё по другому. Сетка задаётся 4 параметра, но они отвечают не за `x`, `y`, `width`, `height` прямоугольника, а они задают отступы от 4х сторон прямоугольника текстуры (ну как padding).
-#### `fillMode = repeat`
-* `fillAlign`
-* `fillOffset`
+
+	`fillMode = none`
+	* `fillAlign`
+	* `fillOffset`
+
+	`fillMode = stretch`
+	* `fillStretchGrid` — если вы знакомы с тем как в Starling или Feathers задаётся 9-scale сетка, то тут всё по другому. Сетка задаётся 4 параметра, но они отвечают не за `x`, `y`, `width`, `height` прямоугольника, а они задают отступы от 4х сторон прямоугольника текстуры (ну как padding).
+
+	`fillMode = repeat`
+	* `fillAlign`
+	* `fillOffset`

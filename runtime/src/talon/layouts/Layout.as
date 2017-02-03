@@ -70,7 +70,7 @@ package talon.layouts
 				if (!_layout[GRID]) registerLayoutAlias(GRID, new GridLayout());
 
 				if (!_layout[FLEX]) registerLayoutAlias(FLEX, new FlexLayout());
-				if (!_layout[ANCHOR]) registerLayoutAlias(ANCHOR, new AnchorLayout());
+				if (!_layout[ANCHOR]) registerLayoutAlias(ANCHOR, new AnchorLayout(), [], ["width", "height"]);
 			}
 		}
 

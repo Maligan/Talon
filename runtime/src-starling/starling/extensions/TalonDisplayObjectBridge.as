@@ -34,6 +34,7 @@ package starling.extensions
 		private var _target:DisplayObject;
 		private var _node:Node;
 		private var _background:FillModeMesh;
+		private var _transform:Matrix;
 
 		public function TalonDisplayObjectBridge(target:DisplayObject, node:Node):void
 		{
@@ -42,6 +43,8 @@ package starling.extensions
 
 			_node = node;
 			_node.addTriggerListener(Event.RESIZE, onNodeResize);
+
+			_transform = new Matrix();
 
 			_background = new FillModeMesh();
 			_background.pixelSnapping = true;
@@ -61,6 +64,7 @@ package starling.extensions
 			addAttributeChangeListener(Attribute.FILTER,                    onFilterChange);
 			addAttributeChangeListener(Attribute.ALPHA,                     onAlphaChange);
 			addAttributeChangeListener(Attribute.BLEND_MODE,                onBlendModeChange);
+			addAttributeChangeListener(Attribute.TRANSFORM,					onTransformChange);
 
 			// Interactive
 			addAttributeChangeListener(Attribute.TOUCH_MODE,                onTouchModeChange);
@@ -167,6 +171,24 @@ package starling.extensions
 				prevFilter.dispose();
 
 			_target.filter = nextFilter;
+		}
+
+		private function onTransformChange():void
+		{
+			var func:String = _node.getAttributeCache(Attribute.TRANSFORM);
+			if (func == Attribute.NONE) return;
+
+			var funcSplit:Array = ParseUtil.parseFunction(func);
+			if (funcSplit && funcSplit[0] == "scale")
+			{
+				var scaleX:Number = parseFloat(funcSplit[1]);
+				var scaleY:Number = scaleX;
+				_target.transformationMatrix.scale(scaleX, scaleY);
+				_target.setRequiresRedraw();
+			}
+
+//			_target.transformationMatrix.concat(_transform);
+//			_target.setRequiresRedraw();
 		}
 
 		//
@@ -314,6 +336,11 @@ package starling.extensions
 		public function get hasOpaqueBackground():Boolean
 		{
 			return _background.texture || !_background.transparent;
+		}
+
+		public function get transform():Matrix
+		{
+			return _transform;
 		}
 	}
 }

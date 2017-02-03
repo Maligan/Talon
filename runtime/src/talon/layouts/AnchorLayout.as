@@ -16,7 +16,7 @@ package talon.layouts
 			{
 				width += child.left.toPixels(child.ppmm, child.ppem, child.ppdp)
 					   + child.right.toPixels(child.ppmm, child.ppem, child.ppdp)
-					   + restrain(child, child.width, child.minWidth, child.maxWidth, 0, availableHeight);
+					   + calcSize(child, child.width, child.height, 0, 0, child.minWidth, child.maxWidth);
 			}
 
 			return width;
@@ -33,7 +33,7 @@ package talon.layouts
 			{
 				height += child.top.toPixels(child.ppmm, child.ppem, child.ppdp)
 					+ child.bottom.toPixels(child.ppmm, child.ppem, child.ppdp)
-					+ restrain(child, child.width, child.minWidth, child.maxWidth, 0, availableWidth);
+					+ calcSize(child, child.height, child.width, 0, 0, child.minHeight, child.maxHeight);
 			}
 
 			return height;
@@ -54,10 +54,10 @@ package talon.layouts
 				var child:Node = node.getChildAt(i);
 
 				// x-axis
-				if (respect(child.left, child.right))
+				if (isRespectingSize(child.left, child.right))
 				{
-					child.bounds.width = restrain(child, child.width, child.minWidth, child.maxWidth, contentWidth, contentWidth);
-					child.bounds.x = calculate(child, child.bounds.width, child.left, child.right, width, paddingLeft, paddingRight);
+					child.bounds.width = calcSize(child, child.width, child.height, contentWidth, contentHeight, child.minWidth, child.maxWidth);
+					child.bounds.x = calcOffset(child, child.bounds.width, child.left, child.right, width, paddingLeft, paddingRight);
 				}
 				else
 				{
@@ -66,10 +66,10 @@ package talon.layouts
 				}
 
 				// y-axis
-				if (respect(child.top, child.bottom))
+				if (isRespectingSize(child.top, child.bottom))
 				{
-					child.bounds.height = restrain(child, child.height, child.minHeight, child.maxHeight, contentHeight, contentHeight);
-					child.bounds.y = calculate(child, child.bounds.height, child.top, child.bottom, height, paddingTop, paddingBottom);
+					child.bounds.height = calcSize(child, child.height, child.width, contentHeight, contentWidth, child.maxHeight, child.maxHeight);
+					child.bounds.y = calcOffset(child, child.bounds.height, child.top, child.bottom, height, paddingTop, paddingBottom);
 				}
 				else
 				{
@@ -81,13 +81,13 @@ package talon.layouts
 			}
 		}
 
-		private function respect(left:AttributeGauge, right:AttributeGauge):Boolean
+		private function isRespectingSize(left:AttributeGauge, right:AttributeGauge):Boolean
 		{
 			return left.isNone || left.unit == AttributeGauge.STAR
 				|| right.isNone || right.unit == AttributeGauge.STAR;
 		}
 
-		private function calculate(child:Node, childWidth:Number, childLeft:AttributeGauge, childRight:AttributeGauge, parentWidth:Number, paddingLeft:Number, paddingRight:Number):Number
+		private function calcOffset(child:Node, childWidth:Number, childLeft:AttributeGauge, childRight:AttributeGauge, parentWidth:Number, paddingLeft:Number, paddingRight:Number):Number
 		{
 			var contentWidth:Number = parentWidth - paddingLeft - paddingRight;
 
@@ -121,19 +121,40 @@ package talon.layouts
 			else if (leftRest && rightStar)
 				return Layout.pad(parentWidth, childWidth, paddingLeft + childLeft.toPixels(child.ppmm, child.ppem, child.ppdp, contentWidth), paddingRight, 0);
 
-			// Last one - (leftRest && rightRest) must be handled outside this method
+			// There is an assertion - last one (leftRest && rightRest) must be handled outside this method
 			throw new Error();
 		}
 
-		private function restrain(n:Node, val:AttributeGauge, min:AttributeGauge, max:AttributeGauge, pp100p:Number, aa:Number):Number
+		private function calcSize(child:Node, mS:AttributeGauge, cS:AttributeGauge, mCS:Number, cCS:Number, mMin:AttributeGauge, mMax:AttributeGauge):Number
 		{
-			var valPx:Number = val.toPixels(n.ppmm, n.ppem, n.ppdp, pp100p, aa);
-			var minPx:Number = min.toPixels(n.ppmm, n.ppem, n.ppdp);
-			var maxPx:Number = max.toPixels(n.ppmm, n.ppem, n.ppdp);
+			// FIXME: What about stars? (yes, size can be in stars)
+			// FIXME: mCS can be Infinity (set to zero?)
 
-			if (!min.isNone && valPx < minPx) return minPx;
-			if (!max.isNone && valPx > maxPx) return maxPx;
-			return valPx;
+			// [Calculate]
+			var value:Number = 0;
+
+			/**/ if (!mS.isNone)
+				value = mS.toPixels(child.ppmm, child.ppem, child.ppdp, mCS);
+			else if (!cS.isNone)
+				value = mS.toPixels(child.ppmm, child.ppem, child.ppdp, mCS, cS.toPixels(child.ppmm, child.ppem, child.ppdp, cCS));
+			else
+				value = mS.toPixels(child.ppmm, child.ppem, child.ppdp, mCS, Infinity);
+
+			// [Restrain]
+			if (!mMin.isNone)
+			{
+				var min:Number = mMin.toPixels(child.ppmm, child.ppem, child.ppdp, mCS);
+				if (min > value) return min;
+			}
+
+			if (!mMax.isNone)
+			{
+				var max:Number = mMax.toPixels(child.ppem, child.ppem, child.ppdp, mCS);
+				if (max < value) return max;
+			}
+
+			// [Result]
+			return value;
 		}
 	}
 }

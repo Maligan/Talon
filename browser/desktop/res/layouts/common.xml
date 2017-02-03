@@ -3,13 +3,7 @@
 	<def ref="Interface">
 		<node id="interface" width="100%" height="100%" layout="abs" class="dark">
 			<node id="container" width="100%" height="100%" />
-			<node id="messages" width="100%" orientation="vertical" gap="1px">
-				<!--<message class="error" text="From file /root.txt you can read about this error" />-->
-				<!--<use ref="Message" />-->
-				<!--<message class="error" text="Error while processing file /tmp/trash.zip" />-->
-				<!--<message class="warning" text="Hold down this warning, you never complete Talon" />-->
-				<!--<message class="error" text="Yes, and after all this shit, I finish message system" />-->
-			</node>
+			<node id="messages" top="0px" width="100%" orientation="vertical" gap="1px" />
 			<node id="popups" width="100%" height="100%" layout="flow" halign="center" valign="center"/>
 			<node id="drag" width="100%" height="100%" />
 		</node>
@@ -48,7 +42,7 @@
 	</def>
 
 	<def ref="BoxModel">
-		<node id="catcher" fill="gray" layout="abs" width="100" height="100">
+		<node id="catcher" fill="gray" layout="anchor" width="100" height="100">
 			<node width="32" height="32" position="100" />
 		</node>
 	</def>

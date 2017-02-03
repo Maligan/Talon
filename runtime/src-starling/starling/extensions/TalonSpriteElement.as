@@ -68,6 +68,8 @@ package starling.extensions
 
 			x = node.bounds.x - pivotX;
 			y = node.bounds.y - pivotY;
+
+			transformationMatrix.concat(_bridge.transform);
 		}
 
 		//

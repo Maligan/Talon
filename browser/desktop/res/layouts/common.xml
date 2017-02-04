@@ -42,9 +42,7 @@
 	</def>
 
 	<def ref="BoxModel">
-		<node id="catcher" fill="gray" layout="anchor" width="100" height="100">
-			<node width="32" height="32" position="100" />
-		</node>
+		<node id="catcher" fill="gray" layout="anchor" />
 	</def>
 
 	<def ref="UpdatePopup">
@@ -54,8 +52,8 @@
 
 			<node id="100" fill="#4e5051" width="100%" orientation="horizontal" padding="8px" wrap="true">
 				<label id="info" ivalign="center" text="$dialog.updater.patchLoading" width="*" height="16px" />
-				<!--<image id="spinner" width="20px" height="20px" pivot="50%" source="$spinner_small"/>-->
-				<image id="details" margin="4px" ivalign="center" source="$drop_down" cursor="button"/>
+				<image id="spinner" width="20px" height="20px" pivot="50%" source="$spinner_small" />
+				<!--<image id="details" margin="4px" ivalign="center" source="$drop_down" cursor="button"/>-->
 			</node>
 
 			<!--<label text="Error while downloading update file descriptor, please try again later, or mail the problem to me: maligan#rambler.ru" width="266px" padding="8px" marginTop="2px" fill="#4e5051" />-->

@@ -58,15 +58,15 @@ package starling.extensions
 			super.height = availableHeight;
 
 			// NB! Use super.getBounds()
-			var result:Rectangle = super.getBounds(this);
+			var result:Rectangle = super.getBounds(this, _helperRect);
 
-			// Add paddings
-			result.width  += node.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp, 0) + node.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-			result.height += node.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0)  + node.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+			// Add padding
+			result.width  += node.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp) + node.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp);
+			result.height += node.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp)  + node.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp);
 
 			// Remove native flash / starling hardcoded 2px padding
-			result.width -= NATIVE_TEXT_FIELD_PADDING*2;
-			result.height -= NATIVE_TEXT_FIELD_PADDING*2;
+			result.width  -= NATIVE_TEXT_FIELD_PADDING * 2;
+			result.height -= NATIVE_TEXT_FIELD_PADDING * 2;
 
 			return result;
 		}
@@ -101,39 +101,43 @@ package starling.extensions
 		{
 			if (numChildren > 0)
 			{
-				var meshBatch:DisplayObject = getChildAt(0);
-				var meshBounds:Rectangle = meshBatch.getBounds(meshBatch);
-
 				// Invoke super.recompose() - via this hack.
 				super.getBounds(this, _helperRect);
 
+				var meshBatch:DisplayObject = getChildAt(0);
+				var meshBounds:Rectangle = meshBatch.getBounds(meshBatch, _helperRect);
+
 				// Add horizontal padding
-				var paddingLeft:Number = node.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-				var paddingRight:Number = node.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				var halign:Number = ParseUtil.parseAlign(format.horizontalAlign);
+				var paddingLeft:Number = node.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp);
+				var paddingRight:Number = node.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp);
 
 				var isHorizontalAutoSize:Boolean = super.autoSize == TextFieldAutoSize.HORIZONTAL || super.autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
 				if (isHorizontalAutoSize)
-					meshBatch.x += Layout.pad(width, meshBounds.width, paddingLeft - NATIVE_TEXT_FIELD_PADDING, paddingRight - NATIVE_TEXT_FIELD_PADDING, ParseUtil.parseAlign(format.horizontalAlign));
+					meshBatch.x += Layout.pad(width, meshBounds.width, paddingLeft - NATIVE_TEXT_FIELD_PADDING, paddingRight - NATIVE_TEXT_FIELD_PADDING, halign);
 				else
-					meshBatch.x += Layout.pad(0, 0, paddingLeft, paddingRight, ParseUtil.parseAlign(format.horizontalAlign));
+					meshBatch.x += Layout.pad(0, 0, paddingLeft, paddingRight, halign);
 
 				// Add vertical padding
-				var paddingTop:Number = node.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp, 0);
-				var paddingBottom:Number = node.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp, 0);
+				var valign:Number = ParseUtil.parseAlign(format.verticalAlign);
+				var paddingTop:Number = node.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp);
+				var paddingBottom:Number = node.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp);
 
 				var isVerticalAutoSize:Boolean = super.autoSize == TextFieldAutoSize.VERTICAL || super.autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
 				if (isVerticalAutoSize)
-					meshBatch.y += Layout.pad(height, meshBounds.height, paddingTop - NATIVE_TEXT_FIELD_PADDING, paddingBottom - NATIVE_TEXT_FIELD_PADDING, ParseUtil.parseAlign(format.verticalAlign));
+					meshBatch.y += Layout.pad(height, meshBounds.height, paddingTop - NATIVE_TEXT_FIELD_PADDING, paddingBottom - NATIVE_TEXT_FIELD_PADDING, valign);
 				else
-					meshBatch.y += Layout.pad(0, 0, paddingTop, paddingBottom, ParseUtil.parseAlign(format.verticalAlign));
+					meshBatch.y += Layout.pad(0, 0, paddingTop, paddingBottom, valign);
 			}
 		}
 
 		public override function render(painter:Painter):void
 		{
-			// Render background
-			_bridge.renderBackground(painter);
+			_bridge.renderCustom(recomposeAndRender, painter);
+		}
 
+		private function recomposeAndRender(painter:Painter):void
+		{
 			if (_requiresRecomposition)
 			{
 				_requiresRecomposition = false;
@@ -142,8 +146,7 @@ package starling.extensions
 
 			// In this call recompose() nether will be invoked (already invoked)
 			// and now this is analog of super.super.render() :-)
-			super.render(painter);
-		}
+			super.render(painter);		}
 
 		public override function hitTest(localPoint:Point):DisplayObject
 		{
@@ -186,6 +189,6 @@ package starling.extensions
 		public override function set autoSize(value:String):void { trace("[TalonTextFiled]", "Ignore autoSize value, this value defined via node width/height == 'none'"); }
 
 		public override function get border():Boolean { return false; }
-		public override function set border(value:Boolean):void { trace("[TalonTextFiled]", "Ignore border value, for debug draw use custom backgroundColor property"); }
+		public override function set border(value:Boolean):void { trace("[TalonTextFiled]", "Ignore border value, for debug draw use custom 'fill' property"); }
 	}
 }

@@ -106,9 +106,7 @@ package talon.browser.desktop.popups.widgets
 
 		public override function render(painter:Painter):void
 		{
-			_bridge.renderBackground(painter);
-
-			super.render(painter);
+			_bridge.renderCustom(super.render, painter);
 		}
 
 		public function get node():Node

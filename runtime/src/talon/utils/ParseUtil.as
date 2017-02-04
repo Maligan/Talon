@@ -1,10 +1,32 @@
 package talon.utils
 {
+	import avmplus.getQualifiedClassName;
+
+	import flash.utils.Dictionary;
+
 	import starling.utils.Color;
+
+	import talon.Node;
 
 	/** This is utility method to work with strings in different formats and notation. */
 	public final class ParseUtil
 	{
+		private static const _parsers:Dictionary = new Dictionary();
+
+		public static function addParser(type:Class, parser:Function):void
+		{
+			_parsers[type] = parser;
+		}
+
+		public static function parseClass(type:Class, string:String, node:Node = null, out:Object = null):*
+		{
+			var parser:Function = _parsers[type];
+			if (parser != null)
+				return parser(string || "", node, out) as type;
+
+			throw new Error("Parser for type " + getQualifiedClassName(type) + " not found");
+		}
+
 		/**
 		 * Parse color strings:
 		 * white
@@ -84,7 +106,6 @@ package talon.utils
 		public static function parseResource(string:String):String
 		{
 			if (string == null) return null;
-			if (string.length < 2) return null;
 			if (string.charAt(0) != "$") return null;
 
 			// Short notation: $resourceKey

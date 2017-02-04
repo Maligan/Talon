@@ -8,6 +8,7 @@ package starling.extensions
 
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
+	import starling.display.Mesh;
 	import starling.events.EnterFrameEvent;
 	import starling.events.Event;
 	import starling.events.Touch;
@@ -15,6 +16,7 @@ package starling.extensions
 	import starling.events.TouchPhase;
 	import starling.filters.FragmentFilter;
 	import starling.rendering.Painter;
+	import starling.styles.MeshStyle;
 	import starling.textures.Texture;
 	import starling.utils.Color;
 	import starling.utils.MatrixUtil;
@@ -28,23 +30,59 @@ package starling.extensions
 	/** Provide method for synchronize starling display tree and talon tree. */
 	public class TalonDisplayObjectBridge
 	{
-		private const MATRIX:Matrix = new Matrix();
-		private const POINT:Point = new Point();
+		ParseUtil.addParser(Matrix, function(value:String, node:Node, out:Matrix):Matrix
+		{
+			out ||= new Matrix();
+			out.identity();
+
+			var funcs:Array = value.split(/\s+(?=scale|rotate|skew|translate|matrix)/g);
+			for each (var func:String in funcs)
+			{
+				var split:Array = ParseUtil.parseFunction(func);
+				if (split == null || split.length < 2) continue;
+
+				var name:String = split[0];
+				var float1:Number = parseFloat(split[1]);
+				var angle1:Number = ParseUtil.parseAngle(split[1], 0);
+
+				/**/ if (name == "scale") out.scale(float1, float1);
+				else if (name == "scaleX") out.scale(float1, 1);
+				else if (name == "scaleY") out.scale(1, float1);
+				else if (name == "rotate") out.rotate(angle1);
+				else if (name == "translate") out.translate(float1, float1);
+				else if (name == "translateX") out.translate(float1, 0);
+				else if (name == "translateY") out.translate(0, float1);
+				else if (name == "skewX") MatrixUtil.skew(out, angle1, 0);
+				else if (name == "skewY") MatrixUtil.skew(out, 0, angle1);
+				else if (name == "matrix")
+				{
+					if (split.length < 7) continue;
+					split.shift();
+					out.setTo.apply(null, split);
+				}
+			}
+
+			return out;
+		});
+
+		private const sMatrix:Matrix = new Matrix();
+		private const sPoint:Point = new Point();
 
 		private var _target:DisplayObject;
 		private var _node:Node;
 		private var _background:FillModeMesh;
 		private var _transform:Matrix;
+		private var _transformChanged:Boolean;
 
 		public function TalonDisplayObjectBridge(target:DisplayObject, node:Node):void
 		{
 			_target = target;
-			_target.addEventListener(EnterFrameEvent.ENTER_FRAME, onEnterFrame);
+			_target.addEventListener(EnterFrameEvent.ENTER_FRAME, validate);
+
+			_transform = new Matrix();
 
 			_node = node;
 			_node.addTriggerListener(Event.RESIZE, onNodeResize);
-
-			_transform = new Matrix();
 
 			_background = new FillModeMesh();
 			_background.pixelSnapping = true;
@@ -65,6 +103,8 @@ package starling.extensions
 			addAttributeChangeListener(Attribute.ALPHA,                     onAlphaChange);
 			addAttributeChangeListener(Attribute.BLEND_MODE,                onBlendModeChange);
 			addAttributeChangeListener(Attribute.TRANSFORM,					onTransformChange);
+			addAttributeChangeListener(Attribute.MESH_STYLE,				onMeshStyleChange);
+			addAttributeChangeListener(Attribute.PIVOT,                     onPivotChange);
 
 			// Interactive
 			addAttributeChangeListener(Attribute.TOUCH_MODE,                onTouchModeChange);
@@ -86,8 +126,36 @@ package starling.extensions
 		}
 
 		//
-		// Listeners: Background
+		// Invalidation
 		//
+		// Validation subsystem based on render methods/rules/context etc.
+		// thus why I do not include invalidation/validation in Talon core
+		//
+
+		public function validate():void
+		{
+			if (_node.invalidated && (_node.parent == null || !_node.parent.invalidated))
+			{
+				// isNaN() check for element bounds
+				// This may be if current element is topmost in talon hierarchy
+				// and there is no setups of its sizes
+
+				// TODO:
+				// Calculate parent width/height (stageWidth/stageHeight if it is stage) for pp100p
+				// respect minWidth, minHeight & node size set to 'none'
+
+				if (_node.bounds.width != _node.bounds.width)
+					_node.bounds.width = _node.width.toPixels(_node.ppmm, _node.ppem, _node.ppdp, 0);
+
+				if (_node.bounds.height != _node.bounds.height)
+					_node.bounds.height = _node.height.toPixels(_node.ppmm, _node.ppem, _node.ppdp, 0);
+
+				_node.commit();
+			}
+		}
+
+		// Listeners: Background
+
 		private function onFillChange():void
 		{
 			var value:* = _node.getAttributeCache(Attribute.FILL);
@@ -141,59 +209,64 @@ package starling.extensions
 			);
 		}
 
-		//
 		// Listeners: Common
-		//
-		private function onIDChange():void { _target.name = _node.getAttributeCache(Attribute.ID); }
-		private function onVisibleChange():void { _target.visible = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.VISIBLE)); }
-		private function onAlphaChange():void { _target.alpha = parseFloat(_node.getAttributeCache(Attribute.ALPHA)); }
-		private function onBlendModeChange():void { _target.blendMode = _node.getAttributeCache(Attribute.BLEND_MODE); }
+
+		private function onIDChange():void
+		{
+			_target.name = _node.getAttributeCache(Attribute.ID);
+		}
+
+		private function onVisibleChange():void
+		{
+			_target.visible = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.VISIBLE));
+		}
+
+		private function onAlphaChange():void
+		{
+			_target.alpha = parseFloat(_node.getAttributeCache(Attribute.ALPHA));
+		}
+
+		private function onBlendModeChange():void
+		{
+			_target.blendMode = _node.getAttributeCache(Attribute.BLEND_MODE);
+		}
 
 		private function onFilterChange():void
 		{
-			trace("[TalonDisplayObjectBridge]", "Filters are disabled in Starling 2.0");
-			return;
+			_target.filter = ParseUtil.parseClass(FragmentFilter,
+				_node.getAttributeCache(Attribute.FILTER),
+				_node,
+				_target.filter
+			);
+		}
 
-			var prevFilter:FragmentFilter = _target.filter;
-			var nextFilter:FragmentFilter = null;
-
-			var func:String = _node.getAttributeCache(Attribute.FILTER);
-			var funcSplit:Array = ParseUtil.parseFunction(func);
-			if (funcSplit)
+		private function onMeshStyleChange():void
+		{
+			if (_target is Mesh)
 			{
-				var funcName:String = funcSplit.shift();
-				var filterParser:Function = null; // _filterParsers[funcName];
-				if (filterParser != null)
-					nextFilter = filterParser(prevFilter, funcSplit);
+				var mesh:Mesh = _target as Mesh;
+				mesh.style = ParseUtil.parseClass(MeshStyle,
+					_node.getAttributeCache(Attribute.MESH_STYLE),
+					_node,
+					mesh.style
+				);
 			}
-
-			if (prevFilter && prevFilter != nextFilter)
-				prevFilter.dispose();
-
-			_target.filter = nextFilter;
 		}
 
 		private function onTransformChange():void
 		{
-			var func:String = _node.getAttributeCache(Attribute.TRANSFORM);
-			if (func == Attribute.NONE) return;
-
-			var funcSplit:Array = ParseUtil.parseFunction(func);
-			if (funcSplit && funcSplit[0] == "scale")
-			{
-				var scaleX:Number = parseFloat(funcSplit[1]);
-				var scaleY:Number = scaleX;
-				_target.transformationMatrix.scale(scaleX, scaleY);
-				_target.setRequiresRedraw();
-			}
-
-//			_target.transformationMatrix.concat(_transform);
-//			_target.setRequiresRedraw();
+			_transform = ParseUtil.parseClass(Matrix, _node.getAttributeCache(Attribute.TRANSFORM), _node, _transform);
+			_transformChanged = true;
+			_target.setRequiresRedraw();
 		}
 
-		//
-		// Interaction
-		//
+		private function onPivotChange():void
+		{
+			_transformChanged = true;
+		}
+
+		// Listeners: Interaction
+
 		private function onCursorChange():void
 		{
 			var cursor:String = _node.getAttributeCache(Attribute.CURSOR);
@@ -271,76 +344,92 @@ package starling.extensions
 			_node.states.unlock();
 		}
 
-		//
-		// Invalidation
-		//
-		// Validation subsystem based on render methods/rules/context etc.
-		// thus why I do not include invalidation/validation in Talon core
-		//
-		private function onEnterFrame(e:EnterFrameEvent):void
+		// Public methods which must be used in target DisplayObject
+
+		public function renderCustom(render:Function, painter:Painter):void
 		{
-			if (_node.invalidated && (_node.parent == null || !_node.parent.invalidated))
+			pushTransform(painter);
+			renderBackground(painter);
+			render(painter);
+			popTransform(painter);
+		}
+
+		private function renderBackground(painter:Painter):void
+		{
+			if (hasOpaqueBackground)
 			{
-				// FIXME: For auto, calc width/height priority
-				// TODO:  What about percentage?
-				if (_node.bounds.width != _node.bounds.width)
-					_node.bounds.width = _node.width.toPixels(_node.ppmm, _node.ppem, _node.ppdp, 0);
-
-				if (_node.bounds.height != _node.bounds.height)
-					_node.bounds.height = _node.height.toPixels(_node.ppmm, _node.ppem, _node.ppdp, 0);
-
-				_node.commit();
+				painter.pushState();
+				painter.setStateTo(_background.transformationMatrix, _background.alpha, _background.blendMode);
+				_background.render(painter);
+				painter.popState();
 			}
 		}
 
-		//
-		// Public methods which must be used in target DisplayObject
-		//
-		public function renderBackground(painter:Painter):void
+		private function pushTransform(painter:Painter):void
 		{
-			painter.pushState();
-			painter.setStateTo(_background.transformationMatrix, _background.alpha, _background.blendMode);
-			_background.render(painter);
-			painter.popState();
+			if (hasTransform)
+			{
+				if (_transformChanged)
+				{
+					_transformChanged = false;
+
+					if (_target.pivotX != 0.0 || _target.pivotY != 0.0)
+					{
+						_transform.tx += _target.pivotX - _transform.a*_target.pivotX - _transform.c*_target.pivotY;
+						_transform.ty += _target.pivotY - _transform.b*_target.pivotX - _transform.d*_target.pivotY;
+					}
+				}
+
+				painter.pushState();
+				painter.state.transformModelviewMatrix(_transform);
+			}
 		}
 
-		public function renderChildrenWithZIndex(painter:Painter):void
+		private function popTransform(painter:Painter):void
 		{
-			// nop
+			if (hasTransform)
+				painter.popState();
 		}
 
-		public function getBoundsCustom(base:Function, targetSpace:DisplayObject, resultRect:Rectangle):Rectangle
+		public function getBoundsCustom(getBounds:Function, targetSpace:DisplayObject, resultRect:Rectangle):Rectangle
 		{
 			if (resultRect == null) resultRect = new Rectangle();
 			else resultRect.setEmpty();
 
-			if (base != null)
-				resultRect = base(targetSpace, resultRect);
+			if (getBounds != null)
+				resultRect = getBounds(targetSpace, resultRect);
 
 			var isEmpty:Boolean = resultRect.isEmpty();
 
 			// Expand resultRect with background bounds
-			_target.getTransformationMatrix(targetSpace, MATRIX);
+			_target.getTransformationMatrix(targetSpace, sMatrix);
 
-			var topLeft:Point = MatrixUtil.transformCoords(MATRIX, 0, 0, POINT);
+			var topLeft:Point = MatrixUtil.transformCoords(sMatrix, 0, 0, sPoint);
 			if (isEmpty || resultRect.left>topLeft.x) resultRect.left = topLeft.x;
 			if (isEmpty || resultRect.top>topLeft.y) resultRect.top = topLeft.y;
 
-			var bottomRight:Point = MatrixUtil.transformCoords(MATRIX, _node.bounds.width, _node.bounds.height, POINT);
+			var bottomRight:Point = MatrixUtil.transformCoords(sMatrix, _node.bounds.width, _node.bounds.height, sPoint);
 			if (isEmpty || resultRect.right<bottomRight.x) resultRect.right = bottomRight.x;
 			if (isEmpty || resultRect.bottom<bottomRight.y) resultRect.bottom = bottomRight.y;
 
 			return resultRect;
 		}
 
+		// Flags
+
 		public function get hasOpaqueBackground():Boolean
 		{
 			return _background.texture || !_background.transparent;
 		}
 
-		public function get transform():Matrix
+		public function get hasTransform():Boolean
 		{
-			return _transform;
+			return _transform.a != 1.0
+				|| _transform.b != 0.0
+				|| _transform.c != 0.0
+				|| _transform.d != 1.0
+				|| _transform.tx != 0.0
+				|| _transform.ty != 0.0;
 		}
 	}
 }

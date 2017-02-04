@@ -61,15 +61,12 @@ package starling.extensions
 		//
 		private function onNodeResize():void
 		{
-			node.bounds.left = node.bounds.left;
-			node.bounds.right = node.bounds.right;
-			node.bounds.top = node.bounds.top;
-			node.bounds.bottom = node.bounds.bottom;
+			// if in percents
+			super.pivotX = node.pivotX.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width);
+			super.pivotY = node.pivotY.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.height);
 
-			x = node.bounds.x - pivotX;
-			y = node.bounds.y - pivotY;
-
-			transformationMatrix.concat(_bridge.transform);
+			x = node.bounds.x + pivotX;
+			y = node.bounds.y + pivotY;
 		}
 
 		//
@@ -77,11 +74,7 @@ package starling.extensions
 		//
 		public override function render(painter:Painter):void
 		{
-			// Background render
-			_bridge.renderBackground(painter);
-
-			// Children render
-			super.render(painter);
+			_bridge.renderCustom(super.render, painter);
 		}
 
 		public override function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
@@ -94,8 +87,9 @@ package starling.extensions
 			var localX:Number = localPoint.x;
 			var localY:Number = localPoint.y;
 
-			var superHitTest:DisplayObject = super.hitTest(localPoint);
-			if (superHitTest == null && _bridge.hasOpaqueBackground)
+			var result:DisplayObject = super.hitTest(localPoint);
+
+			if (result == null && _bridge.hasOpaqueBackground)
 			{
 				// Restore for hitTestMask()
 				localPoint.setTo(localX, localY);
@@ -103,12 +97,11 @@ package starling.extensions
 				if (!visible || !touchable || !hitTestMask(localPoint)) return null;
 
 				// Use getBoundsCustom(null, ...) directly - in this way there is no traveling via children
-				_helperRect.setEmpty();
 				var contains:Boolean = _bridge.getBoundsCustom(null, this, _helperRect).contains(localX, localY);
 				if (contains) return this;
 			}
 
-			return superHitTest;
+			return result;
 		}
 
 		public override function dispose():void
@@ -124,5 +117,8 @@ package starling.extensions
 		{
 			return _node;
 		}
+
+		public override function set pivotX(value:Number):void { node.setAttribute(Attribute.PIVOT_X, value.toString()); }
+		public override function set pivotY(value:Number):void { node.setAttribute(Attribute.PIVOT_Y, value.toString()); }
 	}
 }

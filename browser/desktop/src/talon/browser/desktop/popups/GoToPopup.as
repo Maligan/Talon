@@ -1,18 +1,9 @@
 package talon.browser.desktop.popups
 {
-	import feathers.events.FeathersEventType;
-
-	import flash.display.InteractiveObject;
-	import flash.events.FocusEvent;
-
-	import flash.text.TextFormatAlign;
 	import flash.ui.Keyboard;
-	import flash.utils.setTimeout;
 
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
-	import starling.display.MeshBatch;
-	import starling.display.MeshBatch;
 	import starling.display.MeshBatch;
 	import starling.events.Event;
 	import starling.events.KeyboardEvent;
@@ -20,7 +11,6 @@ package talon.browser.desktop.popups
 	import starling.events.TouchPhase;
 	import starling.extensions.TalonTextFieldElement;
 	import starling.styles.MeshStyle;
-	import starling.utils.Color;
 
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
 	import talon.browser.platform.AppPlatform;
@@ -81,14 +71,18 @@ package talon.browser.desktop.popups
 
 			_input.addEventListener(Event.CHANGE, function():void
 			{
-				_query = _input.text;
-				refresh();
+				refresh(cleanUp(_input.text));
 			});
 
 			addEventListener(KeyboardEvent.KEY_UP, function():void
 			{
-				_input.text = _input.text.replace(/[^\w\d_]/g, "");
+				_input.text = cleanUp(_input.text);
 			});
+
+			function cleanUp(text:String):String
+			{
+				return text.replace(/[^\w\d_]/g, "");
+			}
 			// ---------------------------------------------------------------------------
 
 			refresh();
@@ -113,9 +107,7 @@ package talon.browser.desktop.popups
 			super.dispose();
 		}
 
-		//
 		// Handlers
-		//
 
 		private function onDocumentChange():void
 		{
@@ -152,28 +144,25 @@ package talon.browser.desktop.popups
 			else if (delta>0) moveCursorToPrev();
 		}
 
-		//
 		// Misc
-		//
+
 		private function commit(templateId:String):void
 		{
 			_app.templateId = templateId;
 			close();
 		}
 
-		private function refresh():void
+		private function refresh(query:String = null):void
 		{
-			_query ||= "";
+			_query = query || "";
 			_queryItems = FuzzyUtil.fuzzyFilter(_query, _items);
 
-			_input.text = _query;
 			cursorReset();
 			refreshListText();
 		}
 
-		//
 		// Cursor / List
-		//
+
 		private function refreshListText():void
 		{
 			for (var i:int = 0; i < _labels.length; i++)
@@ -190,6 +179,7 @@ package talon.browser.desktop.popups
 				label.text = null;
 				label.text = item;
 				label.textBounds;
+//				label.format.color = 0x00BFFF;
 
 				if (item)
 				{
@@ -199,7 +189,7 @@ package talon.browser.desktop.popups
 					for (var j:int = 0; j < item.length; j++)
 					{
 						var type:String = prescription[j];
-						if (type == "M")
+//						if (type == "M")
 						{
 							labelStyle.setVertexColor(j*4+0, 0x00BFFF);
 							labelStyle.setVertexColor(j*4+1, 0x00BFFF);

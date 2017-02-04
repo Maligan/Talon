@@ -65,7 +65,7 @@ package starling.extensions
 			if (rotationStash) rotation = 0;
 
 			pivotX = node.pivotX.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width);
-			pivotY = node.pivotY.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width);
+			pivotY = node.pivotY.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.height);
 
 			x = node.bounds.x + pivotX;
 			y = node.bounds.y + pivotY;
@@ -82,12 +82,7 @@ package starling.extensions
 		public override function render(painter:Painter):void
 		{
 			// FIXME: Image with scale
-
-			// Background render
-			_bridge.renderBackground(painter);
-
-			// Self image render
-			super.render(painter);
+			_bridge.renderCustom(super.render, painter);
 		}
 
 		public override function dispose():void

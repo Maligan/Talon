@@ -41,6 +41,8 @@ package talon.browser.platform.document.files
 
 			// Create controller
 			attachController(reference);
+
+			trace("Added", reference.path);
 		}
 
 		public function removeReference(reference:IFileReference):void

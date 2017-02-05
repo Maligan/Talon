@@ -31,7 +31,7 @@ package talon.browser.desktop.filetypes
 		{
 			for each (var child:File in e.files)
 			{
-				var ref:IFileReference = new DesktopFileReference(child, file.root);
+				var ref:IFileReference = new DesktopFileReference(child, file.root, file.rootPrefix);
 				var refIncluded:Boolean = isIncluded(ref);
 				if (refIncluded)
 					document.files.addReference(ref);

@@ -26,9 +26,9 @@ package talon.utils
 		protected var _linkage:Object;
 		protected var _style:StyleSheet;
 
-		public function TMLFactory(resource:Object = null):void
+		public function TMLFactory(resources:Object = null):void
 		{
-			_resources = resource || {};
+			_resources = resources || {};
 			_linkage = {};
 			_style = new StyleSheet();
 

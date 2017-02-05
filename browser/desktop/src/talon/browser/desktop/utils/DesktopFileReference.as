@@ -17,6 +17,7 @@ package talon.browser.desktop.utils
 		private static const NAME_REGEX:RegExp = /([^\?\/\\]+?)(?:\.([\w\-]+))?(?:\?.*)?$/;
 
 		private var _root:File;
+		private var _rootPrefix:String;
 		private var _target:File;
 		private var _monitor:FileMonitor;
 
@@ -24,12 +25,13 @@ package talon.browser.desktop.utils
 		private var _cacheBytesAsXML:XML;
 		private var _cacheError:Error;
 
-		public function DesktopFileReference(target:File, root:File)
+		public function DesktopFileReference(target:File, root:File, rootPrefix:String = null)
 		{
 			if (!target) throw new ArgumentError("File must be non null");
 			if (!root) throw new ArgumentError("Root must be non null");
 
 			_root = root;
+			_rootPrefix = rootPrefix ? rootPrefix.replace(/\/$/, "") : "";
 			_target = target;
 			_monitor = new FileMonitor(_target);
 			_monitor.addEventListener(Event.CHANGE, onFileChange);
@@ -70,6 +72,7 @@ package talon.browser.desktop.utils
 
 			return true;
 		}
+
 		public function get extension():String
 		{
 			var matches:Array = NAME_REGEX.exec(path);
@@ -80,7 +83,20 @@ package talon.browser.desktop.utils
 		//
 		// IFileReference
 		//
-		public function get path():String { return root.getRelativePath(target) + (target.isDirectory ? "/" : ""); }
+		public function get path():String
+		{
+			var result:String = root.getRelativePath(target);
+
+			if (rootPrefix && result)
+				result = rootPrefix + "/" + result;
+			else if (rootPrefix)
+				result = rootPrefix;
+
+			if (target.isDirectory)
+				result += "/";
+
+			return result;
+		}
 
 		public function get data():ByteArray { return _target.exists ? cacheBytes : null; }
 
@@ -90,6 +106,8 @@ package talon.browser.desktop.utils
 		public function get target():File { return _target; }
 
 		public function get root():File { return _root; }
+
+		public function get rootPrefix():String { return _rootPrefix; }
 
 		public function get cacheBytes():ByteArray { return _cacheBytes ||= readBytes(); }
 

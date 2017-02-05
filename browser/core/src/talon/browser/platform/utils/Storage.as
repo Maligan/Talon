@@ -103,5 +103,16 @@ package talon.browser.platform.utils
 			_flush && _flush();
 			dispatchEventWith(Event.CHANGE, false, name);
 		}
+
+		public function getNames(prefix:String = ""):Vector.<String>
+		{
+			var names:Vector.<String> = new <String>[];
+
+			for (var name:String in _inner)
+				if (name.indexOf(prefix) == 0)
+					names[names.length] = name;
+
+			return names;
+		}
 	}
 }

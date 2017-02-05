@@ -5,8 +5,8 @@ package talon.browser.platform.utils
 		public static function parse(string:String):Glob
 		{
 			var glob:Glob = new Glob();
-			glob.negative = string && string.length && string.charAt(0) == "!";
-			glob.regexp = regexp(glob.negative ? string.substr(1) : string);
+			glob.negate = string && string.length && string.charAt(0) == "!";
+			glob.regexp = regexp(glob.negate ? string.substr(1) : string);
 			return glob;
 		}
 
@@ -40,13 +40,13 @@ package talon.browser.platform.utils
 			{
 				var glob:Glob = parse(pattern);
 				if (glob.regexp.exec(string))
-					return !glob.negative;
+					return !glob.negate;
 			}
 
 			return result;
 		}
 
 		public var regexp:RegExp;
-		public var negative:Boolean;
+		public var negate:Boolean;
 	}
 }

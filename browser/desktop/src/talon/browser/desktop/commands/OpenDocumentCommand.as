@@ -43,21 +43,34 @@ package talon.browser.desktop.commands
 
 		private function openDocument(root:File):void
 		{
-			var source:File = null;
-
-			if (root.isDirectory)
-				source = root.resolvePath(AppConstants.BROWSER_DEFAULT_DOCUMENT_FILENAME);
-			else
-				throw new Error(); // TODO: Make error messages like within document
+			var config:File = root.resolvePath(AppConstants.BROWSER_DEFAULT_DOCUMENT_FILENAME);
 
 			// NB! Set as current document immediately (before any references)
-			var documentProperties:Storage = source.exists ? Storage.fromPropertiesFile(source) : new Storage();
+			var documentProperties:Storage = config.exists ? Storage.fromPropertiesFile(config) : new Storage();
 			var document:Document = platform.document = new Document(documentProperties);
 
 			var sourcePathProperty:String = document.properties.getValueOrDefault(DesktopDocumentProperty.SOURCE_PATH, String);
-			var sourcePath:File = source.parent.resolvePath(sourcePathProperty || source.parent.nativePath);
-			if (sourcePath.exists == false) sourcePath = source.parent;
+			var sourcePath:File = config.parent.resolvePath(sourcePathProperty || config.parent.nativePath);
+			if (sourcePath.exists == false) sourcePath = config.parent;
 			var sourcePathReference:DesktopFileReference = new DesktopFileReference(sourcePath, sourcePath);
+
+			// Add virtual dirs (NB! Before source root, for priority reasons)
+			var virtualPattern:RegExp = /\[(.*)]/;
+			var virtualNames:Vector.<String> = document.properties.getNames(DesktopDocumentProperty.SOURCE_PATH + "[");
+
+			for each (var virtualName:String in virtualNames)
+			{
+				var virtualPathSplit:Array = virtualPattern.exec(virtualName);
+				if (virtualPathSplit.length < 1) continue;
+
+				var virtualPath:String = String(virtualPathSplit[1]);
+				var virtualValue:String = document.properties.getValueOrDefault(virtualName);
+
+				var realFile:File = sourcePath.resolvePath(virtualValue);
+				var realFileReference:DesktopFileReference = new DesktopFileReference(realFile, realFile, virtualPath);
+
+				document.files.addReference(realFileReference);
+			}
 
 			// Add source root
 			document.files.addReference(sourcePathReference);
@@ -65,13 +78,6 @@ package talon.browser.desktop.commands
 			// Set project name
 			if (document.properties.getValueOrDefault(DesktopDocumentProperty.DISPLAY_NAME) == null)
 				document.properties.setValue(DesktopDocumentProperty.DISPLAY_NAME, sourcePath.name);
-
-			// Set active document
-
-			// Try open first template
-			//var templates:Vector.<String> = platform.document.factory.templateIds;
-			//var template:String = templates.shift();
-			//if (template) platform.templateId = template;
 
 			// Add document to recent list
 			var recent:Array = platform.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);

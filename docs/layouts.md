@@ -1,10 +1,16 @@
-### Layouts
+## Layouts
+
+### Talon Box Model
 Talon Box Model - simplified analog of [CSS Box Model](http://www.w3.org/TR/CSS21/box.html). Simplification is that there is *no border* only content, margin and padding.
 This model must be respected by all layout algorithms, but but without fanaticism, only as a recommendation.
 
-![Talon Box Model](img/img6.png)
+![Talon Box Model](img/intro_4.png)
 
-#### Anchor
+### Gauge & Units
+Как измерять, в чём задавать, что такое звёздочка
+
+
+### Layout: Anchor
 
 * Родительские аттрибуты: `padding`
 * Дочерние аттрибуты: `left`, `right`, `top`, `bottom`, `width` (`minWidth`, `maxWidth`), `height` (`minHeight`, `maxHeight`)
@@ -22,4 +28,10 @@ This model must be respected by all layout algorithms, but but without fanaticis
 Если одновременно заданы `left` и `right` то значения `width` (`minWidth`, `maxWidth`) будут игнорироватся, а фактическая ширина будет вычислена как растояние между задаными гранями, это изображено в нижнем правом случае на картинке выше.
 
 И ещё раз запомните, всё что было рассказано выше про горизонтальную ось - работает и для вертикальной оси по тем же правилам.
-#### Flex
+
+### Layout: Flex
+
+* Родительские аттрибуты: `padding`, `gap`, `interline`, `wrap`, `align`
+* Дочерние аттрибуты: `margin`, `break`, `ialign`, `width` (`minWidth`, `maxWidth`), `height` (`minHeight`, `maxHeight`)
+
+![Talon Box Model](img/intro_4.png)

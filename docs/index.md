@@ -1,31 +1,18 @@
 # Table of content
 
-## Theory
-1. [Core](core.md)
-	* Node
-	* Styles & Resources
-	* Attribute
-2. [Background](background.md)
-	* Fill Model
-3. [Layouts](layouts.md)
-	* Box Model
-	* Gauges
-	* Layouts
-		* Absolute
-		* Flow
-		* Grid
-4. [Template Markup Language (TML)](tml.md)
-	* Formal Grammars
-	* Expanding
-	* Keywords and syntax
-
-## Practice
-1. [Runtime](runtime.md)
-	* Commit
-	* Events (Resize/Change)
-	* Creating: Manual
-	* Creating: Factory
-2. [Browser](browser.md)
+1. [Node & Attribute](basics.md)  
+	В данном статье рассматривается основные правила на которых основан талон
+2. [Layout](layouts.md)  
+	Здесь вы найдёте полное описание методов и правил растановки элементов
+3. [Background](background.md)  
+	Методы отрисовки задника в узлах
+4. [Runtime API](runtime.md)  
+	Commit, Events (Resize/Change), Invalidataion, Manual & Factory
+5. [TML (Template Markup Language)](tml.md)  
+	Описание языка шаблонизации
+6. [Browser](browser.md)  
+	Параметры настройки браузера
 
 ## Appendix
-1. [CSS Dialect](css.md)
+1. [CSS Dialect](css.md)  
+	Полный список всех поддерживаемых атрибутов

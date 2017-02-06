@@ -7,17 +7,13 @@ package talon.browser.desktop.utils
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
-	/** Dispatched when the modified date of the file being modified changes. */
+	/** Dispatched when file.modificationDate / file.exists changed. */
 	[Event(name="change", type="starling.events.Event")]
 	
-	/**
-	* Class that monitors files for changes.
-	*
-	* Based on as3corelib FileMonitor.
-	*/
+	/** Class that monitors files for changes. */
 	public class FileMonitor extends EventDispatcher
 	{
-		public static const DEFAULT_MONITOR_TIMER:Timer = new Timer(1000);
+		private static const sDefaultTimer:Timer = new Timer(1000);
 
 		private var _timer:Timer;
 		private var _watching:Boolean;
@@ -33,23 +29,18 @@ package talon.browser.desktop.utils
 		public function FileMonitor(file:File = null, interval:Number = -1)
 		{
 			if (interval != -1)
-			{
 				_timer = new Timer(Math.min(interval, 1000));
-			}
 			else
-			{
-				_timer = DEFAULT_MONITOR_TIMER;
-			}
+				_timer = sDefaultTimer;
 
 			this.file = file;
 		}
-	
+
+		/** How often the system is polled for Volume change events. */
+		public function get interval():Number{ return _timer.delay; }
+
 		/** File being monitored for changes. */
-		public function get file():File
-		{
-			return _file;
-		}
-		
+		public function get file():File { return _file; }
 		public function set file(file:File):void
 		{
 			var prevWatching:Boolean = _watching;
@@ -65,18 +56,8 @@ package talon.browser.desktop.utils
 			if (prevWatching)
 				watch();
 		}
-		
-		/** How often the system is polled for Volume change events. */
-		public function get interval():Number
-		{
-			return _timer.delay;
-		}		
-		
-		/**
-		 * Begins monitoring the specified file for changes.
-		 * 
-		 * Broadcasts Event.CHANGE event when the file's modification date has changed.
-		 */
+
+		/** Begins monitoring the specified file for changes. */
 		public function watch():void
 		{
 			if (_watching == false)
@@ -108,10 +89,10 @@ package talon.browser.desktop.utils
 		{
 			try
 			{
-				var modifiedTime:Number = _file.modificationDate.getTime();
-				if (modifiedTime != _timestamp)
+				var timestamp:Number = _file.modificationDate.getTime();
+				if (timestamp != _timestamp)
 				{
-					_timestamp = modifiedTime;
+					_timestamp = timestamp;
 					dispatchEventWith(Event.CHANGE);
 				}
 			}

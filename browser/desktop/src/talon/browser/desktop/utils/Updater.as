@@ -102,7 +102,7 @@ package talon.browser.desktop.utils
 				return;
 			}
 
-			var descriptorRequest:URLRequest = new URLRequest(_url);
+			var descriptorRequest:URLRequest = new URLRequest(_url + "?timestamp=" + new Date().time);
 			step = UpdateStep.DOWNLOAD_DESCRIPTOR;
 			_updateDescriptorLoader.load(descriptorRequest);
 		}
@@ -121,12 +121,12 @@ package talon.browser.desktop.utils
 			_updateDescriptorNamespace = descriptor.namespace();
 			_updateDescriptorVersion = descriptor._updateDescriptorNamespace::versionNumber.valueOf();
 			_updateDescriptorDescription = descriptor._updateDescriptorNamespace::description.valueOf();
-			var updateVersionIsLess:Boolean = compare(_updateDescriptorVersion, _version) <= 0;
-			if (updateVersionIsLess)
-			{
-				complete(UpdateStatus.UPDATE_DESCRIPTOR_VERSION_IS_LESS_OR_EQUALS);
-				return;
-			}
+//			var updateVersionIsLess:Boolean = compare(_updateDescriptorVersion, _version) <= 0;
+//			if (updateVersionIsLess)
+//			{
+//				complete(UpdateStatus.UPDATE_DESCRIPTOR_VERSION_IS_LESS_OR_EQUALS);
+//				return;
+//			}
 
 			// Check version url
 			var descriptorApplicationURL:String = descriptor._updateDescriptorNamespace::url.valueOf();

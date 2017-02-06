@@ -28,7 +28,6 @@ package talon.browser.desktop.popups
 			query("#update").onTap(onUpdateClick);
 			query("#details").onTap(onDetailsClick);
 
-
 			_updater = Updater(data);
 			_updater.addEventListener(Event.CHANGE, onUpdaterChange);
 			_updater.execute(true);
@@ -69,9 +68,10 @@ package talon.browser.desktop.popups
 			// [Begin load descriptor]
 			if (_updater.step == 1)
 			{
-				query("#info").setAttribute(Attribute.TEXT, "$dialog.updates.statusLoading");
+				query("#info").setAttribute(Attribute.TEXT, "$dialog.updater.statusLoadingDescriptor");
 				query("#details").setAttribute(Attribute.VISIBLE, false);
 				query("#detailsInfo").setAttribute(Attribute.VISIBLE, false);
+				query("#update").setAttribute(Attribute.VISIBLE, false);
 
 				query("#spinner").tween(1, { repeatCount: 0, onUpdate: function ():void
 				{
@@ -81,17 +81,16 @@ package talon.browser.desktop.popups
 			// [Begin load application]
 			else if (_updater.step == 2)
 			{
-				// Добавить текст о загрузки приложения
-				// Включить спиннер
+				query("#info").setAttribute(Attribute.TEXT, "$dialog.updater.statusLoadingApplication");
 			}
 			// [Success descriptor load]
 			else if (_updater.lastStatus == "UPDATE_DESCRIPTOR_LOADED")
 			{
-				var patchNotesPattern:String = node.getResource("dialog.updater.patchNotes");
-				var patchNotes:String = StringUtil.format(patchNotesPattern, _updater.lastUpdaterVersion, _updater.lastUpdaterDescription.replace(/\t/g, ""));
-
 				query("#info")
-					.setAttribute(Attribute.TEXT, patchNotes);
+					.setAttribute(Attribute.TEXT, StringUtil.format(node.getResource("dialog.updater.statusHasUpdate"), _updater.lastUpdaterVersion));
+
+				query("#detailsInfo")
+					.setAttribute(Attribute.TEXT, _updater.lastUpdaterDescription);
 
 				query("#spinner")
 					.setAttribute(Attribute.VISIBLE, false)
@@ -99,23 +98,34 @@ package talon.browser.desktop.popups
 
 				query("#details")
 					.setAttribute(Attribute.VISIBLE, true);
+
+				query("#update")
+					.setAttribute(Attribute.VISIBLE, true);
+
 			}
 			// [Success application load & start update]
-			else if (_updater.lastStatus == "UPDATER_STARTED")
+			else if (_updater.lastStatus != "UPDATER_STARTED")
 			{
-			}
-			// [Any exceptions]
-			else
-			{
-				query("#info").setAttribute(Attribute.TEXT, "Sorry, update can't be completed :-(");
-				query("#info").setAttribute(Attribute.FONT_COLOR, "#FFAAAA");
+				var hasLastVersion:Boolean = _updater.lastStatus == "UPDATE_DESCRIPTOR_VERSION_IS_LESS_OR_EQUALS";
+
+				if (hasLastVersion)
+				{
+					query("#info")
+						.setAttribute(Attribute.TEXT, "$dialog.updater.statusLatest");
+				}
+				else
+				{
+					query("#info")
+						.setAttribute(Attribute.TEXT, "$dialog.updater.statusError")
+						.setAttribute(Attribute.FONT_COLOR, "#FFAAAA");
+				}
 
 				query("#spinner")
 					.setAttribute(Attribute.VISIBLE, false)
 					.tweenKill(juggler);
 
 				query("#details")
-					.setAttribute(Attribute.VISIBLE, true);
+					.setAttribute(Attribute.VISIBLE, !hasLastVersion);
 
 				query("#detailsInfo").setAttribute(Attribute.TEXT, _updater.lastStatus);
 			}

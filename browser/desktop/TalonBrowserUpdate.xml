@@ -1,9 +1,12 @@
 <update xmlns="http://ns.adobe.com/air/framework/update/description/2.5">
-	<versionNumber>0.1.1</versionNumber>
-	<url>https://raw.githubusercontent.com/Maligan/Talon/master/browser/bin/TalonBrowser.air</url>
-	<description>
-		* Added custom updater popup
-		* Fixed char colorization
-		* Added release description
-	</description>
+    <versionNumber>0.2.2</versionNumber>
+    <url>https://raw.githubusercontent.com/Maligan/Talon/master/browser/bin/TalonBrowser.air</url>
+    <description>
+        API:
+        - Added 'transform' CSS support
+        - Added 'AnchorLayout' algorithm
+        Browser:
+        - Added custom update dialog
+        - Added project symlink in config
+    </description>
 </update>

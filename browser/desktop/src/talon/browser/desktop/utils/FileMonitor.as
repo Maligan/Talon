@@ -22,8 +22,7 @@ package talon.browser.desktop.utils
 		private var _timer:Timer;
 		private var _watching:Boolean;
 		private var _file:File;
-		private var _lastExists:Boolean = false;
-		private var _lastModifiedTime:Number;
+		private var _timestamp:Number;
 		
 		/**
 		 * 	@parameter file The File that will be monitored for changes.
@@ -59,8 +58,9 @@ package talon.browser.desktop.utils
 				unwatch();
 
 			_file = file;
-			_lastExists = _file.exists;
-			_lastModifiedTime = _lastExists ? _file.modificationDate.getTime() : -1;
+
+			try { _timestamp = _file.modificationDate.getTime() }
+			catch (e:Error) { _timestamp = NaN }
 
 			if (prevWatching)
 				watch();
@@ -106,20 +106,20 @@ package talon.browser.desktop.utils
 		
 		private function onTimerEvent(e:TimerEvent):void
 		{
-			var exist:Boolean = _file.exists;
-
-			if (_lastExists != exist)
-			{
-				_lastExists = _file.exists;
-				if (exist) _lastModifiedTime = _file.modificationDate.getTime();
-				dispatchEventWith(Event.CHANGE);
-			}
-			else if (exist)
+			try
 			{
 				var modifiedTime:Number = _file.modificationDate.getTime();
-				if (modifiedTime != _lastModifiedTime)
+				if (modifiedTime != _timestamp)
 				{
-					_lastModifiedTime = modifiedTime;
+					_timestamp = modifiedTime;
+					dispatchEventWith(Event.CHANGE);
+				}
+			}
+			catch (e:Error)
+			{
+				if (_timestamp == _timestamp)
+				{
+					_timestamp = NaN;
 					dispatchEventWith(Event.CHANGE);
 				}
 			}

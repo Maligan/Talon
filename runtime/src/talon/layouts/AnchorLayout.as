@@ -68,7 +68,7 @@ package talon.layouts
 				// y-axis
 				if (isRespectingSize(child.top, child.bottom))
 				{
-					child.bounds.height = calcSize(child, child.height, child.width, contentHeight, contentWidth, child.maxHeight, child.maxHeight, numStars(child.top) + numStars(child.height) + numStars(child.bottom));
+					child.bounds.height = calcSize(child, child.height, child.width, contentHeight, contentWidth, child.minHeight, child.maxHeight, numStars(child.top) + numStars(child.height) + numStars(child.bottom));
 					child.bounds.y = calcOffset(child, child.bounds.height, child.top, child.bottom, height, paddingTop, paddingBottom);
 				}
 				else

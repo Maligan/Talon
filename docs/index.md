@@ -6,10 +6,10 @@
 	Здесь вы найдёте полное описание методов и правил растановки элементов
 3. [Background](background.md)  
 	Методы отрисовки задника в узлах
-4. [Runtime API](runtime.md)  
-	Commit, Events (Resize/Change), Invalidataion, Manual & Factory
-5. [TML (Template Markup Language)](tml.md)  
+4. [TML (Template Markup Language)](tml.md)  
 	Описание языка шаблонизации
+5. [Runtime API](runtime.md)  
+	Commit, Events (Resize/Change), Invalidataion, Manual & Factory
 6. [Browser](browser.md)  
 	Параметры настройки браузера
 

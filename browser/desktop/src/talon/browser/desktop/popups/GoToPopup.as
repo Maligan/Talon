@@ -179,7 +179,6 @@ package talon.browser.desktop.popups
 				label.text = null;
 				label.text = item;
 				label.textBounds;
-//				label.format.color = 0x00BFFF;
 
 				if (item)
 				{

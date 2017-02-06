@@ -46,17 +46,19 @@
 	</def>
 
 	<def ref="UpdatePopup">
-		<node class="popup" orientation="vertical" width="300px">
+		<node class="popup" orientation="vertical" width="330px">
 
 			<label text="$dialog.updater.title" margin="8px" />
 
 			<node id="100" fill="#4e5051" width="100%" orientation="horizontal" padding="8px" wrap="true">
-				<label id="info" ivalign="center" text="$dialog.updater.patchLoading" width="*" height="16px" />
-				<image id="spinner" width="20px" height="20px" pivot="50%" source="$spinner_small" />
-				<!--<image id="details" margin="4px" ivalign="center" source="$drop_down" cursor="button"/>-->
+				<label id="info" ivalign="center" text="UPDATA_STATUS" width="*" height="16px" />
+				<node layout="anchor" width="20px" height="20px" >
+					<image id="details" pivot="50%" source="$drop_down" cursor="button" />
+					<image id="spinner" pivot="50%" source="$spinner_small" />
+				</node>
 			</node>
 
-			<!--<label text="Error while downloading update file descriptor, please try again later, or mail the problem to me: maligan#rambler.ru" width="266px" padding="8px" marginTop="2px" fill="#4e5051" />-->
+			<label id="detailsInfo" text="UPDATE_INFO" width="266px" padding="8px" marginTop="2px" fontColor="#888888" />
 
 			<node ihalign="center" margin="none" gap="8px" padding="8px" width="100%" halign="right">
 				<button id="update" label="Update" class="action" />

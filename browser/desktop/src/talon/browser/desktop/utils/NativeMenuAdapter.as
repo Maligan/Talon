@@ -13,13 +13,13 @@ package talon.browser.desktop.utils
 		//
 		// Pooling
 		//
-		private static var POOL_SEPARATOR:Vector.<NativeMenuAdapter> = new <NativeMenuAdapter>[];
-		private static var POOL:Vector.<NativeMenuAdapter> = new <NativeMenuAdapter>[];
+		private static var sPoolSeparator:Vector.<NativeMenuAdapter> = new <NativeMenuAdapter>[];
+		private static var sPool:Vector.<NativeMenuAdapter> = new <NativeMenuAdapter>[];
 
 		private function fromPool(name:String, isSeparator:Boolean):NativeMenuAdapter
 		{
-			var list:Vector.<NativeMenuAdapter> = isSeparator ? POOL_SEPARATOR : POOL;
-			var item:NativeMenuAdapter = list.pop() || new NativeMenuAdapter(name, isSeparator);
+			var pool:Vector.<NativeMenuAdapter> = isSeparator ? sPoolSeparator : sPool;
+			var item:NativeMenuAdapter = pool.pop() || new NativeMenuAdapter(name, isSeparator);
 
 			item._nativeItem.name = name;
 			item._name = name;
@@ -35,7 +35,7 @@ package talon.browser.desktop.utils
 			item._children.length = 0;
 			item._parent = null;
 
-			var list:Vector.<NativeMenuAdapter> = item.isSeparator ? POOL_SEPARATOR : POOL;
+			var list:Vector.<NativeMenuAdapter> = item.isSeparator ? sPoolSeparator : sPool;
 			list[list.length] = item;
 		}
 
@@ -89,11 +89,11 @@ package talon.browser.desktop.utils
 
 		private function refreshStatus():void
 		{
-			var isEnabled:Boolean = _command ? _command.isExecutable : _isEnabled;
-			if (isEnabled != _nativeItem.enabled) _nativeItem.enabled = isEnabled;
+			if (_nativeItem.enabled != enabled)
+				_nativeItem.enabled  = enabled;
 
-			var isChecked:Boolean = _command && _command.isActive;
-			if (isChecked != _nativeItem.checked) _nativeItem.checked = isChecked;
+			if (_nativeItem.checked != checked)
+				_nativeItem.checked  = checked;
 		}
 
 		private function onItemSelect(e:*):void
@@ -215,6 +215,9 @@ package talon.browser.desktop.utils
 		//
 		// Lazy parts
 		//
+		private function get enabled():Boolean { return (_parent == null || _parent.enabled) && (_command ? _command.isExecutable : _isEnabled) }
+		private function get checked():Boolean { return _command && _command.isActive; }
+
 		public function get nativeMenu():NativeMenu
 		{
 			if (_nativeMenu == null)

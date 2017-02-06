@@ -70,7 +70,7 @@ package talon.browser.desktop.plugins
 		public function get versionAPI():String { return "1.0.0"; }
 		public function detach():void { }
 
-		private function select(selector:String):TalonQuery
+		private function query(selector:String):TalonQuery
 		{
 			return _query.reset(_interface).select(selector);
 		}
@@ -126,7 +126,6 @@ package talon.browser.desktop.plugins
 			_factory.addResourcesToScope(_locale);
 			_factory.addArchiveContentAsync(readFile(fileInterface), onFactoryComplete);
 
-
 			// Windows
 			_platform.stage.nativeWindow.minSize = new Point(200, 100);
 			_platform.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.MOVE, onWindowMove);
@@ -173,7 +172,7 @@ package talon.browser.desktop.plugins
 
 		private function onPlatformStart(e:Event):void
 		{
-			// UPDATE
+			// [UPDATE]
 			var isEnableAutoUpdate:Boolean = _platform.settings.getValueOrDefault(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, Boolean, true);
 			// TODO: Save for have default value != null
 			_platform.settings.setValue(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, isEnableAutoUpdate);
@@ -181,7 +180,7 @@ package talon.browser.desktop.plugins
 			// FIXME: Auto check
 			// if (isEnableAutoUpdate) _updater.checkNow();
 
-			// REOPEN
+			// [REOPEN]
 			var invArgs:Array = e.data as Array;
 			var invTemplate:String = null;
 
@@ -257,22 +256,20 @@ package talon.browser.desktop.plugins
 
 
 			// popups container
-			_popups.host = select("#popups").getElementAt(0) as DisplayObjectContainer;
+			_popups.host = query("#popups").getElementAt(0) as DisplayObjectContainer;
 			_popups.addEventListener(Event.CHANGE, onPopupManagerChange);
 
 			// messages container
-			_messages = select("#messages").getElementAt(0) as TalonSpriteElement;
+			_messages = query("#messages").getElementAt(0) as TalonSpriteElement;
 
 			// template container - split hierarchy with isolator for stopping style/resource inheritance
 			_templateContainer = new TalonSpriteElement();
-			_templateContainer.node.setAttribute(Attribute.LAYOUT, Layout.FLOW);
-			_templateContainer.node.setAttribute(Attribute.VALIGN, Align.CENTER);
-			_templateContainer.node.setAttribute(Attribute.HALIGN, Align.CENTER);
+			_templateContainer.node.setAttribute(Attribute.LAYOUT, Layout.ANCHOR);
 
 			_isolator.alignPivot();
 			_isolator.addChild(_templateContainer);
 
-			_isolatorContainer = select("#container").getElementAt(0) as TalonSpriteElement;
+			_isolatorContainer = query("#container").getElementAt(0) as TalonSpriteElement;
 			_isolatorContainer.addEventListener(TouchEvent.TOUCH, onIsolatorTouch);
 			_isolatorContainer.addChild(_isolator);
 
@@ -360,7 +357,7 @@ package talon.browser.desktop.plugins
 			// Opened document/template
 			if (_platform.document)
 			{
-				var title:String = _platform.document.properties.getValueOrDefault(DesktopDocumentProperty.DISPLAY_NAME, String);
+				var title:String = _platform.document.properties.getValueOrDefault(DesktopDocumentProperty.PROJECT_NAME, String);
 				if (_platform.templateId) title += "/" + _platform.templateId;
 				result.push(title);
 			}
@@ -376,7 +373,7 @@ package talon.browser.desktop.plugins
 			// Zoom (if non 100%)
 			if (zoom != 1) result.push(int(zoom * 100) + "%");
 			// Application name + version
-			result.push(AppConstants.APP_NAME + " " + AppConstants.APP_VERSION.replace(/\.0$/, ""));
+			result.push(AppConstants.APP_NAME + " " + AppConstants.APP_VERSION);
 
 			_platform.stage.nativeWindow.title = result.join(" - ");
 		}

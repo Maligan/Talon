@@ -135,7 +135,7 @@ package talon.utils
 
 		protected function setNodeAttribute(node:Node, attributeName:String, value:String):void
 		{
-			var bindPattern:RegExp = /@(\w+)/;
+			var bindPattern:RegExp = /^@([\w_][\w\d_]+)$/;
 			var bindSplit:Array = bindPattern.exec(value);
 
 			var bindSourceAttributeName:String = (bindSplit && bindSplit.length>1) ? bindSplit[1] : null;

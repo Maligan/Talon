@@ -1,5 +1,7 @@
 package talon.browser.platform
 {
+	import flash.utils.getDefinitionByName;
+
 	public class AppConstants
 	{
 		//
@@ -10,11 +12,17 @@ package talon.browser.platform
 		public static const APP_DOCUMENTATION_URL:String = "https://github.com/Maligan/Talon/blob/master/docs/index.md";
 		public static function get APP_VERSION():String
 		{
-			return "0.2.1";
-//			var xml:XML = NativeApplication.nativeApplication.applicationDescriptor;
-//			var ns:Namespace = xml.namespace();
-//			var version:String = xml.ns::versionNumber;
-//			return version;
+			try
+			{
+				var napp:Class = getDefinitionByName("flash.desktop.NativeApplication") as Class;
+				var xml:XML = napp["nativeApplication"]["applicationDescriptor"];
+				var ns:Namespace = xml.namespace();
+				return xml.ns::versionNumber;
+			}
+			catch (e:Error)
+			{
+				return "";
+			}
 		}
 
 		public static const BROWSER_DOCUMENT_EXTENSION:String = "talon";

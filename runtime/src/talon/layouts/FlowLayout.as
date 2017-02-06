@@ -33,10 +33,13 @@ package talon.layouts
 			var flow:Flow = calculateFlow(node, width, height);
 			flow.arrange();
 
+			var flowChildIndex:int = 0;
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				var childBounds:Rectangle = flow.getChildBounds(i, orientation);
+				var childVisible:Boolean = ParseUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBLE));
+				if (childVisible == false) continue;
+				var childBounds:Rectangle = flow.getChildBounds(flowChildIndex++, orientation);
 				child.bounds.copyFrom(childBounds);
 				child.commit();
 			}
@@ -87,6 +90,9 @@ package talon.layouts
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
+
+				var childVisible:Boolean = ParseUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBLE));
+				if (childVisible == false) continue;
 
 				// TODO: Respect minWidth/maxWidth/minHeight/maxHeight values
 				// ------------------------------------------

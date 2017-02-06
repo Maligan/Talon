@@ -3,13 +3,9 @@ package starling.extensions
 	import starling.animation.Juggler;
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
-	import starling.display.DisplayObject;
-	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
-
-	import starling.extensions.ITalonElement;
 
 	public class TalonQuery
 	{
@@ -69,7 +65,7 @@ package starling.extensions
 		{
 			var id:String = DisplayObject(element).name;
 			if (id == null) return false;
-			return id.indexOf(selector.substr(1)) == 0;
+			return id == selector.substr(1);
 		}
 
 		//

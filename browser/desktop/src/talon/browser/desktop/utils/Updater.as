@@ -37,12 +37,6 @@ package talon.browser.desktop.utils
 			return 0;
 		}
 
-		private static const NO_CACHE:Array = [
-			new URLRequestHeader("Cache-Control", "no-cache, no-store, must-revalidate"),
-			new URLRequestHeader("Pragma", "no-cache"),
-			new URLRequestHeader("Expires", "0")
-		];
-
 		private var _url:String;
 		private var _version:String;
 
@@ -109,7 +103,6 @@ package talon.browser.desktop.utils
 			}
 
 			var descriptorRequest:URLRequest = new URLRequest(_url);
-			descriptorRequest.requestHeaders = NO_CACHE;
 			step = UpdateStep.DOWNLOAD_DESCRIPTOR;
 			_updateDescriptorLoader.load(descriptorRequest);
 		}
@@ -152,7 +145,6 @@ package talon.browser.desktop.utils
 
 			// Download file
 			var descriptorApplicationRequest:URLRequest = new URLRequest(descriptorApplicationURL);
-			descriptorApplicationRequest.requestHeaders = NO_CACHE;
 			step = UpdateStep.DOWNLOAD_APPLICATION;
 			_updateApplicationFileLoader.load(descriptorApplicationRequest);
 		}

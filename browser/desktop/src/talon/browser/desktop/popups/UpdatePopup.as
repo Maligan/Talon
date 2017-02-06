@@ -3,6 +3,8 @@ package talon.browser.desktop.popups
 	import flash.ui.Keyboard;
 	import flash.ui.MouseCursor;
 
+	import starling.core.Starling;
+
 	import starling.display.DisplayObject;
 	import starling.events.Event;
 
@@ -15,6 +17,7 @@ package talon.browser.desktop.popups
 	public class UpdatePopup extends Popup
 	{
 		private var _updater:Updater;
+		private var _details:Boolean;
 
 		protected override function initialize():void
 		{
@@ -23,7 +26,8 @@ package talon.browser.desktop.popups
 
 			query("#cancel").onTap(onCancelClick);
 			query("#update").onTap(onUpdateClick);
-			query("#spinner").tween(1, { rotation: 2*Math.PI, repeatCount: 0 }, juggler);
+			query("#details").onTap(onDetailsClick);
+
 
 			_updater = Updater(data);
 			_updater.addEventListener(Event.CHANGE, onUpdaterChange);
@@ -50,10 +54,11 @@ package talon.browser.desktop.popups
 			close();
 		}
 
-		private function onExpandClick(e:Event):void
+		private function onDetailsClick(e:Event):void
 		{
-			var spinner:DisplayObject = e.target as DisplayObject;
-			spinner.rotation = spinner.rotation == 0 ? -Math.PI/2 : 0;
+			_details = !_details;
+			query("#details").setAttribute(Attribute.TRANSFORM, _details ? "rotate(-90deg)" : "none");
+			query("#detailsInfo").setAttribute(Attribute.VISIBLE, _details);
 		}
 
 		//
@@ -64,27 +69,36 @@ package talon.browser.desktop.popups
 			// [Begin load descriptor]
 			if (_updater.step == 1)
 			{
-				query("#info").setAttribute(Attribute.TEXT, "$dialog.updater.patchLoading");
+				query("#info").setAttribute(Attribute.TEXT, "$dialog.updates.statusLoading");
+				query("#details").setAttribute(Attribute.VISIBLE, false);
+				query("#detailsInfo").setAttribute(Attribute.VISIBLE, false);
+
+				query("#spinner").tween(1, { repeatCount: 0, onUpdate: function ():void
+				{
+					query("#spinner").setAttribute(Attribute.TRANSFORM, "rotate(" + (Starling.juggler.elapsedTime * 180) + "deg)");
+				}}, juggler);
 			}
 			// [Begin load application]
 			else if (_updater.step == 2)
 			{
-				query("#info").setAttribute(Attribute.TEXT, "[Загрузка приложения]");
+				// Добавить текст о загрузки приложения
+				// Включить спиннер
 			}
 			// [Success descriptor load]
 			else if (_updater.lastStatus == "UPDATE_DESCRIPTOR_LOADED")
 			{
 				var patchNotesPattern:String = node.getResource("dialog.updater.patchNotes");
 				var patchNotes:String = StringUtil.format(patchNotesPattern, _updater.lastUpdaterVersion, _updater.lastUpdaterDescription.replace(/\t/g, ""));
-				query("#info").setAttribute(Attribute.TEXT, patchNotes);
-				// query("#spinner").setAttribute(Attribute.VISIBLE, false);
+
+				query("#info")
+					.setAttribute(Attribute.TEXT, patchNotes);
 
 				query("#spinner")
-					.setAttribute(Attribute.SOURCE, "$drop_down")
-					.setAttribute(Attribute.MARGIN, "4px")
-					.setAttribute(Attribute.CURSOR, MouseCursor.BUTTON)
-					.onTap(onExpandClick)
+					.setAttribute(Attribute.VISIBLE, false)
 					.tweenKill(juggler);
+
+				query("#details")
+					.setAttribute(Attribute.VISIBLE, true);
 			}
 			// [Success application load & start update]
 			else if (_updater.lastStatus == "UPDATER_STARTED")
@@ -93,17 +107,17 @@ package talon.browser.desktop.popups
 			// [Any exceptions]
 			else
 			{
-				// Error
-//				query("#info").setAttribute(Attribute.TEXT, _updater.lastStatus);
 				query("#info").setAttribute(Attribute.TEXT, "Sorry, update can't be completed :-(");
-				query("#info").setAttribute(Attribute.FONT_COLOR, "#FFaaaa");
+				query("#info").setAttribute(Attribute.FONT_COLOR, "#FFAAAA");
 
 				query("#spinner")
-					.setAttribute(Attribute.SOURCE, "$drop_down")
-					.setAttribute(Attribute.MARGIN, "4px")
-					.setAttribute(Attribute.CURSOR, MouseCursor.BUTTON)
-					.onTap(onExpandClick)
+					.setAttribute(Attribute.VISIBLE, false)
 					.tweenKill(juggler);
+
+				query("#details")
+					.setAttribute(Attribute.VISIBLE, true);
+
+				query("#detailsInfo").setAttribute(Attribute.TEXT, _updater.lastStatus);
 			}
 
 			node.invalidate();

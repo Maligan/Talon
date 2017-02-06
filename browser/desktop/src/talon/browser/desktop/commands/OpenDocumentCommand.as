@@ -76,8 +76,8 @@ package talon.browser.desktop.commands
 			document.files.addReference(sourcePathReference);
 
 			// Set project name
-			if (document.properties.getValueOrDefault(DesktopDocumentProperty.DISPLAY_NAME) == null)
-				document.properties.setValue(DesktopDocumentProperty.DISPLAY_NAME, sourcePath.name);
+			if (document.properties.getValueOrDefault(DesktopDocumentProperty.PROJECT_NAME) == null)
+				document.properties.setValue(DesktopDocumentProperty.PROJECT_NAME, sourcePath.name);
 
 			// Add document to recent list
 			var recent:Array = platform.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);

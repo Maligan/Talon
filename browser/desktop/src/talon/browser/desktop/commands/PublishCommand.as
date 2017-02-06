@@ -125,7 +125,7 @@ package talon.browser.desktop.commands
 					return sourcePath.parent.resolvePath(sourcePath.name + "." + AppConstants.BROWSER_PUBLISH_EXTENSION).nativePath;
 			}
 
-			return document.properties.getValueOrDefault(DesktopDocumentProperty.DISPLAY_NAME, String)
+			return document.properties.getValueOrDefault(DesktopDocumentProperty.PROJECT_NAME, String)
 				+ "."
 				+ AppConstants.BROWSER_PUBLISH_EXTENSION;
 		}

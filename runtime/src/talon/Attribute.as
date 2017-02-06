@@ -70,7 +70,7 @@ package talon
 		public static const TOUCH_EVENTS:String                    = registerAttribute("touchEvents",           FALSE);
 		public static const CURSOR:String                          = registerAttribute("cursor",                "auto");
 
-		public static const LAYOUT:String                          = registerAttribute("layout",                Layout.FLOW);
+		public static const LAYOUT:String                          = registerAttribute("layout",                Layout.ANCHOR);
 		public static const TRANSFORM:String 					   = registerAttribute("transform",			    NONE);
 		public static const MESH_STYLE:String 					   = registerAttribute("meshStyle",			    NONE);
 		public static const BLEND_MODE:String                      = registerAttribute("blendMode",             "auto");

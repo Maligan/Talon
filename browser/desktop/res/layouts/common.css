@@ -39,25 +39,23 @@
 	fill: #406079;
 }
 
+input:error { fill: $input_error;	}
+input:focus { fill: $input_focus;	}
 input {
 	fill: $input_normal;
 	fillStretchGrid: 10px;
+
+	cursor: ibeam;
 
 	margin: -4px;
 	padding: 8px;
 	height: 35px;
 
-	cursor: ibeam;
+	fontColor: white;
 }
 
-input:error {
-	fill: $input_error;	
-}
-
-input:focus {
-	fill: $input_focus;	
-}
-
+button:hover { fill: $button_over; }
+button:active { fill: $button_down; }
 button {
 	fill: $button_normal;
 	fillStretchGrid: 4px;
@@ -78,26 +76,13 @@ button {
 	touchEvents: true;
 }
 
-button:hover {
-	fill: $button_over;
-}
-
-button:active {
-	fill: $button_down;
-}
-
+button.action:hover { fill: $button_action_over; }
+button.action:active { fill: $button_action_down; }
 button.action {
 	fill: $button_action_normal;
 	fontColor: #FFFFFF;
 }
 
-button.action:hover {
-	fill: $button_action_over;
-}
-
-button.action:active {
-	fill: $button_action_down;
-}
 
 checkbox label {
 	fontColor: #FFFFFF;
@@ -107,14 +92,17 @@ checkbox label {
 	/*filter: drop-shadow(1, -90deg, black, 0.5, 0);*/
 }
 
+checkbox:active { image: $checkbox_unckecked_down; }
 checkbox { 
 	cursor: button;
 	touchMode: leaf;
 	touchEvents: true;
-}
 
-checkbox #flag { src: $checkbox_unckecked_normal; }
-checkbox:active #flag { src: $checkbox_unckecked_down; }
+	fontColor: white;
+	gap: 2px;
+
+	image: $checkbox_unckecked_normal;
+}
 
 #interface #container { fillMode: repeat; }
 #interface #drag.active {

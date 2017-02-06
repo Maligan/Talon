@@ -37,6 +37,7 @@ package talon.browser.desktop.commands
 		{
 			if (platform.document == null) return null;
 
+			// FIXME: If there is symlinks in config - return not real source root
 			var fileReferences:Vector.<IFileReference> = platform.document.files.toArray();
 			var fileReference:DesktopFileReference = fileReferences.shift() as DesktopFileReference;
 

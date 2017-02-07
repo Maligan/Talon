@@ -6,10 +6,9 @@ package talon.utils
 	/** @private */
 	public class AttributeStringSet
 	{
-		private static const DELIMITER:String = " ";
-		private static const ARRAY:Array = [];
+		private static const sArray:Array = [];
 
-		private var _container:Object = new Object();
+		private var _container:Vector.<String> = new Vector.<String>();
 		private var _change:Trigger = new Trigger();
 		private var _locked:Boolean;
 		private var _changed:Boolean;
@@ -44,23 +43,26 @@ package talon.utils
 		public function contains(string:String):Boolean
 		{
 			initialize();
-			return _container[string] != null;
+			return _container.indexOf(string) != -1;
 		}
 
 		public function insert(string:String):void
 		{
 			if (!contains(string))
 			{
-				_container[string] = string;
+				_container[_container.length] = string;
 				dispatchChange();
 			}
 		}
 
 		public function remove(string:String):void
 		{
-			if (contains(string))
+			initialize();
+
+			var indexOf:int = _container.indexOf(string);
+			if (indexOf != -1)
 			{
-				delete _container[string];
+				_container.removeAt(indexOf);
 				dispatchChange();
 			}
 		}
@@ -96,13 +98,13 @@ package talon.utils
 
 		public function parse(string:String):void
 		{
-			_container = new Object();
+			_container.length = 0;
 
 			if (string)
 			{
-				var split:Array = string.split(DELIMITER);
+				var split:Array = string.split(" ");
 				for each (var element:String in split)
-					_container[element] = element;
+					_container[_container.length] = element;
 			}
 
 			dispatchChange();
@@ -110,12 +112,12 @@ package talon.utils
 
 		public function toString():String
 		{
-			ARRAY.length = 0;
+			sArray.length = 0;
 
 			for each (var element:String in _container)
-				ARRAY[ARRAY.length] = element;
+				sArray[sArray.length] = element;
 
-			return ARRAY.join(DELIMITER);
+			return sArray.join(" ");
 		}
 	}
 }

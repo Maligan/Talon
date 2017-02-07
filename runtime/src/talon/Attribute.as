@@ -326,14 +326,14 @@ class SimpleSolver implements ISolver
 {
 	private var _change:Trigger;
 	private var _values:Vector.<Object>;
-	private var _orders:Object;
+	private var _orders:Vector.<Vector.<String>>;
 	private var _ignore:int;
 
 	public function SimpleSolver(ignore:int = -1):void
 	{
 		_change = new Trigger(this);
 		_values = new Vector.<Object>();
-		_orders = new Object();
+		_orders = new Vector.<Vector.<String>>(3);
 		_ignore = ignore;
 	}
 
@@ -349,16 +349,16 @@ class SimpleSolver implements ISolver
 		if (_values.length < priority + 1)
 			_values.length = priority + 1;
 
-		var hash:Object = _values[priority] || (_values[priority] = {});
-		var order:Vector.<String> = _orders[hash] || (_orders[hash] = new Vector.<String>());
+		var values:Object = _values[priority] || (_values[priority] = {});
+		var orders:Vector.<String> = _orders[priority] || (_orders[priority] = new Vector.<String>());
 
 		// Mark as last changed key
-		var indexOf:int = order.indexOf(key);
-		if (indexOf != -1) order.removeAt(indexOf);
-		order[order.length] = key;
+		var indexOf:int = orders.indexOf(key);
+		if (indexOf != -1) orders.removeAt(indexOf);
+		orders[orders.length] = key;
 
 		// Set new value
-		hash[key] = string;
+		values[key] = string;
 
 		// Dispatch change
 		if (prev != value) _change.dispatch();
@@ -376,7 +376,7 @@ class SimpleSolver implements ISolver
 			if (i == ignore) continue;
 			var hash:Object = _values[i];
 			if (hash == null) continue;
-			var order:Object = _orders[hash];
+			var order:Vector.<String> = _orders[i];
 
 			var j:int = order.length;
 			while (--j >= 0)

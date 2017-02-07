@@ -6,6 +6,7 @@ package
 	import talon.Node;
 	import talon.layouts.Layout;
 
+	[Ignore]
 	public class LayoutAbsTest
 	{
 		private var parent:Node;

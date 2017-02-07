@@ -4,6 +4,8 @@ package talon.browser.desktop.filetypes
 	import flash.events.IOErrorEvent;
 	import flash.filesystem.File;
 
+	import starling.events.Event;
+
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 
 	import talon.browser.desktop.utils.DesktopFileReference;
@@ -33,7 +35,7 @@ package talon.browser.desktop.filetypes
 			{
 				var ref:DesktopFileReference = DesktopFileReference.getReference(child, file.root, file.rootPrefix);
 				if (!isIncluded(ref) || !document.files.addReference(ref))
-					DesktopFileReference.putReference(ref);
+					DesktopFileReference.putReference(ref); // FIXME: Memory leak (how to return references to pull after remove references from collection)
 			}
 
 			document.tasks.end();

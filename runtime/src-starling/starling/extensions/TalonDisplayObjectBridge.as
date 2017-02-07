@@ -24,7 +24,7 @@ package starling.extensions
 	import talon.Attribute;
 	import talon.Node;
 	import talon.enums.TouchMode;
-	import talon.utils.AttributeGauge;
+	import talon.utils.Gauge;
 	import talon.utils.ParseUtil;
 
 	/** Provide method for synchronize starling display tree and talon tree. */
@@ -115,8 +115,7 @@ package starling.extensions
 		public function addAttributeChangeListener(attribute:String, listener:Function, immediate:Boolean = false):void
 		{
 			_node.getOrCreateAttribute(attribute).change.addListener(listener);
-			// TODO: Trigger context
-			if (immediate) listener();
+			if (immediate) listener(); // Attribute doesn't passed - it is not created yet now
 		}
 
 		private function onNodeResize():void
@@ -138,17 +137,15 @@ package starling.extensions
 			{
 				// isNaN() check for element bounds
 				// This may be if current element is topmost in talon hierarchy
-				// and there is no setups of its sizes
+				// and there is no user setups of its sizes
 
-				// TODO:
-				// Calculate parent width/height (stageWidth/stageHeight if it is stage) for pp100p
-				// respect minWidth, minHeight & node size set to 'none'
+				// TODO: Respect percentages & min/max size
 
 				if (_node.bounds.width != _node.bounds.width)
-					_node.bounds.width = _node.width.toPixels(_node.ppmm, _node.ppem, _node.ppdp, 0);
+					_node.bounds.width = _node.width.toPixels(_node, 0);
 
 				if (_node.bounds.height != _node.bounds.height)
-					_node.bounds.height = _node.height.toPixels(_node.ppmm, _node.ppem, _node.ppdp, 0);
+					_node.bounds.height = _node.height.toPixels(_node, 0);
 
 				_node.commit();
 			}
@@ -202,10 +199,10 @@ package starling.extensions
 
 			_background.setStretchOffsets
 			(
-				AttributeGauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_TOP), _node.ppmm, _node.ppem, _node.ppdp, textureHeight),
-				AttributeGauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_RIGHT), _node.ppmm, _node.ppem, _node.ppdp, textureWidth),
-				AttributeGauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_BOTTOM), _node.ppmm, _node.ppem, _node.ppdp, textureHeight),
-				AttributeGauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_LEFT), _node.ppmm, _node.ppem, _node.ppdp, textureWidth)
+				Gauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_TOP), _node, textureHeight),
+				Gauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_RIGHT), _node, textureWidth),
+				Gauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_BOTTOM), _node, textureHeight),
+				Gauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_LEFT), _node, textureWidth)
 			);
 		}
 

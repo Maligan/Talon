@@ -4,7 +4,7 @@ package talon.utils
 	import talon.Node;
 
 	/** @private Measured size. Defined by 'units' and 'amount'. */
-	public final class AttributeGauge
+	public final class Gauge
 	{
 		/** Value is not set. This is <code>null</code> analog. */
 		public static const NONE:String = "none";
@@ -22,13 +22,13 @@ package talon.utils
 		public static const STAR:String = "*";
 
 		private static const sFormat:RegExp = /^(-?\d*\.?\d+)(px|dp|mm|em|%|\*|)$/;
-		private static const sGauge:AttributeGauge = new AttributeGauge(null, null);
+		private static const sGauge:Gauge = new Gauge(null, null);
 
-		public static function toPixels(string:String, ppmm:Number, ppem:Number, ppdp:Number, pp100p:Number, auto:Function = null, aa:Number = 0, ppts:Number = 0, ts:int = 0):Number
+		public static function toPixels(string:String, node:Node, pp100p:Number = 0, auto:Function = null, aa:Number = 0, ppts:Number = 0, ts:int = 0):Number
 		{
 			sGauge.parse(string);
 			sGauge.auto = auto;
-			return sGauge.toPixels(ppmm, ppem, ppdp, pp100p, aa, ppts, ts);
+			return sGauge.toPixels(node, pp100p, aa, ppts, ts);
 		}
 
 		private var _node:Node;
@@ -40,7 +40,7 @@ package talon.utils
 		private var _auto:Function = null;
 
 		/** @private */
-		public function AttributeGauge(node:Node, attributeName:String)
+		public function Gauge(node:Node, attributeName:String)
 		{
 			_node = node;
 			_attributeName = attributeName;
@@ -85,7 +85,8 @@ package talon.utils
 		/**
 		 * @private
 		 * Transform gauge to pixels.
-		 * Core & Hardcore function.
+		 *
+		 * Core & Hardcore function - I wrote this method first from all Talon code :-)
 		 *
 		 * @param ppmm pixels per millimeter
 		 * @param ppem pixels per em
@@ -95,15 +96,15 @@ package talon.utils
 		 * @param ppts pixels per total stars
 		 * @param ts total stars amount
 		 */
-		public function toPixels(ppmm:Number, ppem:Number, ppdp:Number, pp100p:Number = 0, aa:Number = Infinity, ppts:Number = 0, ts:int = 0):Number
+		public function toPixels(node:Node, pp100p:Number = 0, aa:Number = Infinity, ppts:Number = 0, ts:int = 0):Number
 		{
 			switch (unit)
 			{
 				case NONE:		return auto ? auto(aa) : 0;
 				case PX:		return amount;
-				case MM:		return amount * ppmm;
-				case EM:        return amount * ppem;
-				case DP:        return amount * ppdp;
+				case MM:		return amount * node.ppmm;
+				case EM:        return amount * node.ppem;
+				case DP:        return amount * node.ppdp;
 				case PERCENT:   return amount * pp100p/100;
 				case STAR:		return amount * (ts?(ppts/ts):0);
 				default:		throw new Error("Unknown gauge unit: " + unit);

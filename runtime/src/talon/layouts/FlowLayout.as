@@ -5,7 +5,7 @@ package talon.layouts
 	import talon.Attribute;
 	import talon.Node;
 	import talon.enums.Orientation;
-	import talon.utils.AttributeGauge;
+	import talon.utils.Gauge;
 	import talon.utils.ParseUtil;
 	import talon.utils.ParseUtil;
 
@@ -60,10 +60,10 @@ package talon.layouts
 				orientation = orientationAttribute.inited;
 			}
 
-			var paddingLeft:Number = node.paddingLeft.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
-			var paddingRight:Number = node.paddingRight.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
-			var paddingTop:Number = node.paddingTop.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
-			var paddingBottom:Number = node.paddingBottom.toPixels(node.ppmm, node.ppem, node.ppdp, 0);
+			var paddingLeft:Number = node.paddingLeft.toPixels(node, 0);
+			var paddingRight:Number = node.paddingRight.toPixels(node, 0);
+			var paddingTop:Number = node.paddingTop.toPixels(node, 0);
+			var paddingBottom:Number = node.paddingBottom.toPixels(node, 0);
 
 			var contentWidth:Number = maxWidth==Infinity ? 0 : (maxWidth - paddingLeft - paddingRight);
 			var contentHeight:Number = maxHeight==Infinity ? 0 : (maxHeight - paddingTop - paddingBottom);
@@ -94,7 +94,6 @@ package talon.layouts
 				var childVisible:Boolean = ParseUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBLE));
 				if (childVisible == false) continue;
 
-				// TODO: Respect minWidth/maxWidth/minHeight/maxHeight values
 				// ------------------------------------------
 				var childWidth:Number = 0;
 				var childHeight:Number = 0;
@@ -102,42 +101,42 @@ package talon.layouts
 				if (child.width.isNone && !child.height.isNone)
 				{
 					// contentWidth && and contentHeight for auto!
-					childHeight = child.height.toPixels(node.ppmm, node.ppem, node.ppdp, contentHeight, Infinity, child.height.amount, child.height.amount);
-					childWidth  = child.width.toPixels (node.ppmm, node.ppem, node.ppdp, contentWidth, childHeight, child.width.amount, child.width.amount);
+					childHeight = child.height.toPixels(node, contentHeight, Infinity, child.height.amount, child.height.amount);
+					childWidth  = child.width.toPixels(node, contentWidth, childHeight, child.width.amount, child.width.amount);
 				}
 				else if (child.height.isNone && !child.width.isNone)
 				{
-					childWidth  = child.width.toPixels (node.ppmm, node.ppem, node.ppdp, contentWidth, Infinity, child.width.amount, child.width.amount);
-					childHeight = child.height.toPixels(node.ppmm, node.ppem, node.ppdp, contentHeight, childWidth, child.height.amount, child.height.amount);
+					childWidth  = child.width.toPixels(node, contentWidth, Infinity, child.width.amount, child.width.amount);
+					childHeight = child.height.toPixels(node, contentHeight, childWidth, child.height.amount, child.height.amount);
 				}
 				else
 				{
-					childWidth  = child.width.toPixels (node.ppmm, node.ppem, node.ppdp, contentWidth, Infinity, child.width.amount, child.width.amount);
-					childHeight = child.height.toPixels(node.ppmm, node.ppem, node.ppdp, contentHeight, Infinity, child.height.amount, child.height.amount);
+					childWidth  = child.width.toPixels(node, contentWidth, Infinity, child.width.amount, child.width.amount);
+					childHeight = child.height.toPixels(node, contentHeight, Infinity, child.height.amount, child.height.amount);
 				}
 				// ------------------------------------------
 
-				var childMarginLeft:Number      = child.marginLeft.toPixels(node.ppmm, node.ppem, node.ppdp, contentWidth);
-				var childMarginRight:Number     = child.marginRight.toPixels(node.ppmm, node.ppem, node.ppdp, contentWidth);
-				var childMarginTop:Number       = child.marginTop.toPixels(node.ppmm, node.ppem, node.ppdp, contentHeight);
-				var childMarginBottom:Number    = child.marginBottom.toPixels(node.ppmm, node.ppem, node.ppdp, contentHeight);
+				var childMarginLeft:Number      = child.marginLeft.toPixels(node, contentWidth);
+				var childMarginRight:Number     = child.marginRight.toPixels(node, contentWidth);
+				var childMarginTop:Number       = child.marginTop.toPixels(node, contentHeight);
+				var childMarginBottom:Number    = child.marginBottom.toPixels(node, contentHeight);
 
 				// Setup child flow values
 				flow.beginChild();
 				flow.setChildBreakMode(child.getAttributeCache(Attribute.BREAK));
 				if (orientation == Orientation.HORIZONTAL)
 				{
-					flow.setChildLength(childWidth, child.width.unit == AttributeGauge.STAR);
+					flow.setChildLength(childWidth, child.width.unit == Gauge.STAR);
 					flow.setChildLengthMargin(childMarginLeft, childMarginRight);
-					flow.setChildThickness(childHeight, child.height.unit == AttributeGauge.STAR);
+					flow.setChildThickness(childHeight, child.height.unit == Gauge.STAR);
 					flow.setChildThicknessMargin(childMarginTop, childMarginBottom);
 					flow.setChildInlineAlign(getAlign(child, Attribute.IVALIGN));
 				}
 				else
 				{
-					flow.setChildLength(childHeight, child.height.unit == AttributeGauge.STAR);
+					flow.setChildLength(childHeight, child.height.unit == Gauge.STAR);
 					flow.setChildLengthMargin(childMarginTop, childMarginBottom);
-					flow.setChildThickness(childWidth, child.width.unit == AttributeGauge.STAR);
+					flow.setChildThickness(childWidth, child.width.unit == Gauge.STAR);
 					flow.setChildThicknessMargin(childMarginLeft, childMarginRight);
 					flow.setChildInlineAlign(getAlign(child, Attribute.IHALIGN));
 				}
@@ -149,8 +148,8 @@ package talon.layouts
 
 		private function getWrap(node:Node):Boolean { return ParseUtil.parseBoolean(node.getAttributeCache(Attribute.WRAP)); }
 		private function getAlign(node:Node, name:String):Number { return ParseUtil.parseAlign(node.getAttributeCache(name)); }
-		private function getGap(node:Node):Number { return AttributeGauge.toPixels(node.getAttributeCache(Attribute.GAP), node.ppmm, node.ppem, node.ppdp, -1); }
-		private function getInterline(node:Node):Number { return AttributeGauge.toPixels(node.getAttributeCache(Attribute.INTERLINE), node.ppmm, node.ppem, node.ppdp, -1); }
+		private function getGap(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.GAP), node); }
+		private function getInterline(node:Node):Number { return Gauge.toPixels(node.getAttributeCache(Attribute.INTERLINE), node); }
 	}
 }
 

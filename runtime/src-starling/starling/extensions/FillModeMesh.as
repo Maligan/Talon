@@ -266,14 +266,18 @@ package starling.extensions
 
 		private function setVertex(indexBase:int, indexShift:int, h:Ruler, v:Ruler):void
 		{
-			var index:int = indexBase + indexShift;
+			var vertexID:int = indexBase + indexShift;
 			var tx:Number = (indexShift==0 || indexShift==2) ? h.texAtBegin : h.texAtEnd;
 			var ty:Number = (indexShift==0 || indexShift==1) ? v.texAtBegin : v.texAtEnd;
 
-			vertexData.setPoint(index, "position", h.pos, v.pos);
-			vertexData.setPoint(index, "texCoords", tx, ty);
-			vertexData.setColor(index, "color", color);
-			vertexData.setAlpha(index, "color", alpha);
+			vertexData.setColor(vertexID, "color", color);
+			vertexData.setAlpha(vertexID, "color", alpha);
+
+			if (texture) texture.setTexCoords(vertexData, vertexID, "texCoords", tx, ty);
+			else vertexData.setPoint(vertexID, "texCoords", tx, ty);
+
+			// TODO: Add textures frame support (see starling Image tileGrid implementation)
+			vertexData.setPoint(vertexID, "position", h.pos, v.pos);
 		}
 
 		private function fillRepeat(size:Number, tsize:Number, align:Number, result:Vector.<Ruler>):void

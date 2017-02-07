@@ -7,7 +7,7 @@ package talon
 
 	import talon.layouts.Layout;
 	import talon.styles.StyleSheet;
-	import talon.utils.AttributeGauge;
+	import talon.utils.Gauge;
 	import talon.utils.AttributeStringSet;
 	import talon.utils.Trigger;
 
@@ -22,9 +22,6 @@ package talon
 
 	public final class Node
 	{
-		//
-		// Private properties
-		//
 		private var _attributes:Dictionary = new Dictionary();
 		private var _style:StyleSheet;
 		private var _styleTouches:Dictionary = new Dictionary();
@@ -59,38 +56,40 @@ package talon
 		// Strong typed attributes wrappers:
 		// For internal/layouts usage only.
 		//
-		/** @private */ public const width:AttributeGauge = new AttributeGauge(this, Attribute.WIDTH);
-		/** @private */ public const height:AttributeGauge = new AttributeGauge(this, Attribute.HEIGHT);
+		/** @private */ public const fontSize:Gauge = new Gauge(this, Attribute.FONT_SIZE);
 
-		/** @private */ public const minWidth:AttributeGauge = new AttributeGauge(this, Attribute.MIN_WIDTH);
-		/** @private */ public const minHeight:AttributeGauge = new AttributeGauge(this, Attribute.MIN_HEIGHT);
+		/** @private */ public const width:Gauge = new Gauge(this, Attribute.WIDTH);
+		/** @private */ public const height:Gauge = new Gauge(this, Attribute.HEIGHT);
 
-		/** @private */ public const maxWidth:AttributeGauge = new AttributeGauge(this, Attribute.MAX_WIDTH);
-		/** @private */ public const maxHeight:AttributeGauge = new AttributeGauge(this, Attribute.MAX_HEIGHT);
+		/** @private */ public const minWidth:Gauge = new Gauge(this, Attribute.MIN_WIDTH);
+		/** @private */ public const minHeight:Gauge = new Gauge(this, Attribute.MIN_HEIGHT);
 
-		/** @private */ public const marginTop:AttributeGauge = new AttributeGauge(this, Attribute.MARGIN_TOP);
-		/** @private */ public const marginRight:AttributeGauge = new AttributeGauge(this, Attribute.MARGIN_RIGHT);
-		/** @private */ public const marginBottom:AttributeGauge = new AttributeGauge(this, Attribute.MARGIN_BOTTOM);
-		/** @private */ public const marginLeft:AttributeGauge = new AttributeGauge(this, Attribute.MARGIN_LEFT);
+		/** @private */ public const maxWidth:Gauge = new Gauge(this, Attribute.MAX_WIDTH);
+		/** @private */ public const maxHeight:Gauge = new Gauge(this, Attribute.MAX_HEIGHT);
 
-		/** @private */ public const paddingTop:AttributeGauge = new AttributeGauge(this, Attribute.PADDING_TOP);
-		/** @private */ public const paddingRight:AttributeGauge = new AttributeGauge(this, Attribute.PADDING_RIGHT);
-		/** @private */ public const paddingBottom:AttributeGauge = new AttributeGauge(this, Attribute.PADDING_BOTTOM);
-		/** @private */ public const paddingLeft:AttributeGauge = new AttributeGauge(this, Attribute.PADDING_LEFT);
+		/** @private */ public const marginTop:Gauge = new Gauge(this, Attribute.MARGIN_TOP);
+		/** @private */ public const marginRight:Gauge = new Gauge(this, Attribute.MARGIN_RIGHT);
+		/** @private */ public const marginBottom:Gauge = new Gauge(this, Attribute.MARGIN_BOTTOM);
+		/** @private */ public const marginLeft:Gauge = new Gauge(this, Attribute.MARGIN_LEFT);
 
-		/** @private */ public const top:AttributeGauge = new AttributeGauge(this, Attribute.TOP);
-		/** @private */ public const right:AttributeGauge = new AttributeGauge(this, Attribute.RIGHT);
-		/** @private */ public const bottom:AttributeGauge = new AttributeGauge(this, Attribute.BOTTOM);
-		/** @private */ public const left:AttributeGauge = new AttributeGauge(this, Attribute.LEFT);
+		/** @private */ public const paddingTop:Gauge = new Gauge(this, Attribute.PADDING_TOP);
+		/** @private */ public const paddingRight:Gauge = new Gauge(this, Attribute.PADDING_RIGHT);
+		/** @private */ public const paddingBottom:Gauge = new Gauge(this, Attribute.PADDING_BOTTOM);
+		/** @private */ public const paddingLeft:Gauge = new Gauge(this, Attribute.PADDING_LEFT);
 
-		/** @private */ public const pivotX:AttributeGauge = new AttributeGauge(this, Attribute.PIVOT_X);
-		/** @private */ public const pivotY:AttributeGauge = new AttributeGauge(this, Attribute.PIVOT_Y);
+		/** @private */ public const top:Gauge = new Gauge(this, Attribute.TOP);
+		/** @private */ public const right:Gauge = new Gauge(this, Attribute.RIGHT);
+		/** @private */ public const bottom:Gauge = new Gauge(this, Attribute.BOTTOM);
+		/** @private */ public const left:Gauge = new Gauge(this, Attribute.LEFT);
 
-		/** @private */ public const x:AttributeGauge = new AttributeGauge(this, Attribute.X);
-		/** @private */ public const y:AttributeGauge = new AttributeGauge(this, Attribute.Y);
+		/** @private */ public const pivotX:Gauge = new Gauge(this, Attribute.PIVOT_X);
+		/** @private */ public const pivotY:Gauge = new Gauge(this, Attribute.PIVOT_Y);
 
-		/** @private */ public const originX:AttributeGauge = new AttributeGauge(this, Attribute.ORIGIN_X);
-		/** @private */ public const originY:AttributeGauge = new AttributeGauge(this, Attribute.ORIGIN_Y);
+		/** @private */ public const x:Gauge = new Gauge(this, Attribute.X);
+		/** @private */ public const y:Gauge = new Gauge(this, Attribute.Y);
+
+		/** @private */ public const originX:Gauge = new Gauge(this, Attribute.ORIGIN_X);
+		/** @private */ public const originY:Gauge = new Gauge(this, Attribute.ORIGIN_Y);
 
 		/** @private */ public const classes:AttributeStringSet = new AttributeStringSet(this, Attribute.CLASS);
 		/** @private */ public const states:AttributeStringSet = new AttributeStringSet(this, Attribute.STATE);
@@ -231,7 +230,7 @@ package talon
 		public function commit():void
 		{
 			// Update self view object attached to node
-			dispatch(Event.RESIZE); // FIXME: Split to position/size change
+			dispatch(Event.RESIZE);
 
 			// Update children nodes
 			layout.arrange(this, bounds.width, bounds.height);
@@ -258,19 +257,24 @@ package talon
 		/** Current node 'fontSize' expressed in pixels.*/
 		public function get ppem():Number
 		{
-			// FIXME: Remove base (already in Attribute.FONT_SIZE) (or recalculate it?)
-			const BASE:int = 12;
-
 			// If fontSize is inherit:
 			var attribute:Attribute = getOrCreateAttribute(Attribute.FONT_SIZE);
 			if (attribute.isInherit) return parent.ppem;
 
+			// Hardcoded version of frontSize attribute 'based' value
+			var based:int = 12;
+
 			// If it is root node and fontSize is not setted:
-			if (attribute.valueCache == "inherit") return BASE;
+			if (attribute.valueCache == "inherit") return based;
 
 			// Else calculate via parent and self values:
-			var relative:int = parent ? parent.ppem : BASE;
-			return AttributeGauge.toPixels(attribute.value, ppmm, relative, ppdp, relative);
+			var ppem:int = parent ? parent.ppem : based;
+
+			// Avoid cycling (ppem -> ppem -> ppem -> ...) in toPixels method with EM units
+			if (fontSize.unit == Gauge.EM)
+				return fontSize.amount * ppem;
+
+			return fontSize.toPixels(this, ppem);
 		}
 
 		/** This is default 'auto' callback for gauges: width, minWidth, maxWidth. */

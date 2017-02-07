@@ -62,9 +62,8 @@ package talon
 
 		public static const FONT_COLOR:String                      = registerAttribute("fontColor",             INHERIT, "#FFFFFF");
 		public static const FONT_NAME:String                       = registerAttribute("fontName",              INHERIT, "mini");
-		public static const FONT_SIZE:String                       = registerAttribute("fontSize",              INHERIT, "12"); // FIXME: add 'px'
+		public static const FONT_SIZE:String                       = registerAttribute("fontSize",              INHERIT, "12px"); // Has hardcoded value in Node.ppem method
 		public static const FONT_AUTO_SCALE:String                 = registerAttribute("fontAutoScale",         INHERIT, "false");
-		public static const FONT_SHARPNESS:String                  = registerAttribute("fontSharpness",         INHERIT, "1");
 
 		public static const TOUCH_MODE:String                      = registerAttribute("touchMode",             TouchMode.BRANCH);
 		public static const TOUCH_EVENTS:String                    = registerAttribute("touchEvents",           FALSE);
@@ -239,7 +238,7 @@ package talon
 				_valueCached = true;
 
 				// Extract resource value
-                // FIXME: Stack overflow (loops)
+                // TODO: Stack overflow (loops)
 				while (_valueCache is String)
 				{
 					var key:String = ParseUtil.parseResource(_valueCache);

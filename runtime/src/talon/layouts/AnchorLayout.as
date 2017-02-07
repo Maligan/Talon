@@ -1,7 +1,7 @@
 package talon.layouts
 {
 	import talon.Node;
-	import talon.utils.AttributeGauge;
+	import talon.utils.Gauge;
 
 	public class AnchorLayout extends Layout
 	{
@@ -9,13 +9,13 @@ package talon.layouts
 		{
 			var width:Number = 0;
 
-			width += node.paddingLeft.toPixels(node.ppmm, node.ppem, node.ppdp)
-				   + node.paddingRight.toPixels(node.ppmm, node.ppem, node.ppdp);
+			width += node.paddingLeft.toPixels(node)
+				   + node.paddingRight.toPixels(node);
 
 			for each (var child:Node in node)
 			{
-				width += child.left.toPixels(child.ppmm, child.ppem, child.ppdp)
-					   + child.right.toPixels(child.ppmm, child.ppem, child.ppdp)
+				width += child.left.toPixels(child)
+					   + child.right.toPixels(child)
 					   + calcSize(child, child.width, child.height, 0, 0, child.minWidth, child.maxWidth, 0);
 			}
 
@@ -26,13 +26,13 @@ package talon.layouts
 		{
 			var height:Number = 0;
 
-			height += node.paddingTop.toPixels(node.ppmm, node.ppem, node.ppdp)
-					+ node.paddingBottom.toPixels(node.ppmm, node.ppem, node.ppdp);
+			height += node.paddingTop.toPixels(node)
+					+ node.paddingBottom.toPixels(node);
 
 			for each (var child:Node in node)
 			{
-				height += child.top.toPixels(child.ppmm, child.ppem, child.ppdp)
-					+ child.bottom.toPixels(child.ppmm, child.ppem, child.ppdp)
+				height += child.top.toPixels(child)
+					+ child.bottom.toPixels(child)
 					+ calcSize(child, child.height, child.width, 0, 0, child.minHeight, child.maxHeight, 0);
 			}
 
@@ -41,10 +41,10 @@ package talon.layouts
 
 		public override function arrange(node:Node, width:Number, height:Number):void
 		{
-			var paddingLeft:Number = node.paddingLeft.toPixels(node.ppmm, node.ppem, node.ppdp, width);
-			var paddingRight:Number = node.paddingRight.toPixels(node.ppmm, node.ppem, node.ppdp, width);
-			var paddingTop:Number = node.paddingTop.toPixels(node.ppmm, node.ppem, node.ppdp, height);
-			var paddingBottom:Number = node.paddingBottom.toPixels(node.ppmm, node.ppem, node.ppdp, height);
+			var paddingLeft:Number = node.paddingLeft.toPixels(node, width);
+			var paddingRight:Number = node.paddingRight.toPixels(node, width);
+			var paddingTop:Number = node.paddingTop.toPixels(node, height);
+			var paddingBottom:Number = node.paddingBottom.toPixels(node, height);
 
 			var contentWidth:Number = width - paddingLeft - paddingRight;
 			var contentHeight:Number = height - paddingTop - paddingBottom;
@@ -61,8 +61,8 @@ package talon.layouts
 				}
 				else
 				{
-					child.bounds.left = paddingLeft + child.left.toPixels(child.ppmm, child.ppem, child.ppdp, contentWidth);
-					child.bounds.right = width - paddingRight - child.right.toPixels(child.ppmm, child.ppem, child.ppdp, contentWidth);
+					child.bounds.left = paddingLeft + child.left.toPixels(child, contentWidth);
+					child.bounds.right = width - paddingRight - child.right.toPixels(child, contentWidth);
 				}
 
 				// y-axis
@@ -73,34 +73,34 @@ package talon.layouts
 				}
 				else
 				{
-					child.bounds.top = paddingTop + child.top.toPixels(child.ppmm, child.ppem, child.ppdp, contentHeight);
-					child.bounds.bottom = height - paddingBottom - child.bottom.toPixels(child.ppmm, child.ppem, child.ppdp, contentHeight);
+					child.bounds.top = paddingTop + child.top.toPixels(child, contentHeight);
+					child.bounds.bottom = height - paddingBottom - child.bottom.toPixels(child, contentHeight);
 				}
 
 				child.commit();
 			}
 		}
 
-		private function isRespectingSize(left:AttributeGauge, right:AttributeGauge):Boolean
+		private function isRespectingSize(left:Gauge, right:Gauge):Boolean
 		{
-			return left.isNone || left.unit == AttributeGauge.STAR
-				|| right.isNone || right.unit == AttributeGauge.STAR;
+			return left.isNone || left.unit == Gauge.STAR
+				|| right.isNone || right.unit == Gauge.STAR;
 		}
 
-		private function numStars(gauge:AttributeGauge):int
+		private function numStars(gauge:Gauge):int
 		{
-			return gauge.unit == AttributeGauge.STAR ? gauge.amount : 0;
+			return gauge.unit == Gauge.STAR ? gauge.amount : 0;
 		}
 
-		private function calcOffset(child:Node, childWidth:Number, childLeft:AttributeGauge, childRight:AttributeGauge, parentWidth:Number, paddingLeft:Number, paddingRight:Number):Number
+		private function calcOffset(child:Node, childWidth:Number, childLeft:Gauge, childRight:Gauge, parentWidth:Number, paddingLeft:Number, paddingRight:Number):Number
 		{
 			var contentWidth:Number = parentWidth - paddingLeft - paddingRight;
 
 			var totalPx:Number =  contentWidth - childWidth;
 			var totalStars:int = numStars(childLeft) + numStars(childRight);
 
-			var leftPx:Number = childLeft.toPixels(child.ppem, child.ppem, child.ppdp, childWidth, 0, totalPx, totalStars);
-			var rightPx:Number = childRight.toPixels(child.ppmm, child.ppem, child.ppdp, contentWidth, 0, totalPx, totalStars);
+			var leftPx:Number = childLeft.toPixels(child, childWidth, 0, totalPx, totalStars);
+			var rightPx:Number = childRight.toPixels(child, contentWidth, 0, totalPx, totalStars);
 
 			var align:Number;
 			if (childLeft.isNone && !childRight.isNone) 		align = 1;
@@ -110,21 +110,21 @@ package talon.layouts
 			return Layout.pad(parentWidth, childWidth, paddingLeft + leftPx, paddingRight + rightPx, align);
 		}
 
-		private function calcSize(child:Node, mainSize:AttributeGauge, crossSize:AttributeGauge, mainContentSize:Number, crossContentSize:Number, mainMinSize:AttributeGauge, mainMaxSize:AttributeGauge, totalStars:int):Number
+		private function calcSize(child:Node, mainSize:Gauge, crossSize:Gauge, mainContentSize:Number, crossContentSize:Number, mainMinSize:Gauge, mainMaxSize:Gauge, totalStars:int):Number
 		{
 			var valueIsDependent:Boolean = mainSize.isNone && !crossSize.isNone;
-			var valueAutoArg:Number = valueIsDependent ? crossSize.toPixels(child.ppmm, child.ppem, child.ppdp, crossContentSize) : Infinity;
-			var value:Number = mainSize.toPixels(child.ppmm, child.ppem, child.ppdp, mainContentSize, valueAutoArg, mainContentSize, totalStars);
+			var valueAutoArg:Number = valueIsDependent ? crossSize.toPixels(child, crossContentSize) : Infinity;
+			var value:Number = mainSize.toPixels(child, mainContentSize, valueAutoArg, mainContentSize, totalStars);
 
 			if (!mainMinSize.isNone)
 			{
-				var min:Number = mainMinSize.toPixels(child.ppmm, child.ppem, child.ppdp, mainContentSize);
+				var min:Number = mainMinSize.toPixels(child, mainContentSize);
 				if (min > value) return min;
 			}
 
 			if (!mainMaxSize.isNone)
 			{
-				var max:Number = mainMaxSize.toPixels(child.ppem, child.ppem, child.ppdp, mainContentSize);
+				var max:Number = mainMaxSize.toPixels(child, mainContentSize);
 				if (max < value) return max;
 			}
 

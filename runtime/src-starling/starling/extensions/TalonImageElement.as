@@ -38,15 +38,15 @@ package starling.extensions
 		private function measureWidth(height:Number):Number
 		{
 			return (texture ? measure(height, texture.height, texture.width) : 0)
-				 + node.paddingLeft.toPixels(node.ppmm, node.ppem, node.ppdp)
-				 + node.paddingRight.toPixels(node.ppmm, node.ppem, node.ppdp);
+				 + node.paddingLeft.toPixels(node)
+				 + node.paddingRight.toPixels(node);
 		}
 
 		private function measureHeight(width:Number):Number
 		{
 			return (texture ? measure(width,  texture.width,  texture.height) : 0)
-				 + node.paddingTop.toPixels(node.ppmm, node.ppem, node.ppdp)
-				 + node.paddingBottom.toPixels(node.ppmm, node.ppem, node.ppdp);
+				 + node.paddingTop.toPixels(node)
+				 + node.paddingBottom.toPixels(node);
 		}
 
 		private function measure(knownDimension:Number, knownDimensionOfTexture:Number, measuredDimensionOfTexture:Number):Number
@@ -67,16 +67,16 @@ package starling.extensions
 
 		private function onNodeResize():void
 		{
-			pivotX = node.pivotX.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width);
-			pivotY = node.pivotY.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.height);
+			pivotX = node.pivotX.toPixels(node, node.bounds.width);
+			pivotY = node.pivotY.toPixels(node, node.bounds.height);
 
 			x = node.bounds.x + pivotX;
 			y = node.bounds.y + pivotY;
 
-			var paddingLeft:Number = node.paddingLeft.toPixels(node.ppmm, node.ppem, node.ppdp);
-			var paddingRight:Number = node.paddingRight.toPixels(node.ppmm, node.ppem, node.ppdp);
-			var paddingTop:Number = node.paddingTop.toPixels(node.ppmm, node.ppem, node.ppdp);
-			var paddingBottom:Number = node.paddingBottom.toPixels(node.ppmm, node.ppem, node.ppdp);
+			var paddingLeft:Number = node.paddingLeft.toPixels(node);
+			var paddingRight:Number = node.paddingRight.toPixels(node);
+			var paddingTop:Number = node.paddingTop.toPixels(node);
+			var paddingBottom:Number = node.paddingBottom.toPixels(node);
 
 			readjustSize(node.bounds.width-paddingLeft-paddingRight, node.bounds.height-paddingTop-paddingBottom);
 

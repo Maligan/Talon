@@ -44,6 +44,9 @@ package starling.extensions
 			_bridge.addAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
+
+			// TODO: Allow setup batchable flag
+			batchable = true;
 		}
 
 		//
@@ -61,8 +64,8 @@ package starling.extensions
 			var result:Rectangle = super.getBounds(this, _helperRect);
 
 			// Add padding
-			result.width  += node.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp) + node.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp);
-			result.height += node.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp)  + node.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp);
+			result.width  += node.paddingLeft.toPixels(node) + node.paddingRight.toPixels(node);
+			result.height += node.paddingTop.toPixels(node)  + node.paddingBottom.toPixels(node);
 
 			// Remove native flash / starling hardcoded 2px padding
 			result.width  -= NATIVE_TEXT_FIELD_PADDING * 2;
@@ -109,8 +112,8 @@ package starling.extensions
 
 				// Add horizontal padding
 				var halign:Number = ParseUtil.parseAlign(format.horizontalAlign);
-				var paddingLeft:Number = node.paddingLeft.toPixels(node.ppem, node.ppem, node.ppdp);
-				var paddingRight:Number = node.paddingRight.toPixels(node.ppem, node.ppem, node.ppdp);
+				var paddingLeft:Number = node.paddingLeft.toPixels(node);
+				var paddingRight:Number = node.paddingRight.toPixels(node);
 
 				var isHorizontalAutoSize:Boolean = super.autoSize == TextFieldAutoSize.HORIZONTAL || super.autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
 				if (isHorizontalAutoSize)
@@ -120,8 +123,8 @@ package starling.extensions
 
 				// Add vertical padding
 				var valign:Number = ParseUtil.parseAlign(format.verticalAlign);
-				var paddingTop:Number = node.paddingTop.toPixels(node.ppem, node.ppem, node.ppdp);
-				var paddingBottom:Number = node.paddingBottom.toPixels(node.ppem, node.ppem, node.ppdp);
+				var paddingTop:Number = node.paddingTop.toPixels(node);
+				var paddingBottom:Number = node.paddingBottom.toPixels(node);
 
 				var isVerticalAutoSize:Boolean = super.autoSize == TextFieldAutoSize.VERTICAL || super.autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
 				if (isVerticalAutoSize)
@@ -168,14 +171,19 @@ package starling.extensions
 		// Properties Delegating
 		//
 
-		// TODO: sharpness, gridFitType
 		private function onFontColorChange():void { format.color = ParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
 		private function onFontSizeChange():void { format.size = node.ppem }
 		private function onFontNameChange():void { format.font = node.getAttributeCache(Attribute.FONT_NAME) || BitmapFont.MINI; }
 		private function onHAlignChange():void { format.horizontalAlign = _node.getAttributeCache(Attribute.HALIGN) }
 		private function onVAlignChange():void { format.verticalAlign = _node.getAttributeCache(Attribute.VALIGN) }
-		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); node.invalidate(); } // TODO: What about invalidate()?
 		private function onAutoScaleChange():void { super.autoScale = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.FONT_AUTO_SCALE)); }
+		private function onTextChange():void
+		{
+			super.text = _node.getAttributeCache(Attribute.TEXT);
+
+			if (autoSize != TextFieldAutoSize.NONE)
+				node.invalidate();
+		}
 
 		//
 		// Properties

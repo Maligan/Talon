@@ -62,8 +62,8 @@ package starling.extensions
 		private function onNodeResize():void
 		{
 			// if in percents
-			super.pivotX = node.pivotX.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.width);
-			super.pivotY = node.pivotY.toPixels(node.ppmm, node.ppem, node.ppdp, node.bounds.height);
+			super.pivotX = node.pivotX.toPixels(node, node.bounds.width);
+			super.pivotY = node.pivotY.toPixels(node, node.bounds.height);
 
 			x = node.bounds.x + pivotX;
 			y = node.bounds.y + pivotY;

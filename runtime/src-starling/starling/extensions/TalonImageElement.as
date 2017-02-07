@@ -116,7 +116,7 @@ package starling.extensions
 
 		public override function dispose():void
 		{
-			node.dispose();
+			_bridge.dispose();
 			super.dispose();
 		}
 

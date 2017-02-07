@@ -415,6 +415,12 @@ package starling.extensions
 			return resultRect;
 		}
 
+		public function dispose():void
+		{
+			_node.dispose();
+			_background.dispose();
+		}
+
 		// Flags
 
 		public function get hasOpaqueBackground():Boolean

@@ -491,7 +491,16 @@ package talon.browser.desktop.plugins
 				_locked = value;
 				_menu.locked = !value;
 				_isolatorContainer.touchGroup = value;
-				_isolatorContainer.filter = value ? new BlurFilter(1, 1) : null;
+
+				if (_locked)
+				{
+					_isolatorContainer.filter = new BlurFilter(1, 1);
+				}
+				else if (_isolatorContainer.filter)
+				{
+					_isolatorContainer.filter.dispose();
+					_isolatorContainer.filter = null;
+				}
 			}
 		}
 

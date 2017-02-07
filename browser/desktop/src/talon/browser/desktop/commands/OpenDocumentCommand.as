@@ -52,7 +52,7 @@ package talon.browser.desktop.commands
 			var sourcePathProperty:String = document.properties.getValueOrDefault(DesktopDocumentProperty.SOURCE_PATH, String);
 			var sourcePath:File = config.parent.resolvePath(sourcePathProperty || config.parent.nativePath);
 			if (sourcePath.exists == false) sourcePath = config.parent;
-			var sourcePathReference:DesktopFileReference = new DesktopFileReference(sourcePath, sourcePath);
+			var sourcePathReference:DesktopFileReference = DesktopFileReference.getReference(sourcePath, sourcePath);
 
 			// Add virtual dirs (NB! Before source root, for priority reasons)
 			var virtualPattern:RegExp = /\[(.*)]/;
@@ -67,7 +67,7 @@ package talon.browser.desktop.commands
 				var virtualValue:String = document.properties.getValueOrDefault(virtualName);
 
 				var realFile:File = sourcePath.resolvePath(virtualValue);
-				var realFileReference:DesktopFileReference = new DesktopFileReference(realFile, realFile, virtualPath);
+				var realFileReference:DesktopFileReference = DesktopFileReference.getReference(realFile, realFile, virtualPath);
 
 				document.files.addReference(realFileReference);
 			}

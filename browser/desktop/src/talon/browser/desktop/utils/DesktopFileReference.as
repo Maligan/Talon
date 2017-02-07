@@ -14,39 +14,60 @@ package talon.browser.desktop.utils
 	[Event(name="change", type="flash.events.Event")]
 	public class DesktopFileReference extends EventDispatcher implements IFileReference
 	{
+		public static const sPool:Vector.<DesktopFileReference> = new <DesktopFileReference>[];
+
+		public static function getReference(target:File, root:File, rootPrefix:String = null):DesktopFileReference
+		{
+			var reference:DesktopFileReference = sPool.pop() || new DesktopFileReference();
+			reference.reset(target, root, rootPrefix);
+			return reference;
+		}
+
+		public static function putReference(reference:DesktopFileReference):void
+		{
+			reference.reset(null, null, null);
+			sPool[sPool.length] = reference;
+		}
+
 		private static const NAME_REGEX:RegExp = /([^\?\/\\]+?)(?:\.([\w\-]+))?(?:\?.*)?$/;
 
 		private var _root:File;
 		private var _rootPrefix:String;
-		private var _target:File;
 		private var _monitor:FileMonitor;
 
 		private var _cacheBytes:ByteArray;
 		private var _cacheBytesAsXML:XML;
 		private var _cacheError:Error;
 
-		public function DesktopFileReference(target:File, root:File, rootPrefix:String = null)
+		public function DesktopFileReference()
 		{
-			if (!target) throw new ArgumentError("File must be non null");
-			if (!root) throw new ArgumentError("Root must be non null");
-
-			_root = root;
-			_rootPrefix = rootPrefix ? rootPrefix.replace(/\/$/, "") : "";
-			_target = target;
-			_monitor = new FileMonitor(_target);
+			_monitor = new FileMonitor();
 			_monitor.addEventListener(Event.CHANGE, onFileChange);
 			_monitor.watch();
 		}
 
 		private function onFileChange(e:*):void
 		{
+			clearCache();
+			dispatchEvent(new Event(Event.CHANGE));
+		}
+
+		private function reset(target:File, root:File, rootPrefix:String):void
+		{
+			clearCache();
+
+			_root = root;
+			_rootPrefix = rootPrefix ? rootPrefix.replace(/\/$/, "") : "";
+			_monitor.file = target;
+		}
+
+		private function clearCache():void
+		{
 			_cacheBytes && _cacheBytes.clear();
 			_cacheBytes = null;
 			_cacheBytesAsXML && System.disposeXML(_cacheBytesAsXML);
 			_cacheBytesAsXML = null;
 			_cacheError = null;
-
-			dispatchEvent(new Event(Event.CHANGE));
 		}
 
 		//
@@ -98,12 +119,12 @@ package talon.browser.desktop.utils
 			return result;
 		}
 
-		public function get data():ByteArray { return _target.exists ? cacheBytes : null; }
+		public function get data():ByteArray { return target.exists ? cacheBytes : null; }
 
 		//
 		// Properties
 		//
-		public function get target():File { return _target; }
+		public function get target():File { return _monitor.file; }
 
 		public function get root():File { return _root; }
 
@@ -126,7 +147,7 @@ package talon.browser.desktop.utils
 			try
 			{
 				result = new ByteArray();
-				stream.open(_target, FileMode.READ);
+				stream.open(target, FileMode.READ);
 				stream.readBytes(result, 0, stream.bytesAvailable);
 			}
 			catch (e:Error)

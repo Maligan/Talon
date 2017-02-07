@@ -30,10 +30,10 @@ package talon.browser.platform.document.files
 			_mappings[checker] = typeClass;
 		}
 
-		public function addReference(reference:IFileReference):void
+		public function addReference(reference:IFileReference):Boolean
 		{
-			if (reference.data === null) return;
-			if (hasURL(reference.path) === true) return;
+			if (reference.data === null) return false;
+			if (hasURL(reference.path) === true) return false;
 
 			// Initialize reference
 			reference.addEventListener(Event.CHANGE, onReferenceChange);
@@ -41,6 +41,8 @@ package talon.browser.platform.document.files
 
 			// Create controller
 			attachController(reference);
+
+			return true;
 		}
 
 		public function removeReference(reference:IFileReference):void

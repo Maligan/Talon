@@ -17,8 +17,6 @@ package talon.browser.platform.popups
 
 		internal final function ctor(manager:PopupManager, data:Object = null):void
 		{
-			node.setAttribute(Attribute.POSITION, "50%");
-
 			_query = new TalonQuery(this);
 			_manager = manager;
 			_data = data;

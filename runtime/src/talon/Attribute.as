@@ -99,14 +99,6 @@ package talon
 		public static const TEXT:String                            = registerAttribute("text");
 		public static const SOURCE:String                          = registerAttribute("source");
 
-		[Deprecated] public static const X:String                  = registerAttribute("x",                   "0px");
-		[Deprecated] public static const Y:String                  = registerAttribute("y",                   "0px");
-		[Deprecated] public static const POSITION:String           = registerComposite("position",            [X, Y]);
-
-		[Deprecated] public static const ORIGIN_X:String           = registerAttribute("originX",              NONE);
-		[Deprecated] public static const ORIGIN_Y:String           = registerAttribute("originY",              NONE);
-		[Deprecated] public static const ORIGIN:String             = registerComposite("origin",               [ORIGIN_X, ORIGIN_Y]);
-
 		//
 		// Defaults
 		//

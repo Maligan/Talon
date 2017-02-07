@@ -85,12 +85,6 @@ package talon
 		/** @private */ public const pivotX:Gauge = new Gauge(this, Attribute.PIVOT_X);
 		/** @private */ public const pivotY:Gauge = new Gauge(this, Attribute.PIVOT_Y);
 
-		/** @private */ public const x:Gauge = new Gauge(this, Attribute.X);
-		/** @private */ public const y:Gauge = new Gauge(this, Attribute.Y);
-
-		/** @private */ public const originX:Gauge = new Gauge(this, Attribute.ORIGIN_X);
-		/** @private */ public const originY:Gauge = new Gauge(this, Attribute.ORIGIN_Y);
-
 		/** @private */ public const classes:AttributeStringSet = new AttributeStringSet(this, Attribute.CLASS);
 		/** @private */ public const states:AttributeStringSet = new AttributeStringSet(this, Attribute.STATE);
 

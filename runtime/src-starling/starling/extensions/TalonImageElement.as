@@ -62,7 +62,7 @@ package starling.extensions
 		private function onSourceChange():void
 		{
 			texture = node.getAttributeCache(Attribute.SOURCE) as Texture;
-			readjustSize();
+			if (node.width.isNone || node.height.isNone) node.invalidate();
 		}
 
 		private function onNodeResize():void

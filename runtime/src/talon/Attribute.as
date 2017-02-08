@@ -40,10 +40,11 @@ package talon
 		public static const PADDING_LEFT:String                    = registerAttribute("paddingLeft",           NONE);
 		public static const PADDING:String                         = registerComposite("padding",               [PADDING_TOP, PADDING_RIGHT, PADDING_BOTTOM, PADDING_LEFT]);
 
-		public static const LEFT:String                     	   = registerAttribute("left",                  NONE);
 		public static const TOP:String                      	   = registerAttribute("top",                   NONE);
 		public static const RIGHT:String                    	   = registerAttribute("right",                 NONE);
 		public static const BOTTOM:String                   	   = registerAttribute("bottom",                NONE);
+		public static const LEFT:String                     	   = registerAttribute("left",                  NONE);
+		public static const ANCHOR:String                          = registerComposite("anchor",                [TOP, RIGHT, BOTTOM, LEFT]);
 
 		public static const FILL:String                            = registerAttribute("fill",                  NONE);
 		public static const FILL_STRETCH_GRID_TOP:String           = registerAttribute("fillStretchGridTop",    NONE);

@@ -41,25 +41,25 @@ package talon.utils
 		//
 		// Factory
 		//
-		public function create(source:Object, includeStyleSheet:Boolean, includeResources:Boolean):Object
+		public function create(xmlOrKey:Object, includeStyleSheet:Boolean, includeResources:Boolean):Object
 		{
 			var template:XML = null;
 
-			if (source is XML) template = source as XML;
+			if (xmlOrKey is XML) template = xmlOrKey as XML;
 			else
 			{
-				template = _parser.templatesXML[source];
+				template = _parser.templatesXML[xmlOrKey];
 
 				for (var tag:String in _parser.templatesTag)
 				{
-					if (_parser.templatesTag[tag] == source)
+					if (_parser.templatesTag[tag] == xmlOrKey)
 					{
 						_parserTag = tag;
 						break;
 					}
 				}
 
-				if (template == null) throw new ArgumentError("Template with id: " + source + " doesn't exist");
+				if (template == null) throw new ArgumentError("Template with id: " + xmlOrKey + " doesn't exist");
 			}
 
 			_parserLastTemplateRoot = null;

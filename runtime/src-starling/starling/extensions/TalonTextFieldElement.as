@@ -18,8 +18,6 @@ package starling.extensions
 
 	public class TalonTextFieldElement extends TextField implements ITalonElement
 	{
-		private static const NATIVE_TEXT_FIELD_PADDING:int = 2;
-
 		private static var _helperRect:Rectangle = new Rectangle();
 
 		private var _node:Node;
@@ -31,6 +29,7 @@ package starling.extensions
 			super(0, 0, null);
 
 			_node = new Node();
+			_node.getOrCreateAttribute(Attribute.WRAP).inited = "true";
 			_node.addTriggerListener(Event.RESIZE, onNodeResize);
 			_node.width.auto = measureWidth;
 			_node.height.auto = measureHeight;
@@ -38,6 +37,7 @@ package starling.extensions
 			// Bridge
 			_bridge = new TalonDisplayObjectBridge(this, node);
 			_bridge.addAttributeChangeListener(Attribute.TEXT, onTextChange);
+			_bridge.addAttributeChangeListener(Attribute.WRAP, onWrapChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_AUTO_SCALE, onAutoScaleChange);
 			_bridge.addAttributeChangeListener(Attribute.HALIGN, onHAlignChange, true);
 			_bridge.addAttributeChangeListener(Attribute.VALIGN, onVAlignChange, true);
@@ -45,8 +45,7 @@ package starling.extensions
 			_bridge.addAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
 
-			// TODO: Allow setup batchable flag
-			batchable = true;
+			batchable = true; // TODO: Allow setup batchable flag
 		}
 
 		//
@@ -59,17 +58,14 @@ package starling.extensions
 			super.autoSize = getAutoSize(availableWidth == Infinity, availableHeight == Infinity);
 			super.width = availableWidth;
 			super.height = availableHeight;
+			var result:Rectangle = super.getBounds(this, _helperRect); // NB! Use super.getBounds()
 
-			// NB! Use super.getBounds()
-			var result:Rectangle = super.getBounds(this, _helperRect);
+			// TODO: For example 'mini' font - lineHeight = 8px (in config), but real height = 5px, getBounds() return real height
+			// super.autoSize = TextFieldAutoSize.NONE;
 
 			// Add padding
 			result.width  += node.paddingLeft.toPixels(node) + node.paddingRight.toPixels(node);
 			result.height += node.paddingTop.toPixels(node)  + node.paddingBottom.toPixels(node);
-
-			// Remove native flash / starling hardcoded 2px padding
-			result.width  -= NATIVE_TEXT_FIELD_PADDING * 2;
-			result.height -= NATIVE_TEXT_FIELD_PADDING * 2;
 
 			return result;
 		}
@@ -102,7 +98,7 @@ package starling.extensions
 
 		private function recomposeWithPadding():void
 		{
-			if (numChildren > 0)
+			if (_requiresRecomposition)
 			{
 				// Invoke super.recompose() - via this hack.
 				super.getBounds(this, _helperRect);
@@ -117,7 +113,7 @@ package starling.extensions
 
 				var isHorizontalAutoSize:Boolean = super.autoSize == TextFieldAutoSize.HORIZONTAL || super.autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
 				if (isHorizontalAutoSize)
-					meshBatch.x += Layout.pad(width, meshBounds.width, paddingLeft - NATIVE_TEXT_FIELD_PADDING, paddingRight - NATIVE_TEXT_FIELD_PADDING, halign);
+					meshBatch.x += Layout.pad(width, meshBounds.width, paddingLeft, paddingRight, halign);
 				else
 					meshBatch.x += Layout.pad(0, 0, paddingLeft, paddingRight, halign);
 
@@ -128,9 +124,11 @@ package starling.extensions
 
 				var isVerticalAutoSize:Boolean = super.autoSize == TextFieldAutoSize.VERTICAL || super.autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
 				if (isVerticalAutoSize)
-					meshBatch.y += Layout.pad(height, meshBounds.height, paddingTop - NATIVE_TEXT_FIELD_PADDING, paddingBottom - NATIVE_TEXT_FIELD_PADDING, valign);
+					meshBatch.y += Layout.pad(height, meshBounds.height, paddingTop, paddingBottom, valign);
 				else
 					meshBatch.y += Layout.pad(0, 0, paddingTop, paddingBottom, valign);
+
+				_requiresRecomposition = false;
 			}
 		}
 
@@ -143,13 +141,14 @@ package starling.extensions
 		{
 			if (_requiresRecomposition)
 			{
-				_requiresRecomposition = false;
+				setRequiresRecomposition();
 				recomposeWithPadding();
 			}
 
 			// In this call recompose() nether will be invoked (already invoked)
 			// and now this is analog of super.super.render() :-)
-			super.render(painter);		}
+			super.render(painter);
+		}
 
 		public override function hitTest(localPoint:Point):DisplayObject
 		{
@@ -177,9 +176,10 @@ package starling.extensions
 		private function onHAlignChange():void { format.horizontalAlign = _node.getAttributeCache(Attribute.HALIGN) }
 		private function onVAlignChange():void { format.verticalAlign = _node.getAttributeCache(Attribute.VALIGN) }
 		private function onAutoScaleChange():void { super.autoScale = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.FONT_AUTO_SCALE)); }
+		private function onWrapChange():void { super.wordWrap = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.WRAP)); }
 		private function onTextChange():void
 		{
-			super.text = _node.getAttributeCache(Attribute.TEXT);
+			super.text = _node.getAttributeCache(Attribute.TEXT) || _node.getOrCreateAttribute(Attribute.TEXT).value;
 
 			if (autoSize != TextFieldAutoSize.NONE)
 				node.invalidate();
@@ -190,6 +190,8 @@ package starling.extensions
 		//
 		public function get node():Node { return _node; }
 
+
+		override public function set wordWrap(value:Boolean):void {  node.setAttribute(Attribute.WRAP, value.toString()); }
 		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
 		public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.FONT_AUTO_SCALE, value.toString()); }
 

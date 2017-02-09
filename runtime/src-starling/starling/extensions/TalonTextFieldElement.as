@@ -183,11 +183,15 @@ package starling.extensions
 
 		private function onNodeResize():void
 		{
-			x = _node.bounds.x;
-			y = _node.bounds.y;
+			// TODO: Make pivot/position in bridge?
+			pivotX = node.pivotX.toPixels(node, node.bounds.width);
+			pivotY = node.pivotY.toPixels(node, node.bounds.height);
 
-			width = _node.bounds.width;
-			height = _node.bounds.height;
+			x = node.bounds.x + pivotX;
+			y = node.bounds.y + pivotY;
+
+			width = node.bounds.width;
+			height = node.bounds.height;
 		}
 
 		//

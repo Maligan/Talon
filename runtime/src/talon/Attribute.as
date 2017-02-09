@@ -60,6 +60,10 @@ package talon
 		public static const FILL_MODE_VERTICAL:String              = registerAttribute("fillModeVertical",      FillMode.STRETCH);
 		public static const FILL_MODE:String                       = registerComposite("fillMode",              [FILL_MODE_HORIZONTAL, FILL_MODE_VERTICAL]);
 		public static const FILL_BLEND_MODE:String                 = registerAttribute("fillBlendMode",         "auto");
+		public static const FILL_ALIGN_HORIZONTAL:String           = registerAttribute("fillAlignHorizontal",   "left");
+		public static const FILL_ALIGN_VERTICAAL:String            = registerAttribute("fillAlignVertical",     "top");
+		public static const FILL_ALIGN:String                 	   = registerComposite("fillAlign",             [FILL_ALIGN_HORIZONTAL, FILL_ALIGN_VERTICAAL]);
+
 
 		public static const FONT_COLOR:String                      = registerAttribute("fontColor",             INHERIT, "#FFFFFF");
 		public static const FONT_NAME:String                       = registerAttribute("fontName",              INHERIT, "mini");

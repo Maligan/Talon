@@ -106,7 +106,7 @@ package starling.extensions
 				var charQuadIndex:int = i - numNonDrawableChars;
 				if (charQuadIndex >= numDrawableChars) break;
 
-				var charIsDrawable:Boolean = char && charID != 32 && charID != 9 && charID != 10 && charID != 13;
+				var charIsDrawable:Boolean = char != null;
 				if (charIsDrawable)
 				{
 					if (scale != scale)

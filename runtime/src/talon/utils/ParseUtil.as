@@ -57,12 +57,12 @@ package talon.utils
 			var unit:String = split[2];
 			switch (unit)
 			{
-				case "deg":
-					return amount * Math.PI / 180;
-
 				case "rad":
-				default:
 					return amount;
+
+				case "deg":
+				default:
+					return amount * Math.PI / 180;
 			}
 		}
 
@@ -74,7 +74,6 @@ package talon.utils
 		 * First item - function name, second and other - arguments
 		 * Or return null if input string doesn't match css functional notation.
 		 *
-		 * CSS functional notation:
 		 * The format of functional notation is: 'function('
 		 * followed by optional white space
 		 * followed by an optional single quote (') or double quote (") character

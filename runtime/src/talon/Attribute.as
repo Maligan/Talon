@@ -225,7 +225,7 @@ package talon
 		{
 			if (_valueCached == false)
 			{
-				// By default is equal to value
+				// By default equal to value
 				_valueCache = value;
 				_valueCacheIsResource = false;
 				_valueCached = true;

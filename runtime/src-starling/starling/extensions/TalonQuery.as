@@ -11,6 +11,7 @@ package starling.extensions
 	{
 		private var _elements:Vector.<ITalonElement>;
 		private var _elementsBackBuffer:Vector.<ITalonElement>;
+		private var _elementsAreBusy:Boolean;
 
 		public function TalonQuery(element:ITalonElement = null):void
 		{
@@ -21,10 +22,14 @@ package starling.extensions
 
 		public function reset(element:ITalonElement = null):TalonQuery
 		{
-			_elements.length = 0;
-			_elementsBackBuffer.length = 0;
-			_elements[0] = element;
-			return this;
+			if (_elementsAreBusy) return clone().reset(element)
+			else
+			{
+				_elements.length = 0;
+				_elementsBackBuffer.length = 0;
+				_elements[0] = element;
+				return this;
+			}
 		}
 
 		//
@@ -32,18 +37,22 @@ package starling.extensions
 		//
 		public function select(selector:String):TalonQuery
 		{
-			// Select
-			var result:Vector.<ITalonElement> = _elementsBackBuffer;
+			if (_elementsAreBusy) return clone().select(selector);
+			else
+			{
+				// Select
+				var result:Vector.<ITalonElement> = _elementsBackBuffer;
 
-			for each (var element:ITalonElement in _elements)
-				selectInternal(element, selector, result);
+				for each (var element:ITalonElement in _elements)
+					selectInternal(element, selector, result);
 
-			// Swap
-			_elementsBackBuffer = _elements;
-			_elementsBackBuffer.length = 0;
-			_elements = result;
+				// Swap
+				_elementsBackBuffer = _elements;
+				_elementsBackBuffer.length = 0;
+				_elements = result;
 
-			return this;
+				return this;
+			}
 		}
 
 		private function selectInternal(element:ITalonElement, selector:String, result:Vector.<ITalonElement>):void
@@ -104,6 +113,20 @@ package starling.extensions
 
 			for each (var element:ITalonElement in _elements)
 				juggler.removeTweens(element);
+
+			return this;
+		}
+
+		public function forEach(callback:Function):TalonQuery
+		{
+			_elementsAreBusy = true;
+
+			for (var i:int = 0; i < _elements.length; i++)
+				if (callback.length == 3) callback(_elements[i], i, _elements);
+				else if (callback.length == 2) callback(_elements[i], i);
+				else callback(_elements[i]);
+
+			_elementsAreBusy = false;
 
 			return this;
 		}

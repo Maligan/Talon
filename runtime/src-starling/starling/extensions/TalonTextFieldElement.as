@@ -4,7 +4,7 @@ package starling.extensions
 	import flash.geom.Rectangle;
 
 	import starling.display.DisplayObject;
-	import starling.display.MeshBatch;
+	import starling.display.Mesh;
 	import starling.events.Event;
 	import starling.rendering.Painter;
 	import starling.text.BitmapChar;
@@ -19,7 +19,8 @@ package starling.extensions
 
 	public class TalonTextFieldElement extends TextField implements ITalonElement
 	{
-		private static var _helperRect:Rectangle = new Rectangle();
+		private static var _sRect:Rectangle = new Rectangle();
+		private static var _sPoint:Point = new Point();
 
 		private var _node:Node;
 		private var _bridge:TalonDisplayObjectBridge;
@@ -59,119 +60,92 @@ package starling.extensions
 			super.autoSize = getAutoSize(availableWidth == Infinity, availableHeight == Infinity);
 			super.width = availableWidth;
 			super.height = availableHeight;
-			var result:Rectangle = super.getBounds(this, _helperRect); // Call super.recompose()
+			super.getBounds(this, _sRect);	// call super.recompose();
+			getTrueTextBounds(_sRect);		// calculate true text bounds (which respect font lineHeight)
 			super.autoSize = TextFieldAutoSize.NONE;
 
-			fixWidth(result);
-			fixHeight(result);
+			_sRect.width  += node.paddingLeft.toPixels(node) + node.paddingRight.toPixels(node);
+			_sRect.height += node.paddingTop.toPixels(node)  + node.paddingBottom.toPixels(node);
 
-			// Add padding
-			result.width  += node.paddingLeft.toPixels(node) + node.paddingRight.toPixels(node);
-			result.height += node.paddingTop.toPixels(node)  + node.paddingBottom.toPixels(node);
-
-			return result;
+			return _sRect;
 		}
 
-		private function fixWidth(result:Rectangle):void
+		private function getTrueTextBounds(out:Rectangle = null):Rectangle
 		{
-			var bitmapFont:BitmapFont = getCompositor(format.font) as BitmapFont;
-			if (bitmapFont)
+			out ||= new Rectangle();
+			out.setEmpty();
+
+			var mesh:Mesh = getChildAt(0) as Mesh;
+			var font:BitmapFont = getCompositor(format.font) as BitmapFont;
+			if (font == null) return mesh.getBounds(this, out);
+
+			var scale:Number = format.size / font.size;
+			var numDrawableChars:int = mesh.numVertices / 4;
+			if (numDrawableChars == 0)
 			{
-				var mesh:MeshBatch = getChildAt(0) as MeshBatch;
-
-				var left:int = int.MAX_VALUE;
-				var leftmostCharIndex:int = 0;
-
-				var right:int = int.MIN_VALUE;
-				var rightmostCharIndex:int = 0;
-				var numWhitespaces:int = 0;
-				var numUnrenderables:int = 0;
-
-				for (var i:int = 0; i < text.length; i++)
-				{
-					var charCode:int = text.charCodeAt(i);
-					if (charIsWhitespace(charCode))
-						numWhitespaces++;
-					else if (bitmapFont.getChar(charCode) == null)
-						numUnrenderables++;
-					else
-					{
-						var quadIndex:int = i-numWhitespaces-numUnrenderables;
-						var quadRight:int = mesh.getVertexPosition((quadIndex+1)*4-1).x;
-						if (quadRight > right)
-						{
-							rightmostCharIndex = i;
-							right = quadRight;
-						}
-
-						var quadLeft:int = mesh.getVertexPosition((quadIndex+1)*4-1-3).x;
-						if (quadLeft < left)
-						{
-							leftmostCharIndex = i;
-							left = quadLeft;
-						}
-					}
-				}
-
-				if (right != 0)
-					result.width = right - left;
+				out.width  = 0;
+				out.height = font.lineHeight * scale;
+				return out;
 			}
-		}
 
-		private function fixHeight(result:Rectangle):void
-		{
-			var bitmapFont:BitmapFont = getCompositor(format.font) as BitmapFont;
-			if (bitmapFont)
+			if (autoScale) scale = NaN;
+
+			// find anchor chars
+
+			var leftmostCharLeft:Number = NaN;
+			var rightmostCharRight:Number = NaN;
+			var bottommostCharTop:Number = NaN;
+			var topmostCharTop:Number = NaN;
+
+			var numNonDrawableChars:int = 0;
+
+			for (var i:int = 0; i < text.length; i++)
 			{
-				var mesh:MeshBatch = getChildAt(0) as MeshBatch;
-				var meshBounds:Rectangle = mesh.getBounds(mesh);
+				var charID:int = text.charCodeAt(i);
+				var char:BitmapChar = font.getChar(charID);
+				var charQuadIndex:int = i - numNonDrawableChars;
+				if (charQuadIndex >= numDrawableChars) break;
 
-				// Get last rendered char
-				var lastCharYOffset:int = 0;
-				var lastCharIndex:int = text.length;
-				while (--lastCharIndex > -1)
+				var charIsDrawable:Boolean = char && charID != 32 && charID != 9 && charID != 10 && charID != 13;
+				if (charIsDrawable)
 				{
-					var charCode:int = text.charCodeAt(lastCharIndex);
-					var char:BitmapChar = bitmapFont.getChar(charCode);
-					if (char && !charIsWhitespace(charCode))
+					if (scale != scale)
 					{
-						lastCharYOffset = Math.max(0, -char.yOffset);
-						break;
+						var quadHeight:Number = mesh.getVertexPosition(charQuadIndex*4 + 3, _sPoint).y
+											  - mesh.getVertexPosition(charQuadIndex*4 + 0, _sPoint).y;
+
+						scale = quadHeight / char.height;
 					}
-				}
 
-				// Whitespaces does not create quad in mesh - calculate quad index in MeshBatch for last char
-				var numWhitespaces:int = 0;
-				var numUnrenderables:int = 0;
-				for (var i:int = 0; i < lastCharIndex; i++)
-				{
-					charCode = text.charCodeAt(i);
-					if (charIsWhitespace(charCode))
-						numWhitespaces++;
-					else if (bitmapFont.getChar(charCode)==null)
-						numUnrenderables++;
-				}
+					var charLeft:Number = mesh.getVertexPosition(charQuadIndex*4 + 0, _sPoint).x - char.xOffset*scale;
+					if (charLeft < leftmostCharLeft || leftmostCharLeft != leftmostCharLeft)
+						leftmostCharLeft = charLeft;
 
-				var quadIndex:int = lastCharIndex - numWhitespaces - numUnrenderables;
+					var charRight:Number = mesh.getVertexPosition(charQuadIndex*4 + 1, _sPoint).x;
+					if (charRight > rightmostCharRight || rightmostCharRight != rightmostCharRight)
+						rightmostCharRight = charRight;
 
-				// Calculate numLines and fix total height of text field
-				if (quadIndex > -1)
-				{
-					var scale:Number = format.size / bitmapFont.size;
-					var lastCharQuadY:int = mesh.getVertexPosition((quadIndex+1)*4-1 - 3).y + lastCharYOffset*scale;
-					var lineOffset:Number = bitmapFont.lineHeight*scale + format.leading;
-					var numLines:int = 1 + int(lastCharQuadY/lineOffset);
-					result.height = numLines*bitmapFont.lineHeight*scale + (numLines - 1)*format.leading;
-//					trace(text.charAt(lastCharIndex) + "(" + lastCharYOffset + ")", numLines, result.height)
+					var charTop:Number = _sPoint.y - char.yOffset*scale;
+					if (charTop > bottommostCharTop || bottommostCharTop != bottommostCharTop)
+						bottommostCharTop = charTop;
+
+					if (charTop < topmostCharTop || topmostCharTop != topmostCharTop)
+						topmostCharTop = charTop;
 				}
+				else
+					numNonDrawableChars++;
 			}
+
+			// find width & height
+
+			var numLines:int = 1 + int((bottommostCharTop - topmostCharTop)/ (font.lineHeight*scale + format.leading));
+			var width:Number = rightmostCharRight - leftmostCharLeft;
+			var height:Number = numLines*font.lineHeight*scale + (numLines-1)*format.leading;
+
+			out.setTo(0, 0, width, height);
+			return out;
 		}
 
-		private function charIsWhitespace(charCode:int):Boolean
-		{
-			// Only char codes from BitmapFont class
-			return (charCode == 32 || charCode == 9 || charCode == 10 || charCode == 13);
-		}
 
 		private function getAutoSize(autoWidth:Boolean, autoHeight:Boolean):String
 		{
@@ -208,10 +182,10 @@ package starling.extensions
 			if (_requiresRecomposition)
 			{
 				super.setRequiresRecomposition();
-				super.getBounds(this, _helperRect);
+				super.getBounds(this, _sRect);
 
 				var meshBatch:DisplayObject = getChildAt(0);
-				var meshBounds:Rectangle = meshBatch.getBounds(meshBatch, _helperRect);
+				var meshBounds:Rectangle = meshBatch.getBounds(meshBatch, _sRect);
 
 				// Add horizontal padding
 				var halign:Number = ParseUtil.parseAlign(format.horizontalAlign);
@@ -223,7 +197,7 @@ package starling.extensions
 				var valign:Number = ParseUtil.parseAlign(format.verticalAlign);
 				var paddingTop:Number = node.paddingTop.toPixels(node);
 				var paddingBottom:Number = node.paddingBottom.toPixels(node);
-				meshBatch.y += Layout.pad(_node.bounds.height, meshBounds.height, paddingTop, paddingBottom, valign) - meshBounds.y;
+				meshBatch.y = Layout.pad(0, 0, paddingTop, paddingBottom, valign);
 
 				_requiresRecomposition = false;
 			}
@@ -245,7 +219,7 @@ package starling.extensions
 
 		public override function hitTest(localPoint:Point):DisplayObject
 		{
-			return getBounds(this, _helperRect).containsPoint(localPoint) ? this : null;
+			return getBounds(this, _sRect).containsPoint(localPoint) ? this : null;
 		}
 
 		public override function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle

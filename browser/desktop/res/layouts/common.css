@@ -16,14 +16,15 @@
 }
 
 #goto label {
-	halign: left;
-	padding: 10px 12px;
 	width: *;
 	height: 35px;
-	cursor: button;
+
+	align: left center;
+	padding: 0 11px;
 
 	touchMode: leaf;
 	touchEvents: true;
+	cursor: button;
 }
 
 #goto label:nth-child(2n) {
@@ -57,23 +58,20 @@ input {
 button:hover { fill: $button_over; }
 button:active { fill: $button_down; }
 button {
+	label: Button;
+
 	fill: $button_normal;
 	fillStretchGrid: 4px;
-	cursor: button;
 
 	fontSize: 13px;
 	fontColor: #F0F1F1;
-	height: 2em;
 
-	valign: center;
-	halign: center;
-
-	padding: 0.2em 0.5em 0em;
-
-	label: Button;
+	align: center;
+	padding: 0.4em 0.5em 0.4em;
 
 	touchMode: leaf;
 	touchEvents: true;
+	cursor: button;
 }
 
 button.action:hover { fill: $button_action_over; }

@@ -108,7 +108,7 @@
 	</def>
 
 	<def ref="Button" tag="button">
-		<label type="button" text="@label" />
+		<label text="@label" />
 	</def>
 
 	<def ref="Checkbox" tag="checkbox">

@@ -48,6 +48,7 @@ package starling.extensions
 			_bridge.addAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
 
 			batchable = true; // TODO: Allow setup batchable flag
+			pixelSnapping = true;
 		}
 
 		//
@@ -83,8 +84,7 @@ package starling.extensions
 			var numDrawableChars:int = mesh.numVertices / 4;
 			if (numDrawableChars == 0)
 			{
-				out.width  = 0;
-				out.height = font.lineHeight * scale;
+				out.setTo(0, 0, 0, font.lineHeight * scale);
 				return out;
 			}
 
@@ -138,11 +138,11 @@ package starling.extensions
 
 			// find width & height
 
-			var numLines:int = 1 + int((bottommostCharTop - topmostCharTop)/ (font.lineHeight*scale + format.leading));
+			var numLines:int = 1 + int((bottommostCharTop - topmostCharTop) / (font.lineHeight*scale + format.leading*scale));
 			var width:Number = rightmostCharRight - leftmostCharLeft;
-			var height:Number = numLines*font.lineHeight*scale + (numLines-1)*format.leading;
+			var height:Number = numLines*font.lineHeight*scale + (numLines-1)*format.leading*scale;
 
-			out.setTo(0, 0, width, height);
+			out.setTo(leftmostCharLeft, topmostCharTop, width, height);
 			return out;
 		}
 
@@ -181,23 +181,26 @@ package starling.extensions
 		{
 			if (_requiresRecomposition)
 			{
-				super.setRequiresRecomposition();
+				// Crop padding from result size
+				var paddingTop:Number = node.paddingTop.toPixels(node);
+				var paddingRight:Number = node.paddingRight.toPixels(node);
+				var paddingBottom:Number = node.paddingBottom.toPixels(node);
+				var paddingLeft:Number = node.paddingLeft.toPixels(node);
+
+				width = _node.bounds.width - paddingLeft - paddingRight;
+				height = _node.bounds.height - paddingTop - paddingBottom;
+
+				// Call super.recompose();
 				super.getBounds(this, _sRect);
 
-				var meshBatch:DisplayObject = getChildAt(0);
-				var meshBounds:Rectangle = meshBatch.getBounds(meshBatch, _sRect);
-
-				// Add horizontal padding
+				// Add padding to mesh
+				getTrueTextBounds(_sRect);
 				var halign:Number = ParseUtil.parseAlign(format.horizontalAlign);
-				var paddingLeft:Number = node.paddingLeft.toPixels(node);
-				var paddingRight:Number = node.paddingRight.toPixels(node);
-				meshBatch.x = Layout.pad(_node.bounds.width, meshBounds.width, paddingLeft, paddingRight, halign) - meshBounds.x;
-
-				// Add vertical padding
 				var valign:Number = ParseUtil.parseAlign(format.verticalAlign);
-				var paddingTop:Number = node.paddingTop.toPixels(node);
-				var paddingBottom:Number = node.paddingBottom.toPixels(node);
-				meshBatch.y = Layout.pad(0, 0, paddingTop, paddingBottom, valign);
+				var mesh:DisplayObject = getChildAt(0);
+
+				mesh.x = Layout.pad(_node.bounds.width, _sRect.width, paddingLeft, paddingRight, halign) - _sRect.x;
+				mesh.y = Layout.pad(_node.bounds.height, _sRect.height, paddingTop, paddingBottom, valign) - _sRect.y;
 
 				_requiresRecomposition = false;
 			}

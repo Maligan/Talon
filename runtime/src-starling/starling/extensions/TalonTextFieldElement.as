@@ -81,7 +81,7 @@ package starling.extensions
 			if (font == null)
 			{
 				mesh.getBounds(this, out);
-				out.inflate(-4, -4); // TrueTypeCompositor inflate 2px, and we need remove native 2px padding
+				out.inflate(-2, -2);
 				return out;
 			}
 
@@ -187,7 +187,7 @@ package starling.extensions
 			if (_requiresRecomposition)
 			{
 				// Crop padding from result size
-				var trueTypeCompositorCorrection = getCompositor(format.font) ? 0 : 12;
+				var trueTypeCompositorCorrection = getCompositor(format.font) ? 0 : 8;
 				var paddingTop:Number = node.paddingTop.toPixels(node);
 				var paddingRight:Number = node.paddingRight.toPixels(node);
 				var paddingBottom:Number = node.paddingBottom.toPixels(node);

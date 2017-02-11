@@ -19,6 +19,8 @@ package starling.extensions
 
 	public class TalonTextFieldElement extends TextField implements ITalonElement
 	{
+		private static const TRUE_TYPE_CORRECTION:int = 4 + 1;
+
 		private static var _sRect:Rectangle = new Rectangle();
 		private static var _sPoint:Point = new Point();
 
@@ -48,7 +50,6 @@ package starling.extensions
 			_bridge.addAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
 
 			batchable = true; // TODO: Allow setup batchable flag
-			pixelSnapping = true;
 		}
 
 		//
@@ -58,9 +59,11 @@ package starling.extensions
 		private function measureHeight(availableWidth:Number):Number { return measure(availableWidth, Infinity).height; }
 		private function measure(availableWidth:Number, availableHeight:Number):Rectangle
 		{
+			var trueTypeCorrection:int = getCompositor(format.font) ? 0 : TRUE_TYPE_CORRECTION;
+
 			super.autoSize = getAutoSize(availableWidth == Infinity, availableHeight == Infinity);
-			super.width = availableWidth;
-			super.height = availableHeight;
+			super.width = availableWidth + trueTypeCorrection;
+			super.height = availableHeight + trueTypeCorrection;
 			super.getBounds(this, _sRect);	// call super.recompose();
 			getTrueTextBounds(_sRect);		// calculate true text bounds (which respect font lineHeight)
 			super.autoSize = TextFieldAutoSize.NONE;
@@ -187,14 +190,15 @@ package starling.extensions
 			if (_requiresRecomposition)
 			{
 				// Crop padding from result size
-				var trueTypeCompositorCorrection = getCompositor(format.font) ? 0 : 8;
+				var trueTypeCorrection:int = getCompositor(format.font) ? 0 : TRUE_TYPE_CORRECTION;
+
 				var paddingTop:Number = node.paddingTop.toPixels(node);
 				var paddingRight:Number = node.paddingRight.toPixels(node);
 				var paddingBottom:Number = node.paddingBottom.toPixels(node);
 				var paddingLeft:Number = node.paddingLeft.toPixels(node);
 
-				width = _node.bounds.width - paddingLeft - paddingRight + trueTypeCompositorCorrection;
-				height = _node.bounds.height - paddingTop - paddingBottom + trueTypeCompositorCorrection;
+				width = _node.bounds.width - paddingLeft - paddingRight + trueTypeCorrection;
+				height = _node.bounds.height - paddingTop - paddingBottom + trueTypeCorrection;
 
 				// Call super.recompose();
 				super.getBounds(this, _sRect);
@@ -207,8 +211,6 @@ package starling.extensions
 
 				mesh.x = Layout.pad(_node.bounds.width, _sRect.width, paddingLeft, paddingRight, halign) - _sRect.x;
 				mesh.y = Layout.pad(_node.bounds.height, _sRect.height, paddingTop, paddingBottom, valign) - _sRect.y;
-
-				trace("trace:", _sRect.x, _sRect.y, _sRect.width, _sRect.height);
 
 				_requiresRecomposition = false;
 			}

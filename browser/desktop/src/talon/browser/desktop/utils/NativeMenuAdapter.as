@@ -215,8 +215,8 @@ package talon.browser.desktop.utils
 		//
 		// Lazy parts
 		//
-		private function get enabled():Boolean { return (_parent == null || _parent.enabled) && (_command ? _command.isExecutable : _isEnabled) }
-		private function get checked():Boolean { return _command && _command.isActive; }
+		private function get enabled():Boolean { return (_command == null || _command.isExecutable) && isEnabled }
+		private function get checked():Boolean { return (_command && _command.isActive); }
 
 		public function get nativeMenu():NativeMenu
 		{

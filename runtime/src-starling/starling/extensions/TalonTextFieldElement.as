@@ -78,7 +78,12 @@ package starling.extensions
 
 			var mesh:Mesh = getChildAt(0) as Mesh;
 			var font:BitmapFont = getCompositor(format.font) as BitmapFont;
-			if (font == null) return mesh.getBounds(this, out);
+			if (font == null)
+			{
+				mesh.getBounds(this, out);
+				out.inflate(-4, -4); // TrueTypeCompositor inflate 2px, and we need remove native 2px padding
+				return out;
+			}
 
 			var scale:Number = format.size / font.size;
 			var numDrawableChars:int = mesh.numVertices / 4;
@@ -182,13 +187,14 @@ package starling.extensions
 			if (_requiresRecomposition)
 			{
 				// Crop padding from result size
+				var trueTypeCompositorCorrection = getCompositor(format.font) ? 0 : 12;
 				var paddingTop:Number = node.paddingTop.toPixels(node);
 				var paddingRight:Number = node.paddingRight.toPixels(node);
 				var paddingBottom:Number = node.paddingBottom.toPixels(node);
 				var paddingLeft:Number = node.paddingLeft.toPixels(node);
 
-				width = _node.bounds.width - paddingLeft - paddingRight;
-				height = _node.bounds.height - paddingTop - paddingBottom;
+				width = _node.bounds.width - paddingLeft - paddingRight + trueTypeCompositorCorrection;
+				height = _node.bounds.height - paddingTop - paddingBottom + trueTypeCompositorCorrection;
 
 				// Call super.recompose();
 				super.getBounds(this, _sRect);
@@ -201,6 +207,8 @@ package starling.extensions
 
 				mesh.x = Layout.pad(_node.bounds.width, _sRect.width, paddingLeft, paddingRight, halign) - _sRect.x;
 				mesh.y = Layout.pad(_node.bounds.height, _sRect.height, paddingTop, paddingBottom, valign) - _sRect.y;
+
+				trace("trace:", _sRect.x, _sRect.y, _sRect.width, _sRect.height);
 
 				_requiresRecomposition = false;
 			}

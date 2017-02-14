@@ -125,7 +125,10 @@ package talon.utils
 
 		private static function mergeAttributes(...sources):Object
 		{
-			var result:Object = new Object();
+			// NB! Use OrderedObject because there are compositor attributes
+			// like padding & padding -Top, -Right, -Bottom, -Left
+			// and for these attributes order is crucial value
+			var result:Object = new OrderedObject();
 
 			for each (var source:Object in sources)
 				for (var key:String in source)

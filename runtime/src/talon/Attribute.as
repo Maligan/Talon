@@ -336,7 +336,7 @@ class SimpleSolver implements ISolver
 
 	public function getValue(priority:int, key:String):String
 	{
-		return (priority < _values.length) ? _values[priority][key] : null;
+		return (priority<_values.length && _values[priority]) ? _values[priority][key] : null;
 	}
 
 	public function setValue(priority:int, key:String, string:String):void

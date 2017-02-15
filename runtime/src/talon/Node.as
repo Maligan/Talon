@@ -251,24 +251,16 @@ package talon
 		/** Current node 'fontSize' expressed in pixels.*/
 		public function get ppem():Number
 		{
-			// If fontSize is inherit:
-			var attribute:Attribute = getOrCreateAttribute(Attribute.FONT_SIZE);
-			if (attribute.isInherit) return parent.ppem;
-
-			// Hardcoded version of frontSize attribute 'based' value
-			var based:int = 12;
-
-			// If it is root node and fontSize is not setted:
-			if (attribute.valueCache == "inherit") return based;
-
-			// Else calculate via parent and self values:
-			var ppem:int = parent ? parent.ppem : based;
-
-			// Avoid cycling (ppem -> ppem -> ppem -> ...) in toPixels method with EM units
+			// Avoid loops (toPixels() <-> ppem) with EM or PERCENT units
+			// 12 is hardcoded version of fontSize 'based' value
+			
 			if (fontSize.unit == Gauge.EM)
-				return fontSize.amount * ppem;
+				return fontSize.amount * (parent ? parent.ppem : 12);
 
-			return fontSize.toPixels(this, ppem);
+			else if (fontSize.unit == Gauge.PERCENT)
+				return fontSize.amount * (parent ? parent.ppem : 12) / 100;
+
+			return fontSize.toPixels(this);
 		}
 
 		/** This is default 'auto' callback for gauges: width, minWidth, maxWidth. */

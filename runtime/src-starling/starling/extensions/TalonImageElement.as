@@ -19,9 +19,12 @@ package starling.extensions
 
 		private var _bridge:TalonDisplayObjectBridge;
 		private var _node:Node;
+		private var _vertexOffset:Point;
 
 		public function TalonImageElement()
 		{
+			_vertexOffset = new Point();
+
 			super(1, 1);
 
 			_node = new Node();
@@ -31,6 +34,8 @@ package starling.extensions
 
 			_bridge = new TalonDisplayObjectBridge(this, node);
 			_bridge.addAttributeChangeListener(Attribute.SOURCE, onSourceChange);
+
+			_vertexOffset = new Point();
 
 			pixelSnapping = true;
 		}
@@ -78,21 +83,24 @@ package starling.extensions
 			var paddingTop:Number = node.paddingTop.toPixels(node);
 			var paddingBottom:Number = node.paddingBottom.toPixels(node);
 
-			readjustSize(node.bounds.width-paddingLeft-paddingRight, node.bounds.height-paddingTop-paddingBottom);
+			_vertexOffset.setTo(paddingLeft, paddingTop);
 
-			// TODO: Call it within setupVertices ?
-			offsetVertices(paddingLeft, paddingTop);
+			readjustSize(node.bounds.width-paddingLeft-paddingRight, node.bounds.height-paddingTop-paddingBottom);
 		}
 
-		private function offsetVertices(offsetX:Number, offsetY:Number):void
+		protected override function setupVertices():void
 		{
+			super.setupVertices();
+
+			// Offset vertices by padding
+
 			var posAttr:String = "position";
 			var point:Point = Pool.getPoint();
 
 			for (var i:int = 0; i < vertexData.numVertices; i++)
 			{
 				point = vertexData.getPoint(i, posAttr, point);
-				point.offset(offsetX, offsetY);
+				point.offset(_vertexOffset.x, _vertexOffset.y);
 				vertexData.setPoint(i, posAttr, point.x, point.y);
 			}
 

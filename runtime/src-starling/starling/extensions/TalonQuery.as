@@ -1,9 +1,13 @@
 package starling.extensions
 {
+	import flash.geom.Point;
+
+	import starling.utils.Pool;
 	import starling.animation.Juggler;
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
+	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 
@@ -153,11 +157,20 @@ package starling.extensions
 		{
 			onEvent(TouchEvent.TOUCH, function(e:TouchEvent):void
 			{
-				if (e.getTouch(e.target as DisplayObject, TouchPhase.ENDED))
+				var target:DisplayObject = e.target as DisplayObject;
+				var touch:Touch = e.getTouch(target, TouchPhase.ENDED);
+				if (touch)
 				{
-					listener.length
-						? listener(e)
-						: listener();
+					var local:Point = touch.getLocation(target, Pool.getPoint());
+					var within:Boolean = target.hitTest(local);
+					Pool.putPoint(local);
+
+					if (within)
+					{
+						listener.length
+							? listener(e)
+							: listener();
+					}
 				}
 			});
 

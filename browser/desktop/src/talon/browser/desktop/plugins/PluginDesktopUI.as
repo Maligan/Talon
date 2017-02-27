@@ -443,7 +443,8 @@ package talon.browser.desktop.plugins
 				if (displayObjectAsTalonElement)
 				{
 					var bounds:Rectangle = displayObject.getBounds(displayObject.stage);
-					graphics.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+					if (bounds.width == bounds.width && bounds.height == bounds.height)
+						graphics.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
 				}
 
 				var displayObjectAsContainer:DisplayObjectContainer = displayObject as DisplayObjectContainer;

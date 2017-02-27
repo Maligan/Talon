@@ -32,6 +32,7 @@ package talon.browser.desktop.popups.widgets
 
 		private var _node:Node;
 		private var _bridge:TalonDisplayObjectBridge;
+		private var _manual:Boolean;
 
 		public function TalonFeatherTextInput()
 		{
@@ -81,8 +82,12 @@ package talon.browser.desktop.popups.widgets
 
 		private function onResize():void
 		{
-			x = node.bounds.x;
-			y = node.bounds.y;
+			if (!manual)
+			{
+				x = node.bounds.x;
+				y = node.bounds.y;
+			}
+
 			width = node.bounds.width;
 			height = node.bounds.height;
 		}
@@ -112,6 +117,16 @@ package talon.browser.desktop.popups.widgets
 		public function get node():Node
 		{
 			return _node;
+		}
+
+		public function get manual():Boolean
+		{
+			return _manual;
+		}
+
+		public function set manual(value:Boolean):void
+		{
+			_manual = value;
 		}
 	}
 }

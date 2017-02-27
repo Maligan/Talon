@@ -20,6 +20,7 @@ package starling.extensions
 		private var _bridge:TalonDisplayObjectBridge;
 		private var _node:Node;
 		private var _vertexOffset:Point;
+		private var _manual:Boolean;
 
 		public function TalonImageElement()
 		{
@@ -75,8 +76,11 @@ package starling.extensions
 			pivotX = node.pivotX.toPixels(node, node.bounds.width);
 			pivotY = node.pivotY.toPixels(node, node.bounds.height);
 
-			x = node.bounds.x + pivotX;
-			y = node.bounds.y + pivotY;
+			if (!manual)
+			{
+				x = node.bounds.x + pivotX;
+				y = node.bounds.y + pivotY;
+			}
 
 			var paddingLeft:Number = node.paddingLeft.toPixels(node);
 			var paddingRight:Number = node.paddingRight.toPixels(node);
@@ -119,6 +123,8 @@ package starling.extensions
 
 		public override function hitTest(localPoint:Point):DisplayObject
 		{
+			if (!visible || !touchable) return null;
+			if (mask && !hitTestMask(localPoint)) return null;
 			return getBounds(this, _sRectangle).containsPoint(localPoint) ? this : null;
 		}
 
@@ -131,6 +137,16 @@ package starling.extensions
 		public function get node():Node
 		{
 			return _node;
+		}
+
+		public function get manual():Boolean
+		{
+			return _manual;
+		}
+
+		public function set manual(value:Boolean):void
+		{
+			_manual = value;
 		}
 	}
 }

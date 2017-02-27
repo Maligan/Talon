@@ -27,6 +27,7 @@ package starling.extensions
 		private var _node:Node;
 		private var _bridge:TalonDisplayObjectBridge;
 		private var _requiresRecomposition:Boolean;
+		private var _manual:Boolean;
 
 		public function TalonTextFieldElement()
 		{
@@ -169,8 +170,11 @@ package starling.extensions
 			pivotX = node.pivotX.toPixels(node, node.bounds.width);
 			pivotY = node.pivotY.toPixels(node, node.bounds.height);
 
-			x = node.bounds.x + pivotX;
-			y = node.bounds.y + pivotY;
+			if (!manual)
+			{
+				x = node.bounds.x + pivotX;
+				y = node.bounds.y + pivotY;
+			}
 
 			width = node.bounds.width;
 			height = node.bounds.height;
@@ -232,6 +236,8 @@ package starling.extensions
 
 		public override function hitTest(localPoint:Point):DisplayObject
 		{
+			if (!visible || !touchable) return null;
+			if (mask && !hitTestMask(localPoint)) return null;
 			return getBounds(this, _sRect).containsPoint(localPoint) ? this : null;
 		}
 
@@ -270,6 +276,8 @@ package starling.extensions
 		//
 		public function get node():Node { return _node; }
 
+		public function get manual():Boolean { return _manual; }
+		public function set manual(value:Boolean):void { _manual = value; }
 
 		override public function set wordWrap(value:Boolean):void {  node.setAttribute(Attribute.WRAP, value.toString()); }
 		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }

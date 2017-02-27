@@ -19,6 +19,7 @@ package starling.extensions
 
 		private var _node:Node;
 		private var _bridge:TalonDisplayObjectBridge;
+		private var _manual:Boolean;
 
 		public function TalonSpriteElement()
 		{
@@ -65,8 +66,11 @@ package starling.extensions
 			super.pivotX = node.pivotX.toPixels(node, node.bounds.width);
 			super.pivotY = node.pivotY.toPixels(node, node.bounds.height);
 
-			x = node.bounds.x + pivotX;
-			y = node.bounds.y + pivotY;
+			if (!manual)
+			{
+				x = node.bounds.x + pivotX;
+				y = node.bounds.y + pivotY;
+			}
 		}
 
 		//
@@ -116,6 +120,16 @@ package starling.extensions
 		public function get node():Node
 		{
 			return _node;
+		}
+
+		public function get manual():Boolean
+		{
+			return _manual;
+		}
+
+		public function set manual(value:Boolean):void
+		{
+			_manual = value;
 		}
 
 		public override function set pivotX(value:Number):void { node.setAttribute(Attribute.PIVOT_X, value.toString()); }

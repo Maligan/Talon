@@ -12,8 +12,9 @@ package talon.layouts
 			width += node.paddingLeft.toPixels(node)
 				   + node.paddingRight.toPixels(node);
 
-			for each (var child:Node in node)
+			for (var i:int = 0; i < node.numChildren; i++)
 			{
+				var child:Node = node.getChildAt(i);
 				width += child.left.toPixels(child)
 					   + child.right.toPixels(child)
 					   + calcSize(child, child.width, child.height, 0, 0, child.minWidth, child.maxWidth, 0);
@@ -29,11 +30,12 @@ package talon.layouts
 			height += node.paddingTop.toPixels(node)
 					+ node.paddingBottom.toPixels(node);
 
-			for each (var child:Node in node)
+			for (var i:int = 0; i < node.numChildren; i++)
 			{
+				var child:Node = node.getChildAt(i);
 				height += child.top.toPixels(child)
-					+ child.bottom.toPixels(child)
-					+ calcSize(child, child.height, child.width, 0, 0, child.minHeight, child.maxHeight, 0);
+					   + child.bottom.toPixels(child)
+					   + calcSize(child, child.height, child.width, 0, 0, child.minHeight, child.maxHeight, 0);
 			}
 
 			return height;

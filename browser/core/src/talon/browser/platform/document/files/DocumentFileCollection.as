@@ -30,10 +30,9 @@ package talon.browser.platform.document.files
 			_mappings[checker] = typeClass;
 		}
 
-		public function addReference(reference:IFileReference):Boolean
+		public function addReference(reference:IFileReference):void
 		{
-			if (reference.data === null) return false;
-			if (hasURL(reference.path) === true) return false;
+			if (hasURL(reference.path) === true) throw new Error("Reference '" + reference.path + "' already in collection");
 
 			// Initialize reference
 			reference.addEventListener(Event.CHANGE, onReferenceChange);
@@ -41,30 +40,30 @@ package talon.browser.platform.document.files
 
 			// Create controller
 			attachController(reference);
-
-			return true;
 		}
 
-		public function removeReference(reference:IFileReference):void
+		public function removeReference(reference:IFileReference, dispose:Boolean = false):void
 		{
-			if (hasURL(reference.path) == false) return;
+			if (_references[reference.path] != reference) throw new Error("Reference '" + reference.path + "' not added in collection");
 
 			// Detach controller
 			detachController(reference);
 
-			// Dispose reference
+			// Remove reference
 			reference = _references[reference.path];
 			reference.removeEventListener(Event.CHANGE, onReferenceChange);
 			delete _references[reference.path];
+
+			// Dispose reference
+			if (dispose) reference.dispose();
 		}
 
 		private function onReferenceChange(e:Event):void
 		{
 			var reference:IFileReference = IFileReference(e.target);
-
-			if (reference.data === null)
+			if (reference.data == null)
 			{
-				removeReference(reference);
+				removeReference(reference, true);
 			}
 			else
 			{
@@ -98,7 +97,7 @@ package talon.browser.platform.document.files
 			var references:Vector.<IFileReference> = toArray();
 
 			while (references.length)
-				removeReference(references.pop());
+				removeReference(references.pop(), true);
 		}
 
 		//
@@ -109,7 +108,6 @@ package talon.browser.platform.document.files
 		{
 			var controllerClass:Class = DummyFileController;
 
-			// Define controller class
 			for each (var checker:Function in _checkers)
 			{
 				if (checker(reference) === true)
@@ -120,19 +118,16 @@ package talon.browser.platform.document.files
 			}
 
 			var controller:IFileController = new controllerClass();
-			controller.attach(_document, reference);
-
 			_controllers[reference.path] = controller;
+
+			controller.attach(_document, reference);
 		}
 
 		/** Remove controller from reference. */
 		private function detachController(reference:IFileReference):void
 		{
-			reference = _references[reference.path];
-
 			var controller:IFileController = _controllers[reference.path];
 			controller.detach();
-
 			delete _controllers[reference.path];
 		}
 	}

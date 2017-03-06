@@ -15,5 +15,8 @@ package talon.browser.platform.document.files
 		/** - File's content
 		 *  - Has "null" ONLY IF file doesn't exists (if existence is unknown - empty ByteArray) */
 		function get data():ByteArray;
+
+		/** - Clean up all links, listeners etc. */
+		function dispose():void;
 	}
 }

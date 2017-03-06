@@ -13,7 +13,19 @@ package talon.browser.desktop.utils
 	/** Class that monitors files for changes. */
 	public class FileMonitor extends EventDispatcher
 	{
-		private static const sDefaultTimer:Timer = new Timer(1000);
+		private static const sTimers:Object = {};
+
+		private static function getTimerFromPool(interval:int):Timer
+		{
+			interval = Math.max(interval, 1000);
+
+			var timer:Timer = sTimers[interval];
+			if (timer == null)
+				timer = sTimers[interval] = new Timer(interval);
+
+			return timer;
+
+		}
 
 		private var _timer:Timer;
 		private var _watching:Boolean;
@@ -26,82 +38,64 @@ package talon.browser.desktop.utils
 		 * 	@param interval How often in milliseconds the file is polled for
 		 * 	change events. Default value is 1000, minimum value is 1000
 		 */ 
-		public function FileMonitor(file:File = null, interval:Number = -1)
+		public function FileMonitor(file:File = null, interval:int = -1)
 		{
-			if (interval != -1)
-				_timer = new Timer(Math.min(interval, 1000));
-			else
-				_timer = sDefaultTimer;
-
 			this.file = file;
+			this.interval = interval;
 		}
 
 		/** How often the system is polled for Volume change events. */
-		public function get interval():Number{ return _timer.delay; }
+		public function get interval():int{ return _timer.delay; }
+		public function set interval(value:int):void
+		{
+			_timer && _timer.removeEventListener(TimerEvent.TIMER, onTimerEvent);
+			_timer = getTimerFromPool(value);
+			_timer.addEventListener(TimerEvent.TIMER, onTimerEvent);
+			_timer.running || _timer.start();
+		}
 
 		/** File being monitored for changes. */
 		public function get file():File { return _file; }
 		public function set file(file:File):void
 		{
-			var prevWatching:Boolean = _watching;
-
-			if (_watching)
-				unwatch();
-
 			_file = file;
 
 			try { _timestamp = _file.modificationDate.getTime() }
 			catch (e:Error) { _timestamp = NaN }
-
-			if (prevWatching)
-				watch();
 		}
 
 		/** Begins monitoring the specified file for changes. */
 		public function watch():void
 		{
-			if (_watching == false)
-			{
-				_watching = true;
-
-				if (_timer.hasEventListener(TimerEvent.TIMER) == false)
-					_timer.start();
-
-				_timer.addEventListener(TimerEvent.TIMER, onTimerEvent);
-			}
+			_watching = true;
 		}
 
 		/** Stops watching the specified file for changes. */
 		public function unwatch():void
 		{
-			if (_watching)
-			{
-				_watching = false;
-
-				_timer.removeEventListener(TimerEvent.TIMER, onTimerEvent);
-
-				if (_timer.hasEventListener(TimerEvent.TIMER) == false)
-					_timer.stop();
-			}
+			_watching = false;
 		}
 		
 		private function onTimerEvent(e:TimerEvent):void
 		{
-			try
+			if (_watching && _file)
 			{
-				var timestamp:Number = _file.modificationDate.getTime();
-				if (timestamp != _timestamp)
+				try
 				{
-					_timestamp = timestamp;
-					dispatchEventWith(Event.CHANGE);
+					var timestamp:Number = _file.modificationDate.getTime();
+					if (timestamp != _timestamp)
+					{
+						_timestamp = timestamp;
+						dispatchEventWith(Event.CHANGE);
+					}
 				}
-			}
-			catch (e:Error)
-			{
-				if (_timestamp == _timestamp)
+				catch (e:Error)
 				{
-					_timestamp = NaN;
-					dispatchEventWith(Event.CHANGE);
+					if (_timestamp == _timestamp)
+					{
+						_timestamp = NaN;
+						dispatchEventWith(Event.CHANGE);
+					}
 				}
 			}
 		}

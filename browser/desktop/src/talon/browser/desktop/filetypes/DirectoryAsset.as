@@ -33,19 +33,23 @@ package talon.browser.desktop.filetypes
 		{
 			for each (var child:File in e.files)
 			{
-				var ref:DesktopFileReference = DesktopFileReference.getReference(child, file.root, file.rootPrefix);
-				if (!isIncluded(ref) || !document.files.addReference(ref))
-					DesktopFileReference.putReference(ref); // FIXME: Memory leak (how to return references to pull after remove references from collection)
+				var refPath:String = DesktopFileReference.getFileReferencePath(child, file.root, file.rootPrefix);
+
+				if (!isIncluded(refPath) || !document.files.hasURL(refPath))
+				{
+					var ref:DesktopFileReference = new DesktopFileReference(child, file.root, file.rootPrefix);
+					document.files.addReference(ref);
+				}
 			}
 
 			document.tasks.end();
 		}
 
-		private function isIncluded(file:IFileReference):Boolean
+		private function isIncluded(path:String):Boolean
 		{
 			var patterns:String = document.properties.getValueOrDefault(DesktopDocumentProperty.SOURCE_PATTERN, String);
 			if (patterns == null) return true;
-			return Glob.matchPattern(file.path, patterns);
+			return Glob.matchPattern(path, patterns);
 		}
 
 		private function onIOError(e:IOErrorEvent):void

@@ -14,19 +14,21 @@ package talon.browser.desktop.utils
 	[Event(name="change", type="flash.events.Event")]
 	public class DesktopFileReference extends EventDispatcher implements IFileReference
 	{
-		public static const sPool:Vector.<DesktopFileReference> = new <DesktopFileReference>[];
-
-		public static function getReference(target:File, root:File, rootPrefix:String = null):DesktopFileReference
+		public static function getFileReferencePath(target:File, root:File, rootPrefix:String):String
 		{
-			var reference:DesktopFileReference = sPool.pop() || new DesktopFileReference();
-			reference.reset(target, root, rootPrefix);
-			return reference;
-		}
+			if (target == null || root == null) return null;
 
-		public static function putReference(reference:DesktopFileReference):void
-		{
-			reference.reset(null, null, null);
-			sPool[sPool.length] = reference;
+			var result:String = root.getRelativePath(target);
+
+			if (rootPrefix && result)
+				result = rootPrefix + "/" + result;
+			else if (rootPrefix)
+				result = rootPrefix;
+
+			if (target.isDirectory)
+				result += "/";
+
+			return result;
 		}
 
 		private static const NAME_REGEX:RegExp = /([^\?\/\\]+?)(?:\.([\w\-]+))?(?:\?.*)?$/;
@@ -35,15 +37,18 @@ package talon.browser.desktop.utils
 		private var _rootPrefix:String;
 		private var _monitor:FileMonitor;
 
+		private var _cachePath:String;
 		private var _cacheBytes:ByteArray;
 		private var _cacheBytesAsXML:XML;
 		private var _cacheError:Error;
 
-		public function DesktopFileReference()
+		public function DesktopFileReference(target:File, root:File, rootPrefix:String = null)
 		{
 			_monitor = new FileMonitor();
 			_monitor.addEventListener(Event.CHANGE, onFileChange);
 			_monitor.watch();
+
+			reset(target, root, rootPrefix);
 		}
 
 		private function onFileChange(e:*):void
@@ -59,6 +64,7 @@ package talon.browser.desktop.utils
 			_root = root;
 			_rootPrefix = rootPrefix ? rootPrefix.replace(/\/$/, "") : "";
 			_monitor.file = target;
+			_cachePath = getFileReferencePath(target, root, rootPrefix);
 		}
 
 		private function clearCache():void
@@ -104,24 +110,13 @@ package talon.browser.desktop.utils
 		//
 		// IFileReference
 		//
-		public function get path():String
-		{
-			var result:String = root.getRelativePath(target);
-
-			if (rootPrefix && result)
-				result = rootPrefix + "/" + result;
-			else if (rootPrefix)
-				result = rootPrefix;
-
-			if (target.isDirectory)
-				result += "/";
-
-			return result;
-		}
+		public function get path():String { return _cachePath; }
 
 		public function get data():ByteArray { return target.exists ? cacheBytes : null; }
 
-		//
+		public function dispose():void { reset(null, null, null) }
+
+//
 		// Properties
 		//
 		public function get target():File { return _monitor.file; }
@@ -141,19 +136,17 @@ package talon.browser.desktop.utils
 		//
 		private function readBytes():ByteArray
 		{
-			var result:ByteArray = null;
+			var result:ByteArray = new ByteArray();
 			var stream:FileStream = new FileStream();
 
 			try
 			{
-				result = new ByteArray();
 				stream.open(target, FileMode.READ);
 				stream.readBytes(result, 0, stream.bytesAvailable);
 			}
 			catch (e:Error)
 			{
 				_cacheError = e;
-				result = new ByteArray();
 			}
 			finally
 			{

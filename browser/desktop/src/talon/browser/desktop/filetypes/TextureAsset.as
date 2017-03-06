@@ -73,7 +73,7 @@ package talon.browser.desktop.filetypes
 			{
 				if (e is IOErrorEvent) complete(null, IOErrorEvent(e).text);
 				else if (e is SecurityErrorEvent) complete(null, SecurityErrorEvent(e).text);
-				else complete(null, "#" + e.errorID);
+				else complete(null, "Texture bytes is null");
 			}
 		}
 

@@ -21,6 +21,7 @@ package talon.browser.desktop.commands
 
 		public override function execute():void
 		{
+			platform.document && platform.document.dispose();
 			platform.document = null;
 		}
 

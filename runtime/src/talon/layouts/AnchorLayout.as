@@ -7,38 +7,40 @@ package talon.layouts
 	{
 		public override function measureWidth(node:Node, availableHeight:Number):Number
 		{
-			var width:Number = 0;
-
-			width += node.paddingLeft.toPixels(node)
-				   + node.paddingRight.toPixels(node);
+			var maxChildWidth:Number = 0;
 
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				width += child.left.toPixels(child)
-					   + child.right.toPixels(child)
-					   + calcSize(child, child.width, child.height, 0, 0, child.minWidth, child.maxWidth, 0);
+				var childWidth:Number = child.left.toPixels(child)
+									  + child.right.toPixels(child)
+									  + calcSize(child, child.width, child.height, 0, 0, child.minWidth, child.maxWidth, 0);
+
+				maxChildWidth = Math.max(maxChildWidth, childWidth);
 			}
 
-			return width;
+			return maxChildWidth
+				 + node.paddingLeft.toPixels(node)
+				 + node.paddingRight.toPixels(node);
 		}
 
 		public override function measureHeight(node:Node, availableWidth:Number):Number
 		{
-			var height:Number = 0;
-
-			height += node.paddingTop.toPixels(node)
-					+ node.paddingBottom.toPixels(node);
+			var maxChildHeight:int = 0;
 
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				height += child.top.toPixels(child)
-					   + child.bottom.toPixels(child)
-					   + calcSize(child, child.height, child.width, 0, 0, child.minHeight, child.maxHeight, 0);
+				var childHeight:Number = child.top.toPixels(child)
+					   		   		   + child.bottom.toPixels(child)
+					   		   		   + calcSize(child, child.height, child.width, 0, 0, child.minHeight, child.maxHeight, 0);
+
+				maxChildHeight = Math.max(maxChildHeight, childHeight);
 			}
 
-			return height;
+			return maxChildHeight
+				 + node.paddingTop.toPixels(node)
+				 + node.paddingBottom.toPixels(node);
 		}
 
 		public override function arrange(node:Node, width:Number, height:Number):void

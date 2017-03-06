@@ -19,6 +19,7 @@ package starling.extensions
 
 	public class TalonTextFieldElement extends TextField implements ITalonElement
 	{
+		// There are 2px padding & 1px flash.text.TextField bug with autoSize disharmony
 		private static const TRUE_TYPE_CORRECTION:int = 4 + 1;
 
 		private static var _sRect:Rectangle = new Rectangle();
@@ -26,7 +27,7 @@ package starling.extensions
 
 		private var _node:Node;
 		private var _bridge:TalonDisplayObjectBridge;
-		private var _requiresRecomposition:Boolean;
+		private var _requiresRecompositionWithPadding:Boolean;
 		private var _manual:Boolean;
 
 		public function TalonTextFieldElement()
@@ -65,7 +66,10 @@ package starling.extensions
 			super.autoSize = getAutoSize(availableWidth == Infinity, availableHeight == Infinity);
 			super.width = availableWidth + trueTypeCorrection;
 			super.height = availableHeight + trueTypeCorrection;
+
+			super.setRequiresRecomposition();
 			super.getBounds(this, _sRect);	// call super.recompose();
+
 			getTrueTextBounds(_sRect);		// calculate true text bounds (which respect font lineHeight)
 			super.autoSize = TextFieldAutoSize.NONE;
 
@@ -115,7 +119,7 @@ package starling.extensions
 				var charQuadIndex:int = i - numNonDrawableChars;
 				if (charQuadIndex >= numDrawableChars) break;
 
-				var charIsDrawable:Boolean = char != null;
+				var charIsDrawable:Boolean = char != null && (char.width != 0 && char.height != 0);
 				if (charIsDrawable)
 				{
 					if (scale != scale)
@@ -147,9 +151,12 @@ package starling.extensions
 
 			// find width & height
 
-			var numLines:int = 1 + int((bottommostCharTop - topmostCharTop) / (font.lineHeight*scale + format.leading*scale));
+			var lineHeight:Number = font.lineHeight*scale;
+			var leading:Number = format.leading*scale;
+
+			var numLines:int = 1 + int((bottommostCharTop-topmostCharTop) / (lineHeight+leading));
 			var width:Number = rightmostCharRight - leftmostCharLeft;
-			var height:Number = numLines*font.lineHeight*scale + (numLines-1)*format.leading*scale;
+			var height:Number = numLines*lineHeight + (numLines-1)*leading;
 
 			out.setTo(leftmostCharLeft, topmostCharTop, width, height);
 			return out;
@@ -185,13 +192,13 @@ package starling.extensions
 		//
 		protected override function setRequiresRecomposition():void
 		{
-			_requiresRecomposition = true;
+			_requiresRecompositionWithPadding = true;
 			super.setRequiresRecomposition();
 		}
 
 		private function recomposeWithPadding():void
 		{
-			if (_requiresRecomposition)
+			if (_requiresRecompositionWithPadding)
 			{
 				// Crop padding from result size
 				var trueTypeCorrection:int = getCompositor(format.font) ? 0 : TRUE_TYPE_CORRECTION;
@@ -216,7 +223,7 @@ package starling.extensions
 				mesh.x = Layout.pad(_node.bounds.width, _sRect.width, paddingLeft, paddingRight, halign) - _sRect.x;
 				mesh.y = Layout.pad(_node.bounds.height, _sRect.height, paddingTop, paddingBottom, valign) - _sRect.y;
 
-				_requiresRecomposition = false;
+				_requiresRecompositionWithPadding = false;
 			}
 		}
 
@@ -227,7 +234,7 @@ package starling.extensions
 
 		private function recomposeAndRender(painter:Painter):void
 		{
-			if (_requiresRecomposition) recomposeWithPadding();
+			if (_requiresRecompositionWithPadding) recomposeWithPadding();
 
 			// In this call recompose() nether will be invoked (already invoked)
 			// and now this is analog of super.super.render() :-)

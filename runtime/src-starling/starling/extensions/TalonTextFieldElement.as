@@ -15,6 +15,7 @@ package starling.extensions
 	import talon.Attribute;
 	import talon.Node;
 	import talon.layouts.Layout;
+	import talon.utils.Gauge;
 	import talon.utils.ParseUtil;
 
 	public class TalonTextFieldElement extends TextField implements ITalonElement
@@ -48,6 +49,7 @@ package starling.extensions
 			_bridge.addAttributeChangeListener(Attribute.HALIGN, onHAlignChange, true);
 			_bridge.addAttributeChangeListener(Attribute.VALIGN, onVAlignChange, true);
 			_bridge.addAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange, true);
+			_bridge.addAttributeChangeListener(Attribute.INTERLINE, onInterlineChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
 			_bridge.addAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
 
@@ -270,10 +272,11 @@ package starling.extensions
 		private function onVAlignChange():void { format.verticalAlign = _node.getAttributeCache(Attribute.VALIGN) }
 		private function onAutoScaleChange():void { super.autoScale = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.FONT_AUTO_SCALE)); }
 		private function onWrapChange():void { super.wordWrap = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.WRAP)); }
-		private function onTextChange():void
-		{
-			super.text = _node.getAttributeCache(Attribute.TEXT);
+		private function onInterlineChange():void { format.leading = Gauge.toPixels(_node.getAttributeCache(Attribute.INTERLINE), _node); invalidateIfAutoSize(); }
+		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); invalidateIfAutoSize(); }
 
+		private function invalidateIfAutoSize():void
+		{
 			if (autoSize != TextFieldAutoSize.NONE)
 				node.invalidate();
 		}

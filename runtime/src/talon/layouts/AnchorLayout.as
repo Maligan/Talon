@@ -87,7 +87,7 @@ package talon.layouts
 
 		private function isRespectingSize(left:Gauge, right:Gauge):Boolean
 		{
-			return left.isNone || left.unit == Gauge.STAR
+			return left.isNone  || left.unit  == Gauge.STAR
 				|| right.isNone || right.unit == Gauge.STAR;
 		}
 
@@ -114,21 +114,21 @@ package talon.layouts
 			return Layout.pad(parentWidth, childWidth, paddingLeft + leftPx, paddingRight + rightPx, align);
 		}
 
-		private function calcSize(child:Node, mainSize:Gauge, crossSize:Gauge, mainContentSize:Number, crossContentSize:Number, mainMinSize:Gauge, mainMaxSize:Gauge, totalStars:int):Number
+		private function calcSize(child:Node, childMainSize:Gauge, childCrossSize:Gauge, contentMainSize:Number, contentCrossSize:Number, childMainMinSize:Gauge, childMainMaxSize:Gauge, totalStars:int):Number
 		{
-			var valueIsDependent:Boolean = mainSize.isNone && !crossSize.isNone;
-			var valueAutoArg:Number = valueIsDependent ? crossSize.toPixels(child, crossContentSize) : Infinity;
-			var value:Number = mainSize.toPixels(child, mainContentSize, valueAutoArg, mainContentSize, totalStars);
+			var valueIsDependent:Boolean = childMainSize.isNone && !childCrossSize.isNone;
+			var valueAutoArg:Number = valueIsDependent ? childCrossSize.toPixels(child, contentCrossSize) : Infinity;
+			var value:Number = childMainSize.toPixels(child, contentMainSize, valueAutoArg, contentMainSize, totalStars);
 
-			if (!mainMinSize.isNone)
+			if (!childMainMinSize.isNone)
 			{
-				var min:Number = mainMinSize.toPixels(child, mainContentSize);
+				var min:Number = childMainMinSize.toPixels(child, contentMainSize);
 				if (min > value) return min;
 			}
 
-			if (!mainMaxSize.isNone)
+			if (!childMainMaxSize.isNone)
 			{
-				var max:Number = mainMaxSize.toPixels(child, mainContentSize);
+				var max:Number = childMainMaxSize.toPixels(child, contentMainSize);
 				if (max < value) return max;
 			}
 

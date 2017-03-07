@@ -14,6 +14,7 @@ package talon.browser.desktop.plugins
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Sprite;
+	import starling.display.Stage;
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 	import starling.events.TouchEvent;
@@ -448,17 +449,29 @@ package talon.browser.desktop.plugins
 					var bounds:Rectangle = displayObjectAsTalonElement.node.bounds;
 					if (bounds.width == bounds.width && bounds.height == bounds.height)
 					{
-						var parent:DisplayObjectContainer = displayObject.parent;
+						var isVisible:Boolean = displayObject.visible;
+						var isVisibleCursor:DisplayObject = displayObject.parent;
 
-						parent.localToGlobal(bounds.topLeft, helperPoint);
-						helper.left = helperPoint.x;
-						helper.top = helperPoint.y;
+						while (isVisible && isVisibleCursor && !(isVisibleCursor is Stage))
+						{
+							isVisible = isVisibleCursor.visible;
+							isVisibleCursor = isVisibleCursor.parent;
+						}
 
-						parent.localToGlobal(bounds.bottomRight, helperPoint);
-						helper.right = helperPoint.x;
-						helper.bottom = helperPoint.y;
+						if (isVisible)
+						{
+							var parent:DisplayObjectContainer = displayObject.parent;
 
-						graphics.drawRect(helper.x, helper.y, helper.width, helper.height);
+							parent.localToGlobal(bounds.topLeft, helperPoint);
+							helper.left = helperPoint.x;
+							helper.top = helperPoint.y;
+
+							parent.localToGlobal(bounds.bottomRight, helperPoint);
+							helper.right = helperPoint.x;
+							helper.bottom = helperPoint.y;
+
+							graphics.drawRect(helper.x, helper.y, helper.width, helper.height);
+						}
 					}
 				}
 

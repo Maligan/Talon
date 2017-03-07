@@ -1,6 +1,10 @@
 package talon.browser.desktop.popups
 {
+	import feathers.events.FeathersEventType;
+
 	import flash.ui.Keyboard;
+
+	import starling.core.Starling;
 
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
@@ -21,10 +25,12 @@ package talon.browser.desktop.popups
 
 	public class GoToPopup extends Popup
 	{
+		private static const LAST_QUERY:String = "GoToPopup.LAST_QUERY";
+
 		// Data
-		private var _items:Array;
+		private var _items:Vector.<String>;
 		private var _query:String;
-		private var _queryItems:Array;
+		private var _queryItems:Vector.<String>;
 		private var _cursor:int;
 
 		// View
@@ -38,17 +44,35 @@ package talon.browser.desktop.popups
 
 		protected override function initialize():void
 		{
-			var view:DisplayObjectContainer = manager.factory.createElement("GoToPopup") as DisplayObjectContainer;
-			addChild(view);
+			initializeChildren();
 
 			_app = data as AppPlatform;
 			_app.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
+			_items = _app.document.factory.templateIds;
 
-			var source:Vector.<String> = _app.document.factory.templateIds;
-			_items = new Array();
-			for each (var template:String in source) _items.push(template);
+			// Keyboard control
+			addKeyboardListener(Keyboard.UP, moveCursorToPrev);
+			addKeyboardListener(Keyboard.DOWN, moveCursorToNext);
+			addKeyboardListener(Keyboard.ENTER, onEnterPress);
+			addKeyboardListener(Keyboard.ESCAPE, close);
 
-			// ---------------------------------------------------------------------------
+			// Mouse wheel control
+			_wheel = new MouseWheel(this, _app.starling);
+			_wheel.addEventListener(Event.TRIGGERED, onMouseWheel);
+
+			var lastQuery:String = _app.document.properties.getValueOrDefault(LAST_QUERY, String, "");
+			_app.document.properties.setValue(LAST_QUERY, "");
+			_input.text = lastQuery;
+			_input.selectRange(0, lastQuery.length);
+			refresh(lastQuery);
+		}
+
+		private function initializeChildren():void
+		{
+			removeChildren(0, -1, true);
+			var view:DisplayObjectContainer = manager.factory.createElement("GoToPopup") as DisplayObjectContainer;
+			addChild(view);
+
 			_labels = new <TalonTextFieldElement>[];
 
 			for (var i:int = 0; i < view.numChildren; i++)
@@ -83,19 +107,6 @@ package talon.browser.desktop.popups
 			{
 				return text.replace(/[^\w\d_]/g, "");
 			}
-			// ---------------------------------------------------------------------------
-
-			refresh();
-
-			// Keyboard control
-			addKeyboardListener(Keyboard.UP, moveCursorToPrev);
-			addKeyboardListener(Keyboard.DOWN, moveCursorToNext);
-			addKeyboardListener(Keyboard.ENTER, onEnterPress);
-			addKeyboardListener(Keyboard.ESCAPE, close);
-
-			// Mouse wheel control
-			_wheel = new MouseWheel(this, _app.starling);
-			_wheel.addEventListener(Event.TRIGGERED, onMouseWheel);
 		}
 
 		public override function dispose():void
@@ -123,7 +134,7 @@ package talon.browser.desktop.popups
 			{
 				var labelIndex:int = _labels.indexOf(e.currentTarget as TalonTextFieldElement);
 				var itemIndex:int = _labelsShift + labelIndex;
-				var templateId:String = _queryItems[itemIndex];
+				var templateId:String = itemIndex < _queryItems.length ? _queryItems[itemIndex] : null;
 				if (templateId) commit(templateId);
 			}
 		}
@@ -148,6 +159,7 @@ package talon.browser.desktop.popups
 
 		private function commit(templateId:String):void
 		{
+			_app.document.properties.setValue(LAST_QUERY, _query);
 			_app.templateId = templateId;
 			close();
 		}
@@ -171,7 +183,7 @@ package talon.browser.desktop.popups
 				var labelStyle:MeshStyle = label.style;
 
 				var itemIndex:int = _labelsShift + i;
-				var item:String = _queryItems[itemIndex] || "";
+				var item:String = itemIndex < _queryItems.length ? _queryItems[itemIndex] : "";
 
 				label.batchable = false;
 

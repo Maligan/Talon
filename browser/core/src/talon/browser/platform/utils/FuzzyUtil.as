@@ -3,11 +3,11 @@ package talon.browser.platform.utils
 	public class FuzzyUtil
 	{
 		/** Select all items which fuzzy match query, and sort by Levenshtein order. */
-		public static function fuzzyFilter(query:String, items:Array):Array
+		public static function fuzzyFilter(query:String, items:Vector.<String>):Vector.<String>
 		{
 			query = query.toLowerCase();
 
-			var result:Array = [];
+			var result:Vector.<String> = new <String>[];
 
 			for each (var item:String in items)
 			{
@@ -16,7 +16,6 @@ package talon.browser.platform.utils
 				if (itemMatch) result[result.length] = item;
 			}
 
-			result.sort();
 			return result;
 		}
 

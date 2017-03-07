@@ -4,12 +4,8 @@ package talon.browser.desktop.filetypes
 	import flash.events.IOErrorEvent;
 	import flash.filesystem.File;
 
-	import starling.events.Event;
-
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
-
 	import talon.browser.desktop.utils.DesktopFileReference;
-	import talon.browser.platform.document.files.IFileReference;
 	import talon.browser.platform.document.log.DocumentMessage;
 	import talon.browser.platform.utils.Glob;
 
@@ -35,11 +31,9 @@ package talon.browser.desktop.filetypes
 			{
 				var refPath:String = DesktopFileReference.getFileReferencePath(child, file.root, file.rootPrefix);
 
-				if (!isIncluded(refPath) || !document.files.hasURL(refPath))
-				{
-					var ref:DesktopFileReference = new DesktopFileReference(child, file.root, file.rootPrefix);
-					document.files.addReference(ref);
-				}
+				var refIsMatch:Boolean = isIncluded(refPath) && !document.files.hasURL(refPath);
+				if (refIsMatch)
+					document.files.addReference(new DesktopFileReference(child, file.root, file.rootPrefix));
 			}
 
 			document.tasks.end();

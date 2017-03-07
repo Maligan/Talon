@@ -51,10 +51,19 @@ package talon.browser.desktop.popups.widgets
 
 			// Create textEditor
 			textEditorFactory = editorFactory;
+		}
 
-			// Focus
-			addEventListener(FeathersEventType.FOCUS_IN, onFocusIn);
-			addEventListener(FeathersEventType.FOCUS_OUT, onFocusOut);
+		public override function dispose():void
+		{
+			removeFocusListeners();
+			super.dispose();
+		}
+
+		protected override function createTextEditor():void
+		{
+			removeFocusListeners();
+			super.createTextEditor();
+			addFocusListeners();
 		}
 
 		private function editorFactory():ITextEditor
@@ -70,15 +79,34 @@ package talon.browser.desktop.popups.widgets
 			return editor;
 		}
 
-		private function onFocusIn(e:Event):void
+		// focus
+
+		private function removeFocusListeners():void
+		{
+			if (nativeFocus)
+			{
+				nativeFocus.removeEventListener(FeathersEventType.FOCUS_IN, onFocusIn);
+				nativeFocus.removeEventListener(FeathersEventType.FOCUS_OUT, onFocusOut);
+			}
+		}
+
+		private function addFocusListeners():void
+		{
+			nativeFocus.addEventListener(FeathersEventType.FOCUS_IN, onFocusIn);
+			nativeFocus.addEventListener(FeathersEventType.FOCUS_OUT, onFocusOut);
+		}
+
+		private function onFocusIn(e:*):void
 		{
 			node.states.insert(STATE_FOCUS);
 		}
 
-		private function onFocusOut(e:Event):void
+		private function onFocusOut(e:*):void
 		{
 			node.states.remove(STATE_FOCUS);
 		}
+
+		// node
 
 		private function onResize():void
 		{
@@ -106,8 +134,7 @@ package talon.browser.desktop.popups.widgets
 
 		private function get textFormat():BitmapFontTextFormat
 		{
-			return textEditor ? BitmapFontTextEditor(textEditor).textFormat : null;
-		}
+			return textEditor ? BitmapFontTextEditor(textEditor).textFormat : null; }
 
 		public override function render(painter:Painter):void
 		{

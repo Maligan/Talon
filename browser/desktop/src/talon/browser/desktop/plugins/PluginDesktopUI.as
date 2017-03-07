@@ -439,12 +439,27 @@ package talon.browser.desktop.plugins
 		{
 			if (deep!=0 && displayObject && displayObject.stage)
 			{
+				var helper:Rectangle = new Rectangle();
+				var helperPoint:Point = new Point();
+
 				var displayObjectAsTalonElement:ITalonElement = displayObject as ITalonElement;
 				if (displayObjectAsTalonElement)
 				{
-					var bounds:Rectangle = displayObject.getBounds(displayObject.stage);
+					var bounds:Rectangle = displayObjectAsTalonElement.node.bounds;
 					if (bounds.width == bounds.width && bounds.height == bounds.height)
-						graphics.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+					{
+						var parent:DisplayObjectContainer = displayObject.parent;
+
+						parent.localToGlobal(bounds.topLeft, helperPoint);
+						helper.left = helperPoint.x;
+						helper.top = helperPoint.y;
+
+						parent.localToGlobal(bounds.bottomRight, helperPoint);
+						helper.right = helperPoint.x;
+						helper.bottom = helperPoint.y;
+
+						graphics.drawRect(helper.x, helper.y, helper.width, helper.height);
+					}
 				}
 
 				var displayObjectAsContainer:DisplayObjectContainer = displayObject as DisplayObjectContainer;

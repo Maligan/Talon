@@ -1,10 +1,6 @@
 package talon.browser.desktop.popups
 {
-	import feathers.events.FeathersEventType;
-
 	import flash.ui.Keyboard;
-
-	import starling.core.Starling;
 
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
@@ -26,17 +22,19 @@ package talon.browser.desktop.popups
 	public class GoToPopup extends Popup
 	{
 		private static const LAST_QUERY:String = "GoToPopup.LAST_QUERY";
+		private static const LAST_OFFSET:String = "GoToPopup.LAST_OFFSET";
+		private static const LAST_CURSOR:String = "GoToPopup.LAST_CURSOR";
 
 		// Data
 		private var _items:Vector.<String>;
 		private var _query:String;
 		private var _queryItems:Vector.<String>;
-		private var _cursor:int;
 
 		// View
 		private var _input:TalonFeatherTextInput;
 		private var _labels:Vector.<TalonTextFieldElement>;
-		private var _labelsShift:int;
+		private var _labelsOffset:int;
+		private var _labelsCursor:int;
 
 		// Controller
 		private var _app:AppPlatform;
@@ -60,11 +58,20 @@ package talon.browser.desktop.popups
 			_wheel = new MouseWheel(this, _app.starling);
 			_wheel.addEventListener(Event.TRIGGERED, onMouseWheel);
 
+			// read prev state
 			var lastQuery:String = _app.document.properties.getValueOrDefault(LAST_QUERY, String, "");
+			var lastOffset:int = _app.document.properties.getValueOrDefault(LAST_OFFSET, int, 0);
+			var lastCursor:int = _app.document.properties.getValueOrDefault(LAST_CURSOR, int, 0);
+
+			// reset prev state
 			_app.document.properties.setValue(LAST_QUERY, "");
+			_app.document.properties.setValue(LAST_OFFSET, 0);
+			_app.document.properties.setValue(LAST_CURSOR, 0);
+
+			// reset
 			_input.text = lastQuery;
 			_input.selectRange(0, lastQuery.length);
-			refresh(lastQuery);
+			refresh(lastQuery, lastOffset, lastCursor);
 		}
 
 		private function initializeChildren():void
@@ -123,7 +130,10 @@ package talon.browser.desktop.popups
 		private function onDocumentChange():void
 		{
 			if (_app.document)
-				refresh();
+			{
+				_items = _app.document.factory.templateIds;
+				refresh(_query);
+			}
 			else
 				close();
 		}
@@ -133,7 +143,7 @@ package talon.browser.desktop.popups
 			if (e.getTouch(e.target as DisplayObject, TouchPhase.ENDED))
 			{
 				var labelIndex:int = _labels.indexOf(e.currentTarget as TalonTextFieldElement);
-				var itemIndex:int = _labelsShift + labelIndex;
+				var itemIndex:int = _labelsOffset + labelIndex;
 				var templateId:String = itemIndex < _queryItems.length ? _queryItems[itemIndex] : null;
 				if (templateId) commit(templateId);
 			}
@@ -142,7 +152,7 @@ package talon.browser.desktop.popups
 		private function onEnterPress():void
 		{
 			// Open selected query
-			if (_queryItems.length) commit(_queryItems[_cursor]);
+			if (_queryItems.length) commit(_queryItems[_labelsCursor]);
 
 			// Notify user
 			else manager.notify();
@@ -160,29 +170,69 @@ package talon.browser.desktop.popups
 		private function commit(templateId:String):void
 		{
 			_app.document.properties.setValue(LAST_QUERY, _query);
+			_app.document.properties.setValue(LAST_OFFSET, _labelsOffset);
+			_app.document.properties.setValue(LAST_CURSOR, _labelsCursor);
+
 			_app.templateId = templateId;
 			close();
 		}
 
-		private function refresh(query:String = null):void
+		private function refresh(query:String = null, offset:int = 0, cursor:int = 0):void
 		{
 			_query = query || "";
 			_queryItems = FuzzyUtil.fuzzyFilter(_query, _items);
 
-			cursorReset();
-			refreshListText();
+			_labelsCursor = -1;
+			_labelsOffset = -1;
+
+			refreshList(offset, cursor);
+		}
+
+		private function refreshList(offset:int = 0, cursor:int = 0):void
+		{
+			// restrain
+
+			var numLabels:int = _labels.length;
+			var numItems:int = _queryItems.length;
+			if (numItems == 0)
+			{
+				offset =  0;
+				cursor = -1;
+			}
+			else
+			{
+				offset = (offset + numItems) % numItems;
+				cursor = (cursor + numItems) % numItems;
+
+				offset = Math.min(offset, cursor);
+				offset = Math.max(offset, cursor - (numLabels-1));
+			}
+
+			// draw
+
+			if (_labelsOffset != offset)
+			{
+				_labelsOffset = offset;
+				updateTexts();
+			}
+
+			if (_labelsCursor != cursor)
+			{
+				_labelsCursor = cursor;
+				updateCursor();
+			}
 		}
 
 		// Cursor / List
 
-		private function refreshListText():void
+		private function updateTexts():void
 		{
 			for (var i:int = 0; i < _labels.length; i++)
 			{
 				var label:TalonTextFieldElement = _labels[i];
 				var labelStyle:MeshStyle = label.style;
 
-				var itemIndex:int = _labelsShift + i;
+				var itemIndex:int = _labelsOffset + i;
 				var item:String = itemIndex < _queryItems.length ? _queryItems[itemIndex] : "";
 
 				label.batchable = false;
@@ -214,63 +264,18 @@ package talon.browser.desktop.popups
 			}
 		}
 
-		private function refreshListHighlight():void
+		private function updateCursor():void
 		{
 			for (var i:int = 0; i < _labels.length; i++)
 			{
-				if (_cursor == _labelsShift + i)
+				if (_labelsCursor == _labelsOffset + i)
 					_labels[i].node.classes.insert("selected");
 				else
 					_labels[i].node.classes.remove("selected");
 			}
 		}
 
-		private function cursorReset():void
-		{
-			_labelsShift = 0;
-			_cursor = _queryItems.length == 0 ? -1 : 0;
-			refreshListHighlight();
-		}
-
-		private function moveCursorToNext():void
-		{
-			if (_queryItems.length > 0)
-			{
-				_cursor = (_cursor + 1) % _queryItems.length;
-				refreshLabelShift();
-				refreshListHighlight();
-			}
-		}
-
-		private function moveCursorToPrev():void
-		{
-			if (_queryItems.length > 0)
-			{
-				if (_cursor == 0)
-					_cursor = _queryItems.length - 1;
-				else
-					_cursor = (_cursor - 1) % _queryItems.length;
-
-				refreshLabelShift();
-				refreshListHighlight();
-			}
-		}
-
-		private function refreshLabelShift():void
-		{
-			var labelBeginIndex:int = _labelsShift;
-			var labelEndIndex:int = _labelsShift + _labels.length - 1;
-
-			if (_cursor > labelEndIndex)
-			{
-				_labelsShift = _cursor - _labels.length + 1;
-				refreshListText();
-			}
-			else if (_cursor < labelBeginIndex)
-			{
-				_labelsShift = _cursor;
-				refreshListText();
-			}
-		}
+		private function moveCursorToNext():void { refreshList(_labelsOffset, _labelsCursor + 1); }
+		private function moveCursorToPrev():void { refreshList(_labelsOffset, _labelsCursor - 1); }
 	}
 }

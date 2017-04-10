@@ -81,7 +81,7 @@ package talon.browser.desktop.commands
 			if (fileController is DirectoryAsset) return true;
 
 			var patternsString:String = platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_PATTERN, String);
-			if (patternsString == null) return true;
+			if (patternsString == null) return false;
 
 			return !Glob.matchPattern(file.path, patternsString);
 		}

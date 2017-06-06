@@ -64,7 +64,6 @@ package talon
 		public static const FILL_ALIGN_VERTICAAL:String            = registerAttribute("fillAlignVertical",     "top");
 		public static const FILL_ALIGN:String                 	   = registerComposite("fillAlign",             [FILL_ALIGN_HORIZONTAL, FILL_ALIGN_VERTICAAL]);
 
-
 		public static const FONT_COLOR:String                      = registerAttribute("fontColor",             INHERIT, "#FFFFFF");
 		public static const FONT_NAME:String                       = registerAttribute("fontName",              INHERIT, "mini");
 		public static const FONT_SIZE:String                       = registerAttribute("fontSize",              INHERIT, "12px"); // Has hardcoded value in Node.ppem method
@@ -91,11 +90,12 @@ package talon
 		public static const ALIGN:String                           = registerComposite("align",                 [HALIGN, VALIGN]);
 
 		public static const ORIENTATION:String                     = registerAttribute("orientation",           Orientation.HORIZONTAL);
-		public static const IHALIGN:String                         = registerAttribute("ihalign",               "left");
-		public static const IVALIGN:String                         = registerAttribute("ivalign",               "top");
 		public static const GAP:String                             = registerAttribute("gap",                   NONE);
 		public static const INTERLINE:String                       = registerAttribute("interline",             NONE);
 		public static const WRAP:String                            = registerAttribute("wrap",                  FALSE);
+		public static const HALIGN_SELF:String                     = registerAttribute("ihalign",               "left"); // TODO: halignSelf
+		public static const VALIGN_SELF:String                     = registerAttribute("ivalign",               "top");	 // TODO: valignSelf
+		public static const ALIGN_SELF:String					   = registerComposite("alignSelf",				[HALIGN_SELF, VALIGN_SELF]);
 
 		public static const BREAK_BEFORE:String                    = registerAttribute("breakBefore",           BreakMode.SOFT);
 		public static const BREAK_AFTER:String                     = registerAttribute("breakAfter",            BreakMode.SOFT);

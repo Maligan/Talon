@@ -29,7 +29,7 @@ package talon.utils
 			{
 				_attribute = _node.getOrCreateAttribute(_attributeName);
 				_attribute.change.addListener(onChange);
-				onChange();
+				parse(_attribute.valueCache, false);
 			}
 		}
 
@@ -96,7 +96,7 @@ package talon.utils
 				_change.dispatch();
 		}
 
-		public function parse(string:String):void
+		public function parse(string:String, dispatch:Boolean = true):void
 		{
 			_container.length = 0;
 
@@ -107,7 +107,7 @@ package talon.utils
 					_container[_container.length] = element;
 			}
 
-			dispatchChange();
+			if (dispatch) dispatchChange();
 		}
 
 		public function toString():String

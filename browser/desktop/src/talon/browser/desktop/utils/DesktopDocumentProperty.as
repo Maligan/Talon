@@ -8,6 +8,7 @@ package talon.browser.desktop.utils
 		public static const SOURCE_PATTERN:String  = "source.pattern";
 
 		public static const EXPORT_PATH:String     = "export.path";
+		public static const EXPORT_PATTERN:String  = "export.pattern";
 		public static const EXPORT_EXEC:String     = "export.exec";
 	}
 }

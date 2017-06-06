@@ -34,7 +34,7 @@ package starling.extensions
 			_node.addTriggerListener(Event.RESIZE, onNodeResize);
 
 			_bridge = new TalonDisplayObjectBridge(this, node);
-			_bridge.addAttributeChangeListener(Attribute.SOURCE, onSourceChange);
+			_bridge.setAttributeChangeListener(Attribute.SOURCE, onSourceChange);
 
 			_vertexOffset = new Point();
 
@@ -67,8 +67,13 @@ package starling.extensions
 
 		private function onSourceChange():void
 		{
+			var prevW:int = texture ? texture.width  : -1;
+			var prevH:int = texture ? texture.height : -1;
 			texture = node.getAttributeCache(Attribute.SOURCE) as Texture;
-			if (node.width.isNone || node.height.isNone) node.invalidate();
+			var currW:int = texture ? texture.width  : -1;
+			var currH:int = texture ? texture.height : -1;
+
+			if (node.width.isNone && (prevW != currW) || node.height.isNone && (prevH != currH)) node.invalidate();
 		}
 
 		private function onNodeResize():void
@@ -98,17 +103,20 @@ package starling.extensions
 
 			// Offset vertices by padding
 
-			var posAttr:String = "position";
-			var point:Point = Pool.getPoint();
-
-			for (var i:int = 0; i < vertexData.numVertices; i++)
+			if (_vertexOffset.x != 0 || _vertexOffset.y != 0)
 			{
-				point = vertexData.getPoint(i, posAttr, point);
-				point.offset(_vertexOffset.x, _vertexOffset.y);
-				vertexData.setPoint(i, posAttr, point.x, point.y);
-			}
+				var posAttr:String = "position";
+				var point:Point = Pool.getPoint();
 
-			Pool.putPoint(point);
+				for (var i:int = 0; i < vertexData.numVertices; i++)
+				{
+					point = vertexData.getPoint(i, posAttr, point);
+					point.offset(_vertexOffset.x, _vertexOffset.y);
+					vertexData.setPoint(i, posAttr, point.x, point.y);
+				}
+
+				Pool.putPoint(point);
+			}
 		}
 
 		public override function render(painter:Painter):void

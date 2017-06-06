@@ -24,7 +24,6 @@ package talon.browser.desktop.plugins
 	import starling.extensions.TalonQuery;
 	import starling.extensions.TalonSpriteElement;
 	import starling.filters.BlurFilter;
-	import starling.utils.Align;
 	import starling.utils.Color;
 
 	import talon.Attribute;
@@ -124,7 +123,7 @@ package talon.browser.desktop.plugins
 			_popups = _platform.popups;
 			_factory = _platform.factory;
 			_factory.addTerminal("input", TalonFeatherTextInput);
-			_factory.addResourcesToScope(_locale);
+			_factory.addResources(_locale);
 			_factory.addArchiveContentAsync(readFile(fileInterface), onFactoryComplete);
 
 			// Windows
@@ -593,6 +592,7 @@ class AppUINativeMenu
 		insert("file/preferences/alwaysOnTop", new  ChangeSettingCommand(_platform, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
 		insert("file/preferences/autoReopen",  new  ChangeSettingCommand(_platform, AppConstants.SETTING_AUTO_REOPEN, true, false));
 		insert("file/preferences/autoUpdate",  new  ChangeSettingCommand(_platform, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, true, false));
+		insert("file/preferences/publishCache",new  ChangeSettingCommand(_platform, AppConstants.SETTING_PUBLISH_CACHE, true, false));
 		insert("file/-");
 		insert("file/publishAs",               new  PublishCommand(_platform), "shift-ctrl-s");
 		insert("file/screenshot",              new  PublishScreenshotCommand(_platform, ui), "shift-ctrl-a");

@@ -17,91 +17,133 @@ package talon.utils
 		public static const ATT_TAG:String = "tag";
 
 		protected var _parser:TMLParser;
-		protected var _parserStack:Array;
+		protected var _parserCache:Object;
+		protected var _parserCursorTags:Vector.<String>;
+		protected var _parserCursorAttributes:Object;
+		protected var _parserProducts:Array;
 		protected var _parserProduct:*;
-		protected var _parserLastTemplateRoot:Node;
-		protected var _parserTag:String;
+		protected var _parserBindSource:Node;
 
 		protected var _resources:Object;
 		protected var _linkage:Object;
 		protected var _style:StyleSheet;
 
-		public function TMLFactory(resources:Object = null):void
+		public function TMLFactory():void
 		{
-			_resources = resources || {};
+			_resources = {};
 			_linkage = {};
 			_style = new StyleSheet();
 
-			_parserStack = new Array();
+			_parserProducts = new Array();
 			_parser = new TMLParser();
 			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
 			_parser.addEventListener(TMLParser.EVENT_END, onElementEnd);
 		}
 
-		//
 		// Factory
-		//
+
 		public function create(xmlOrKey:Object, includeStyleSheet:Boolean, includeResources:Boolean):Object
 		{
+			// Define
 			var template:XML = null;
+			var templateTag:String = null;
 
-			if (xmlOrKey is XML) template = xmlOrKey as XML;
-			else
+			if (xmlOrKey is XML)
+				template = xmlOrKey as XML;
+			else if (xmlOrKey is String)
 			{
-				template = _parser.templatesXML[xmlOrKey];
-
-				for (var tag:String in _parser.templatesTag)
-				{
-					if (_parser.templatesTag[tag] == xmlOrKey)
-					{
-						_parserTag = tag;
-						break;
-					}
-				}
-
-				if (template == null) throw new ArgumentError("Template with id: " + xmlOrKey + " doesn't exist");
+				template = _parser.templates[xmlOrKey];
+				templateTag = getTemplateTagByKey(xmlOrKey as String);
 			}
 
-			_parserLastTemplateRoot = null;
-			_parserStack.length = 0;
+			if (template == null) throw new ArgumentError("Template with id: " + xmlOrKey + " doesn't exist");
 
 			// Parse template, while parsing events dispatched (onElementBegin, onElementEnd)
-			_parser.parse(template);
-			var result:* = _parserProduct;
-			var resultNode:Node = getElementNode(result);
-
-			_parserLastTemplateRoot = null;
-			_parserStack.length = 0;
+			_parserBindSource = null;
+			_parserProducts.length = 0;
 			_parserProduct = null;
+			_parserCursorAttributes = null;
+			_parserCursorTags = null;
+
+			if (_parserCache && xmlOrKey is String && _parserCache[xmlOrKey] != null) parseCache(xmlOrKey as String);
+			else _parser.parse(template, templateTag);
+
+			var result:* = _parserProduct;
+			var resultNode:Node = getNode(result);
+
+			_parserBindSource = null;
+			_parserProducts.length = 0;
+			_parserProduct = null;
+			_parserCursorAttributes = null;
+			_parserCursorTags = null;
 
 			// Add style and resources
 			if (resultNode)
 			{
+				resultNode.unfreeze();
 				if (includeResources) resultNode.setResources(_resources);
 				if (includeStyleSheet) resultNode.setStyleSheet(_style);
 			}
 
+			resultNode.unfreeze()
+
+			// Result
 			return result;
+		}
+
+		private function getTemplateTagByKey(key:String):String
+		{
+			for (var tag:String in _parser.templateTagToKey)
+				if (_parser.templateTagToKey[tag] == key)
+					return tag;
+
+			return null;
+		}
+
+		private function parseCache(name:String):void
+		{
+			var events:Array = _parserCache[name];
+
+			for each (var event:Object in events)
+			{
+				if (event.type == TMLParser.EVENT_BEGIN)
+				{
+					_parserCursorAttributes = new OrderedObject();
+
+					for each (var attribute:Object in event.attributes)
+					{
+						var key:String = attribute.key;
+						var value:String = attribute.value;
+						_parserCursorAttributes[key] = value;
+					}
+
+					_parserCursorTags = Vector.<String>(event.tags);
+					onElementBegin(null);
+				}
+				else if (event.type == TMLParser.EVENT_END)
+				{
+					onElementEnd(null);
+				}
+			}
 		}
 
 		protected function onElementBegin(e:Event):void
 		{
-			var attributes:Object = _parser.cursorAttributes;
-
+			var tags:Vector.<String> = _parserCursorTags || _parser.cursorTags;
+			var attributes:Object = _parserCursorAttributes || _parser.cursorAttributes;
 
 			if (attributes[Attribute.TYPE] == null)
-				attributes[Attribute.TYPE] = _parserTag || _parser.cursorTags[0];
-
-			_parserTag = null;
+				attributes[Attribute.TYPE] = tags[0];
 
 			// Create new element
-			var elementClass:Class = getLinkageClass(_parser.cursorTags);
+			var elementClass:Class = getLinkageClass(tags);
 			var element:* = new elementClass();
-			var elementNode:Node = getElementNode(element);
+			var elementNode:Node = getNode(element);
+			elementNode.freeze();
 
 			// Save last template root (for binding purpose)
-			if (_parserLastTemplateRoot == null || _parser.cursorTags.length>1)
-				_parserLastTemplateRoot = elementNode;
+			if (_parserBindSource == null || tags.length>1)
+				_parserBindSource = elementNode;
 
 			// Copy attributes to node
 			if (elementNode)
@@ -109,14 +151,14 @@ package talon.utils
 					setNodeAttribute(elementNode, key, attributes[key]);
 
 			// Add to parent
-			if (_parserStack.length)
+			if (_parserProducts.length)
 			{
-				var parent:* = _parserStack[_parserStack.length - 1];
+				var parent:* = _parserProducts[_parserProducts.length - 1];
 				var child:* = element;
 				addChild(parent, child);
 			}
 
-			_parserStack.push(element);
+			_parserProducts.push(element);
 		}
 
 		protected function getLinkageClass(types:Vector.<String>):Class
@@ -141,7 +183,7 @@ package talon.utils
 			var bindSourceAttributeName:String = (bindSplit && bindSplit.length>1) ? bindSplit[1] : null;
 			if (bindSourceAttributeName)
 			{
-				var bindSourceAttribute:Attribute = _parserLastTemplateRoot.getOrCreateAttribute(bindSourceAttributeName);
+				var bindSourceAttribute:Attribute = _parserBindSource.getOrCreateAttribute(bindSourceAttributeName);
 				var bindTargetAttribute:Attribute = node.getOrCreateAttribute(attributeName);
 				bindTargetAttribute.upstream(bindSourceAttribute);
 			}
@@ -151,7 +193,14 @@ package talon.utils
 			}
 		}
 
-		protected function getElementNode(element:*):Node
+		protected function onElementEnd(e:Event):void
+		{
+			_parserProduct = _parserProducts.pop();
+		}
+
+		// For override
+
+		protected function getNode(element:*):Node
 		{
 			throw new Error("Not implemented");
 		}
@@ -161,31 +210,19 @@ package talon.utils
 			throw new Error("Not implemented");
 		}
 
-		protected function onElementEnd(e:Event):void
-		{
-			_parserProduct = _parserStack.pop();
-		}
-
-		//
-		// Linkage
-		//
-		/** Setup class which created for type of type. */
-		public function setLinkage(type:String, typeClass:Class):void { _linkage[type] = typeClass; }
-
-		//
-		// Library
-		//
-		/** Add resource (image, string, etc.) to global factory scope. */
-		public function addResourceToScope(id:String, resource:*):void { _resources[id] = resource; }
+		// Register
 
 		/** Add all key-value pairs from object. */
-		public function addResourcesToScope(object:Object):void { for (var id:String in object) addResourceToScope(id, object[id]); }
+		public function addResources(object:Object):void { for (var id:String in object) addResource(id, object[id]); }
+
+		/** Add resource (image, string, etc.) to global factory scope. */
+		public function addResource(id:String, resource:*):void { _resources[id] = resource; }
 
 		/** Add css to global factory scope. */
-		public function addStyleSheet(css:String):void { _style.parse(css); }
+		public function addStyle(css:String):void { _style.parse(css); }
 
 		/** Define type as terminal (see TML specification) */
-		public function addTerminal(type:String, typeClass:Class):void { _parser.terminals.push(type); setLinkage(type, typeClass); }
+		public function addTerminal(type:String, typeClass:Class):void { _parser.terminals.push(type); _linkage[type] = typeClass; }
 
 		/** Add template (non terminal symbol) definition. Template name equals @res attribute. */
 		public function addTemplate(xml:XML):void
@@ -195,17 +232,19 @@ package talon.utils
 
 			var ref:String = xml.attribute(ATT_REF);
 			if (ref == null) throw new ArgumentError("Template must contains " + ATT_REF + " attribute");
-			if (ref in _parser.templatesXML) throw new ArgumentError("Template with " + ATT_REF + " = '" + ref + "' already exists");
+			if (ref in _parser.templates) throw new ArgumentError("Template with " + ATT_REF + " = '" + ref + "' already exists");
 
 			var children:XMLList = xml.children();
 			if (children.length() != 1) throw new ArgumentError("Template '" + ref + "' must contains one child");
 			var tree:XML = children[0];
 
 			var tag:String = xml.attribute(ATT_TAG);
-			if (tag != null) _parser.templatesTag[tag] = ref;
+			if (tag != null) _parser.templateTagToKey[tag] = ref;
 
-			_parser.templatesXML[ref] = tree;
+			_parser.templates[ref] = tree;
 		}
+
+		public function setCache(cache:Object):void { _parserCache = cache }
 
 		/** Add all templates and style sheets from library xml. */
 		public function addLibrary(xml:XML):void
@@ -223,10 +262,10 @@ package talon.utils
 						addTemplate(child);
 						break;
 					case TAG_STYLE:
-						addStyleSheet(child.text());
+						addStyle(child.text());
 						break;
 					case TAG_PROPERTIES:
-						addResourcesToScope(ParseUtil.parseProperties(child.text()));
+						addResources(ParseUtil.parseProperties(child.text()));
 						break;
 					default:
 						logger("Ignore library part", "'" + subtype + "'", "unknown type");
@@ -234,13 +273,67 @@ package talon.utils
 			}
 		}
 
-		//
 		// Utils
-		//
+
 		protected function logger(...args):void
 		{
 			var message:String = args.join(" ");
 			trace("[TalonFactory]", message);
+		}
+
+		public function getCache():Object
+		{
+			// Replace default listeners
+			_parser.removeEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
+			_parser.removeEventListener(TMLParser.EVENT_END, onElementEnd);
+			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBeginInner);
+			_parser.addEventListener(TMLParser.EVENT_END, onElementEndInner);
+
+			// Parse all templates
+			var cache:Object = {};
+			var events:Array;
+
+			for (var key:String in _parser.templates)
+			{
+				cache[key] = events = [];
+				var value:XML = _parser.templates[key];
+				_parser.parse(value);
+			}
+
+			function onElementBeginInner(e:Event):void
+			{
+				var order:Array = [];
+
+				for (key in _parser.cursorAttributes)
+				{
+					order.push({
+						key: key,
+						value: _parser.cursorAttributes[key]
+					})
+				}
+
+				events.push({
+					type: e.type,
+					tags: _parser.cursorTags.concat(),
+					attributes: order
+				})
+			}
+
+			function onElementEndInner(e:Event):void
+			{
+				events.push({
+					type: e.type
+				})
+			}
+
+			// Restore listeners
+			_parser.removeEventListener(TMLParser.EVENT_BEGIN, onElementBeginInner);
+			_parser.removeEventListener(TMLParser.EVENT_END, onElementEndInner);
+			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
+			_parser.addEventListener(TMLParser.EVENT_END, onElementEnd);
+
+			// Result
+			return cache;
 		}
 	}
 }

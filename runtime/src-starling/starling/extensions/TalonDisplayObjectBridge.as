@@ -5,6 +5,7 @@ package starling.extensions
 	import flash.geom.Rectangle;
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
+	import flash.utils.Dictionary;
 
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
@@ -14,6 +15,9 @@ package starling.extensions
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
+	import starling.filters.BlurFilter;
+	import starling.filters.ColorMatrixFilter;
+	import starling.filters.FilterChain;
 	import starling.filters.FragmentFilter;
 	import starling.rendering.Painter;
 	import starling.styles.MeshStyle;
@@ -30,7 +34,7 @@ package starling.extensions
 	/** Provide method for synchronize starling display tree and talon tree. */
 	public class TalonDisplayObjectBridge
 	{
-		ParseUtil.addParser(Matrix, function(value:String, node:Node, out:Matrix):Matrix
+		ParseUtil.registerClassParser(Matrix, function(value:String, node:Node, out:Matrix):Matrix
 		{
 			out ||= new Matrix();
 			out.identity();
@@ -65,6 +69,67 @@ package starling.extensions
 			return out;
 		});
 
+		ParseUtil.registerClassParser(FragmentFilter, function(value:String, node:Node, out:FragmentFilter):FragmentFilter
+		{
+			var outChain:FilterChain = out as FilterChain;
+			var outBlur:BlurFilter = out as BlurFilter;
+			if (outBlur) outBlur.blurX = outBlur.blurY = 0;
+			var outColorMatrix:ColorMatrixFilter = out as ColorMatrixFilter;
+			if (outColorMatrix) outColorMatrix.reset();
+
+			var filters:Array = value.split(/\s+(?=none|blur|saturate|brightness|contrast|hue|tint)/g);
+			if (filters.length == 1 && filters[0] == "none")
+			{
+				out && out.dispose();
+				out = null;
+			}
+
+			for each (var filter:String in filters)
+			{
+				var args:Array = ParseUtil.parseFunction(filter);
+				if (args == null || args.length == 0) continue;
+
+				var float1:Number = parseFloat(args[1]) || 0;
+				var angle1:Number = ParseUtil.parseAngle(args[1], 0);
+				var color1:uint = ParseUtil.parseColor(args[1]);
+
+				switch (args[0])
+				{
+					case "saturate":
+					case "brightness":
+					case "contrast":
+					case "hue":
+					case "tint":
+						outColorMatrix ||= new ColorMatrixFilter();
+						/**/ if (args[0] == "saturate")   outColorMatrix.adjustSaturation(float1);
+						else if (args[0] == "brightness") outColorMatrix.adjustBrightness(float1);
+						else if (args[0] == "contrast")   outColorMatrix.adjustContrast(float1);
+						else if (args[0] == "hue")        outColorMatrix.adjustHue(angle1);
+						else if (args[0] == "tint")       outColorMatrix.tint(color1, parseFloat(args[2]) || 1.0);
+						break;
+
+					case "blur":
+						outBlur ||= new BlurFilter();
+						outBlur.blurX = float1;
+						outBlur.blurY = parseFloat(args[2]) || float1;
+						break;
+				}
+			}
+
+			if (outColorMatrix && outBlur)
+			{
+				out = outChain = new FilterChain();
+				outChain.addFilter(outColorMatrix);
+				outChain.addFilter(outBlur);
+			}
+			else if (outColorMatrix)
+				out = outColorMatrix;
+			else if (outBlur)
+				out = outBlur;
+
+			return out;
+		});
+
 		private const sMatrix:Matrix = new Matrix();
 		private const sPoint:Point = new Point();
 
@@ -73,50 +138,63 @@ package starling.extensions
 		private var _background:FillModeMesh;
 		private var _transform:Matrix;
 		private var _transformChanged:Boolean;
+		private var _listeners:Dictionary;
 
 		public function TalonDisplayObjectBridge(target:DisplayObject, node:Node):void
 		{
 			_target = target;
 			_target.addEventListener(EnterFrameEvent.ENTER_FRAME, validate);
+			_listeners = new Dictionary();
 
 			_transform = new Matrix();
 
 			_node = node;
 			_node.addTriggerListener(Event.RESIZE, onNodeResize);
+			_node.addTriggerListener(Event.CHANGE, onNodeChange);
 
 			_background = new FillModeMesh();
 			_background.pixelSnapping = true;
 			_background.addEventListener(Event.CHANGE, _target.setRequiresRedraw);
 
 			// Background
-			addAttributeChangeListener(Attribute.FILL,           			onFillChange);
-			addAttributeChangeListener(Attribute.FILL_MODE,      			onFillModeChange);
-			addAttributeChangeListener(Attribute.FILL_STRETCH_GRID,   		onFillStretchGridChange);
-			addAttributeChangeListener(Attribute.FILL_ALPHA,          		onFillAlphaChange);
-			addAttributeChangeListener(Attribute.FILL_SCALE,          		onFillScaleChange);
-			addAttributeChangeListener(Attribute.FILL_BLEND_MODE,			onFillBlendModeChange);
-			addAttributeChangeListener(Attribute.FILL_ALIGN,				onFillAlignChange);
+			setAttributeChangeListener(Attribute.FILL,           			onFillChange);
+			setAttributeChangeListener(Attribute.FILL_MODE,      			onFillModeChange);
+			setAttributeChangeListener(Attribute.FILL_STRETCH_GRID,   		onFillStretchGridChange);
+			setAttributeChangeListener(Attribute.FILL_ALPHA,          		onFillAlphaChange);
+			setAttributeChangeListener(Attribute.FILL_SCALE,          		onFillScaleChange);
+			setAttributeChangeListener(Attribute.FILL_BLEND_MODE,			onFillBlendModeChange);
+			setAttributeChangeListener(Attribute.FILL_ALIGN,				onFillAlignChange);
 
 			// Common options
-			addAttributeChangeListener(Attribute.ID,                        onIDChange);
-			addAttributeChangeListener(Attribute.VISIBLE,                   onVisibleChange);
-			addAttributeChangeListener(Attribute.FILTER,                    onFilterChange);
-			addAttributeChangeListener(Attribute.ALPHA,                     onAlphaChange);
-			addAttributeChangeListener(Attribute.BLEND_MODE,                onBlendModeChange);
-			addAttributeChangeListener(Attribute.TRANSFORM,					onTransformChange);
-			addAttributeChangeListener(Attribute.MESH_STYLE,				onMeshStyleChange);
-			addAttributeChangeListener(Attribute.PIVOT,                     onPivotChange);
+			setAttributeChangeListener(Attribute.ID,                        onIDChange);
+			setAttributeChangeListener(Attribute.VISIBLE,                   onVisibleChange);
+			setAttributeChangeListener(Attribute.FILTER,                    onFilterChange);
+			setAttributeChangeListener(Attribute.ALPHA,                     onAlphaChange);
+			setAttributeChangeListener(Attribute.BLEND_MODE,                onBlendModeChange);
+			setAttributeChangeListener(Attribute.TRANSFORM,					onTransformChange);
+			setAttributeChangeListener(Attribute.MESH_STYLE,				onMeshStyleChange);
+			setAttributeChangeListener(Attribute.PIVOT,                     onPivotChange);
 
 			// Interactive
-			addAttributeChangeListener(Attribute.TOUCH_MODE,                onTouchModeChange);
-			addAttributeChangeListener(Attribute.TOUCH_EVENTS,              onTouchEventsChange);
-			addAttributeChangeListener(Attribute.CURSOR,                    onCursorChange);
+			setAttributeChangeListener(Attribute.TOUCH_MODE,                onTouchModeChange);
+			setAttributeChangeListener(Attribute.TOUCH_EVENTS,              onTouchEventsChange);
+			setAttributeChangeListener(Attribute.CURSOR,                    onCursorChange);
 		}
 
-		public function addAttributeChangeListener(attribute:String, listener:Function, immediate:Boolean = false):void
+		public function setAttributeChangeListener(attribute:String, listener:Function, immediate:Boolean = false):void
 		{
-			_node.getOrCreateAttribute(attribute).change.addListener(listener);
-			if (immediate) listener(); // Attribute doesn't passed - it is not created yet now
+			_listeners[attribute] = listener;
+			if (immediate) listener();
+		}
+
+		private function onNodeChange(attribute:Attribute):void
+		{
+			if (attribute)
+			{
+				var listener:Function = _listeners[attribute.name];
+				if (listener)
+					listener();
+			}
 		}
 
 		private function onNodeResize():void

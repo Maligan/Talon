@@ -5,6 +5,7 @@ package talon.browser.desktop.commands
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
+	import flash.utils.ByteArray;
 
 	import starling.events.Event;
 
@@ -14,10 +15,10 @@ package talon.browser.desktop.commands
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;
 	import talon.browser.platform.AppPlatformEvent;
-	import talon.browser.platform.utils.Command;
 	import talon.browser.platform.document.Document;
 	import talon.browser.platform.document.files.IFileController;
 	import talon.browser.platform.document.files.IFileReference;
+	import talon.browser.platform.utils.Command;
 	import talon.browser.platform.utils.Glob;
 
 	public class PublishCommand extends Command
@@ -68,8 +69,19 @@ package talon.browser.desktop.commands
 				zip.addFile(file.path, file.data);
 			}
 
+			// Create cache
+			var useCache:Boolean = platform.settings.getValueOrDefault(AppConstants.SETTING_PUBLISH_CACHE, Boolean, false);
+			if (useCache)
+			{
+				var cache:Object = platform.document.factory.getCache();
+				var cacheJSON:String = JSON.stringify(cache);
+				var cacheBytes:ByteArray = new ByteArray();
+				cacheBytes.writeUTFBytes(cacheJSON);
+				zip.addFile(AppConstants.BROWSER_DEFAULT_CACHE_FILENAME, cacheBytes);
+			}
+
 			// Create
-//			if (zip.getFileCount() == 0) throw new Error("No files for export");
+			// FIXME: if (zip.getFileCount() == 0) throw new Error("No files for export");
 
 			writeFile(target, zip);
 		}

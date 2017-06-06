@@ -49,9 +49,9 @@ package talon.browser.platform.document
 			return super.createElement(source, includeStyleSheet, includeResources);
 		}
 
-		protected override function getElementNode(element:*):Node
+		protected override function getNode(element:*):Node
 		{
-			var node:Node = super.getElementNode(element);
+			var node:Node = super.getNode(element);
 
 			if (node)
 			{
@@ -87,7 +87,7 @@ package talon.browser.platform.document
 		//
 		public function hasTemplate(id:String):Boolean
 		{
-			return _parser.templatesXML[id] != null;
+			return _parser.templates[id] != null;
 		}
 
 		public override function addTemplate(xml:XML):void
@@ -99,19 +99,19 @@ package talon.browser.platform.document
 
 		public function removeTemplate(id:String):void
 		{
-			var template:XML = _parser.templatesXML[id];
+			var template:XML = _parser.templates[id];
 			if (template == null)
 			{
 				return;
 			}
 
-			delete _parser.templatesXML[id];
+			delete _parser.templates[id];
 
-			for (var tag:String in _parser.templatesTag)
+			for (var tag:String in _parser.templateTagToKey)
 			{
-				if (_parser.templatesTag[tag] == id)
+				if (_parser.templateTagToKey[tag] == id)
 				{
-					delete _parser.templatesTag[tag];
+					delete _parser.templateTagToKey[tag];
 					break;
 				}
 			}
@@ -122,7 +122,7 @@ package talon.browser.platform.document
 		public function get templateIds():Vector.<String>
 		{
 			var result:Vector.<String> = new Vector.<String>();
-			for (var id:String in _parser.templatesXML) result[result.length] = id;
+			for (var id:String in _parser.templates) result[result.length] = id;
 			return result.sort(byName);
 		}
 
@@ -178,9 +178,9 @@ package talon.browser.platform.document
 			dispatchChange();
 		}
 
-		public override function addResourceToScope(id:String, resource:*):void
+		public override function addResource(id:String, resource:*):void
 		{
-			super.addResourceToScope(id, resource);
+			super.addResource(id, resource);
 			dispatchChange();
 		}
 
@@ -192,7 +192,7 @@ package talon.browser.platform.document
 		//
 		// Styles
 		//
-		public override function addStyleSheet(css:String):void
+		public override function addStyle(css:String):void
 		{
 			throw new Error("Use addStyleSheetWithId");
 		}

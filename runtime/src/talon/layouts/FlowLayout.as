@@ -130,7 +130,7 @@ package talon.layouts
 					flow.setChildLengthMargin(childMarginLeft, childMarginRight);
 					flow.setChildThickness(childHeight, child.height.unit == Gauge.STAR);
 					flow.setChildThicknessMargin(childMarginTop, childMarginBottom);
-					flow.setChildInlineAlign(getAlign(child, Attribute.IVALIGN));
+					flow.setChildInlineAlign(getAlign(child, Attribute.VALIGN_SELF));
 				}
 				else
 				{
@@ -138,7 +138,7 @@ package talon.layouts
 					flow.setChildLengthMargin(childMarginTop, childMarginBottom);
 					flow.setChildThickness(childWidth, child.width.unit == Gauge.STAR);
 					flow.setChildThicknessMargin(childMarginLeft, childMarginRight);
-					flow.setChildInlineAlign(getAlign(child, Attribute.IHALIGN));
+					flow.setChildInlineAlign(getAlign(child, Attribute.HALIGN_SELF));
 				}
 				flow.endChild();
 			}

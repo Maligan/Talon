@@ -40,11 +40,11 @@ package talon.browser.desktop.popups.widgets
 			_node.addTriggerListener(Event.RESIZE, onResize);
 
 			_bridge = new TalonDisplayObjectBridge(this, _node);
-			_bridge.addAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange);
-			_bridge.addAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
-			_bridge.addAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
-			_bridge.addAttributeChangeListener(Attribute.TEXT, onTextChange);
-			_bridge.addAttributeChangeListener(Attribute.PADDING, onPaddingChange);
+			_bridge.setAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange);
+			_bridge.setAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
+			_bridge.setAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
+			_bridge.setAttributeChangeListener(Attribute.TEXT, onTextChange);
+			_bridge.setAttributeChangeListener(Attribute.PADDING, onPaddingChange);
 
 			restrict = "0-9.,";
 			maxChars = 5;

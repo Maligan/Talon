@@ -1,7 +1,5 @@
 package talon.utils
 {
-	import flash.utils.Dictionary;
-
 	/**
 	 * Implementation of pull-model observer pattern.
 	 *

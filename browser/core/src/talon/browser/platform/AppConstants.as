@@ -31,6 +31,7 @@ package talon.browser.platform
 		public static const BROWSER_SCREENSHOT_EXTENSION:String = "png";
 		public static const BROWSER_SUPPORTED_IMAGE_EXTENSIONS:Vector.<String> = new <String>["atf", "png", "jpg", "gif"];
 		public static const BROWSER_DEFAULT_DOCUMENT_FILENAME:String = "." + BROWSER_DOCUMENT_EXTENSION;
+		public static const BROWSER_DEFAULT_CACHE_FILENAME:String = ".cache";
 
 		public static const PLUGINS_DIR:String = "plugins";
 		public static const ZOOM_MIN:int = 25;
@@ -54,6 +55,7 @@ package talon.browser.platform
 		public static const SETTING_CHECK_FOR_UPDATE_ON_STARTUP:String = "checkForUpdateOnStartup";
 		public static const SETTING_WINDOW_POSITION:String = "windowPosition";
 		public static const SETTING_DETACHED_PLUGINS:String = "detachedPlugins";
+		public static const SETTING_PUBLISH_CACHE:String = "publishCache";
 
 		//
 		// Language

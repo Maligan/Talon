@@ -34,6 +34,7 @@ package talon
 		private var _ppdp:Number = 1;
 		private var _ppmm:Number = Capabilities.screenDPI / 25.4;  // 25.4mm in 1 inch
 		private var _invalidated:Boolean = true;
+		private var _freeze:Boolean = false;
 
 		/** @private */
 		public function Node():void
@@ -89,6 +90,22 @@ package talon
 		/** @private */ public const states:AttributeStringSet = new AttributeStringSet(this, Attribute.STATE);
 
 		//
+		// Freeze
+		//
+		public function freeze():void
+		{
+			_freeze = true;
+		}
+
+		public function unfreeze():void
+		{
+			_freeze = false;
+
+			for (var i:int = 0; i < numChildren; i++)
+				getChildAt(i).unfreeze();
+		}
+
+		//
 		// Attributes
 		//
 		/** Get attribute <strong>cached</strong> value. */
@@ -135,6 +152,8 @@ package talon
 		/** Recursive apply style to current node. */
 		private function refreshStyle():void
 		{
+			if (_freeze) return;
+
 			var style:Object = getStyle(this);
 
 			_styleTouch++;
@@ -182,6 +201,8 @@ package talon
 
 		private function refreshResource():void
 		{
+			if (_freeze) return;
+
 			// Notify resource change
 			for each (var attribute:Attribute in _attributes)
 				if (attribute.isResource) attribute.dispatchChange();

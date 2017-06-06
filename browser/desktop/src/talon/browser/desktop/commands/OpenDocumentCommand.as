@@ -4,6 +4,8 @@ package talon.browser.desktop.commands
 	import flash.filesystem.File;
 	import flash.net.FileFilter;
 
+	import talon.browser.desktop.popups.GoToPopup;
+
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.desktop.utils.DesktopFileReference;
 	import talon.browser.platform.AppConstants;

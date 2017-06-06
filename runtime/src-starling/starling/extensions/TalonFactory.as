@@ -16,6 +16,8 @@ package starling.extensions
 
 		public function TalonFactory()
 		{
+			_assets = new AssetManagerExtended(null);
+
 			addTerminal("node", TalonSpriteElement);
 			addTerminal("label", TalonTextFieldElement);
 			addTerminal("image", TalonImageElement);
@@ -28,7 +30,7 @@ package starling.extensions
 
 		// template methods
 
-		protected override function getElementNode(element:*):Node
+		protected override function getNode(element:*):Node
 		{
 			return ITalonElement(element).node;
 		}
@@ -54,8 +56,7 @@ package starling.extensions
 
 			if (bytes == null) throw new ArgumentError("Parameter bytes must be non-null");
 
-			var manager:AssetManagerExtended = new AssetManagerExtended(null /*getNameCallback*/);
-			manager.verbose = false;
+			var manager:AssetManagerExtended = _assets as AssetManagerExtended;
 			manager.enqueueZip(bytes);
 			manager.loadQueue(onProgress);
 
@@ -74,13 +75,13 @@ package starling.extensions
 			var textureIds:Vector.<String> = manager.getTextureNames();
 			for each (var textureId:String in textureIds)
 			{
-				addResourceToScope(textureId, manager.getTexture(textureId));
+				addResource(textureId, manager.getTexture(textureId));
 			}
 
 			var styleIds:Vector.<String> = manager.getCssNames();
 			for each (var styleId:String in styleIds)
 			{
-				addStyleSheet(manager.getCss(styleId));
+				addStyle(manager.getCss(styleId));
 			}
 
 			var xmlIds:Vector.<String> = manager.getXmlNames();
@@ -98,7 +99,7 @@ package starling.extensions
 				for (var propertyName:String in properties)
 				{
 					var propertyValue:String = properties[propertyName];
-					addResourceToScope(propertyName, propertyValue);
+					addResource(propertyName, propertyValue);
 				}
 			}
 		}

@@ -13,7 +13,7 @@ package talon.utils
 	{
 		private static const _parsers:Dictionary = new Dictionary();
 
-		public static function addParser(type:Class, parser:Function):void
+		public static function registerClassParser(type:Class, parser:Function):void
 		{
 			_parsers[type] = parser;
 		}

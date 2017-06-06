@@ -14,7 +14,7 @@ package talon.browser.desktop.filetypes
 			_properties = ParseUtil.parseProperties(string);
 
 			for (var propertyName:String in _properties)
-				document.factory.addResourceToScope(propertyName, _properties[propertyName]);
+				document.factory.addResource(propertyName, _properties[propertyName]);
 		}
 
 		override protected function deactivate():void

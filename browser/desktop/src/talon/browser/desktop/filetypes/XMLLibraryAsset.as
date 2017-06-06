@@ -75,7 +75,7 @@ package talon.browser.desktop.filetypes
 		private function addProperties(properties:String):void
 		{
 			ParseUtil.parseProperties(properties, _properties);
-			document.factory.addResourcesToScope(_properties);
+			document.factory.addResources(_properties);
 		}
 
 		override protected function deactivate():void

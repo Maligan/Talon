@@ -31,8 +31,8 @@ package talon.utils
 		//
 		// Implementation
 		//
-		private var _templatesXML:Object;
-		private var _templatesTag:Object;
+		private var _templates:Object;
+		private var _templateTagToKey:Object;
 		private var _terminals:Vector.<String>;
 		private var _tags:Vector.<String>;
 		private var _attributes:Object;
@@ -41,14 +41,15 @@ package talon.utils
 		public function TMLParser(terminals:Vector.<String> = null, templatesXML:Object = null, templatesTag:Object = null)
 		{
 			_terminals = terminals || new Vector.<String>();
-			_templatesXML = templatesXML || new Object();
-			_templatesTag = templatesTag || new Object();
+			_templates = templatesXML || new Object();
+			_templateTagToKey = templatesTag || new Object();
 			_tags = new Vector.<String>();
 		}
 
-		public function parse(xml:XML):void
+		public function parse(xml:XML, tag:String = null):void
 		{
 			_tags.length = 0;
+			if (tag) _tags[0] = tag;
 			parseInternal(xml, null, EMPTY_XML_LIST);
 		}
 
@@ -93,13 +94,13 @@ package talon.utils
 				}
 				else
 				{
-					ref = _templatesTag[tag];
+					ref = _templateTagToKey[tag];
 					if (ref == null) throw new Error("Tag '" + tag + "' doesn't match any template");
 					attributes = mergeAttributes(fetchAttributes(xml), attributes);
 					_tags[_tags.length] = tag;
 				}
 
-				var template:XML = _templatesXML[ref];
+				var template:XML = _templates[ref];
 				if (template == null) throw new Error("Template with " + ATT_REF + " = '" + ref + "' not found");
 				parseInternal(template, attributes, rewrites);
 			}
@@ -111,7 +112,7 @@ package talon.utils
 		/** Fetch attributes from XML to key-value pairs. */
 		private static function fetchAttributes(xml:XML):Object
 		{
-			var result:Object = new Object();
+			var result:Object = new OrderedObject();
 
 			for each (var attribute:XML in xml.attributes())
 			{
@@ -220,13 +221,13 @@ package talon.utils
 		//
 		// Properties
 		//
-		/** Set of non terminal symbols (key - string, value - xml) */
-		public function get templatesXML():Object { return _templatesXML; }
-
-		/** Mapping from tag to terminal key. */
-		public function get templatesTag():Object { return _templatesTag; }
-
 		/** Set of terminal symbols */
 		public function get terminals():Vector.<String> { return _terminals; }
+
+		/** Set of non-terminal symbols (mapping from key to xml) */
+		public function get templates():Object { return _templates; }
+
+		/** Helper mapping from tag to key. */
+		public function get templateTagToKey():Object { return _templateTagToKey; }
 	}
 }

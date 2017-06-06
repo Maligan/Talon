@@ -43,15 +43,15 @@ package starling.extensions
 
 			// Bridge
 			_bridge = new TalonDisplayObjectBridge(this, node);
-			_bridge.addAttributeChangeListener(Attribute.TEXT, onTextChange);
-			_bridge.addAttributeChangeListener(Attribute.WRAP, onWrapChange);
-			_bridge.addAttributeChangeListener(Attribute.FONT_AUTO_SCALE, onAutoScaleChange);
-			_bridge.addAttributeChangeListener(Attribute.HALIGN, onHAlignChange, true);
-			_bridge.addAttributeChangeListener(Attribute.VALIGN, onVAlignChange, true);
-			_bridge.addAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange, true);
-			_bridge.addAttributeChangeListener(Attribute.INTERLINE, onInterlineChange);
-			_bridge.addAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
-			_bridge.addAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
+			_bridge.setAttributeChangeListener(Attribute.TEXT, onTextChange);
+			_bridge.setAttributeChangeListener(Attribute.WRAP, onWrapChange);
+			_bridge.setAttributeChangeListener(Attribute.FONT_AUTO_SCALE, onAutoScaleChange);
+			_bridge.setAttributeChangeListener(Attribute.HALIGN, onHAlignChange, true);
+			_bridge.setAttributeChangeListener(Attribute.VALIGN, onVAlignChange, true);
+			_bridge.setAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange, true);
+			_bridge.setAttributeChangeListener(Attribute.INTERLINE, onInterlineChange);
+			_bridge.setAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
+			_bridge.setAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
 
 			batchable = true; // TODO: Allow setup batchable flag
 		}

@@ -66,7 +66,7 @@ package talon.browser.desktop.filetypes
 				for each (textureId in _atlas.getNames())
 				{
 					texture = _atlas.getTexture(textureId);
-					document.factory.addResourceToScope(textureId, texture);
+					document.factory.addResource(textureId, texture);
 				}
 			}
 		}

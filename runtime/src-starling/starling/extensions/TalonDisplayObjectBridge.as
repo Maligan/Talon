@@ -105,13 +105,13 @@ package starling.extensions
 						else if (args[0] == "brightness") outColorMatrix.adjustBrightness(float1);
 						else if (args[0] == "contrast")   outColorMatrix.adjustContrast(float1);
 						else if (args[0] == "hue")        outColorMatrix.adjustHue(angle1);
-						else if (args[0] == "tint")       outColorMatrix.tint(color1, parseFloat(args[2]) || 1.0);
+						else if (args[0] == "tint")       outColorMatrix.tint(color1, ParseUtil.parseNumber(args[2], 1));
 						break;
 
 					case "blur":
 						outBlur ||= new BlurFilter();
 						outBlur.blurX = float1;
-						outBlur.blurY = parseFloat(args[2]) || float1;
+						outBlur.blurY = ParseUtil.parseNumber(args[2], float1);
 						break;
 				}
 			}

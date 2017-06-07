@@ -66,6 +66,13 @@ package talon.utils
 			}
 		}
 
+		public static function parseNumber(string:String, fallback:Number = NaN):Number
+		{
+			var result:Number = parseFloat(string);
+			if (result == result) return result;
+			return fallback;
+		}
+
 		/**
 		 * Parse strings like:
 		 * url(http://example.com/) to ['url', 'http://example.com/']

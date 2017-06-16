@@ -4,7 +4,7 @@ package talon.utils
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.styles.StyleSheet;
+	import talon.utils.StyleSheet;
 
 	public class TMLFactory
 	{
@@ -53,7 +53,7 @@ package talon.utils
 			else if (xmlOrKey is String)
 			{
 				template = _parser.templates[xmlOrKey];
-				templateTag = getTemplateTagByKey(xmlOrKey as String);
+				templateTag = _parser.getUsingTag(xmlOrKey as String);
 			}
 
 			if (template == null) throw new ArgumentError("Template with id: " + xmlOrKey + " doesn't exist");
@@ -89,15 +89,6 @@ package talon.utils
 
 			// Result
 			return result;
-		}
-
-		private function getTemplateTagByKey(key:String):String
-		{
-			for (var tag:String in _parser.templateTagToKey)
-				if (_parser.templateTagToKey[tag] == key)
-					return tag;
-
-			return null;
 		}
 
 		private function parseCache(name:String):void
@@ -239,7 +230,7 @@ package talon.utils
 			var tree:XML = children[0];
 
 			var tag:String = xml.attribute(ATT_TAG);
-			if (tag != null) _parser.templateTagToKey[tag] = ref;
+			if (tag != null) _parser.setUsing(ref, tag);
 
 			_parser.templates[ref] = tree;
 		}
@@ -297,7 +288,8 @@ package talon.utils
 			{
 				cache[key] = events = [];
 				var value:XML = _parser.templates[key];
-				_parser.parse(value);
+				var valueTag:String = _parser.getUsingTag(key);
+				_parser.parse(value, valueTag);
 			}
 
 			function onElementBeginInner(e:Event):void

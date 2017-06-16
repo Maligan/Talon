@@ -20,6 +20,7 @@ package talon.browser.platform.utils
 		public static const IPAD:DeviceProfile = registerDeviceProfile("iPad", 1024, 768, 1, 132);
 		public static const IPAD_RETINA:DeviceProfile = registerDeviceProfile("iPad (Retina)", 2048, 1536, 2, 264);
 		public static const IPAD_MINI_RETINA:DeviceProfile = registerDeviceProfile("iPad Mini", 2048, 1536, 2, 326);
+		public static const XIAOMI_REDMI_NOTE_3:DeviceProfile = registerDeviceProfile("Xiaomi Redmi Note 3", 1080, 1920, 2.5, 401);
 
 		private static var _profiles:Array;
 		private static var _profilesById:Dictionary;

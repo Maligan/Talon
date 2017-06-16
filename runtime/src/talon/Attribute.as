@@ -93,8 +93,8 @@ package talon
 		public static const GAP:String                             = registerAttribute("gap",                   NONE);
 		public static const INTERLINE:String                       = registerAttribute("interline",             NONE);
 		public static const WRAP:String                            = registerAttribute("wrap",                  FALSE);
-		public static const HALIGN_SELF:String                     = registerAttribute("ihalign",               "left"); // TODO: halignSelf
-		public static const VALIGN_SELF:String                     = registerAttribute("ivalign",               "top");	 // TODO: valignSelf
+		public static const HALIGN_SELF:String                     = registerAttribute("halignSelf",            "left");
+		public static const VALIGN_SELF:String                     = registerAttribute("valignSelf",            "top");
 		public static const ALIGN_SELF:String					   = registerComposite("alignSelf",				[HALIGN_SELF, VALIGN_SELF]);
 
 		public static const BREAK_BEFORE:String                    = registerAttribute("breakBefore",           BreakMode.SOFT);

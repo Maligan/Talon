@@ -18,9 +18,14 @@ package starling.extensions
 		{
 			_assets = new AssetManagerExtended(null);
 
-			addTerminal("node", TalonSpriteElement);
-			addTerminal("label", TalonTextFieldElement);
-			addTerminal("image", TalonImageElement);
+			addTerminal("div", TalonSprite);
+			addTerminal("txt", TalonTextField);
+			addTerminal("img", TalonImage);
+
+			// FIXME: Remove
+			addTerminal("node", TalonSprite);
+			addTerminal("label", TalonTextField);
+			addTerminal("image", TalonImage);
 		}
 
 		public function createElement(source:Object, includeStyleSheet:Boolean = true, includeResources:Boolean = true):ITalonElement

@@ -1,8 +1,8 @@
-package talon.styles
+package talon.utils
 {
-	import talon.*;
 	import flash.utils.Dictionary;
-	import talon.utils.OrderedObject;
+
+	import talon.*;
 
 	/** Style Sheet Object. */
 	public class StyleSheet

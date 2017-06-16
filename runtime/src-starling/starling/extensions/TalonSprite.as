@@ -13,7 +13,7 @@ package starling.extensions
 	import talon.enums.TouchMode;
 	import starling.extensions.ITalonElement;
 
-	public class TalonSpriteElement extends Sprite implements ITalonElement
+	public class TalonSprite extends Sprite implements ITalonElement
 	{
 		private static var _helperRect:Rectangle = new Rectangle();
 
@@ -21,7 +21,7 @@ package starling.extensions
 		private var _bridge:TalonDisplayObjectBridge;
 		private var _manual:Boolean;
 
-		public function TalonSpriteElement()
+		public function TalonSprite()
 		{
 			_node = new Node();
 			_node.addTriggerListener(Event.RESIZE, onNodeResize);

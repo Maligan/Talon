@@ -6,9 +6,9 @@ package talon
 	import flash.utils.Dictionary;
 
 	import talon.layouts.Layout;
-	import talon.styles.StyleSheet;
+	import talon.utils.StyleSheet;
 	import talon.utils.Gauge;
-	import talon.utils.AttributeStringSet;
+	import talon.utils.StringSet;
 	import talon.utils.Trigger;
 
 	/** Any attribute changed. */
@@ -86,8 +86,8 @@ package talon
 		/** @private */ public const pivotX:Gauge = new Gauge(this, Attribute.PIVOT_X);
 		/** @private */ public const pivotY:Gauge = new Gauge(this, Attribute.PIVOT_Y);
 
-		/** @private */ public const classes:AttributeStringSet = new AttributeStringSet(this, Attribute.CLASS);
-		/** @private */ public const states:AttributeStringSet = new AttributeStringSet(this, Attribute.STATE);
+		/** @private */ public const classes:StringSet = new StringSet(this, Attribute.CLASS);
+		/** @private */ public const states:StringSet = new StringSet(this, Attribute.STATE);
 
 		//
 		// Freeze

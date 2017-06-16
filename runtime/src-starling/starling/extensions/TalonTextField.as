@@ -18,7 +18,7 @@ package starling.extensions
 	import talon.utils.Gauge;
 	import talon.utils.ParseUtil;
 
-	public class TalonTextFieldElement extends TextField implements ITalonElement
+	public class TalonTextField extends TextField implements ITalonElement
 	{
 		// There are 2px padding & 1px flash.text.TextField bug with autoSize disharmony
 		private static const TRUE_TYPE_CORRECTION:int = 4 + 1;
@@ -31,13 +31,15 @@ package starling.extensions
 		private var _requiresRecompositionWithPadding:Boolean;
 		private var _manual:Boolean;
 
-		public function TalonTextFieldElement()
+		public function TalonTextField()
 		{
 			super(0, 0, null);
 
 			_node = new Node();
 			_node.getOrCreateAttribute(Attribute.WRAP).inited = "true";
 			_node.addTriggerListener(Event.RESIZE, onNodeResize);
+			_node.addTriggerListener(Event.ADDED, onNodeParentChange);
+			_node.addTriggerListener(Event.REMOVED, onNodeParentChange);
 			_node.width.auto = measureWidth;
 			_node.height.auto = measureHeight;
 
@@ -78,6 +80,13 @@ package starling.extensions
 			_sRect.width  += node.paddingLeft.toPixels(node) + node.paddingRight.toPixels(node);
 			_sRect.height += node.paddingTop.toPixels(node)  + node.paddingBottom.toPixels(node);
 
+			// BitmapFont#arrangeChars has floating point error:
+			// If TextField used some combination of font, size and text
+			// containerWidth & containerHeight have small delta.
+			// Ceiling used for compensate those errors
+			_sRect.width  = Math.ceil(_sRect.width);
+			_sRect.height = Math.ceil(_sRect.height);
+
 			return _sRect;
 		}
 
@@ -86,6 +95,7 @@ package starling.extensions
 			out ||= new Rectangle();
 			out.setEmpty();
 
+			// For TrueType fonts
 			var mesh:Mesh = getChildAt(0) as Mesh;
 			var font:BitmapFont = getCompositor(format.font) as BitmapFont;
 			if (font == null)
@@ -95,6 +105,7 @@ package starling.extensions
 				return out;
 			}
 
+			// For empty text field
 			var scale:Number = format.size / font.size;
 			var numDrawableChars:int = mesh.numVertices / 4;
 			if (numDrawableChars == 0)
@@ -187,6 +198,13 @@ package starling.extensions
 
 			width = node.bounds.width;
 			height = node.bounds.height;
+		}
+
+		private function onNodeParentChange():void
+		{
+			var unit:String = _node.fontSize.unit;
+			if (unit == Gauge.EM || unit == Gauge.PERCENT || node.getOrCreateAttribute(Attribute.FONT_SIZE).isInherit)
+				onFontSizeChange();
 		}
 
 		//

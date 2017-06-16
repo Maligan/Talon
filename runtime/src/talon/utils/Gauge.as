@@ -12,7 +12,7 @@ package talon.utils
 		public static const PX:String = "px";
 		/** Density-independent pixel (e.g. retina display set point per pixel as 1:2). */
 		public static const DP:String = "dp";
-		/** Millimeter. NB! Device independent (absolute) unit. (Undesirable to use absolute units. If possible then replace it with em/px). */
+		/** Millimeter. NB! Device independent (absolute) unit. (Correct work only on mobile devices). */
 		public static const MM:String = "mm";
 		/** Ems has dynamic value, 1em equals 'fontSize' of current node. */
 		public static const EM:String = "em";

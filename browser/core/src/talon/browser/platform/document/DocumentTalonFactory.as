@@ -101,20 +101,15 @@ package talon.browser.platform.document
 		{
 			var template:XML = _parser.templates[id];
 			if (template == null)
-			{
 				return;
-			}
 
+			var tag:String = _parser.getUsingTag(id);
+
+			// Remove using
+			_parser.setUsing(id, null);
+			_parser.setUsing(null, tag);
+			// Remove xml
 			delete _parser.templates[id];
-
-			for (var tag:String in _parser.templateTagToKey)
-			{
-				if (_parser.templateTagToKey[tag] == id)
-				{
-					delete _parser.templateTagToKey[tag];
-					break;
-				}
-			}
 
 			dispatchChange();
 		}
@@ -215,7 +210,7 @@ import flash.utils.Dictionary;
 import flash.utils.Proxy;
 import flash.utils.flash_proxy;
 
-import talon.styles.StyleSheet;
+import talon.utils.StyleSheet;
 
 namespace resource_proxy;
 

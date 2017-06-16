@@ -13,7 +13,7 @@ package starling.extensions
 	import talon.Attribute;
 	import talon.Node;
 
-	public class TalonImageElement extends Quad implements ITalonElement
+	public class TalonImage extends Quad implements ITalonElement
 	{
 		private static var _sRectangle:Rectangle = new Rectangle();
 
@@ -22,7 +22,7 @@ package starling.extensions
 		private var _vertexOffset:Point;
 		private var _manual:Boolean;
 
-		public function TalonImageElement()
+		public function TalonImage()
 		{
 			_vertexOffset = new Point();
 

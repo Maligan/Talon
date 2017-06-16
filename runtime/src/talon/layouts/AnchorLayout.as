@@ -100,7 +100,7 @@ package talon.layouts
 		{
 			var contentWidth:Number = parentWidth - paddingLeft - paddingRight;
 
-			var totalPx:Number =  contentWidth - childWidth;
+			var totalPx:Number = contentWidth - childWidth;
 			var totalStars:int = numStars(childLeft) + numStars(childRight);
 
 			var leftPx:Number = childLeft.toPixels(child, childWidth, 0, totalPx, totalStars);

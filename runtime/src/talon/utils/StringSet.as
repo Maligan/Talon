@@ -4,7 +4,7 @@ package talon.utils
 	import talon.Node;
 
 	/** @private */
-	public class AttributeStringSet
+	public class StringSet
 	{
 		private static const sArray:Array = [];
 
@@ -17,7 +17,7 @@ package talon.utils
 		private var _attributeName:String;
 		private var _attribute:Attribute;
 
-		public function AttributeStringSet(node:Node, attributeName:String)
+		public function StringSet(node:Node, attributeName:String)
 		{
 			_node = node;
 			_attributeName = attributeName;
@@ -38,7 +38,12 @@ package talon.utils
 			parse(_attribute.valueCache);
 		}
 
-
+		public function toggle(string:String, value:Boolean):void
+		{
+			initialize();
+			if (value) insert(string);
+			else remove(string);
+		}
 
 		public function contains(string:String):Boolean
 		{

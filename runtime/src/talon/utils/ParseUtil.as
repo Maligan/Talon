@@ -1,14 +1,10 @@
 package talon.utils
 {
 	import avmplus.getQualifiedClassName;
-
 	import flash.utils.Dictionary;
-
-	import starling.utils.Color;
-
 	import talon.Node;
 
-	/** This is utility method to work with strings in different formats and notation. */
+	/** This is utility class for work with strings in different formats and notation. */
 	public final class ParseUtil
 	{
 		private static const _parsers:Dictionary = new Dictionary();
@@ -27,6 +23,26 @@ package talon.utils
 			throw new Error("Parser for type " + getQualifiedClassName(type) + " not found");
 		}
 
+		private static const _sColors:Object =
+		{
+			white: 0xffffff,
+			silver: 0xc0c0c0,
+			gray: 0x808080,
+			black: 0x000000,
+			red: 0xff0000,
+			maroon: 0x800000,
+			yellow: 0xffff00,
+			olive: 0x808000,
+			lime: 0x00ff00,
+			green: 0x008000,
+			aqua: 0x00ffff,
+			teal: 0x008080,
+			blue: 0x0000ff,
+			navy: 0x000080,
+			fuchsia: 0xff00ff,
+			purple: 0x800080
+		};
+
 		/**
 		 * Parse color strings:
 		 * white
@@ -39,7 +55,9 @@ package talon.utils
 
 			if (string == null) return fallback;
 			if (string.indexOf("#") == 0) return parseInt(string.substr(1), 16);
-			if (Color[string.toUpperCase()] is uint) return Color[string.toUpperCase()];
+
+			string = string.toLowerCase();
+			if (_sColors.hasOwnProperty(string)) return _sColors[string];
 
 			var method:Array = parseFunction(string.toLowerCase());
 			if (method && method[0]=="rgb" && method.length > 3) return (parseInt(method[1]) << 16) | (parseInt(method[2]) << 8) | parseInt(method[3]);
@@ -145,6 +163,8 @@ package talon.utils
 
 		public static function parseBoolean(string:String):Boolean
 		{
+			// Ha-ha, is this really funny?
+			// Sometimes ago I have think use other keyword(s) for true or false, like on/off etc.
 			return string == "true";
 		}
 

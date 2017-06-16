@@ -9,7 +9,7 @@ package talon.browser.desktop.popups
 	import starling.events.KeyboardEvent;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
-	import starling.extensions.TalonTextFieldElement;
+	import starling.extensions.TalonTextField;
 	import starling.styles.MeshStyle;
 
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
@@ -32,7 +32,7 @@ package talon.browser.desktop.popups
 
 		// View
 		private var _input:TalonFeatherTextInput;
-		private var _labels:Vector.<TalonTextFieldElement>;
+		private var _labels:Vector.<TalonTextField>;
 		private var _labelsOffset:int;
 		private var _labelsCursor:int;
 
@@ -80,16 +80,16 @@ package talon.browser.desktop.popups
 			var view:DisplayObjectContainer = manager.factory.createElement("GoToPopup") as DisplayObjectContainer;
 			addChild(view);
 
-			_labels = new <TalonTextFieldElement>[];
+			_labels = new <TalonTextField>[];
 
 			for (var i:int = 0; i < view.numChildren; i++)
 			{
 				var child:DisplayObject = view.getChildAt(i);
-				if (child is TalonTextFieldElement) _labels.push(child as TalonTextFieldElement);
+				if (child is TalonTextField) _labels.push(child as TalonTextField);
 				else if (child is TalonFeatherTextInput) _input = child as TalonFeatherTextInput;
 			}
 
-			for each (var field:TalonTextFieldElement in _labels)
+			for each (var field:TalonTextField in _labels)
 			{
 				field.isHtmlText = true;
 				field.addEventListener(TouchEvent.TOUCH, onLabelTouch);
@@ -142,7 +142,7 @@ package talon.browser.desktop.popups
 		{
 			if (e.getTouch(e.target as DisplayObject, TouchPhase.ENDED))
 			{
-				var labelIndex:int = _labels.indexOf(e.currentTarget as TalonTextFieldElement);
+				var labelIndex:int = _labels.indexOf(e.currentTarget as TalonTextField);
 				var itemIndex:int = _labelsOffset + labelIndex;
 				var templateId:String = itemIndex < _queryItems.length ? _queryItems[itemIndex] : null;
 				if (templateId) commit(templateId);
@@ -229,7 +229,7 @@ package talon.browser.desktop.popups
 		{
 			for (var i:int = 0; i < _labels.length; i++)
 			{
-				var label:TalonTextFieldElement = _labels[i];
+				var label:TalonTextField = _labels[i];
 				var labelStyle:MeshStyle = label.style;
 
 				var itemIndex:int = _labelsOffset + i;

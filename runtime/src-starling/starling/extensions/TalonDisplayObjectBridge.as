@@ -20,7 +20,9 @@ package starling.extensions
 	import starling.filters.FilterChain;
 	import starling.filters.FragmentFilter;
 	import starling.rendering.Painter;
+	import starling.styles.DistanceFieldStyle;
 	import starling.styles.MeshStyle;
+	import starling.text.TextField;
 	import starling.textures.Texture;
 	import starling.utils.Color;
 	import starling.utils.MatrixUtil;
@@ -71,6 +73,7 @@ package starling.extensions
 
 		ParseUtil.registerClassParser(FragmentFilter, function(value:String, node:Node, out:FragmentFilter):FragmentFilter
 		{
+			// TODO: Extract from outChain blur/colormatrix
 			var outChain:FilterChain = out as FilterChain;
 			var outBlur:BlurFilter = out as BlurFilter;
 			if (outBlur) outBlur.blurX = outBlur.blurY = 0;
@@ -128,6 +131,54 @@ package starling.extensions
 				out = outBlur;
 
 			return out;
+		});
+
+		ParseUtil.registerClassParser(MeshStyle, function(value:String, node:Node, out:MeshStyle):MeshStyle
+		{
+			var split:Array = ParseUtil.parseFunction(value);
+			if (split == null || split[0] == Attribute.NONE)
+				return null;
+
+			var dfs:DistanceFieldStyle = out as DistanceFieldStyle;
+			if (dfs == null)
+				dfs = new DistanceFieldStyle();
+
+			dfs.softness  = ParseUtil.parseNumber(split[1], 0.125);
+			dfs.threshold = ParseUtil.parseNumber(split[2], 0.5);
+
+			switch (split[0])
+			{
+				case "dfs":
+					dfs.setupBasic();
+					break;
+				case "dfs-glow":
+					dfs.setupGlow(
+						ParseUtil.parseNumber(split[3], 0.2),
+						ParseUtil.parseColor(split[4], 0x0),
+						ParseUtil.parseNumber(split[5], 0.5)
+					);
+					break;
+				case "dfs-shadow":
+					dfs.setupDropShadow(
+						ParseUtil.parseNumber(split[3], 0.2),
+						ParseUtil.parseNumber(split[4], 2),
+						ParseUtil.parseNumber(split[5], 2),
+						ParseUtil.parseColor(split[6], 0x0),
+						ParseUtil.parseNumber(split[7], 0.5)
+					);
+					break;
+				case "dfs-outline":
+					dfs.setupOutline(
+						ParseUtil.parseNumber(split[3], 0.25),
+						ParseUtil.parseColor(split[4], 0x0),
+						ParseUtil.parseNumber(split[5], 1)
+					);
+					break;
+				default:
+					return null;
+			}
+
+			return dfs;
 		});
 
 		private const sMatrix:Matrix = new Matrix();
@@ -324,13 +375,12 @@ package starling.extensions
 
 		private function onMeshStyleChange():void
 		{
-			if (_target is Mesh)
+			if (_target is Mesh || _target is TextField)
 			{
-				var mesh:Mesh = _target as Mesh;
-				mesh.style = ParseUtil.parseClass(MeshStyle,
+				_target["style"] = ParseUtil.parseClass(MeshStyle,
 					_node.getAttributeCache(Attribute.MESH_STYLE),
 					_node,
-					mesh.style
+					_target["style"]
 				);
 			}
 		}

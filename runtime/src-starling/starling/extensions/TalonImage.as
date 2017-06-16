@@ -12,6 +12,7 @@ package starling.extensions
 
 	import talon.Attribute;
 	import talon.Node;
+	import talon.utils.ParseUtil;
 
 	public class TalonImage extends Quad implements ITalonElement
 	{
@@ -35,6 +36,7 @@ package starling.extensions
 
 			_bridge = new TalonDisplayObjectBridge(this, node);
 			_bridge.setAttributeChangeListener(Attribute.SOURCE, onSourceChange);
+			_bridge.setAttributeChangeListener(Attribute.SOURCE_TINT, onSourceTintChange);
 
 			_vertexOffset = new Point();
 
@@ -74,6 +76,11 @@ package starling.extensions
 			var currH:int = texture ? texture.height : -1;
 
 			if (node.width.isNone && (prevW != currW) || node.height.isNone && (prevH != currH)) node.invalidate();
+		}
+
+		private function onSourceTintChange():void
+		{
+			color = ParseUtil.parseColor(_node.getAttributeCache(Attribute.SOURCE_TINT));
 		}
 
 		private function onNodeResize():void

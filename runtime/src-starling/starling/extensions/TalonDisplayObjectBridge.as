@@ -32,6 +32,7 @@ package starling.extensions
 	import talon.enums.TouchMode;
 	import talon.utils.Gauge;
 	import talon.utils.ParseUtil;
+	import talon.utils.ParseUtil;
 
 	/** Provide method for synchronize starling display tree and talon tree. */
 	public class TalonDisplayObjectBridge
@@ -215,6 +216,7 @@ package starling.extensions
 			setAttributeChangeListener(Attribute.FILL_SCALE,          		onFillScaleChange);
 			setAttributeChangeListener(Attribute.FILL_BLEND_MODE,			onFillBlendModeChange);
 			setAttributeChangeListener(Attribute.FILL_ALIGN,				onFillAlignChange);
+			setAttributeChangeListener(Attribute.FILL_TINT,					onFillChange);
 
 			// Common options
 			setAttributeChangeListener(Attribute.ID,                        onIDChange);
@@ -289,7 +291,7 @@ package starling.extensions
 			if (value is Texture)
 			{
 				_background.texture = value;
-				_background.color = Color.WHITE;
+				_background.color = ParseUtil.parseColor(_node.getAttributeCache(Attribute.FILL_TINT));
 				_background.transparent = false;
 			}
 			else

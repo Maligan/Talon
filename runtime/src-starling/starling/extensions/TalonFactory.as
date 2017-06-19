@@ -8,9 +8,9 @@ package starling.extensions
 	import starling.utils.AssetManager;
 
 	import talon.Node;
-	import talon.utils.TMLFactory;
+	import talon.utils.TalonFactoryBase;
 
-	public class TalonFactory extends TMLFactory
+	public class TalonFactory extends TalonFactoryBase
 	{
 		private var _assets:AssetManager;
 
@@ -93,8 +93,8 @@ package starling.extensions
 			for each (var xmlId:String in xmlIds)
 			{
 				var xml:XML = manager.getXml(xmlId);
-				if (xml.name() == TMLFactory.TAG_TEMPLATE) addTemplate(xml);
-				if (xml.name() == TMLFactory.TAG_LIBRARY) addLibrary(xml);
+				if (xml.name() == TalonFactoryBase.TAG_TEMPLATE) addTemplate(xml);
+				if (xml.name() == TalonFactoryBase.TAG_LIBRARY) addLibrary(xml);
 			}
 
 			var propertiesIds:Vector.<String> = manager.getPropertiesNames();

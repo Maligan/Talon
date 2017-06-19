@@ -45,7 +45,7 @@ package talon.browser.desktop.plugins
 	import talon.browser.platform.utils.DeviceProfile;
 	import talon.layouts.Layout;
 	import talon.utils.ParseUtil;
-	import talon.utils.TMLFactory;
+	import talon.utils.TalonFactoryBase;
 
 	public class PluginDesktopUI extends EventDispatcher implements IPlugin
 	{
@@ -511,7 +511,7 @@ package talon.browser.desktop.plugins
 		//
 		// Properties
 		//
-		public function get factory():TMLFactory { return _factory; }
+		public function get factory():TalonFactoryBase { return _factory; }
 		public function get template():DisplayObject { return _template; }
 		public function get updater():Updater { return _updater; }
 

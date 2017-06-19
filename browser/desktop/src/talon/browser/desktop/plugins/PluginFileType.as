@@ -16,7 +16,7 @@ package talon.browser.desktop.plugins
 	import talon.browser.platform.AppPlatform;
 	import talon.browser.platform.AppPlatformEvent;
 	import talon.browser.platform.plugins.IPlugin;
-	import talon.utils.TMLFactory;
+	import talon.utils.TalonFactoryBase;
 
 	public class PluginFileType implements IPlugin
 	{
@@ -67,7 +67,7 @@ package talon.browser.desktop.plugins
 			return ref.checkFirstMeaningfulChar("<")
 				&& ref.cacheBytesAsXML
 				&& ref.cacheBytesAsXML.name()
-				&& ref.cacheBytesAsXML.name().toString() == TMLFactory.TAG_TEMPLATE;
+				&& ref.cacheBytesAsXML.name().toString() == TalonFactoryBase.TAG_TEMPLATE;
 		}
 
 		private function checkXMLLibrary(ref:DesktopFileReference):Boolean
@@ -75,7 +75,7 @@ package talon.browser.desktop.plugins
 			return ref.checkFirstMeaningfulChar("<")
 				&& ref.cacheBytesAsXML
 				&& ref.cacheBytesAsXML.name()
-				&& ref.cacheBytesAsXML.name().toString() == TMLFactory.TAG_LIBRARY;
+				&& ref.cacheBytesAsXML.name().toString() == TalonFactoryBase.TAG_LIBRARY;
 		}
 
 		private function checkXMLAtlas(ref:DesktopFileReference):Boolean

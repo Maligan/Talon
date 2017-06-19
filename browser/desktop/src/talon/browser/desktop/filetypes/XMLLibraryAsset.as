@@ -5,7 +5,7 @@ package talon.browser.desktop.filetypes
 	import talon.browser.platform.document.log.DocumentMessage;
 
 	import talon.utils.ParseUtil;
-	import talon.utils.TMLFactory;
+	import talon.utils.TalonFactoryBase;
 
 	public class XMLLibraryAsset extends Asset
 	{
@@ -25,15 +25,15 @@ package talon.browser.desktop.filetypes
 
 				switch (childType)
 				{
-					case TMLFactory.TAG_STYLE:
+					case TalonFactoryBase.TAG_STYLE:
 						addCSS(child.text());
 						break;
 
-					case TMLFactory.TAG_TEMPLATE:
+					case TalonFactoryBase.TAG_TEMPLATE:
 						addTemplate(child);
 						break;
 
-					case TMLFactory.TAG_PROPERTIES:
+					case TalonFactoryBase.TAG_PROPERTIES:
 						addProperties(child.text());
 						break;
 
@@ -47,7 +47,7 @@ package talon.browser.desktop.filetypes
 		{
 			try
 			{
-				var templateId:String = xml.attribute(TMLFactory.ATT_REF);
+				var templateId:String = xml.attribute(TalonFactoryBase.ATT_REF);
 				document.factory.addTemplate(xml);
 				_templates.push(templateId);
 			}

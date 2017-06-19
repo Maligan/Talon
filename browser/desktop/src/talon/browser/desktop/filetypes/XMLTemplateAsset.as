@@ -3,7 +3,7 @@ package talon.browser.desktop.filetypes
 	import flash.system.System;
 
 	import talon.browser.platform.document.log.DocumentMessage;
-	import talon.utils.TMLFactory;
+	import talon.utils.TalonFactoryBase;
 
 	public class XMLTemplateAsset extends Asset
 	{
@@ -18,7 +18,7 @@ package talon.browser.desktop.filetypes
 			try
 			{
 				document.factory.addTemplate(_xml);
-				_id = _xml.attribute(TMLFactory.ATT_REF);
+				_id = _xml.attribute(TalonFactoryBase.ATT_REF);
 			}
 			catch (e:ArgumentError)
 			{

@@ -10,9 +10,9 @@ package talon.utils
 		public static const EVENT_BEGIN:String = "elementBegin";
 		public static const EVENT_END:String = "elementEnd";
 
-		private static const KEYWORD_USE:String = "use";
-		private static const KEYWORD_REF:String = "ref";
-		private static const KEYWORD_UPDATE:String = "update";
+		public static const KEYWORD_USE:String = "use";
+		public static const KEYWORD_REF:String = "ref";
+		public static const KEYWORD_UPDATE:String = "update";
 
 		//
 		// Implementation
@@ -92,6 +92,20 @@ package talon.utils
 		//
 		// Attributes (Static Methods)
 		//
+		private static function mergeAttributes(...sources):Object
+		{
+			// NB! Use OrderedObject because there are compositor attributes
+			// like padding & padding -Top, -Right, -Bottom, -Left
+			// and for these attributes order is crucial value
+			var result:Object = new OrderedObject();
+
+			for each (var source:Object in sources)
+				for (var key:String in source)
+					result[key] = source[key];
+
+			return result;
+		}
+
 		/** Fetch attributes from XML to key-value pairs. */
 		private static function fetchAttributes(xml:XML):Object
 		{
@@ -107,6 +121,7 @@ package talon.utils
 			return result;
 		}
 
+		/** Fetch attributes from XML 'update' field. */
 		private static function fetchAttributesFromUpdateField(xml:XML):Object
 		{
 			var result:Object = new OrderedObject();
@@ -137,20 +152,6 @@ package talon.utils
 		private static function trim(string:String):String
 		{
 			return string.replace(/^\s*|\s*$/gm, '');
-		}
-
-		private static function mergeAttributes(...sources):Object
-		{
-			// NB! Use OrderedObject because there are compositor attributes
-			// like padding & padding -Top, -Right, -Bottom, -Left
-			// and for these attributes order is crucial value
-			var result:Object = new OrderedObject();
-
-			for each (var source:Object in sources)
-				for (var key:String in source)
-					result[key] = source[key];
-
-			return result;
 		}
 
 		//

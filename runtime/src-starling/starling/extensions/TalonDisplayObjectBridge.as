@@ -34,7 +34,7 @@ package starling.extensions
 	import talon.utils.ParseUtil;
 	import talon.utils.ParseUtil;
 
-	/** Provide method for synchronize starling display tree and talon tree. */
+	/** @private Provide method for synchronize starling display tree and talon tree. */
 	public class TalonDisplayObjectBridge
 	{
 		ParseUtil.registerClassParser(Matrix, function(value:String, node:Node, out:Matrix):Matrix

@@ -6,7 +6,7 @@ package talon.utils
 	import talon.Node;
 	import talon.utils.StyleSheet;
 
-	public class TMLFactory
+	public class TalonFactoryBase
 	{
 		public static const TAG_LIBRARY:String = "lib";
 		public static const TAG_TEMPLATE:String = "def";
@@ -28,7 +28,7 @@ package talon.utils
 		protected var _linkage:Object;
 		protected var _style:StyleSheet;
 
-		public function TMLFactory():void
+		public function TalonFactoryBase():void
 		{
 			_resources = {};
 			_linkage = {};
@@ -235,8 +235,6 @@ package talon.utils
 			_parser.templates[ref] = tree;
 		}
 
-		public function setCache(cache:Object):void { _parserCache = cache }
-
 		/** Add all templates and style sheets from library xml. */
 		public function addLibrary(xml:XML):void
 		{
@@ -271,6 +269,10 @@ package talon.utils
 			var message:String = args.join(" ");
 			trace("[TalonFactory]", message);
 		}
+
+		// Cache
+
+		public function setCache(cache:Object):void { _parserCache = cache }
 
 		public function getCache():Object
 		{

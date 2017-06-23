@@ -1,121 +1,121 @@
 <lib>
 
 	<def ref="Interface">
-		<node id="interface" width="100%" height="100%" layout="anchor" class="dark">
-			<node id="container" width="100%" height="100%" />
-			<node id="messages" top="0px" width="100%" layout="flow" orientation="vertical" gap="1px" />
-			<node id="popups" width="100%" height="100%" layout="flow" halign="center" valign="center"/>
-			<node id="drag" width="100%" height="100%" />
-		</node>
+		<div id="interface" width="100%" height="100%" layout="anchor" class="dark">
+			<div id="container" width="100%" height="100%" />
+			<div id="messages" top="0px" width="100%" layout="flow" orientation="vertical" gap="1px" />
+			<div id="popups" width="100%" height="100%" layout="flow" halign="center" valign="center"/>
+			<div id="drag" width="100%" height="100%" />
+		</div>
 	</def>
 
 	<def ref="ProfilePopup">
-		<node class="popup" layout="flow" orientation="vertical"> 
+		<div class="popup" layout="flow" orientation="vertical"> 
 
-			<label text="$dialog.profile.title" padding="8px" /> <!-- width="*" -->
+			<txt text="$dialog.profile.title" padding="8px" /> <!-- width="*" -->
 
-			<node layout="flow" orientation="vertical" gap="8px" padding="8px" width="*" fill="#4e5051">
-				<node layout="flow" width="100%" gap="8px">
-					<label text="$dialog.profile.size" width="*" height="*" halign="left" valign="center" />
+			<div layout="flow" orientation="vertical" gap="8px" padding="8px" width="*" fill="#4e5051">
+				<div layout="flow" width="100%" gap="8px">
+					<txt text="$dialog.profile.size" width="*" height="*" halign="left" valign="center" />
 					<input id="width" width="48" />
-					<label text="x" ivalign="center" margin="none -6px" />
+					<txt text="x" ivalign="center" margin="none -6px" />
 					<input id="height" width="48" />
-				</node>
+				</div>
 
-				<node layout="flow" width="100%"> 
-					<label text="$dialog.profile.DPI" halign="left" valign="center" width="*" height="*" />
+				<div layout="flow" width="100%"> 
+					<txt text="$dialog.profile.DPI" halign="left" valign="center" width="*" height="*" />
 					<input id="dpi" width="48" />
-				</node>
+				</div>
 
-				<node layout="flow" width="100%"> 
-					<label text="$dialog.profile.CSF" halign="left" valign="center" width="*" height="*" />
+				<div layout="flow" width="100%"> 
+					<txt text="$dialog.profile.CSF" halign="left" valign="center" width="*" height="*" />
 					<input id="csf" width="48" />
-				</node>
-			</node>
+				</div>
+			</div>
 
-			<node layout="flow" ihalign="center" margin="none" gap="8px" padding="8px" width="150px">
+			<div layout="flow" ihalign="center" margin="none" gap="8px" padding="8px" width="150px">
 				<button id="accept" label="$button.accept" width="*" class="action" />
 				<button id="cancel" label="$button.cancel" width="*" />
-			</node>
+			</div>
 
-		</node>
+		</div>
 	</def>
 
 	<def ref="UpdatePopup">
-		<node class="popup" layout="flow" orientation="vertical" width="330px">
+		<div class="popup" layout="flow" orientation="vertical" width="330px">
 
-			<label text="$dialog.updater.title" margin="8px" />
+			<txt text="$dialog.updater.title" margin="8px" />
 
-			<node layout="flow" fill="#4e5051" width="100%" orientation="horizontal" padding="8px" wrap="true">
-				<label id="info" ivalign="center" text="UPDATE_STATUS" width="*" height="16px" />
-				<node layout="anchor" width="20px" height="20px" >
-					<image id="details" pivot="50%" source="$drop_down" cursor="button" />
-					<image id="spinner" pivot="50%" source="$spinner_small" />
-				</node>
-			</node>
+			<div layout="flow" fill="#4e5051" width="100%" orientation="horizontal" padding="8px" wrap="true">
+				<txt id="info" ivalign="center" text="UPDATE_STATUS" width="*" height="16px" />
+				<div layout="anchor" width="20px" height="20px" >
+					<img id="details" pivot="50%" source="$drop_down" cursor="button" />
+					<img id="spinner" pivot="50%" source="$spinner_small" />
+				</div>
+			</div>
 
-			<label id="detailsInfo" text="UPDATE_INFO" width="266px" padding="8px" marginTop="2px" fontColor="#888888" />
+			<txt id="detailsInfo" text="UPDATE_INFO" width="266px" padding="8px" marginTop="2px" fontColor="#888888" />
 
-			<node layout="flow" ihalign="center" margin="none" gap="8px" padding="8px" width="100%" halign="right">
+			<div layout="flow" ihalign="center" margin="none" gap="8px" padding="8px" width="100%" halign="right">
 				<button id="update" label="Update" class="action" />
 				<button id="cancel" label="Cancel" />
-			</node>
+			</div>
 
-		</node>
+		</div>
 	</def>
 
 	<!--
 	<def ref="PreferencesPopup">
-		<node class="popup" layout="flow" orientation="vertical"> 
+		<div class="popup" layout="flow" orientation="vertical"> 
 
-			<label text="$dialog.preferences.title" width="*" padding="8px" />
+			<txt text="$dialog.preferences.title" width="*" padding="8px" />
 
-			<node orientation="vertical" gap="8px" padding="8px" width="*" fill="gray" fillAlpha="0.1">
+			<div orientation="vertical" gap="8px" padding="8px" width="*" fill="gray" fillAlpha="0.1">
 				<checkbox label="$dialog.preferences.showStats" />
 				<checkbox label="$dialog.preferences.alwaysOnTop" />
 				<checkbox label="$dialog.preferences.checkForUpdate" />
 				<checkbox label="$dialog.preferences.lockWindowSize" />
 				<checkbox label="$dialog.preferences.openLastDocument" />
-			</node>
+			</div>
 
-			<node ihalign="center" margin="none" gap="8px" padding="8px">
+			<div ihalign="center" margin="none" gap="8px" padding="8px">
 				<button id="_accept" label="$button.accept" class="action" />
 				<button id="_cancel" label="$button.cancel" />
-			</node>
+			</div>
 
-		</node>
+		</div>
 	</def>
 	-->
 
 	<def ref="GoToPopup">
-		<node class="popup" id="goto" layout="flow" orientation="vertical"> 
+		<div class="popup" id="goto" layout="flow" orientation="vertical"> 
 			<input width="300px" margin="4px"/>
-			<label />
-			<label />
-			<label />
-			<label />
-			<label />
-			<label />
-		</node>
+			<txt />
+			<txt />
+			<txt />
+			<txt />
+			<txt />
+			<txt />
+		</div>
 	</def>
 
 	<def ref="Message" tag="message">
-		<label type="message" />
+		<txt type="message" />
 	</def>
 
 	<def ref="Input" tag="input">
-		<label type="input" />
+		<txt type="input" />
 	</def>
 
 	<def ref="Button" tag="button">
-		<label text="@label" />
+		<txt text="@label" />
 	</def>
 
 	<def ref="Checkbox" tag="checkbox">
-		<node type="checkbox" label="Checkbox" layout="flow">
-			<image source="@image" />
-			<label text="@label" halign="left" paddingTop="2" />
-		</node>
+		<div type="checkbox" label="Checkbox" layout="flow">
+			<img source="@image" />
+			<txt text="@label" halign="left" paddingTop="2" />
+		</div>
 	</def>
 
 </lib>

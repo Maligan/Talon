@@ -15,7 +15,7 @@
 	margin: -17px;
 }
 
-#goto label {
+#goto txt {
 	width: *;
 	height: 35px;
 
@@ -27,16 +27,16 @@
 	cursor: button;
 }
 
-#goto label:nth-child(2n) {
+#goto txt:nth-child(2n) {
 	fill: #4e5051;
 }
 
-#goto label:hover {
+#goto txt:hover {
 	/** NB! Color not from topcoat */
 	fill: #555859;
 }
 
-#goto label.selected {
+#goto txt.selected {
 	fill: #406079;
 }
 
@@ -58,7 +58,7 @@ input {
 button:hover { fill: $button_over; }
 button:active { fill: $button_down; }
 button {
-	label: Button;
+	txt: Button;
 
 	fill: $button_normal;
 	fillStretchGrid: 4px;
@@ -82,7 +82,7 @@ button.action {
 }
 
 
-checkbox label {
+checkbox txt {
 	fontColor: #FFFFFF;
 	marginTop: -2px;
 	ivalign: center;

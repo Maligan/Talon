@@ -14,9 +14,6 @@ package talon.utils
 		public static const KEYWORD_REF:String = "ref";
 		public static const KEYWORD_UPDATE:String = "update";
 
-		//
-		// Implementation
-		//
 		private var _templates:Object;
 		private var _terminals:Vector.<String>;
 
@@ -24,91 +21,90 @@ package talon.utils
 		private var _usingKeys:Object;
 
 		private var _tags:Vector.<String>;
-		private var _attributes:Object;
+		private var _attributes:Vector.<Object>;
 
 		/** @private */
-		public function TMLParser(terminals:Vector.<String> = null, templatesXML:Object = null)
+		public function TMLParser(terminals:Vector.<String> = null, templates:Object = null)
 		{
 			_terminals = terminals || new Vector.<String>();
-			_templates = templatesXML || new Object();
+			_templates = templates || new Object();
 			_usingTags = new Object();
 			_usingKeys = new Object();
 			_tags = new Vector.<String>();
+			_attributes = new Vector.<Object>();
 		}
 
 		public function parse(xml:XML, tag:String = null):void
 		{
 			_tags.length = 0;
 			if (tag) _tags[0] = tag;
-			parseInternal(xml, null);
+			parseInternal(xml);
 		}
 
-		private function parseInternal(xml:XML, attributes:Object):void
+		private function parseInternal(xml:XML):void
 		{
 			var kind:String = xml.nodeKind();
 			if (kind == "text") throw new Error("Text elements doesn't supported - " + xml.valueOf());
 			if (kind != "element") return;
 
+			var template:XML = null;
+			var ref:String = null;
 			var tag:String = xml.name();
-			if (_tags.indexOf(tag) != -1) throw new Error("Template is recursive nested");
 
 			// If node is terminal - it can't be expanded - create node
 			var isTerminal:Boolean = _terminals.indexOf(tag) != -1;
 			if (isTerminal)
 			{
 				_tags[_tags.length] = tag;
-				attributes = mergeAttributes(fetchAttributes(xml), attributes);
-				dispatchBegin(attributes);
+				_attributes.push(fetchAttributes(xml));
+				dispatch(EVENT_BEGIN);
+
 				_tags.length = 0;
-				for each (var child:XML in xml.children()) parseInternal(child, null);
-				dispatchEnd();
+				_attributes.length = 0;
+				for each (var child:XML in xml.children())
+					parseInternal(child);
+
+				dispatch(EVENT_END);
+			}
+			else if (tag == KEYWORD_USE)
+			{
+				ref = xml.attribute(KEYWORD_REF);
+				if (ref == null) throw new Error("Tag '" + KEYWORD_USE + "' must contains '" + KEYWORD_REF + "' attribute");
+
+				template = _templates[ref];
+				if (template == null) throw new Error("Template with " + KEYWORD_REF + " = '" + ref + "' not found");
+
+				_attributes.push(fetchAttributesFromUpdateField(xml));
+				tag = getUsingTag(ref);
+				if (tag) _tags[_tags.length] = tag;
+
+				parseInternal(template);
 			}
 			else
 			{
-				var ref:String = null;
+				ref = getUsingKey(tag);
+				if (ref == null) throw new Error("Tag '" + tag + "' doesn't match any template");
 
-				if (tag == KEYWORD_USE)
-				{
-					ref = xml.attribute(KEYWORD_REF);
-					if (ref == null) throw new Error("Tag '" + KEYWORD_USE + "' must contains '" + KEYWORD_REF + "' attribute");
-					attributes = mergeAttributes(fetchAttributesFromUpdateField(xml), attributes);
-					tag = getUsingTag(ref);
-					if (tag) _tags[_tags.length] = tag;
-				}
-				else
-				{
-					ref = getUsingKey(tag);
-					if (ref == null) throw new Error("Tag '" + tag + "' doesn't match any template");
-					attributes = mergeAttributes(fetchAttributes(xml), attributes);
-					_tags[_tags.length] = tag;
-				}
-
-				var template:XML = _templates[ref];
+				template = _templates[ref];
 				if (template == null) throw new Error("Template with " + KEYWORD_REF + " = '" + ref + "' not found");
-				parseInternal(template, attributes);
+
+				_attributes.push(fetchAttributes(xml));
+				_tags[_tags.length] = tag;
+
+				parseInternal(template);
 			}
 		}
 
 		//
 		// Attributes (Static Methods)
 		//
-		private static function mergeAttributes(...sources):Object
-		{
-			// NB! Use OrderedObject because there are compositor attributes
-			// like padding & padding -Top, -Right, -Bottom, -Left
-			// and for these attributes order is crucial value
-			var result:Object = new OrderedObject();
-
-			for each (var source:Object in sources)
-				for (var key:String in source)
-					result[key] = source[key];
-
-			return result;
-		}
 
 		/** Fetch attributes from XML to key-value pairs. */
 		private static function fetchAttributes(xml:XML):Object
 		{
+			// NB! Use OrderedObject because there are compositor attributes
+			// like padding & padding -Top, -Right, -Bottom, -Left
+			// and for these attributes order is crucial value
 			var result:Object = new OrderedObject();
 
 			for each (var attribute:XML in xml.attributes())
@@ -157,25 +153,17 @@ package talon.utils
 		//
 		// Output
 		//
-		private function dispatchBegin(attributes:Object):void
+		private function dispatch(type:String):void
 		{
-			_attributes = attributes;
-			var event:Event = new Event(EVENT_BEGIN);
-			dispatchEvent(event);
-		}
-
-		private function dispatchEnd():void
-		{
-			_attributes = null;
-			var event:Event = new Event(EVENT_END);
+			var event:Event = new Event(type);
 			dispatchEvent(event);
 		}
 
 		/** Current parse process stack of element types. */
-		public function get cursorTags():Vector.<String> { return _tags; }
+		public function get tags():Vector.<String> { return _tags; }
 
-		/** Current element attributes. */
-		public function get cursorAttributes():Object { return _attributes; }
+		/** Current parse process stack of element attributes. */
+		public function get attributes():Vector.<Object> { return _attributes; }
 
 		//
 		// Properties

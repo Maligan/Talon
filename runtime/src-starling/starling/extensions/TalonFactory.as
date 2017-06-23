@@ -47,6 +47,7 @@ package starling.extensions
 			parentAsDisplayObject.addChild(childAsDisplayObject);
 		}
 
+
 		// integration with starling asset manager
 
 		public function get assets():AssetManager

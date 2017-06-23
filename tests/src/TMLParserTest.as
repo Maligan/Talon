@@ -34,10 +34,11 @@ package
 		{
 			var node:Node = new Node();
 
-			for (var key:String in _parser.cursorAttributes)
-				node.setAttribute(key, _parser.cursorAttributes[key]);
+			for each (var attributes:Object in _parser.attributes)
+				for (var key:String in attributes)
+					node.setAttribute(key, attributes[key]); // NB! Without binding
 
-			_resultTags[node] = _parser.cursorTags.concat();
+			_resultTags[node] = _parser.tags.concat();
 			_result && _result.addChild(node);
 			_result = node;
 		}

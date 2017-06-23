@@ -70,15 +70,15 @@ package talon.browser.desktop.commands
 			}
 
 			// Create cache
-			var useCache:Boolean = platform.settings.getValueOrDefault(AppConstants.SETTING_PUBLISH_CACHE, Boolean, false);
-			if (useCache)
-			{
-				var cache:Object = platform.document.factory.getCache();
-				var cacheJSON:String = JSON.stringify(cache);
-				var cacheBytes:ByteArray = new ByteArray();
-				cacheBytes.writeUTFBytes(cacheJSON);
-				zip.addFile(AppConstants.BROWSER_DEFAULT_CACHE_FILENAME, cacheBytes);
-			}
+//			var useCache:Boolean = platform.settings.getValueOrDefault(AppConstants.SETTING_PUBLISH_CACHE, Boolean, false);
+//			if (useCache)
+//			{
+//				var cache:Object = platform.document.factory.getCache();
+//				var cacheJSON:String = JSON.stringify(cache);
+//				var cacheBytes:ByteArray = new ByteArray();
+//				cacheBytes.writeUTFBytes(cacheJSON);
+//				zip.addFile(AppConstants.BROWSER_DEFAULT_CACHE_FILENAME, cacheBytes);
+//			}
 
 			// Create
 			// FIXME: if (zip.getFileCount() == 0) throw new Error("No files for export");

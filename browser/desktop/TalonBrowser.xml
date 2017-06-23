@@ -4,7 +4,7 @@
   <id>TalonBrowser</id>
   <filename>Talon Browser</filename>
   <name>Talon Browser</name>
-  <versionNumber>0.3.1</versionNumber>
+  <versionNumber>0.4.0</versionNumber>
 
   <initialWindow>
     <content>%CONTENT%</content>

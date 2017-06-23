@@ -7,6 +7,12 @@ package talon.utils
 	/** Style Sheet Object. */
 	public class StyleSheet
 	{
+		/** @private For internal usage only. */
+		public static function isMatch(node:Node, selector:String):Boolean
+		{
+			return StyleSelector.getSelector(selector).match(node);
+		}
+
 		protected var _selectors:Vector.<StyleSelector>;
 		protected var _selectorsStyles:Dictionary;
 		protected var _selectorsByIdent:Dictionary;
@@ -132,7 +138,7 @@ package talon.utils
 			var selector:StyleSelector = _selectorsByIdent[ident];
 			if (selector == null)
 			{
-				selector = new StyleSelector(ident);
+				selector = StyleSelector.getSelector(ident);
 				_selectorsByIdent[selector];
 				_selectors.push(selector);
 			}
@@ -172,6 +178,17 @@ import talon.Node;
 
 class StyleSelector
 {
+	private static const _selector:Object = {};
+
+	public static function getSelector(string:String):StyleSelector
+	{
+		var selector:StyleSelector = _selector[string];
+		if (selector == null)
+			selector = _selector[string] = new StyleSelector(string);
+
+		return selector;
+	}
+
 	private static function getPriorityMerge(b:int, c:int, d:int):int
 	{
 		return (b << 16) | (c << 8) | d;
@@ -194,7 +211,7 @@ class StyleSelector
 		var current:String = split.pop();
 
 		// Parent selector
-		if (split.length > 0) _ancestor = new StyleSelector(split.join(' '));
+		if (split.length > 0) _ancestor = getSelector(split.join(' '));
 
 		// This selector
 		var pattern:RegExp = /\*|[.#:]?[\w-()+-]+/;

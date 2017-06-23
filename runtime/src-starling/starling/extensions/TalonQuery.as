@@ -2,7 +2,6 @@ package starling.extensions
 {
 	import flash.geom.Point;
 
-	import starling.utils.Pool;
 	import starling.animation.Juggler;
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
@@ -10,6 +9,9 @@ package starling.extensions
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
+	import starling.utils.Pool;
+
+	import talon.utils.StyleSheet;
 
 	public class TalonQuery
 	{
@@ -64,7 +66,7 @@ package starling.extensions
 			if (element == null) return;
 
 			// Check self
-			if (isMatch(selector, element))
+			if (StyleSheet.isMatch(element.node, selector))
 				result[result.length] = element;
 
 			// Recursive

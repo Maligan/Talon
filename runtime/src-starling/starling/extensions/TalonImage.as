@@ -45,22 +45,22 @@ package starling.extensions
 
 		private function measureWidth(height:Number):Number
 		{
-			return (texture ? measure(height, texture.height, texture.width) : 0)
+			// If there is no texture - size is 100px, like default starling Image
+			return (texture ? measure(height, texture.height, texture.width) : 100)
 				 + node.paddingLeft.toPixels(node)
 				 + node.paddingRight.toPixels(node);
 		}
 
 		private function measureHeight(width:Number):Number
 		{
-			return (texture ? measure(width,  texture.width,  texture.height) : 0)
+			return (texture ? measure(width,  texture.width,  texture.height) : 100)
 				 + node.paddingTop.toPixels(node)
 				 + node.paddingBottom.toPixels(node);
 		}
 
 		private function measure(knownDimension:Number, knownDimensionOfTexture:Number, measuredDimensionOfTexture:Number):Number
 		{
-			// If there is no texture - size is zero
-			if (texture == null) return 0;
+			if (texture == null) throw new Error();
 			// If no limit on image size - return original texture size
 			if (knownDimension == Infinity) return measuredDimensionOfTexture;
 			// Else calculate new size preserving texture aspect ratio

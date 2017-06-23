@@ -85,35 +85,29 @@ package talon.utils
 			elementNode.freeze();
 
 			// Copy attributes to node
-			var setted:Object = {};
+			elementNode.setAttribute(Attribute.TYPE, _parser.tags[0]);
 
-			for (var i:int = 0; i < _parser.attributes.length; i++)
+			for (var i:int = _parser.attributes.length-1; i >= 0; i--)
 			{
 				for (var key:String in _parser.attributes[i])
 				{
-					if (setted[key] == null)
-					{
-						var value:String = setted[key] = _parser.attributes[i][key];
+					var value:String = _parser.attributes[i][key];
 
-						var bindPattern:RegExp = /^@([\w_][\w\d_]+)$/;
-						var bindSplit:Array = bindPattern.exec(value);
-						var bindName:String = (bindSplit && bindSplit.length>1) ? bindSplit[1] : null;
-						if (bindName)
-						{
-							var bindSource:Node = (i==0 && _parserRoots.length) ? getNode(_parserRoots[_parserRoots.length-1]) : elementNode;
-							var bindSourceAttribute:Attribute = bindSource.getOrCreateAttribute(bindName);
-							elementNode.getOrCreateAttribute(key).upstream(bindSourceAttribute);
-						}
-						else
-						{
-							elementNode.setAttribute(key, value);
-						}
+					var bindPattern:RegExp = /^@([\w_][\w\d_]+)$/;
+					var bindSplit:Array = bindPattern.exec(value);
+					var bindName:String = (bindSplit && bindSplit.length>1) ? bindSplit[1] : null;
+					if (bindName)
+					{
+						var bindSource:Node = (i==0 && _parserRoots.length) ? getNode(_parserRoots[_parserRoots.length-1]) : elementNode;
+						var bindSourceAttribute:Attribute = bindSource.getOrCreateAttribute(bindName);
+						elementNode.getOrCreateAttribute(key).upstream(bindSourceAttribute);
+					}
+					else
+					{
+						elementNode.setAttribute(key, value);
 					}
 				}
 			}
-
-			if (setted[Attribute.TYPE] == null)
-				elementNode.setAttribute(Attribute.TYPE, _parser.tags[0]);
 
 			// Save last template root (for binding purpose)
 			if (_parserStack.length == 0 || _parser.attributes.length > 1)

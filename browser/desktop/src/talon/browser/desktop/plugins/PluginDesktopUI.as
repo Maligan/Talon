@@ -24,10 +24,8 @@ package talon.browser.desktop.plugins
 	import starling.extensions.TalonQuery;
 	import starling.extensions.TalonSprite;
 	import starling.filters.BlurFilter;
-	import starling.styles.DistanceFieldStyle;
-	import starling.styles.MeshStyle;
+	import starling.text.ITextCompositor;
 	import starling.text.TextField;
-	import starling.text.TextFieldAutoSize;
 	import starling.utils.Color;
 
 	import talon.Attribute;
@@ -57,6 +55,7 @@ package talon.browser.desktop.plugins
 		private var _locale:Object;
 		private var _factory:TalonFactory;
 
+		private var _interfaceFont:ITextCompositor;
 		private var _interface:TalonSprite;
 		private var _isolatorContainer:TalonSprite;
 		private var _isolator:DisplayObjectContainer;
@@ -87,6 +86,7 @@ package talon.browser.desktop.plugins
 			_platform.addEventListener(AppPlatformEvent.STARTED, onPlatformStart);
 			_platform.addEventListener(AppPlatformEvent.INVOKE, onPlatformInvoke);
 
+			_platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, refreshWindowFont);
 			_platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, refreshWindowTitle);
 			_platform.addEventListener(AppPlatformEvent.TEMPLATE_CHANGE, refreshWindowTitle);
 			_platform.profile.addEventListener(Event.CHANGE, refreshWindowTitle);
@@ -256,8 +256,8 @@ package talon.browser.desktop.plugins
 		private function onFactoryComplete():void
 		{
 			_interface = _factory.createElement("Interface") as TalonSprite;
+			_interfaceFont = TextField.getCompositor("Source_Sans_Pro");
 			DisplayObjectContainer(_platform.starling.root).addChild(_interface);
-
 
 			// popups container
 			_popups.host = query("#popups").getElementAt(0) as DisplayObjectContainer;
@@ -354,6 +354,12 @@ package talon.browser.desktop.plugins
 		//
 		// Refresh
 		//
+		private function refreshWindowFont():void
+		{
+			// If you close file which contain internal browser font :-)
+			TextField.registerCompositor(_interfaceFont, "Source_Sans_Pro")
+		}
+
 		private function refreshWindowTitle():void
 		{
 			var result:Array = [];
@@ -435,7 +441,7 @@ package talon.browser.desktop.plugins
 			if (outline && !locked)
 			{
 				graphics.lineStyle(1, Color.FUCHSIA);
-				refreshOutlineRect(graphics, displayObject, -1);
+				refreshOutlineRect(graphics, displayObject);
 			}
 		}
 

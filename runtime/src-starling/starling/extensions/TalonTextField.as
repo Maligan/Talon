@@ -210,7 +210,7 @@ package starling.extensions
 		//
 		// TalonDisplayObjectBridge customization
 		//
-		protected override function setRequiresRecomposition():void
+		public override function setRequiresRecomposition():void
 		{
 			_requiresRecompositionWithPadding = true;
 			super.setRequiresRecomposition();

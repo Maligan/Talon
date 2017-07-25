@@ -6,9 +6,9 @@
 5. [Template Markup Language (TML)](tml.md)
 
 ## Appendix
-* [CSS Dialect](css.md)
-    Full reference of supported attributes
-* [API reference](runtime.md)
+* [CSS Dialect](css.md)  
+	Full reference of supported attributes
+* [API Reference](runtime.md)  
     Action Script API description and full reference
-* [Browser tips & tricks](browser.md)
+* [Browser Tips & Tricks](browser.md)  
     Info about browser

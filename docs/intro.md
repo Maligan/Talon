@@ -144,17 +144,10 @@ public class Game extends Sprite
     {
 		var factory:TalonFactory = new TalonFactory();
 
-		// factory has deep integration with starling's AssetManager
-		factory.assets.enqueue(new helloworld_zip());
-		factory.assets.loadQueue(function(progress:Number):void
+		factory.importArchiveAsync(new helloworld_zip(), function():void
 		{
-			if (progress == 1)
-			{
-				var popup:ITalonElement = _factory.createElement("Popup");
-
-				addChild(popup as Sprite);
-			}
-		});
+			addChild(_factory.build("Popup") as Sprite);
+		}
     }
 }
 ```

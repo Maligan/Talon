@@ -8,29 +8,26 @@ package starling.extensions
 	import starling.utils.AssetManager;
 
 	import talon.Node;
+	import talon.utils.StyleSheet;
 	import talon.utils.TalonFactoryBase;
 
 	public class TalonFactory extends TalonFactoryBase
 	{
-		private var _assets:AssetManager;
-
 		public function TalonFactory()
 		{
-			_assets = new AssetManagerExtended(null);
-
-			addTerminal("div", TalonSprite);
-			addTerminal("txt", TalonTextField);
-			addTerminal("img", TalonImage);
+			setTerminal("div", TalonSprite);
+			setTerminal("txt", TalonTextField);
+			setTerminal("img", TalonImage);
 
 			// FIXME: Remove
-			addTerminal("node", TalonSprite);
-			addTerminal("label", TalonTextField);
-			addTerminal("image", TalonImage);
+			setTerminal("node", TalonSprite);
+			setTerminal("label", TalonTextField);
+			setTerminal("image", TalonImage);
 		}
 
-		public function createElement(source:Object, includeStyleSheet:Boolean = true, includeResources:Boolean = true):ITalonElement
+		public function build(xmlOrKey:Object, includeStyleSheet:Boolean = true, includeResources:Boolean = true):ITalonElement
 		{
-			return create(source, includeStyleSheet, includeResources) as ITalonElement;
+			return createInternal(xmlOrKey, includeStyleSheet, includeResources) as ITalonElement;
 		}
 
 		// template methods
@@ -50,19 +47,23 @@ package starling.extensions
 
 		// integration with starling asset manager
 
-		public function get assets():AssetManager
+		/** Import all textures, templates, css from asset manager. */
+		public function importAssetManager(assets:AssetManager):void
 		{
-			return _assets;
+			var names:Vector.<String> = new Vector.<String>();
+			// Textures
+			names.length = 0;
+			assets.getTextureNames()
 		}
-
-		public function addArchiveContentAsync(bytes:ByteArray, complete:Function):void
+		
+		public function importArchiveAsync(bytes:ByteArray, complete:Function):void
 		{
 			var hasFZipLibrary:Boolean = ApplicationDomain.currentDomain.hasDefinition("deng.fzip.FZip");
 			if (hasFZipLibrary == false) throw new Error("FZip library required for archive import");
 
 			if (bytes == null) throw new ArgumentError("Parameter bytes must be non-null");
 
-			var manager:AssetManagerExtended = _assets as AssetManagerExtended;
+			var manager:AssetManagerExtended = new AssetManagerExtended(null);
 			manager.enqueueZip(bytes);
 			manager.loadQueue(onProgress);
 
@@ -87,7 +88,7 @@ package starling.extensions
 			var styleIds:Vector.<String> = manager.getCssNames();
 			for each (var styleId:String in styleIds)
 			{
-				addStyle(manager.getCss(styleId));
+				addStyle(new StyleSheet(manager.getCss(styleId)));
 			}
 
 			var xmlIds:Vector.<String> = manager.getXmlNames();
@@ -95,7 +96,7 @@ package starling.extensions
 			{
 				var xml:XML = manager.getXml(xmlId);
 				if (xml.name() == TalonFactoryBase.TAG_TEMPLATE) addTemplate(xml);
-				if (xml.name() == TalonFactoryBase.TAG_LIBRARY) addLibrary(xml);
+				if (xml.name() == TalonFactoryBase.TAG_LIBRARY) importLibrary(xml);
 			}
 
 			var propertiesIds:Vector.<String> = manager.getPropertiesNames();

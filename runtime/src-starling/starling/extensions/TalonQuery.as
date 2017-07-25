@@ -49,6 +49,8 @@ package starling.extensions
 		
 		public function select(selector:String):TalonQuery
 		{
+			if (selector == null) return this;
+			
 			if (_elementsAreBusy) return clone().select(selector);
 			else
 			{

@@ -21,7 +21,7 @@ package talon.browser.desktop.popups
 
 		protected override function initialize():void
 		{
-			addChild(manager.factory.createElement("UpdatePopup") as DisplayObject);
+			addChild(manager.factory.build("UpdatePopup") as DisplayObject);
 			node.commit();
 
 			query("#cancel").onTap(onCancelClick);

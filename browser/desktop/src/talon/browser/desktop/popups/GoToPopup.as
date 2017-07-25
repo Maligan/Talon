@@ -77,7 +77,7 @@ package talon.browser.desktop.popups
 		private function initializeChildren():void
 		{
 			removeChildren(0, -1, true);
-			var view:DisplayObjectContainer = manager.factory.createElement("GoToPopup") as DisplayObjectContainer;
+			var view:DisplayObjectContainer = manager.factory.build("GoToPopup") as DisplayObjectContainer;
 			addChild(view);
 
 			_labels = new <TalonTextField>[];

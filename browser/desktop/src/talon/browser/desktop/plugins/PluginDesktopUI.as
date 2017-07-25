@@ -126,9 +126,9 @@ package talon.browser.desktop.plugins
 
 			_popups = _platform.popups;
 			_factory = _platform.factory;
-			_factory.addTerminal("input", TalonFeatherTextInput);
-			_factory.addResources(_locale);
-			_factory.addArchiveContentAsync(readFile(fileInterface), onFactoryComplete);
+			_factory.setTerminal("input", TalonFeatherTextInput);
+			_factory.importResources(_locale);
+			_factory.importArchiveAsync(readFile(fileInterface), onFactoryComplete);
 
 			// Windows
 			_platform.stage.nativeWindow.minSize = new Point(200, 100);
@@ -255,10 +255,35 @@ package talon.browser.desktop.plugins
 		//
 		private function onFactoryComplete():void
 		{
-			_interface = _factory.createElement("Interface") as TalonSprite;
+			_interface = _factory.build("Interface") as TalonSprite;
 			_interfaceFont = TextField.getCompositor("Source_Sans_Pro");
 			DisplayObjectContainer(_platform.starling.root).addChild(_interface);
 
+
+			var item:ITalonElement = new TalonSprite();
+			
+			item.query().fill = "red";
+			
+			var factory:TalonFactory;
+
+//			// Simple
+//			factory.addStyle(new StyleSheet());
+//			factory.addResource("key", "value");
+//			factory.addTemplate(<def ref="null" />);
+//			
+//			// Complex
+//			factory.importResources({});
+//			factory.importLibrary(<lib />);
+//			factory.importAssetManager(new AssetManager());
+//			factory.importArchiveAsync(null, trace);
+//
+//			// Creating
+//			factory.build("Popup");
+//			
+//			// Other
+//			factory.setTerminal("input", TextInput);
+			
+			
 			// popups container
 			_popups.host = query("#popups").getElementAt(0) as DisplayObjectContainer;
 			_popups.addEventListener(Event.CHANGE, onPopupManagerChange);
@@ -425,7 +450,7 @@ package talon.browser.desktop.plugins
 				for (var i:int = 0; i < _platform.document.messages.numMessages; i++)
 				{
 					var messageData:DocumentMessage = _platform.document.messages.getMessageAt(i);
-					var messageView:ITalonElement = _factory.createElement("Message");
+					var messageView:ITalonElement = _factory.build("Message");
 					messageView.node.setAttribute(Attribute.TEXT, messageData.text);
 					messageView.node.setAttribute(Attribute.CLASS, messageData.level==2?"error":"warning");
 					_messages.addChild(messageView as DisplayObject);
@@ -499,7 +524,7 @@ package talon.browser.desktop.plugins
 
 			try
 			{
-				result = _platform.document.factory.createElement(templateId) as DisplayObject;
+				result = _platform.document.factory.build(templateId) as DisplayObject;
 			}
 			catch (e:Error)
 			{

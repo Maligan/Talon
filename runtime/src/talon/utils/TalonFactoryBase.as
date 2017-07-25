@@ -4,6 +4,7 @@ package talon.utils
 
 	import talon.Attribute;
 	import talon.Node;
+	import talon.utils.StyleSheet;
 
 	public class TalonFactoryBase
 	{
@@ -39,7 +40,7 @@ package talon.utils
 
 		// Factory
 
-		public function create(xmlOrKey:Object, includeStyleSheet:Boolean, includeResources:Boolean):Object
+		protected function createInternal(xmlOrKey:Object, includeStyleSheet:Boolean, includeResources:Boolean):Object
 		{
 			// Define
 			var template:XML = null;
@@ -129,14 +130,9 @@ package talon.utils
 				var lastRoot:* = _parserRoots[_parserRoots.length-1];
 
 				if (last == lastRoot)
-				{
-					_parserStack.pop();
-					_parserRoots.pop()
-				}
-				else
-				{
-					_parserStack.pop();
-				}
+					_parserRoots.pop();
+
+				_parserStack.pop();
 			}
 		}
 
@@ -155,13 +151,17 @@ package talon.utils
 		// Linkage
 
 		/** Define type as terminal (see TML specification) */
-		public function addTerminal(type:String, typeClass:Class):void
+		public function setTerminal(type:String, typeClass:Class):void
 		{
+			if (_linkage[type] != null)
+				throw new Error("Terminal + '" + type + "' already exist");
+				
 			_parser.terminals.push(type);
 			_linkage[type] = typeClass;
 		}
 
-		protected function getLinkageClass(types:Vector.<String>):Class
+		/** I hide linkage type to class for non-terminal, this method is redundant. */
+		protected final function getLinkageClass(types:Vector.<String>):Class
 		{
 			for (var i:int = 0; i < types.length; i++)
 			{
@@ -177,14 +177,11 @@ package talon.utils
 
 		// Register
 
-		/** Add all key-value pairs from object. */
-		public function addResources(object:Object):void { for (var id:String in object) addResource(id, object[id]); }
-
 		/** Add resource (image, string, etc.) to global factory scope. */
 		public function addResource(id:String, resource:*):void { _resources[id] = resource; }
-
-		/** Add css to global factory scope. */
-		public function addStyle(css:String):void { _style.parse(css); }
+		
+		/** Add style to global factory scope. */
+		public function addStyle(style:StyleSheet):void { _style.merge(style); }
 
 		/** Add template (non terminal symbol) definition. Template name equals @res attribute. */
 		public function addTemplate(xml:XML):void
@@ -197,8 +194,8 @@ package talon.utils
 			if (ref in _parser.templates) throw new ArgumentError("Template with " + ATT_REF + " = '" + ref + "' already exists");
 
 			var children:XMLList = xml.children();
-			if (children.length() != 1) throw new ArgumentError("Template '" + ref + "' must contains one child");
-			var tree:XML = children[0];
+			if (children.length() > 1) throw new ArgumentError("Template '" + ref + "' can contains only one child");
+			var tree:XML = children[0] || new XML();
 
 			var tag:String = xml.attribute(ATT_TAG);
 			if (tag != null) _parser.setUsing(ref, tag);
@@ -206,8 +203,10 @@ package talon.utils
 			_parser.templates[ref] = tree;
 		}
 
+		// Batch stuff import
+		
 		/** Add all templates and style sheets from library xml. */
-		public function addLibrary(xml:XML):void
+		public function importLibrary(xml:XML):void
 		{
 			var type:String = xml.name();
 			if (type != TAG_LIBRARY) throw new ArgumentError("Root node must be <" + TAG_LIBRARY + ">");
@@ -222,10 +221,10 @@ package talon.utils
 						addTemplate(child);
 						break;
 					case TAG_STYLE:
-						addStyle(child.text());
+						addStyle(new StyleSheet(child.text()));
 						break;
 					case TAG_PROPERTIES:
-						addResources(ParseUtil.parseProperties(child.text()));
+						importResources(ParseUtil.parseProperties(child.text()));
 						break;
 					default:
 						logger("Ignore library part", "'" + subtype + "'", "unknown type");
@@ -233,6 +232,9 @@ package talon.utils
 			}
 		}
 
+		/** Add all key-value pairs from object. */
+		public function importResources(object:Object):void { for (var id:String in object) addResource(id, object[id]); }
+		
 		// Utils
 
 		protected function logger(...args):void

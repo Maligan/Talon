@@ -21,7 +21,7 @@ package talon.browser.desktop.popups
 
 		protected override function initialize():void
 		{
-			addChild(manager.factory.createElement("ProfilePopup") as DisplayObject);
+			addChild(manager.factory.build("ProfilePopup") as DisplayObject);
 
 			_profileSource = DeviceProfile(data);
 			_profileTemp = new DeviceProfile();

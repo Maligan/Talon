@@ -44,7 +44,6 @@ package talon.utils
 		private function parseInternal(xml:XML):void
 		{
 			var kind:String = xml.nodeKind();
-			if (kind == "text") throw new Error("Text elements doesn't supported - " + xml.valueOf());
 			if (kind != "element") return;
 
 			var template:XML = null;

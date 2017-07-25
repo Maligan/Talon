@@ -122,7 +122,7 @@ package starling.extensions
 
 		public function query(selector:String = null):TalonQuery
 		{
-			return selector ? new TalonQuery(this).select(selector) : new TalonQuery(this);
+			return new TalonQuery(this).select(selector);
 		}
 
 		public function get manual():Boolean

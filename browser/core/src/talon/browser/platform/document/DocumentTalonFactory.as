@@ -7,6 +7,7 @@ package talon.browser.platform.document
 	import starling.extensions.TalonFactory;
 
 	import talon.Node;
+	import talon.utils.StyleSheet;
 
 	/** Extended version of TalonFactory for browser purpose. */
 	public final class DocumentTalonFactory extends TalonFactory
@@ -41,12 +42,12 @@ package talon.browser.platform.document
 			_document.tasks.end();
 		}
 
-		public override function createElement(source:Object, includeStyleSheet:Boolean = true, includeResources:Boolean = true):ITalonElement
+		public override function build(source:Object, includeStyleSheet:Boolean = true, includeResources:Boolean = true):ITalonElement
 		{
 			resources.resource_proxy::reset();
 			_style = _styles.getMergedStyleSheet();
 
-			return super.createElement(source, includeStyleSheet, includeResources);
+			return super.build(source, includeStyleSheet, includeResources);
 		}
 
 		protected override function getNode(element:*):Node
@@ -187,7 +188,7 @@ package talon.browser.platform.document
 		//
 		// Styles
 		//
-		public override function addStyle(css:String):void
+		public override function addStyle(style:StyleSheet):void
 		{
 			throw new Error("Use addStyleSheetWithId");
 		}

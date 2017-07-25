@@ -20,12 +20,14 @@ package talon.utils
 		private var _parseSelectorsCursor:Vector.<StyleSelector>;
 
 		/** @private */
-		public function StyleSheet()
+		public function StyleSheet(css:String = null)
 		{
 			_selectorsStyles = new Dictionary();
 			_selectors = new Vector.<StyleSelector>();
 			_selectorsByIdent = new Dictionary();
 			_parseSelectorsCursor = new Vector.<StyleSelector>();
+			
+			if (css) parse(css);
 		}
 
 		/** Get an object (containing key-value pairs) that reflects the style of the node. */
@@ -59,7 +61,26 @@ package talon.utils
 		{
 			parseCSS(css);
 		}
-
+		
+		/** Merge all selectors from another style to this. */
+		public function merge(style:StyleSheet):void
+		{
+			for each (var selector:StyleSelector in style._selectors)
+			{
+				if (_selectors.indexOf(selector) == -1)
+				{
+					_selectors.push(selector);
+					_selectorsStyles[selector] = new OrderedObject();
+				}
+				
+				var from:Object = style._selectorsStyles[selector];
+				var to:Object = _selectorsStyles[selector];
+				
+				for (var key:String in from)
+					to[key] = from[key];
+			}
+		}
+		
 		//
 		// Recursive descent parser (BNF):
 		//
@@ -139,7 +160,6 @@ package talon.utils
 			if (selector == null)
 			{
 				selector = StyleSelector.getSelector(ident);
-				_selectorsByIdent[selector];
 				_selectors.push(selector);
 			}
 
@@ -202,6 +222,7 @@ class StyleSelector
 	private var _classes:Vector.<String>;
 	private var _states:Vector.<Object>;
 
+	/** @private */
 	public function StyleSelector(string:String)
 	{
 		_classes = new <String>[];

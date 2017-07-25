@@ -3,7 +3,6 @@ package talon.browser.desktop.filetypes
 	import flash.system.System;
 
 	import talon.browser.platform.document.log.DocumentMessage;
-
 	import talon.utils.ParseUtil;
 	import talon.utils.TalonFactoryBase;
 
@@ -75,7 +74,7 @@ package talon.browser.desktop.filetypes
 		private function addProperties(properties:String):void
 		{
 			ParseUtil.parseProperties(properties, _properties);
-			document.factory.addResources(_properties);
+			document.factory.importResources(_properties);
 		}
 
 		override protected function deactivate():void

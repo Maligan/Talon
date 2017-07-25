@@ -1,7 +1,9 @@
 package talon.layouts
 {
+	import talon.Attribute;
 	import talon.Node;
 	import talon.utils.Gauge;
+	import talon.utils.ParseUtil;
 
 	public class AnchorLayout extends Layout
 	{
@@ -12,11 +14,14 @@ package talon.layouts
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				var childWidth:Number = child.left.toPixels(child)
-									  + child.right.toPixels(child)
-									  + calcSize(child, child.width, child.height, 0, 0, child.minWidth, child.maxWidth, 0);
-
-				maxChildWidth = Math.max(maxChildWidth, childWidth);
+				if (isVisible(child))
+				{
+					var childWidth:Number = child.left.toPixels(child)
+										  + child.right.toPixels(child)
+										  + calcSize(child, child.width, child.height, 0, 0, child.minWidth, child.maxWidth, 0);
+	
+					maxChildWidth = Math.max(maxChildWidth, childWidth);
+				}
 			}
 
 			return maxChildWidth
@@ -31,11 +36,14 @@ package talon.layouts
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
-				var childHeight:Number = child.top.toPixels(child)
-					   		   		   + child.bottom.toPixels(child)
-					   		   		   + calcSize(child, child.height, child.width, 0, 0, child.minHeight, child.maxHeight, 0);
-
-				maxChildHeight = Math.max(maxChildHeight, childHeight);
+				if (isVisible(child))
+				{
+					var childHeight:Number = child.top.toPixels(child)
+										   + child.bottom.toPixels(child)
+										   + calcSize(child, child.height, child.width, 0, 0, child.minHeight, child.maxHeight, 0);
+	
+					maxChildHeight = Math.max(maxChildHeight, childHeight);
+				}
 			}
 
 			return maxChildHeight
@@ -89,6 +97,13 @@ package talon.layouts
 		{
 			return left.isNone  || left.unit  == Gauge.STAR
 				|| right.isNone || right.unit == Gauge.STAR;
+		}
+		
+		private function isVisible(node:Node):Boolean
+		{
+			return ParseUtil.parseBoolean(
+				node.getAttributeCache(Attribute.VISIBLE)
+			)
 		}
 
 		private function numStars(gauge:Gauge):int

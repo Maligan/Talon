@@ -15,6 +15,7 @@ package talon.browser.desktop.popups.widgets
 
 	import starling.events.Event;
 	import starling.extensions.TalonDisplayObjectBridge;
+	import starling.extensions.TalonQuery;
 	import starling.rendering.Painter;
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
@@ -144,6 +145,11 @@ package talon.browser.desktop.popups.widgets
 		public function get node():Node
 		{
 			return _node;
+		}
+
+		public function query(selector:String = null):TalonQuery
+		{
+			return new TalonQuery(this).select(selector);
 		}
 
 		public function get manual():Boolean

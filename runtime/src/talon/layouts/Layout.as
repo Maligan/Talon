@@ -65,8 +65,8 @@ package talon.layouts
 			if (_initialized == false)
 			{
 				_initialized = true;
-				if (!_layout[ANCHOR]) registerLayoutAlias(ANCHOR, new AnchorLayout(), ["padding"], ["top", "right", "bottom", "left", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight"]);
-				if (!_layout[FLOW]) registerLayoutAlias(FLOW, new FlowLayout(), ["gap", "interline", "wrap", "orientation"], ["width", "height", "filter", "visible"]);
+				if (!_layout[ANCHOR]) registerLayoutAlias(ANCHOR, new AnchorLayout(), ["padding"], ["visible", "top", "right", "bottom", "left", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight"]);
+				if (!_layout[FLOW]) registerLayoutAlias(FLOW, new FlowLayout(), ["gap", "interline", "wrap", "orientation"], ["visible", "width", "height", "filter"]);
 				if (!_layout[GRID]) registerLayoutAlias(GRID, new GridLayout());
 
 				if (!_layout[FLEX]) registerLayoutAlias(FLEX, new FlexLayout());

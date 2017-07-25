@@ -262,7 +262,7 @@ package talon.browser.desktop.plugins
 			// popups container
 			_popups.host = query("#popups").getElementAt(0) as DisplayObjectContainer;
 			_popups.addEventListener(Event.CHANGE, onPopupManagerChange);
-
+ 
 			// messages container
 			_messages = query("#messages").getElementAt(0) as TalonSprite;
 

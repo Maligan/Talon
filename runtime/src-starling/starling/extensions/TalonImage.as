@@ -154,6 +154,11 @@ package starling.extensions
 			return _node;
 		}
 
+		public function query(selector:String = null):TalonQuery
+		{
+			return new TalonQuery(this).select(selector);
+		}
+
 		public function get manual():Boolean
 		{
 			return _manual;

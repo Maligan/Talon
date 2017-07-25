@@ -6,8 +6,6 @@ package talon.browser.platform.popups
 	import starling.extensions.TalonQuery;
 	import starling.extensions.TalonSprite;
 
-	import talon.Attribute;
-
 	public class Popup extends TalonSprite
 	{
 		private var _manager:PopupManager;
@@ -47,7 +45,7 @@ package talon.browser.platform.popups
 		//
 		// Code sugar
 		//
-		protected final function query(selector:String):TalonQuery
+		public override function query(selector:String = null):TalonQuery
 		{
 			return _query.reset(this).select(selector);
 		}

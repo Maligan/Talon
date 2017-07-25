@@ -2,16 +2,13 @@ package talon.browser.desktop.commands
 {
 	import flash.events.Event;
 	import flash.filesystem.File;
-	import flash.net.FileFilter;
-
-	import talon.browser.desktop.popups.GoToPopup;
 
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.desktop.utils.DesktopFileReference;
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.utils.Command;
 	import talon.browser.platform.document.Document;
+	import talon.browser.platform.utils.Command;
 	import talon.browser.platform.utils.Storage;
 
 	public class OpenDocumentCommand extends Command

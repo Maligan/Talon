@@ -1,6 +1,8 @@
 package starling.extensions
 {
 	import flash.geom.Point;
+	import flash.utils.Proxy;
+	import flash.utils.flash_proxy;
 
 	import starling.animation.Juggler;
 	import starling.core.Starling;
@@ -13,7 +15,9 @@ package starling.extensions
 
 	import talon.utils.StyleSheet;
 
-	public class TalonQuery
+	use namespace flash_proxy;
+
+	public final dynamic class TalonQuery extends Proxy
 	{
 		private var _elements:Vector.<ITalonElement>;
 		private var _elementsBackBuffer:Vector.<ITalonElement>;
@@ -21,6 +25,7 @@ package starling.extensions
 
 		public function TalonQuery(element:ITalonElement = null):void
 		{
+			
 			_elements = new <ITalonElement>[];
 			_elementsBackBuffer = new <ITalonElement>[];
 			if (element) reset(element);
@@ -28,7 +33,7 @@ package starling.extensions
 
 		public function reset(element:ITalonElement = null):TalonQuery
 		{
-			if (_elementsAreBusy) return clone().reset(element)
+			if (_elementsAreBusy) return clone().reset(element);
 			else
 			{
 				_elements.length = 0;
@@ -41,6 +46,7 @@ package starling.extensions
 		//
 		// Selection
 		//
+		
 		public function select(selector:String):TalonQuery
 		{
 			if (_elementsAreBusy) return clone().select(selector);
@@ -74,13 +80,6 @@ package starling.extensions
 			if (elementAsContainer)
 				for (var i:int = 0; i < elementAsContainer.numChildren; i++)
 					selectInternal(elementAsContainer.getChildAt(i) as ITalonElement, selector, result);
-		}
-
-		private function isMatch(selector:String, element:ITalonElement):Boolean
-		{
-			var id:String = DisplayObject(element).name;
-			if (id == null) return false;
-			return id == selector.substr(1);
 		}
 
 		//
@@ -177,6 +176,36 @@ package starling.extensions
 			});
 
 			return this;
+		}
+		
+		//
+		// Flash Proxy
+		//
+		public function get length():int { return _elements.length }
+		
+		// Enumeration of elements
+		flash_proxy override function nextNameIndex(index:int):int { return index < _elements.length ? index+1 : 0; }
+		flash_proxy override function nextName(index:int):String { return (index-1).toString(); }
+		flash_proxy override function nextValue(index:int):* { return _elements[index-1]; }
+		
+		// Access to elements & attributes
+		flash_proxy override function getProperty(name:*):*
+		{
+			if (name is String)
+				return name < _elements.length ? _elements[name] : null;
+
+			else if (_elements.length > 0)
+				return _elements[0].node.getOrCreateAttribute(name).value;
+
+			return null;
+		}
+		
+		flash_proxy override function setProperty(name:*, value:*):void
+		{
+			if (name is String)
+				throw new ArgumentError();
+			
+			setAttribute(name, value);
 		}
 	}
 }

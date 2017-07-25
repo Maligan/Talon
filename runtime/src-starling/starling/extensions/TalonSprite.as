@@ -10,8 +10,6 @@ package starling.extensions
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.enums.TouchMode;
-	import starling.extensions.ITalonElement;
 
 	public class TalonSprite extends Sprite implements ITalonElement
 	{
@@ -120,6 +118,11 @@ package starling.extensions
 		public function get node():Node
 		{
 			return _node;
+		}
+
+		public function query(selector:String = null):TalonQuery
+		{
+			return selector ? new TalonQuery(this).select(selector) : new TalonQuery(this);
 		}
 
 		public function get manual():Boolean

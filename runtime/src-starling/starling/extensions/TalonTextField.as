@@ -307,6 +307,8 @@ package starling.extensions
 		public function get manual():Boolean { return _manual; }
 		public function set manual(value:Boolean):void { _manual = value; }
 
+		public function query(selector:String = null):TalonQuery { return new TalonQuery(this).select(selector); }
+
 		override public function set wordWrap(value:Boolean):void {  node.setAttribute(Attribute.WRAP, value.toString()); }
 		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
 		public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.FONT_AUTO_SCALE, value.toString()); }

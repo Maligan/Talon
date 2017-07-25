@@ -6,7 +6,6 @@ package talon.browser.desktop.popups
 	import flash.ui.Keyboard;
 
 	import starling.display.DisplayObject;
-
 	import starling.events.Event;
 
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;

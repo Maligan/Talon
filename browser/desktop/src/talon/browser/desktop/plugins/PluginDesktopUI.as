@@ -451,6 +451,7 @@ package talon.browser.desktop.plugins
 				{
 					var messageData:DocumentMessage = _platform.document.messages.getMessageAt(i);
 					var messageView:ITalonElement = _factory.build("Message");
+					messageView.node.setAttribute("file", messageData.location);
 					messageView.node.setAttribute(Attribute.TEXT, messageData.text);
 					messageView.node.setAttribute(Attribute.CLASS, messageData.level==2?"error":"warning");
 					_messages.addChild(messageView as DisplayObject);
@@ -627,10 +628,10 @@ class AppUINativeMenu
 		insert("file/preferences/alwaysOnTop", new  ChangeSettingCommand(_platform, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
 		insert("file/preferences/autoReopen",  new  ChangeSettingCommand(_platform, AppConstants.SETTING_AUTO_REOPEN, true, false));
 		insert("file/preferences/autoUpdate",  new  ChangeSettingCommand(_platform, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, true, false));
-		insert("file/preferences/publishCache",new  ChangeSettingCommand(_platform, AppConstants.SETTING_PUBLISH_CACHE, true, false));
 		insert("file/-");
 		insert("file/publishAs",               new  PublishCommand(_platform), "shift-ctrl-s");
 		insert("file/screenshot",              new  PublishScreenshotCommand(_platform, ui), "shift-ctrl-a");
+		// insert("file/cache",				   new  PublishCacheCommand(_platform), "shift-ctrl-l");
 
 		_platform.settings.addPropertyListener(AppConstants.SETTING_RECENT_DOCUMENTS, refreshRecentOpenedDocumentsList);
 		refreshRecentOpenedDocumentsList();

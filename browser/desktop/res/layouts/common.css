@@ -58,7 +58,7 @@ input {
 button:hover { fill: $button_over; }
 button:active { fill: $button_down; }
 button {
-	txt: Button;
+	text: Button;
 
 	fill: $button_normal;
 	fillStretchGrid: 4px;
@@ -67,7 +67,7 @@ button {
 	fontColor: #F0F1F1;
 
 	align: center;
-	padding: 0.4em 0.5em 0.4em;
+	padding: 0.5em;
 
 	touchMode: leaf;
 	touchEvents: true;
@@ -116,31 +116,14 @@ checkbox {
 message {
 	width: 100%;
 	padding: 1em;
-	fill: #000000;
 }
 
-.dark message {
-	fill: #FFFFFF;
-	fillAlpha: 0.4;
-}
+.dark message { fill: black; fillAlpha: 0.5; }
+.dark message #file { fontColor: #0088FF; }
+.dark message.error { fontColor: #FF8800; }
+.dark message.warning { fontColor: #FFFF00; }
 
-.dark message.error {
-	fontColor: #FF6600;
-}
-
-.dark message.warning {
-	fontColor: #FFFF00;
-}
-
-.light message {
-	fill: #000000;
-	fillAlpha: 0.7;
-}
-
-.light message.error {
-	fontColor: #FF9999;
-}
-
-.light message.warning {
-	fontColor: #FFFF99;
-}
+.light message { fill: white; fillAlpha: 0.7; }
+.light message #file { fontColor: #0044CC; }
+.light message.error { fontColor: #880000; }
+.light message.warning { fontColor: #888800; }

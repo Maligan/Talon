@@ -18,7 +18,7 @@
 				<div layout="flow" width="100%" gap="8px">
 					<txt text="$dialog.profile.size" width="*" height="*" halign="left" valign="center" />
 					<input id="width" width="48" />
-					<txt text="x" ivalign="center" margin="none -6px" />
+					<txt text="x" valignSelf="center" margin="none -6px none -4px" />
 					<input id="height" width="48" />
 				</div>
 
@@ -33,7 +33,7 @@
 				</div>
 			</div>
 
-			<div layout="flow" ihalign="center" margin="none" gap="8px" padding="8px" width="150px">
+			<div layout="flow" halignSelf="center" margin="none" gap="8px" padding="8px" width="150px">
 				<button id="accept" label="$button.accept" width="*" class="action" />
 				<button id="cancel" label="$button.cancel" width="*" />
 			</div>
@@ -47,7 +47,7 @@
 			<txt text="$dialog.updater.title" margin="8px" />
 
 			<div layout="flow" fill="#4e5051" width="100%" orientation="horizontal" padding="8px" wrap="true">
-				<txt id="info" ivalign="center" text="UPDATE_STATUS" width="*" height="16px" />
+				<txt id="info" valignSelf="center" text="UPDATE_STATUS" width="*" height="16px" />
 				<div layout="anchor" width="20px" height="20px" >
 					<img id="details" pivot="50%" source="$drop_down" cursor="button" />
 					<img id="spinner" pivot="50%" source="$spinner_small" />
@@ -56,7 +56,7 @@
 
 			<txt id="detailsInfo" text="UPDATE_INFO" width="266px" padding="8px" marginTop="2px" fontColor="#888888" />
 
-			<div layout="flow" ihalign="center" margin="none" gap="8px" padding="8px" width="100%" halign="right">
+			<div layout="flow" halignSelf="center" margin="none" gap="8px" padding="8px" width="100%" halign="right">
 				<button id="update" label="Update" class="action" />
 				<button id="cancel" label="Cancel" />
 			</div>
@@ -78,7 +78,7 @@
 				<checkbox label="$dialog.preferences.openLastDocument" />
 			</div>
 
-			<div ihalign="center" margin="none" gap="8px" padding="8px">
+			<div halignSelf="center" margin="none" gap="8px" padding="8px">
 				<button id="_accept" label="$button.accept" class="action" />
 				<button id="_cancel" label="$button.cancel" />
 			</div>
@@ -100,7 +100,10 @@
 	</def>
 
 	<def ref="Message" tag="message">
-		<txt type="message" />
+		<div text="Message" file="/path/to/file" layout="flow">
+			<txt id="file" text="@file" />
+			<txt id="text" text="@text" />
+		</div>
 	</def>
 
 	<def ref="Input" tag="input">
@@ -114,7 +117,7 @@
 	<def ref="Checkbox" tag="checkbox">
 		<div type="checkbox" label="Checkbox" layout="flow">
 			<img source="@image" />
-			<txt text="@label" halign="left" paddingTop="2" />
+			<txt text="@label" alignSelf="center" marginTop="1px"/>
 		</div>
 	</def>
 

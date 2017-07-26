@@ -12,7 +12,6 @@ package talon.browser.desktop.utils
 	import flash.net.URLLoader;
 	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
-	import flash.net.URLRequestHeader;
 	import flash.utils.ByteArray;
 
 	[Event(type="flash.events.ProgressEvent", name="progress")]
@@ -121,12 +120,12 @@ package talon.browser.desktop.utils
 			_updateDescriptorNamespace = descriptor.namespace();
 			_updateDescriptorVersion = descriptor._updateDescriptorNamespace::versionNumber.valueOf();
 			_updateDescriptorDescription = descriptor._updateDescriptorNamespace::description.valueOf();
-//			var updateVersionIsLess:Boolean = compare(_updateDescriptorVersion, _version) <= 0;
-//			if (updateVersionIsLess)
-//			{
-//				complete(UpdateStatus.UPDATE_DESCRIPTOR_VERSION_IS_LESS_OR_EQUALS);
-//				return;
-//			}
+			var updateVersionIsLess:Boolean = compare(_updateDescriptorVersion, _version) <= 0;
+			if (updateVersionIsLess)
+			{
+				complete(UpdateStatus.UPDATE_DESCRIPTOR_VERSION_IS_LESS_OR_EQUALS);
+				return;
+			}
 
 			// Check version url
 			var descriptorApplicationURL:String = descriptor._updateDescriptorNamespace::url.valueOf();

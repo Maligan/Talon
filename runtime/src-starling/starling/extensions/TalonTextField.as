@@ -67,18 +67,21 @@ package starling.extensions
 		{
 			var trueTypeCorrection:int = getCompositor(format.font) ? 0 : TRUE_TYPE_CORRECTION;
 
+			var paddingTop:Number = node.paddingTop.toPixels(node);
+			var paddingRight:Number = node.paddingRight.toPixels(node);
+			var paddingBottom:Number = node.paddingBottom.toPixels(node);
+			var paddingLeft:Number = node.paddingLeft.toPixels(node);
+
 			super.autoSize = getAutoSize(availableWidth == Infinity, availableHeight == Infinity);
-			super.width = availableWidth + trueTypeCorrection;
-			super.height = availableHeight + trueTypeCorrection;
-
+			super.width = availableWidth - paddingLeft - paddingRight + trueTypeCorrection;
+			super.height = availableHeight - paddingTop - paddingBottom + trueTypeCorrection;
 			super.setRequiresRecomposition();
-			super.getBounds(this, _sRect);	// call super.recompose();
+			super.getBounds(this, _sRect);				// call super.recompose();
+			getTrueTextBounds(_sRect);					// calculate true text bounds (which respect font lineHeight)
+			super.autoSize = TextFieldAutoSize.NONE;	// restore super.autoSize value
 
-			getTrueTextBounds(_sRect);		// calculate true text bounds (which respect font lineHeight)
-			super.autoSize = TextFieldAutoSize.NONE;
-
-			_sRect.width  += node.paddingLeft.toPixels(node) + node.paddingRight.toPixels(node);
-			_sRect.height += node.paddingTop.toPixels(node)  + node.paddingBottom.toPixels(node);
+			_sRect.width  += paddingLeft + paddingRight;
+			_sRect.height += paddingTop + paddingBottom;
 
 			// BitmapFont#arrangeChars has floating point error:
 			// If TextField used some combination of font, size and text
@@ -117,6 +120,7 @@ package starling.extensions
 			if (autoScale) scale = NaN;
 
 			// find anchor chars
+			var anchors:Object = {};
 
 			var leftmostCharLeft:Number = NaN;
 			var rightmostCharRight:Number = NaN;
@@ -153,10 +157,16 @@ package starling.extensions
 
 					var charTop:Number = _sPoint.y - char.yOffset*scale;
 					if (charTop > bottommostCharTop || bottommostCharTop != bottommostCharTop)
+					{
 						bottommostCharTop = charTop;
+						anchors["bottom"] = i + ": " + String.fromCharCode(charID);
+					}
 
 					if (charTop < topmostCharTop || topmostCharTop != topmostCharTop)
+					{
 						topmostCharTop = charTop;
+						anchors["top"] = i + ": " + String.fromCharCode(charID);
+					}
 				}
 				else
 					numNonDrawableChars++;

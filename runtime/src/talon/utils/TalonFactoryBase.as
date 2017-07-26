@@ -4,7 +4,6 @@ package talon.utils
 
 	import talon.Attribute;
 	import talon.Node;
-	import talon.utils.StyleSheet;
 
 	public class TalonFactoryBase
 	{
@@ -160,7 +159,7 @@ package talon.utils
 			_linkage[type] = typeClass;
 		}
 
-		/** I hide linkage type to class for non-terminal, this method is redundant. */
+		/** While linkage type to non-terminal is hidden - this method is redundant. */
 		protected final function getLinkageClass(types:Vector.<String>):Class
 		{
 			for (var i:int = 0; i < types.length; i++)

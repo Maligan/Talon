@@ -71,42 +71,38 @@ package starling.extensions
 			{
 				if (ratio == 1)
 				{
-					onAssetManagerComplete(manager);
+					var textureIds:Vector.<String> = manager.getTextureNames();
+					for each (var textureId:String in textureIds)
+					{
+						addResource(textureId, manager.getTexture(textureId));
+					}
+
+					var styleIds:Vector.<String> = manager.getCssNames();
+					for each (var styleId:String in styleIds)
+					{
+						addStyle(new StyleSheet(manager.getCss(styleId)));
+					}
+
+					var xmlIds:Vector.<String> = manager.getXmlNames();
+					for each (var xmlId:String in xmlIds)
+					{
+						var xml:XML = manager.getXml(xmlId);
+						if (xml.name() == TalonFactoryBase.TAG_TEMPLATE) addTemplate(xml);
+						if (xml.name() == TalonFactoryBase.TAG_LIBRARY) importLibrary(xml);
+					}
+
+					var propertiesIds:Vector.<String> = manager.getPropertiesNames();
+					for each (var propertiesId:String in propertiesIds)
+					{
+						var properties:Object = manager.getProperties(propertiesId);
+						for (var propertyName:String in properties)
+						{
+							var propertyValue:String = properties[propertyName];
+							addResource(propertyName, propertyValue);
+						}
+					}
+					
 					complete();
-				}
-			}
-		}
-
-		private function onAssetManagerComplete(manager:AssetManagerExtended):void
-		{
-			var textureIds:Vector.<String> = manager.getTextureNames();
-			for each (var textureId:String in textureIds)
-			{
-				addResource(textureId, manager.getTexture(textureId));
-			}
-
-			var styleIds:Vector.<String> = manager.getCssNames();
-			for each (var styleId:String in styleIds)
-			{
-				addStyle(new StyleSheet(manager.getCss(styleId)));
-			}
-
-			var xmlIds:Vector.<String> = manager.getXmlNames();
-			for each (var xmlId:String in xmlIds)
-			{
-				var xml:XML = manager.getXml(xmlId);
-				if (xml.name() == TalonFactoryBase.TAG_TEMPLATE) addTemplate(xml);
-				if (xml.name() == TalonFactoryBase.TAG_LIBRARY) importLibrary(xml);
-			}
-
-			var propertiesIds:Vector.<String> = manager.getPropertiesNames();
-			for each (var propertiesId:String in propertiesIds)
-			{
-				var properties:Object = manager.getProperties(propertiesId);
-				for (var propertyName:String in properties)
-				{
-					var propertyValue:String = properties[propertyName];
-					addResource(propertyName, propertyValue);
 				}
 			}
 		}

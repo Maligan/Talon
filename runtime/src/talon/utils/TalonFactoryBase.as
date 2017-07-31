@@ -238,46 +238,47 @@ package talon.utils
 		
 		public function getCache():Object
 		{
-			var cache:Object = {};
+			var cache:Object = { type: "application/x-talon-cache" };
 
 			// Templates
 			
 			var cacheTemplates:Object = cache["templates"] = {};
 			var cacheTemplate:Object;
-			var cacheEvents:Array;
+			var cacheTemplateBuild:Array;
 			
 			_parser.addEventListener(TMLParser.EVENT_BEGIN, onParser, false, int.MAX_VALUE);
 			_parser.addEventListener(TMLParser.EVENT_END, onParser, false, int.MAX_VALUE);
 
 			for (var templateName:String in _parser.templates)
 			{
-				cacheTemplate = cacheTemplates[templateName] = {};
-				cacheEvents = cacheTemplate["parse"] = [];
+				cacheTemplate = cacheTemplates[templateName] = { ref: templateName };
+				cacheTemplateBuild = cacheTemplate["build"] = [];
+
 				var templateXML:XML = _parser.templates[templateName];
 				var templateTag:String = _parser.getUsingTag(templateName);
 				if (templateTag) cacheTemplate["tag"] = templateTag;
-				cacheTemplate["ref"] = templateName;
+
 				_parser.parse(templateXML, templateTag);
 			}
 			
 			function onParser(e:Event):void
 			{
-				var cacheEvent:Object = cacheEvents[cacheEvents.length] = { type: e.type };
+				var event:Object = cacheTemplateBuild[cacheTemplateBuild.length] = { type: e.type };
 
 				if (e.type == TMLParser.EVENT_BEGIN)
 				{
-					var temp0:Array;
-					var temp1:Array;
+					var tmp0:Array;
+					var tmp1:Array;
 
-					cacheEvent["tag"] = _parser.tags[0];
-					cacheEvent["attributes"] = temp0 = [];
+					event["tags"] = _parser.tags.concat();
+					event["attributes"] = tmp0 = [];
 					
 					for each (var attributes:Object in _parser.attributes)
 					{
-						temp1 = temp0[temp0.length] = [];
+						tmp1 = tmp0[tmp0.length] = [];
 						
 						for (var name:String in attributes)
-							temp1.push(name, attributes[name])
+							tmp1.push(name, attributes[name])
 					}
 				}
 
@@ -289,23 +290,22 @@ package talon.utils
 
 			// Styles
 			
-			var cacheStyles:Object = cache["styles"] = {};
+			var cacheStyles:Object = cache["styles"] = [];
+
+			for (var selector:String in _style.selectors)
+			{
+				var cacheStyleSelector:Object = cacheStyles[cacheStyles.length] = { selector: selector }
+				var cacheStyleProps:Object = cacheStyleSelector["attributes"] = [];
+
+				for (var key:String in _style.selectors[selector])
+					cacheStyleProps.push(key, _style.selectors[selector][key]);
+			}
+
+			// Properties
 
 			// Result
 			
 			return cache;
-			
-//			{
-//				version: "0.3"
-//				templates: {
-//					Template1: [
-//						{ type: "begin", tags: "div", attrs: ["key1", "value1", "key2", "value2"] },
-//						{ type: "end" }
-//					]
-//				}
-//				styles: {
-//				}
-//			}	
 		}
 		
 		public function setCache(object:Object):void

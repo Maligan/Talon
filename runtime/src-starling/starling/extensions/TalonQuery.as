@@ -46,7 +46,8 @@ package starling.extensions
 		//
 		// Selection
 		//
-		
+
+		/** FIXME: Remember about num spaces */
 		public function select(selector:String):TalonQuery
 		{
 			if (selector == null) return this;
@@ -74,7 +75,7 @@ package starling.extensions
 			if (element == null) return;
 
 			// Check self
-			if (StyleSheet.isMatch(element.node, selector))
+			if (StyleSheet.match(element.node, selector))
 				result[result.length] = element;
 
 			// Recursive

@@ -1,32 +1,25 @@
 package talon.utils
 {
-	import flash.utils.Dictionary;
-
-	import talon.*;
+	import talon.Node;
 
 	/** Style Sheet Object. */
 	public class StyleSheet
 	{
 		/** @private For internal usage only. */
-		public static function isMatch(node:Node, selector:String):Boolean
+		public static function match(node:Node, selector:String):Boolean
 		{
-			return StyleSelector.getSelector(selector).match(node);
+			return StyleSelector.match(node, selector) != -1;
 		}
 
-		protected var _selectors:Vector.<StyleSelector>;
-		protected var _selectorsStyles:Dictionary;
-		protected var _selectorsByIdent:Dictionary;
-
-		private var _parseSelectorsCursor:Vector.<StyleSelector>;
+		private var _selectors:Object;
+		private var _selectorsCursor:Vector.<String>;
 
 		/** @private */
 		public function StyleSheet(css:String = null)
 		{
-			_selectorsStyles = new Dictionary();
-			_selectors = new Vector.<StyleSelector>();
-			_selectorsByIdent = new Dictionary();
-			_parseSelectorsCursor = new Vector.<StyleSelector>();
-			
+			_selectors = new OrderedObject();
+			_selectorsCursor = new <String>[];
+
 			if (css) parse(css);
 		}
 
@@ -37,18 +30,19 @@ package talon.utils
 
 			var priorities:Object = new Object();
 
-			for each (var selector:StyleSelector in _selectors)
+			for (var selector:String in _selectors)
 			{
-				if (!selector.match(node)) continue;
+				var match:int = StyleSelector.match(node, selector);
+				if (match == -1) continue;
 
-				var styles:Object = _selectorsStyles[selector];
-				for (var property:String in styles)
+				var props:Object = _selectors[selector];
+				for (var key:String in props)
 				{
-					var priority:int = priorities[property];
-					if (priority <= selector.priority)
+					var propPriority:int = priorities[key];
+					if (propPriority <= match)
 					{
-						result[property] = styles[property];
-						priorities[property] = selector.priority;
+						priorities[key] = match;
+						result[key] = props[key];
 					}
 				}
 			}
@@ -62,23 +56,22 @@ package talon.utils
 			parseCSS(css);
 		}
 		
-		/** Merge all selectors from another style to this. */
+		/** FIXME: Move into factory: Merge all selectors from another style to this. */
 		public function merge(style:StyleSheet):void
 		{
-			for each (var selector:StyleSelector in style._selectors)
+			for (var selector:String in style._selectors)
 			{
-				if (_selectors.indexOf(selector) == -1)
-				{
-					_selectors.push(selector);
-					_selectorsStyles[selector] = new OrderedObject();
-				}
-				
-				var from:Object = style._selectorsStyles[selector];
-				var to:Object = _selectorsStyles[selector];
+				var from:Object = style._selectors[selector];
+				var to:Object = _selectors[selector] ||= new OrderedObject();
 				
 				for (var key:String in from)
 					to[key] = from[key];
 			}
+		}
+
+		public function get selectors():Object
+		{
+			return _selectors;
 		}
 		
 		//
@@ -113,13 +106,10 @@ package talon.utils
 			var startIndex:int = 0;
 			var endIndex:int = input.indexOf('{');
 
-			resetCursorSelectors();
+			_selectorsCursor.length = 0;
 			var selectors:Array = input.substr(startIndex, endIndex).split(',');
 			for each (var selector:String in selectors)
-			{
-				selector = trim(selector);
-				addCursorSelector(selector);
-			}
+				_selectorsCursor[_selectorsCursor.length] = trim(selector).replace(/\s\+/, ' ');
 
 			return input.substr(endIndex);
 		}
@@ -149,29 +139,12 @@ package talon.utils
 		//
 		// Parsing calls
 		//
-		private function resetCursorSelectors():void
-		{
-			_parseSelectorsCursor.length = 0;
-		}
-
-		private function addCursorSelector(ident:String):void
-		{
-			var selector:StyleSelector = _selectorsByIdent[ident];
-			if (selector == null)
-			{
-				selector = StyleSelector.getSelector(ident);
-				_selectors.push(selector);
-			}
-
-			_parseSelectorsCursor.push(selector);
-		}
 
 		private function addCursorSelectorsProperty(name:String, value:String):void
 		{
-			for each (var selector:StyleSelector in _parseSelectorsCursor)
+			for each (var selector:String in _selectorsCursor)
 			{
-				var style:Object = _selectorsStyles[selector];
-				if (style == null) style = _selectorsStyles[selector] = new OrderedObject();
+				var style:Object = _selectors[selector] ||= new OrderedObject();
 				style[name] = value;
 			}
 		}
@@ -198,13 +171,20 @@ import talon.Node;
 
 class StyleSelector
 {
-	private static const _selector:Object = {};
+	private static const _sSelectors:Object = {};
 
-	public static function getSelector(string:String):StyleSelector
+	/** Return match priority or -1 */
+	public static function match(node:Node, source:String):int
 	{
-		var selector:StyleSelector = _selector[string];
+		var selector:StyleSelector = getSelector(source);
+		return selector.match(node) ? selector.priority : -1;
+	}
+
+	private static function getSelector(source:String):StyleSelector
+	{
+		var selector:StyleSelector = _sSelectors[source];
 		if (selector == null)
-			selector = _selector[string] = new StyleSelector(string);
+			selector = _sSelectors[source] = new StyleSelector(source);
 
 		return selector;
 	}
@@ -215,6 +195,7 @@ class StyleSelector
 	}
 
 	private var _priority:int;
+	private var _source:String;
 
 	private var _ancestor:StyleSelector;
 	private var _id:String;
@@ -223,12 +204,14 @@ class StyleSelector
 	private var _states:Vector.<Object>;
 
 	/** @private */
-	public function StyleSelector(string:String)
+	public function StyleSelector(source:String)
 	{
+		_source = source;
+
 		_classes = new <String>[];
 		_states = new <Object>[];
 
-		var split:Array = string.split(' ');
+		var split:Array = _source.split(' ');
 		var current:String = split.pop();
 
 		// Parent selector
@@ -253,6 +236,11 @@ class StyleSelector
 
 		// CSS Selector Priority (@see http://www.w3.org/wiki/CSS/Training/Priority_level_of_selector) merged to one integer
 		_priority = (_ancestor ? _ancestor.priority : 0) + getPriorityMerge(_id?1:0, _classes.length + _states.length, _type?1:0);
+	}
+
+	public function get source():String
+	{
+		return _source;
 	}
 
 	public function match(node:Node):Boolean

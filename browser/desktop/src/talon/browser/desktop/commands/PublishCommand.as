@@ -5,7 +5,6 @@ package talon.browser.desktop.commands
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
-	import flash.utils.ByteArray;
 
 	import starling.events.Event;
 

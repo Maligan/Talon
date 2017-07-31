@@ -189,7 +189,7 @@ package talon.utils
 			if (xmlName != TAG_TEMPLATE) throw new ArgumentError("Root node must be <" + TAG_TEMPLATE + ">");
 
 			var ref:String = xml.attribute(ATT_REF);
-			if (ref == null) throw new ArgumentError("Template must contains " + ATT_REF + " attribute");
+			if (ref == false) throw new ArgumentError("Template must contains " + ATT_REF + " attribute");
 			if (ref in _parser.templates) throw new ArgumentError("Template with " + ATT_REF + " = '" + ref + "' already exists");
 
 			var children:XMLList = xml.children();
@@ -233,6 +233,85 @@ package talon.utils
 
 		/** Add all key-value pairs from object. */
 		public function importResources(object:Object):void { for (var id:String in object) addResource(id, object[id]); }
+		
+		// Cache
+		
+		public function getCache():Object
+		{
+			var cache:Object = {};
+
+			// Templates
+			
+			var cacheTemplates:Object = cache["templates"] = {};
+			var cacheTemplate:Object;
+			var cacheEvents:Array;
+			
+			_parser.addEventListener(TMLParser.EVENT_BEGIN, onParser, false, int.MAX_VALUE);
+			_parser.addEventListener(TMLParser.EVENT_END, onParser, false, int.MAX_VALUE);
+
+			for (var templateName:String in _parser.templates)
+			{
+				cacheTemplate = cacheTemplates[templateName] = {};
+				cacheEvents = cacheTemplate["parse"] = [];
+				var templateXML:XML = _parser.templates[templateName];
+				var templateTag:String = _parser.getUsingTag(templateName);
+				if (templateTag) cacheTemplate["tag"] = templateTag;
+				cacheTemplate["ref"] = templateName;
+				_parser.parse(templateXML, templateTag);
+			}
+			
+			function onParser(e:Event):void
+			{
+				var cacheEvent:Object = cacheEvents[cacheEvents.length] = { type: e.type };
+
+				if (e.type == TMLParser.EVENT_BEGIN)
+				{
+					var temp0:Array;
+					var temp1:Array;
+
+					cacheEvent["tag"] = _parser.tags[0];
+					cacheEvent["attributes"] = temp0 = [];
+					
+					for each (var attributes:Object in _parser.attributes)
+					{
+						temp1 = temp0[temp0.length] = [];
+						
+						for (var name:String in attributes)
+							temp1.push(name, attributes[name])
+					}
+				}
+
+				e.stopImmediatePropagation();
+			}
+
+			_parser.removeEventListener(TMLParser.EVENT_BEGIN, onParser);
+			_parser.removeEventListener(TMLParser.EVENT_END, onParser);
+
+			// Styles
+			
+			var cacheStyles:Object = cache["styles"] = {};
+
+			// Result
+			
+			return cache;
+			
+//			{
+//				version: "0.3"
+//				templates: {
+//					Template1: [
+//						{ type: "begin", tags: "div", attrs: ["key1", "value1", "key2", "value2"] },
+//						{ type: "end" }
+//					]
+//				}
+//				styles: {
+//				}
+//			}	
+		}
+		
+		public function setCache(object:Object):void
+		{
+			
+		}
 		
 		// Utils
 

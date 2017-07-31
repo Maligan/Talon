@@ -7,8 +7,8 @@ package talon.utils
 	[Event(type="flash.events.Event", name="elementEnd")]
 	public final class TMLParser extends EventDispatcher
 	{
-		public static const EVENT_BEGIN:String = "elementBegin";
-		public static const EVENT_END:String = "elementEnd";
+		public static const EVENT_BEGIN:String = "begin";
+		public static const EVENT_END:String = "end";
 
 		public static const KEYWORD_USE:String = "use";
 		public static const KEYWORD_REF:String = "ref";

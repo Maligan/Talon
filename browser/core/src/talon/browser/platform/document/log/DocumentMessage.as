@@ -10,11 +10,11 @@ package talon.browser.platform.document.log
 		public static const FILE_READ_ERROR:String =                    "E1:    {0}: Reading throw {1}";
 		public static const FILE_LISTING_ERROR:String =                 "E2:    {0}: Listing throw {1}";
 
-		public static const FILE_CONTAINS_WRONG_CSS:String =            "E3:    {0}: Contains wrong CSS";
-		public static const FILE_CONTAINS_WRONG_XML:String =            "E4:    {0}: Contains wrong XML";
-		public static const FILE_CONTAINS_WRONG_ELEMENT:String =        "E5:    {0}: Contains wrong element '{1}'";
-		public static const FILE_CONTAINS_WRONG_TEMPLATE:String =       "E6:    {0}: Contains wrong template {1}";
-		public static const FILE_CONTAINS_WRONG_IMAGE_FORMAT:String =   "E7:    {0}: Loading as bitmap throw {1}";
+		public static const FILE_CONTAINS_WRONG_CSS:String =            "E3:    {0}: Wrong CSS";
+		public static const FILE_CONTAINS_WRONG_XML:String =            "E4:    {0}: Wrong XML";
+		public static const FILE_CONTAINS_WRONG_ELEMENT:String =        "E5:    {0}: Wrong element: {1}";
+		public static const FILE_CONTAINS_WRONG_TEMPLATE:String =       "E6:    {0}: Wrong template: {1}";
+		public static const FILE_CONTAINS_WRONG_IMAGE_FORMAT:String =   "E7:    {0}: Loading as bitmap throw: {1}";
 
 		public static const TEXTURE_ERROR:String =                      "E8:    {0}: Uploading to texture throw {1}";
 		public static const TEXTURE_MISS_ATLAS:String =                 "W9:    Texture '{1}' for atlas '{0}' not found";

@@ -44,66 +44,66 @@ package starling.extensions
 			parentAsDisplayObject.addChild(childAsDisplayObject);
 		}
 
-
 		// integration with starling asset manager
 
 		/** Import all textures, templates, css from asset manager. */
 		public function importAssetManager(assets:AssetManager):void
 		{
+			var name:String;
 			var names:Vector.<String> = new Vector.<String>();
+			
 			// Textures
 			names.length = 0;
-			assets.getTextureNames()
+			names = assets.getTextureNames("", names);
+
+			for each (name in names)
+				addResource(name, assets.getTexture(name));
+
+			// Templates & Libraries
+			names.length = 0;
+			names = assets.getXmlNames("", names);
+			
+			for each (name in names)
+			{
+				var xml:XML = assets.getXml(name);
+				var xmlName:String = xml.name();
+				if (xmlName == TalonFactoryBase.TAG_TEMPLATE) addTemplate(xml);
+				else if (xmlName == TalonFactoryBase.TAG_LIBRARY) importLibrary(xml);
+			}
+			
+			// CSS & Properties
+			// TODO
 		}
 		
-		public function importArchiveAsync(bytes:ByteArray, complete:Function):void
+		public function importArchiveAsync(bytes:ByteArray, onProgress:Function):void
 		{
 			var hasFZipLibrary:Boolean = ApplicationDomain.currentDomain.hasDefinition("deng.fzip.FZip");
 			if (hasFZipLibrary == false) throw new Error("FZip library required for archive import");
-
 			if (bytes == null) throw new ArgumentError("Parameter bytes must be non-null");
 
-			var manager:AssetManagerExtended = new AssetManagerExtended(null);
+			var manager:AssetManagerExtended = new AssetManagerExtended();
 			manager.enqueueZip(bytes);
-			manager.loadQueue(onProgress);
+			manager.loadQueue(onProgressInner);
 
-			function onProgress(ratio:Number):void
+			function onProgressInner(ratio:Number):void
 			{
 				if (ratio == 1)
 				{
-					var textureIds:Vector.<String> = manager.getTextureNames();
-					for each (var textureId:String in textureIds)
-					{
-						addResource(textureId, manager.getTexture(textureId));
-					}
-
-					var styleIds:Vector.<String> = manager.getCssNames();
-					for each (var styleId:String in styleIds)
-					{
-						addStyle(new StyleSheet(manager.getCss(styleId)));
-					}
-
-					var xmlIds:Vector.<String> = manager.getXmlNames();
-					for each (var xmlId:String in xmlIds)
-					{
-						var xml:XML = manager.getXml(xmlId);
-						if (xml.name() == TalonFactoryBase.TAG_TEMPLATE) addTemplate(xml);
-						if (xml.name() == TalonFactoryBase.TAG_LIBRARY) importLibrary(xml);
-					}
-
-					var propertiesIds:Vector.<String> = manager.getPropertiesNames();
-					for each (var propertiesId:String in propertiesIds)
-					{
-						var properties:Object = manager.getProperties(propertiesId);
-						for (var propertyName:String in properties)
-						{
-							var propertyValue:String = properties[propertyName];
-							addResource(propertyName, propertyValue);
-						}
-					}
+					importAssetManager(manager);
 					
-					complete();
+					var styleNames:Vector.<String> = manager.getCssNames();
+					for each (var styleName:String in styleNames)
+						addStyle(new StyleSheet(manager.getCss(styleName)));
+
+					var propertiesNames:Vector.<String> = manager.getPropertiesNames();
+					for each (var propertiesName:String in propertiesNames)
+						importResources(manager.getProperties(propertiesName));
 				}
+
+				if (onProgress.length == 1)
+					onProgress(ratio);
+				else if (ratio == 1)
+					onProgress();
 			}
 		}
 	}
@@ -141,7 +141,7 @@ class AssetManagerExtended extends AssetManager
 	private var mProperties:Dictionary;
 	private var mPropertiesGuess:Dictionary;
 
-	public function AssetManagerExtended(getNameCallback:Function)
+	public function AssetManagerExtended(getNameCallback:Function = null)
 	{
 		mGetNameCallback = getNameCallback;
 		mCss = new Dictionary();

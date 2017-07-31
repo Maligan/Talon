@@ -631,7 +631,7 @@ class AppUINativeMenu
 		insert("file/-");
 		insert("file/publishAs",               new  PublishCommand(_platform), "shift-ctrl-s");
 		insert("file/screenshot",              new  PublishScreenshotCommand(_platform, ui), "shift-ctrl-a");
-		// insert("file/cache",				   new  PublishCacheCommand(_platform), "shift-ctrl-l");
+		insert("file/cache",				   new  PublishCacheCommand(_platform), "shift-ctrl-l");
 
 		_platform.settings.addPropertyListener(AppConstants.SETTING_RECENT_DOCUMENTS, refreshRecentOpenedDocumentsList);
 		refreshRecentOpenedDocumentsList();

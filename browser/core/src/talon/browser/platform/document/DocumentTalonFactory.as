@@ -44,7 +44,7 @@ package talon.browser.platform.document
 
 		public override function build(source:Object, includeStyleSheet:Boolean = true, includeResources:Boolean = true):ITalonElement
 		{
-			resources.resource_proxy::reset();
+			resources.reset();
 			_style = _styles.getMergedStyleSheet();
 
 			return super.build(source, includeStyleSheet, includeResources);
@@ -165,7 +165,7 @@ package talon.browser.platform.document
 
 		public function get missedResourceIds():Vector.<String>
 		{
-			return resources.resource_proxy::missed;
+			return resources.getMissed();
 		}
 
 		public function removeResource(id:String):void
@@ -208,66 +208,49 @@ package talon.browser.platform.document
 }
 
 import flash.utils.Dictionary;
-import flash.utils.Proxy;
 import flash.utils.flash_proxy;
 
+import talon.utils.OrderedObject;
 import talon.utils.StyleSheet;
 
-namespace resource_proxy;
+use namespace flash_proxy;
 
-class ObjectWithAccessLogger extends Proxy
+class ObjectWithAccessLogger extends OrderedObject
 {
-	private var _innerObject:Object;
-	private var _used:Object;
-
-	public function ObjectWithAccessLogger():void
-	{
-		_innerObject = new Object();
-		_used = new Object();
-	}
-
-	resource_proxy function reset():void
-	{
-		_used = new Object();
-	}
-
-	resource_proxy function get used():Vector.<String>
+	private var _touches:Object = {};
+	private var _touchId:int = 1;
+	
+	public function reset():void { _touchId++ }
+	
+	public function getUsed():Vector.<String>
 	{
 		var result:Vector.<String> = new <String>[];
-		for each (var property:String in _used) result[result.length] = property;
+		
+		for (var key:String in this)
+			if (_touches[key] === _touchId)
+				result.push(key);
+		
 		return result;
 	}
 
-	resource_proxy function get unused():Vector.<String>
+	public function getMissed():Vector.<String>
 	{
 		var result:Vector.<String> = new <String>[];
 
-		for (var property:String in _innerObject)
-			if (_used.hasOwnProperty(property) == false)
-				result[result.length] = property;
+		for (var key:String in _touches)
+			if (_touches[key] === _touchId && this[key] === undefined)
+				result.push(key);
 
 		return result;
 	}
+	
+	// Proxy
 
-	resource_proxy function get missed():Vector.<String>
+	flash_proxy override function getProperty(name:*):*
 	{
-		return resource_proxy::used.filter(notExists);
+		_touches[name] = _touchId;
+		return super.flash_proxy::getProperty(name);
 	}
-
-	private function notExists(property:String, index:int, vector:Vector.<String>):Boolean
-	{
-		return _innerObject.hasOwnProperty(property) == false;
-	}
-
-	resource_proxy function get inner():Object
-	{
-		return _innerObject;
-	}
-
-	flash_proxy override function getProperty(name:*):* { return flash_proxy::hasProperty(name) ? _innerObject[name] : null; }
-	flash_proxy override function setProperty(name:*, value:*):void { _innerObject[name] = value; }
-	flash_proxy override function hasProperty(name:*):Boolean { _used[name] = name; return _innerObject.hasOwnProperty(name); }
-	flash_proxy override function deleteProperty(name:*):Boolean { return (delete _innerObject[name]); }
 }
 
 class StyleSheetCollection

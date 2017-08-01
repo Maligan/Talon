@@ -8,9 +8,9 @@ package talon.utils
     [ExcludeClass]
     public dynamic class OrderedObject extends Proxy
     {
-        private var _source:Object;
-		private var _reorderAfterUpdate:Boolean;
-		private var _order:Vector.<QName>;
+        protected var _source:Object;
+		protected var _reorderAfterUpdate:Boolean;
+		protected var _order:Vector.<QName>;
 
         public function OrderedObject(reorderAfterUpdate:Boolean = true)
         {

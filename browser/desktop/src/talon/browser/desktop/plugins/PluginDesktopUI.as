@@ -259,31 +259,6 @@ package talon.browser.desktop.plugins
 			_interfaceFont = TextField.getCompositor("Source_Sans_Pro");
 			DisplayObjectContainer(_platform.starling.root).addChild(_interface);
 
-
-			var item:ITalonElement = new TalonSprite();
-			
-			item.query().fill = "red";
-			
-			var factory:TalonFactory;
-
-//			// Simple
-//			factory.addStyle(new StyleSheet());
-//			factory.addResource("key", "value");
-//			factory.addTemplate(<def ref="null" />);
-//			
-//			// Complex
-//			factory.importResources({});
-//			factory.importLibrary(<lib />);
-//			factory.importAssetManager(new AssetManager());
-//			factory.importArchiveAsync(null, trace);
-//
-//			// Creating
-//			factory.build("Popup");
-//			
-//			// Other
-//			factory.setTerminal("input", TextInput);
-			
-			
 			// popups container
 			_popups.host = query("#popups").getElementAt(0) as DisplayObjectContainer;
 			_popups.addEventListener(Event.CHANGE, onPopupManagerChange);
@@ -433,6 +408,20 @@ package talon.browser.desktop.plugins
 				_templateContainer.node.ppdp = ITalonElement(_template).node.ppdp;
 				_templateContainer.addChild(_template);
 				resizeTo(_platform.profile.width, _platform.profile.height);
+
+				// Add missed resource
+				_platform.document.messages.removeMessagesByNumber(12);
+				var resources:Vector.<String> = _platform.document.factory.missedResourceIds;
+				if (resources.length != 0)
+				{
+					for each (var resource:String in resources)
+					{
+						_platform.document.messages.addMessage(new DocumentMessage(
+							DocumentMessage.TEMPLATE_RESOURCE_MISS,
+							[_platform.templateId, resource]
+						));
+					}
+				}
 			}
 
 			refreshMessages();

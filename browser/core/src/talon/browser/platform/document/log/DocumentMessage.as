@@ -20,7 +20,8 @@ package talon.browser.platform.document.log
 		public static const TEXTURE_MISS_ATLAS:String =                 "W9:    Texture '{1}' for atlas '{0}' not found";
 		public static const TEXTURE_MISS_FONT:String =                  "W10:   Texture '{1}' for font '{0}' not found";
 
-		public static const TEMPLATE_INSTANTIATE_ERROR:String =         "E11:   Template '{0}' instantiate throw {1}";
+		public static const TEMPLATE_INSTANTIATE_ERROR:String =         "E11:   Template '{0}' instantiate throw: {1}";
+		public static const TEMPLATE_RESOURCE_MISS:String =				"W12:	Template '{0}' resource '{1}' not found";
 
 		//
 		// Message

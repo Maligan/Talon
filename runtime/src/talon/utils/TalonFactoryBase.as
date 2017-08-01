@@ -301,7 +301,16 @@ package talon.utils
 					cacheStyleProps.push(key, _style.selectors[selector][key]);
 			}
 
-			// Properties
+			// Resources
+			
+			var cacheResources:Object = cache["resources"] = {};
+			
+			for (var key:String in _resources)
+			{
+				var value:* = _resources[key];
+				if (value is String)
+					cacheResources[key] = value;
+			}
 
 			// Result
 			

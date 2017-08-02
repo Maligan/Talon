@@ -11,7 +11,7 @@ package talon.browser.desktop.filetypes
 		private var _xml:XML;
 		private var _css:Vector.<String> = new Vector.<String>();
 		private var _templates:Vector.<String> = new Vector.<String>();
-		private var _properties:Object = new Object();
+		private var _properties:Vector.<Object> = new Vector.<Object>();
 
 		override protected function activate():void
 		{
@@ -73,8 +73,9 @@ package talon.browser.desktop.filetypes
 
 		private function addProperties(properties:String):void
 		{
-			ParseUtil.parseProperties(properties, _properties);
-			document.factory.importResources(_properties);
+			var object:Object = ParseUtil.parseProperties(properties);
+			_properties.push(object);
+			document.factory.appendResources(object);
 		}
 
 		override protected function deactivate():void
@@ -88,10 +89,8 @@ package talon.browser.desktop.filetypes
 			while (_templates.length)
 				document.factory.removeTemplate(_templates.pop());
 
-			for (var property:String in _properties)
-				document.factory.removeResource(property);
-
-			_properties = {};
+			while (_properties.length)
+				document.factory.removeResources(_properties.pop());
 		}
 	}
 }

@@ -13,15 +13,13 @@ package talon.browser.desktop.filetypes
 
 			_properties = ParseUtil.parseProperties(string);
 
-			for (var propertyName:String in _properties)
-				document.factory.addResource(propertyName, _properties[propertyName]);
+			document.factory.appendResources(_properties);
 		}
 
 		override protected function deactivate():void
 		{
             if (_properties)
-                for (var propertyName:String in _properties)
-                    document.factory.removeResource(propertyName);
+				document.factory.removeResources(_properties);
 
             _properties = null;
 		}

@@ -9,6 +9,7 @@ package talon.browser.desktop.commands
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;
 	import talon.browser.platform.AppPlatformEvent;
+	import talon.browser.platform.document.files.IFileReference;
 	import talon.browser.platform.utils.Command;
 
 	public class PublishCacheCommand extends Command
@@ -33,7 +34,7 @@ package talon.browser.desktop.commands
 
 		private function onExportFileSelect(e:*):void
 		{
-			var cache:Object = platform.document.factory.getCache();
+			var cache:Object = getCache();
 			var cacheJSON:String = JSON.stringify(cache);
 
 			var file:File = File(e.target);
@@ -48,6 +49,23 @@ package talon.browser.desktop.commands
 			{
 				fileStream.close();
 			}
+		}
+		
+		private function getCache():Object
+		{
+			var files:Vector.<IFileReference> = platform.document.files.toArray();
+			var hidden:Vector.<IFileReference> = new <IFileReference>[];
+
+			for each (var file:IFileReference in files)
+				if (PublishCommand.isIgnored(platform, file))
+					platform.document.files.removeReference(hidden[hidden.length] = file);
+			
+			var cache:Object = platform.document.factory.getCache();
+			
+			while (hidden.length > 0)
+				platform.document.files.addReference(hidden.pop());
+			
+			return cache;
 		}
 
 		public override function get isExecutable():Boolean

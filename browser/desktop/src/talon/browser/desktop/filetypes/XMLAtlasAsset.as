@@ -14,6 +14,7 @@ package talon.browser.desktop.filetypes
 		private var _xml:XML;
 		private var _texture:Texture;
 		private var _atlas:TextureAtlas;
+		private var _resources:Object;
 
 		override protected function activate():void
 		{
@@ -31,13 +32,14 @@ package talon.browser.desktop.filetypes
 			_xml && System.disposeXML(_xml);
 			_xml = null;
 
+			if (_resources)
+			{
+				document.factory.removeResources(_resources);
+				_resources = null;
+			}
+			
 			if (_atlas)
 			{
-				var names:Vector.<String> = _atlas.getNames();
-
-				while (names.length)
-					document.factory.removeResource(names.pop());
-
 				_atlas.dispose();
 				_atlas = null;
 			}
@@ -60,14 +62,14 @@ package talon.browser.desktop.filetypes
 
 			if (_texture != texture)
 			{
+				_resources = {};
 				_texture = texture;
 				_atlas = new TextureAtlas(_texture, _xml);
 
 				for each (textureId in _atlas.getNames())
-				{
-					texture = _atlas.getTexture(textureId);
-					document.factory.addResource(textureId, texture);
-				}
+					_resources[textureId] = _atlas.getTexture(textureId);
+				
+				document.factory.appendResources(_resources);
 			}
 		}
 	}

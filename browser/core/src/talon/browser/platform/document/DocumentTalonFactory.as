@@ -168,18 +168,19 @@ package talon.browser.platform.document
 			return resources.getMissed();
 		}
 
-		public function removeResource(id:String):void
+		
+		public function appendResources(object:Object):void
 		{
-			delete _resources[id];
+			resources.append(object);
 			dispatchChange();
 		}
-
-		public override function addResource(id:String, resource:*):void
+		
+		public function removeResources(object:Object):void
 		{
-			super.addResource(id, resource);
-			dispatchChange();
+			resources.remove(object);
+			dispatchChange();			
 		}
-
+		
 		private function get resources():ObjectWithAccessLogger
 		{
 			return ObjectWithAccessLogger(_resources);
@@ -208,15 +209,17 @@ package talon.browser.platform.document
 }
 
 import flash.utils.Dictionary;
+import flash.utils.Proxy;
 import flash.utils.flash_proxy;
 
-import talon.utils.OrderedObject;
 import talon.utils.StyleSheet;
 
 use namespace flash_proxy;
 
-class ObjectWithAccessLogger extends OrderedObject
+class ObjectWithAccessLogger extends Proxy
 {
+	private var _names:Vector.<String> = new <String>[];
+	private var _stack:Vector.<Object> = new <Object>[];
 	private var _touches:Object = {};
 	private var _touchId:int = 1;
 	
@@ -244,13 +247,61 @@ class ObjectWithAccessLogger extends OrderedObject
 		return result;
 	}
 	
+	// Stack
+	
+	public function append(object:Object):void
+	{
+		if (_stack.indexOf(object) == -1)
+			_stack.push(object);
+
+		refreshNames();
+	}
+	
+	public function remove(object:Object):void
+	{
+		var indexOf:int = _stack.indexOf(object);
+		if (indexOf != -1)
+			_stack.removeAt(indexOf);
+
+		refreshNames();
+	}
+	
+	private function refreshNames():void
+	{
+		_names.length = 0;
+		
+		var exist:Object = {};
+		for each (var object:Object in _stack)
+			for (var key:String in object)
+				if (exist[key] != true)
+				{
+					exist[key]  = true;
+					_names.push(key);
+				}
+	}
+	
 	// Proxy
 
 	flash_proxy override function getProperty(name:*):*
 	{
 		_touches[name] = _touchId;
-		return super.flash_proxy::getProperty(name);
+
+		for (var i:int = _stack.length-1; i >= 0; i--)
+			if (_stack[i].hasOwnProperty(name))
+				return _stack[i][name];
+		
+		return null;
 	}
+
+	flash_proxy override function setProperty(name:*, value:*):void
+	{
+		throw new Error("Use append()");
+	}
+
+	flash_proxy override function hasProperty(name:*):Boolean { return getProperty(name) !== undefined; }
+	flash_proxy override function nextName(index:int):String { return String(_names[index - 1]); }
+	flash_proxy override function nextNameIndex(index:int):int { return (index < _names.length) ? (index + 1) : 0; }
+	flash_proxy override function nextValue(index:int):* { return getProperty(_names[index-1]); }
 }
 
 class StyleSheetCollection

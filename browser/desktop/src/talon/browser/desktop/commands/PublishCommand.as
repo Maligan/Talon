@@ -22,6 +22,18 @@ package talon.browser.desktop.commands
 
 	public class PublishCommand extends Command
 	{
+		/** File is ignored for export. */
+		public static function isIgnored(platform:AppPlatform, file:IFileReference):Boolean
+		{
+			var fileController:IFileController = platform.document.files.getController(file.path);
+			if (fileController is DirectoryAsset) return true;
+
+			var patternsString:String = platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_PATTERN, String);
+			if (patternsString == null) return false;
+
+			return !Glob.matchPattern(file.path, patternsString);
+		}
+		
 		private var _target:File;
 
 		public function PublishCommand(platform:AppPlatform, target:File = null)
@@ -64,7 +76,7 @@ package talon.browser.desktop.commands
 
 			for each (var file:IFileReference in platform.document.files.toArray())
 			{
-				if (isIgnored(file)) continue;
+				if (isIgnored(platform, file)) continue;
 				zip.addFile(file.path, file.data);
 			}
 
@@ -83,18 +95,6 @@ package talon.browser.desktop.commands
 			// FIXME: if (zip.getFileCount() == 0) throw new Error("No files for export");
 
 			writeFile(target, zip);
-		}
-
-		/** File is ignored for export. */
-		private function isIgnored(file:IFileReference):Boolean
-		{
-			var fileController:IFileController = platform.document.files.getController(file.path);
-			if (fileController is DirectoryAsset) return true;
-
-			var patternsString:String = platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_PATTERN, String);
-			if (patternsString == null) return false;
-
-			return !Glob.matchPattern(file.path, patternsString);
 		}
 
 

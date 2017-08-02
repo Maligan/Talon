@@ -16,6 +16,7 @@ package talon.browser.desktop.filetypes
 	{
 		private var _id:String;
 		private var _texture:Texture;
+		private var _resources:Object;
 
 		//
 		// Attach
@@ -83,7 +84,9 @@ package talon.browser.desktop.filetypes
 			{
 				_id = document.factory.getResourceId(file.path);
 				_texture = Texture.fromData(data);
-				document.factory.addResource(_id, _texture);
+				_resources = {};
+				_resources[_id] = _texture;
+				document.factory.appendResources(_resources);
 			}
 			catch (e:Error)
 			{
@@ -96,8 +99,10 @@ package talon.browser.desktop.filetypes
 		//
 		override protected function deactivate():void
 		{
-			document.factory.removeResource(_id);
+			document.factory.removeResources(_resources);
+
 			_id = null;
+			_resources = null;
 
 			_texture && _texture.dispose();
 			_texture = null;

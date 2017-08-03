@@ -57,9 +57,9 @@ package talon.utils
 				_tags[_tags.length] = tag;
 				_attributes.push(fetchAttributes(xml));
 				dispatch(EVENT_BEGIN);
-
 				_tags.length = 0;
 				_attributes.length = 0;
+
 				for each (var child:XML in xml.children())
 					parseInternal(child);
 
@@ -74,14 +74,14 @@ package talon.utils
 				if (template == null) throw new Error("Template with " + KEYWORD_REF + " = '" + ref + "' not found");
 
 				_attributes.push(fetchAttributesFromUpdateField(xml));
-				tag = getUsingTag(ref);
+				tag = getUseTag(ref);
 				if (tag) _tags[_tags.length] = tag;
 
 				parseInternal(template);
 			}
 			else
 			{
-				ref = getUsingKey(tag);
+				ref = getUseKey(tag);
 				if (ref == null) throw new Error("Tag '" + tag + "' doesn't match any template");
 
 				template = _templates[ref];
@@ -177,11 +177,11 @@ package talon.utils
 		// Usings
 		//
 
-		public function getUsingTag(key:String):String { return _usingTags[key]; }
-		public function getUsingKey(tag:String):String { return _usingKeys[tag]; }
+		public function getUseTag(key:String):String { return _usingTags[key]; }
+		public function getUseKey(tag:String):String { return _usingKeys[tag]; }
 
 		/** Store two way mapping {key; tag} and vice versa. */
-		public function setUsing(key:String, tag:String):void
+		public function setUse(key:String, tag:String):void
 		{
 			if (key) _usingTags[key] = tag;
 			if (tag) _usingKeys[tag] = key;

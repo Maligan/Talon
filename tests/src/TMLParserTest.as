@@ -27,7 +27,7 @@ package
 
 			_parser.templates["NodeWithTag"] = <node />;
 			_parser.templates["NodeWithoutTag"] = <node />;
-			_parser.setUsing("NodeWithTag", "nodeWithTag");
+			_parser.setUse("NodeWithTag", "nodeWithTag");
 		}
 
 		private function onBegin(e:Event):void

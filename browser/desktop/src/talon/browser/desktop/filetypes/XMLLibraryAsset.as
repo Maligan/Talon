@@ -4,6 +4,7 @@ package talon.browser.desktop.filetypes
 
 	import talon.browser.platform.document.log.DocumentMessage;
 	import talon.utils.ParseUtil;
+	import talon.utils.TMLParser;
 	import talon.utils.TalonFactoryBase;
 
 	public class XMLLibraryAsset extends Asset
@@ -46,7 +47,7 @@ package talon.browser.desktop.filetypes
 		{
 			try
 			{
-				var templateId:String = xml.attribute(TalonFactoryBase.ATT_REF);
+				var templateId:String = xml.attribute(TMLParser.KEYWORD_REF);
 				document.factory.addTemplate(xml);
 				_templates.push(templateId);
 			}

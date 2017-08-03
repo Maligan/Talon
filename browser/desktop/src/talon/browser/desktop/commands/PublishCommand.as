@@ -5,10 +5,15 @@ package talon.browser.desktop.commands
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
+	import flash.utils.ByteArray;
 
 	import starling.events.Event;
 
+	import talon.browser.desktop.filetypes.CSSAsset;
 	import talon.browser.desktop.filetypes.DirectoryAsset;
+	import talon.browser.desktop.filetypes.PropertiesAsset;
+	import talon.browser.desktop.filetypes.XMLLibraryAsset;
+	import talon.browser.desktop.filetypes.XMLTemplateAsset;
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.desktop.utils.DesktopFileReference;
 	import talon.browser.platform.AppConstants;
@@ -22,18 +27,6 @@ package talon.browser.desktop.commands
 
 	public class PublishCommand extends Command
 	{
-		/** File is ignored for export. */
-		public static function isIgnored(platform:AppPlatform, file:IFileReference):Boolean
-		{
-			var fileController:IFileController = platform.document.files.getController(file.path);
-			if (fileController is DirectoryAsset) return true;
-
-			var patternsString:String = platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_PATTERN, String);
-			if (patternsString == null) return false;
-
-			return !Glob.matchPattern(file.path, patternsString);
-		}
-		
 		private var _target:File;
 
 		public function PublishCommand(platform:AppPlatform, target:File = null)
@@ -71,28 +64,22 @@ package talon.browser.desktop.commands
 
 		private function writeDocument(target:File):void
 		{
-			// Create archive
 			var zip:FZip = new FZip();
 
+			// Add cache file
+			var cache:Object = getCache();
+			var cacheJSON:String = JSON.stringify(cache);
+			var cacheBytes:ByteArray = new ByteArray();
+			cacheBytes.writeUTFBytes(cacheJSON);
+			zip.addFile(AppConstants.BROWSER_DEFAULT_CACHE_FILENAME, cacheBytes);
+			
+			// Add assets
 			for each (var file:IFileReference in platform.document.files.toArray())
 			{
-				if (isIgnored(platform, file)) continue;
-				zip.addFile(file.path, file.data);
+				var addToOutput:Boolean = !isIgnored(file) && !isCached(file);
+				if (addToOutput)
+					zip.addFile(file.path, file.data);
 			}
-
-			// Create cache
-//			var useCache:Boolean = platform.settings.getValueOrDefault(AppConstants.SETTING_PUBLISH_CACHE, Boolean, false);
-//			if (useCache)
-//			{
-//				var cache:Object = platform.document.factory.getCache();
-//				var cacheJSON:String = JSON.stringify(cache);
-//				var cacheBytes:ByteArray = new ByteArray();
-//				cacheBytes.writeUTFBytes(cacheJSON);
-//				zip.addFile(AppConstants.BROWSER_DEFAULT_CACHE_FILENAME, cacheBytes);
-//			}
-
-			// Create
-			// FIXME: if (zip.getFileCount() == 0) throw new Error("No files for export");
 
 			writeFile(target, zip);
 		}
@@ -149,6 +136,48 @@ package talon.browser.desktop.commands
 			var fileReference:DesktopFileReference = fileReferences.shift() as DesktopFileReference;
 
 			return fileReference ? fileReference.root : null;
+		}
+
+		private function getCache():Object
+		{
+			var files:Vector.<IFileReference> = platform.document.files.toArray();
+			var stash:Vector.<IFileReference> = new <IFileReference>[];
+
+			for each (var file:IFileReference in files)
+				if (isIgnored(file) && isCached(file))
+					platform.document.files.removeReference(stash[stash.length] = file);
+
+			var cache:Object = platform.document.factory.buildCache();
+
+			while (stash.length > 0)
+				platform.document.files.addReference(stash.pop());
+
+			return cache;
+		}
+
+		/** File is ignored for export. */
+		public function isIgnored(file:IFileReference):Boolean
+		{
+			var fileController:IFileController = platform.document.files.getController(file.path);
+			if (fileController is DirectoryAsset) return true;
+
+			var patternsString:String = platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_PATTERN, String);
+			if (patternsString == null) return false;
+
+			return !Glob.matchPattern(file.path, patternsString);
+		}
+
+		/** File is merged into cache. */
+		public function isCached(file:IFileReference):Boolean
+		{
+			var controller:IFileController = platform.document.files.getController(file.path);
+			
+			if (controller is PropertiesAsset)	return true;
+			if (controller is CSSAsset)			return true;
+			if (controller is XMLLibraryAsset)	return true;
+			if (controller is XMLTemplateAsset)	return true;
+			
+			return false;
 		}
 	}
 }

@@ -13,7 +13,7 @@ package talon.browser.platform.document
 	public final class DocumentTalonFactory extends TalonFactory
 	{
 		private var _document:Document;
-		private var _styles:StyleSheetCollection;
+		private var _stylesCollection:StyleSheetCollection;
 		private var _timer:Timer;
 		private var _csf:Number;
 		private var _dpi:Number;
@@ -22,7 +22,7 @@ package talon.browser.platform.document
 		{
 			_resources = new ObjectWithAccessLogger();
 			_document = document;
-			_styles = new StyleSheetCollection();
+			_stylesCollection = new StyleSheetCollection();
 			_timer = new Timer(1);
 			_timer.addEventListener(TimerEvent.TIMER, onTimer);
 		}
@@ -45,7 +45,7 @@ package talon.browser.platform.document
 		public override function build(source:Object, includeStyleSheet:Boolean = true, includeResources:Boolean = true):ITalonElement
 		{
 			resources.reset();
-			_style = _styles.getMergedStyleSheet();
+			_styles = _stylesCollection.getMergedStyleSheet();
 
 			return super.build(source, includeStyleSheet, includeResources);
 		}
@@ -104,11 +104,11 @@ package talon.browser.platform.document
 			if (template == null)
 				return;
 
-			var tag:String = _parser.getUsingTag(id);
+			var tag:String = _parser.getUseTag(id);
 
 			// Remove using
-			_parser.setUsing(id, null);
-			_parser.setUsing(null, tag);
+			_parser.setUse(id, null);
+			_parser.setUse(null, tag);
 			// Remove xml
 			delete _parser.templates[id];
 
@@ -196,14 +196,20 @@ package talon.browser.platform.document
 
 		public function addStyleSheetWithId(key:String, css:String):void
 		{
-			_styles.insert(key, css);
+			_stylesCollection.insert(key, css);
 			dispatchChange();
 		}
 
 		public function removeStyleSheetWithId(key:String):void
 		{
-			_styles.remove(key);
+			_stylesCollection.remove(key);
 			dispatchChange();
+		}
+
+		override public function buildCache():Object
+		{
+			_styles = _stylesCollection.getMergedStyleSheet();
+			return super.buildCache();
 		}
 	}
 }

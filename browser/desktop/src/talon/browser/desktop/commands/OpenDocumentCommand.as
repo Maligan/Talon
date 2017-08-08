@@ -40,14 +40,17 @@ package talon.browser.desktop.commands
 			openDocument(e.target as File);
 		}
 
-		private function openDocument(root:File):void
+		private function openDocument(dir:File):void
 		{
-			var config:File = root.resolvePath(AppConstants.BROWSER_DEFAULT_DOCUMENT_FILENAME);
+			var config:File = dir.resolvePath(AppConstants.BROWSER_DEFAULT_DOCUMENT_FILENAME);
 
 			// NB! Set as current document immediately (before any references)
 			var documentProperties:Storage = config.exists ? Storage.fromPropertiesFile(config) : new Storage();
 			var document:Document = platform.document = new Document(documentProperties);
 
+			// Save project dir
+			document.properties.setValue(DesktopDocumentProperty.PROJECT_DIR, dir.url);
+			
 			var sourcePathProperty:String = document.properties.getValueOrDefault(DesktopDocumentProperty.SOURCE_PATH, String);
 			var sourcePath:File = config.parent.resolvePath(sourcePathProperty || config.parent.nativePath);
 			if (sourcePath.exists == false) sourcePath = config.parent;
@@ -80,9 +83,9 @@ package talon.browser.desktop.commands
 
 			// Add document to recent list
 			var recent:Array = platform.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);
-			var indexOf:int = recent.indexOf(root.nativePath);
+			var indexOf:int = recent.indexOf(dir.nativePath);
 			if (indexOf != -1) recent.splice(indexOf, 1);
-			recent.unshift(root.nativePath);
+			recent.unshift(dir.nativePath);
 			recent = recent.slice(0, AppConstants.RECENT_HISTORY);
 			platform.settings.setValue(AppConstants.SETTING_RECENT_DOCUMENTS, recent);
 		}

@@ -37,9 +37,10 @@ package talon.browser.desktop.utils
 		private var _rootPrefix:String;
 		private var _monitor:FileMonitor;
 
+		private var _cacheName:Array;
 		private var _cachePath:String;
 		private var _cacheBytes:ByteArray;
-		private var _cacheBytesAsXML:XML;
+		private var _cacheXML:XML;
 		private var _cacheError:Error;
 
 		public function DesktopFileReference(target:File, root:File, rootPrefix:String = null)
@@ -47,7 +48,7 @@ package talon.browser.desktop.utils
 			_monitor = new FileMonitor();
 			_monitor.addEventListener(Event.CHANGE, onFileChange);
 			_monitor.watch();
-
+			
 			reset(target, root, rootPrefix);
 		}
 
@@ -65,14 +66,15 @@ package talon.browser.desktop.utils
 			_rootPrefix = rootPrefix ? rootPrefix.replace(/\/$/, "") : "";
 			_monitor.file = target;
 			_cachePath = getFileReferencePath(target, root, rootPrefix);
+			_cacheName = NAME_REGEX.exec(_cachePath) || [];
 		}
 
 		private function clearCache():void
 		{
 			_cacheBytes && _cacheBytes.clear();
 			_cacheBytes = null;
-			_cacheBytesAsXML && System.disposeXML(_cacheBytesAsXML);
-			_cacheBytesAsXML = null;
+			_cacheXML && System.disposeXML(_cacheXML);
+			_cacheXML = null;
 			_cacheError = null;
 		}
 
@@ -100,12 +102,9 @@ package talon.browser.desktop.utils
 			return true;
 		}
 
-		public function get extension():String
-		{
-			var matches:Array = NAME_REGEX.exec(path);
-			if (matches && matches.length > 0) return matches[2];
-			else return null;
-		}
+		public function get name():String { return _cacheName[0]; }
+		public function get nameWithoutExtension():String { return _cacheName[1]; }
+		public function get extension():String { return _cacheName[2] || ""; }
 
 		//
 		// IFileReference
@@ -116,7 +115,7 @@ package talon.browser.desktop.utils
 
 		public function dispose():void { reset(null, null, null) }
 
-//
+		//
 		// Properties
 		//
 		public function get target():File { return _monitor.file; }
@@ -127,7 +126,7 @@ package talon.browser.desktop.utils
 
 		public function get cacheBytes():ByteArray { return _cacheBytes ||= readBytes(); }
 
-		public function get cacheBytesAsXML():XML { return _cacheBytesAsXML ||= readXML(); }
+		public function get cacheXML():XML { return _cacheXML ||= readXML(); }
 
 		public function get cacheError():Error { return _cacheError; }
 

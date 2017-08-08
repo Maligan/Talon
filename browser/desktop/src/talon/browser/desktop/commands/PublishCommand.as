@@ -7,15 +7,21 @@ package talon.browser.desktop.commands
 	import flash.filesystem.FileStream;
 	import flash.utils.ByteArray;
 
+	import mx.core.FontAsset;
+
 	import starling.events.Event;
+	import starling.textures.TextureAtlas;
 
 	import talon.browser.desktop.filetypes.CSSAsset;
 	import talon.browser.desktop.filetypes.DirectoryAsset;
 	import talon.browser.desktop.filetypes.PropertiesAsset;
+	import talon.browser.desktop.filetypes.TextureAsset;
+	import talon.browser.desktop.filetypes.XMLAtlasAsset;
 	import talon.browser.desktop.filetypes.XMLLibraryAsset;
 	import talon.browser.desktop.filetypes.XMLTemplateAsset;
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.desktop.utils.DesktopFileReference;
+	import talon.browser.desktop.utils.TexturePacker;
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;
 	import talon.browser.platform.AppPlatformEvent;
@@ -34,6 +40,8 @@ package talon.browser.desktop.commands
 			super(platform);
 			platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
 			_target = target;
+
+
 		}
 
 		private function onDocumentChange(e:Event):void
@@ -64,32 +72,53 @@ package talon.browser.desktop.commands
 
 		private function writeDocument(target:File):void
 		{
-			var zip:FZip = new FZip();
+			var files:Object = {};
 
-			// Add cache file
+			// Add cache JSON
 			var cache:Object = getCache();
 			var cacheJSON:String = JSON.stringify(cache);
 			var cacheBytes:ByteArray = new ByteArray();
 			cacheBytes.writeUTFBytes(cacheJSON);
-			zip.addFile(AppConstants.BROWSER_DEFAULT_CACHE_FILENAME, cacheBytes);
+			files[AppConstants.BROWSER_DEFAULT_CACHE_FILENAME] = cacheBytes;
 			
-			// Add assets
+			// Add rest files
 			for each (var file:IFileReference in platform.document.files.toArray())
 			{
-				var addToOutput:Boolean = !isIgnored(file) && !isCached(file);
+				var addToOutput:Boolean = !isIgnored(file) && !isCached(file) && !isPacked(file);
 				if (addToOutput)
-					zip.addFile(file.path, file.data);
+					files[getExportPath(file)] = file.data;
 			}
 
-			writeFile(target, zip);
+			var packerExec:String = platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_TPS_EXEC);
+			if (packerExec)
+			{
+				var packer:TexturePacker = new TexturePacker(new File(packerExec), new File(platform.document.properties.getValueOrDefault(DesktopDocumentProperty.PROJECT_DIR)), getTemp(), "sprites_{n}.xml");
+
+				packer.exec(getImages(), platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_TPS_ARGS, String, "--multipack --format sparrow --trim-mode None")).then(function (sheets:Vector.<File>):void {
+					for each (var sheet:File in sheets)
+						files["sprites/" + sheet.name] = readBytes(sheet);
+
+					writeZip(target, files);
+				}, function (e:Error):void {
+					trace(e);
+				})
+			}
+			else
+			{
+				writeZip(target, files);
+			}
+			
 		}
-
-
-		private function writeFile(file:File, zip:FZip):void
+		
+		private function writeZip(file:File, content:Object):void
 		{
+			// Create zip
+			var zip:FZip = new FZip();
+			for (var filePath:String in content)
+				zip.addFile(filePath, content[filePath]);
+			
 			// Save file
 			var fileStream:FileStream = new FileStream();
-
 			try
 			{
 				fileStream.open(file, FileMode.WRITE);
@@ -178,6 +207,80 @@ package talon.browser.desktop.commands
 			if (controller is XMLTemplateAsset)	return true;
 			
 			return false;
+		}
+		
+		public function isPacked(file:IFileReference):Boolean
+		{
+			var controller:IFileController = platform.document.files.getController(file.path);
+
+			if (controller is TextureAsset)
+				return Glob.matchPattern(file.path, platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_TPS_PATTERN, String, ""))
+					&& platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_TPS_EXEC) != null;
+			
+			return false;
+		}
+		
+		
+		
+		public function getExportPath(file:IFileReference):String
+		{
+			var ref:DesktopFileReference = file as DesktopFileReference;
+			if (ref == null) throw new Error(); // FIXME
+			
+			var controller:IFileController = platform.document.files.getController(ref.path);
+			if (controller is TextureAsset) return "sprites/" + ref.name;
+			if (controller is TextureAtlas) return "sprites/" + ref.name;
+			if (controller is FontAsset) return "fonts/" + ref.name;
+			
+			if (controller is XMLAtlasAsset) return ref.name;
+			
+			return file.path;
+		}
+		
+		
+		// TODO
+		
+		public function getImages():Vector.<File>
+		{
+			var result:Vector.<File> = new <File>[];
+			
+			for each (var reference:IFileReference in platform.document.files.toArray())
+			{
+				var desktop:DesktopFileReference = reference as DesktopFileReference;
+				var controller:IFileController = platform.document.files.getController(reference.path);
+				if (controller is TextureAsset && isPacked(reference)) result.push(desktop.target);
+			}
+			
+			return result;
+		}
+		
+		public function getTemp():File
+		{
+			var packerTempPath:String = platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_TPS_TEMP);
+			if (packerTempPath == null)
+			{
+				packerTempPath = File.createTempDirectory().nativePath;
+				platform.document.properties.setValue(DesktopDocumentProperty.EXPORT_TPS_TEMP, packerTempPath);
+			}
+			
+			return new File(packerTempPath);
+		}
+
+		private function readBytes(file:File):ByteArray
+		{
+			var result:ByteArray = new ByteArray();
+			var stream:FileStream = new FileStream();
+
+			try
+			{
+				stream.open(file, FileMode.READ);
+				stream.readBytes(result, 0, stream.bytesAvailable);
+			}
+			finally
+			{
+				stream.close();
+				return result;
+			}
 		}
 	}
 }

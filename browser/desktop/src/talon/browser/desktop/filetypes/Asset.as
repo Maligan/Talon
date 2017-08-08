@@ -47,13 +47,13 @@ package talon.browser.desktop.filetypes
 
 		public final function readFileXMLOrReportAndNull():XML
 		{
-			if (file.cacheBytesAsXML == null)
+			if (file.cacheXML == null)
 			{
 				reportMessage(DocumentMessage.FILE_CONTAINS_WRONG_XML, file.path);
 				return null;
 			}
 
-			return file.cacheBytesAsXML;
+			return file.cacheXML;
 		}
 
 		public final function readFileStringOrReport():String

@@ -257,7 +257,7 @@ package starling.extensions
 		}
 
 		//
-		// Invalidation
+		// Validation
 		//
 		// Validation subsystem based on render methods/rules/context etc.
 		// thus why I do not include invalidation/validation in Talon core

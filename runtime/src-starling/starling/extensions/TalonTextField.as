@@ -283,6 +283,12 @@ package starling.extensions
 			return _bridge.getBoundsCustom(null, targetSpace, resultRect);
 		}
 
+		public override function get textBounds():Rectangle
+		{
+			recomposeWithPadding();
+			return getTrueTextBounds();
+		}
+
 		public override function dispose():void
 		{
 			_bridge.dispose();

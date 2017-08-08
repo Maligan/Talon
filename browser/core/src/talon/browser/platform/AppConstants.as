@@ -55,13 +55,14 @@ package talon.browser.platform
 		public static const SETTING_CHECK_FOR_UPDATE_ON_STARTUP:String = "checkForUpdateOnStartup";
 		public static const SETTING_WINDOW_POSITION:String = "windowPosition";
 		public static const SETTING_DETACHED_PLUGINS:String = "detachedPlugins";
-		public static const SETTING_PUBLISH_CACHE:String = "publishCache";
+		public static const SETTING_TEXTURE_PACKER_BIN:String = "texturePackerBin";
 
 		//
 		// Language
 		//
 		public static const T_OPEN_TITLE:String                             = "Open Document Root Folder";
 		public static const T_EXPORT_TITLE:String                           = "Export";
+		public static const T_SELECT_TEXTURE_PACKER:String                  = "Select TexturePacker CLI";
 		public static const T_SCREENSHOT_TITLE:String                       = "Select Screenshot File";
 		public static const T_PROJECT_ROOT_TITLE:String                     = "Select Document Folder";
 	}

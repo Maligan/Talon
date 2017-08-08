@@ -23,7 +23,7 @@ package talon.browser.desktop.plugins
 	import starling.extensions.TalonFactory;
 	import starling.extensions.TalonQuery;
 	import starling.extensions.TalonSprite;
-	import starling.filters.BlurFilter;
+	import starling.filters.FragmentFilter;
 	import starling.text.ITextCompositor;
 	import starling.text.TextField;
 	import starling.utils.Color;
@@ -39,6 +39,7 @@ package talon.browser.desktop.plugins
 	import talon.browser.platform.document.DocumentEvent;
 	import talon.browser.platform.document.log.DocumentMessage;
 	import talon.browser.platform.plugins.IPlugin;
+	import talon.browser.platform.popups.Popup;
 	import talon.browser.platform.popups.PopupManager;
 	import talon.browser.platform.utils.DeviceProfile;
 	import talon.layouts.Layout;
@@ -289,6 +290,7 @@ package talon.browser.desktop.plugins
 			_platform.addEventListener(DocumentEvent.CHANGE, refreshCurrentTemplate);
 
 			// ready
+			spinner = locked = false;
 			resizeTo(_platform.profile.width, _platform.profile.height);
 			refreshCurrentTemplate();
 		}
@@ -357,7 +359,8 @@ package talon.browser.desktop.plugins
 		private function refreshWindowFont():void
 		{
 			// If you close file which contain internal browser font :-)
-			TextField.registerCompositor(_interfaceFont, "Source_Sans_Pro")
+			if (_interfaceFont != null)
+				TextField.registerCompositor(_interfaceFont, "Source_Sans_Pro")
 		}
 
 		private function refreshWindowTitle():void
@@ -535,7 +538,26 @@ package talon.browser.desktop.plugins
 		public function get factory():TalonFactoryBase { return _factory; }
 		public function get template():DisplayObject { return _template; }
 		public function get updater():Updater { return _updater; }
+		public function get popups():PopupManager { return _popups; }
 
+		public function get spinner():Boolean { return ParseUtil.parseBoolean(_interface.query("#spinner")[Attribute.VISIBLE]); }
+		public function set spinner(value:Boolean):void
+		{
+			var spin:ITalonElement = _interface.query("#spinner").getElementAt(0);
+			if (spin)
+			{
+				spin.node.setAttribute(Attribute.VISIBLE, value.toString());
+
+				Starling.juggler.removeTweens(spin);
+				value && Starling.juggler.tween(spin, 1, {
+					repeatCount: 0,
+					onUpdate: function():void {
+						spin.node.setAttribute(Attribute.TRANSFORM, "rotate(" + (Starling.juggler.elapsedTime * 180) + "deg)");
+					}
+				})
+			}
+		}
+		
 		public function get locked():Boolean { return _locked; }
 		public function set locked(value:Boolean):void
 		{
@@ -547,7 +569,7 @@ package talon.browser.desktop.plugins
 
 				if (_locked)
 				{
-					_isolatorContainer.filter = new BlurFilter(1, 1);
+					_isolatorContainer.filter = ParseUtil.parseClass(FragmentFilter, "blur(2) tint(gray)");
 				}
 				else if (_isolatorContainer.filter)
 				{
@@ -612,11 +634,12 @@ class AppUINativeMenu
 		insert("file/closeBrowser",            new  CloseWindowCommand(_platform), "shift-ctrl-w");
 		insert("file/-");
 		insert("file/preferences");
-		insert("file/preferences/stats",       new  ChangeSettingCommand(_platform, AppConstants.SETTING_STATS, true, false));
-		insert("file/preferences/lockResize",  new  ChangeSettingCommand(_platform, AppConstants.SETTING_LOCK_RESIZE, true, false));
-		insert("file/preferences/alwaysOnTop", new  ChangeSettingCommand(_platform, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
-		insert("file/preferences/autoReopen",  new  ChangeSettingCommand(_platform, AppConstants.SETTING_AUTO_REOPEN, true, false));
-		insert("file/preferences/autoUpdate",  new  ChangeSettingCommand(_platform, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, true, false));
+		insert("file/preferences/lockResize",    new ChangeSettingCommand(_platform, AppConstants.SETTING_LOCK_RESIZE, true, false));
+		insert("file/preferences/alwaysOnTop",   new ChangeSettingCommand(_platform, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
+		insert("file/preferences/autoReopen",    new ChangeSettingCommand(_platform, AppConstants.SETTING_AUTO_REOPEN, true, false));
+		insert("file/preferences/autoUpdate",    new ChangeSettingCommand(_platform, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, true, false));
+		insert("file/preferences/stats",         new ChangeSettingCommand(_platform, AppConstants.SETTING_STATS, true, false));
+		insert("file/preferences/texturePacker", new ChangeTexturePackerExecutable(_platform));
 		insert("file/-");
 		insert("file/publishAs",               new  PublishCommand(_platform), "shift-ctrl-s");
 		insert("file/screenshot",              new  PublishScreenshotCommand(_platform, ui), "shift-ctrl-a");
@@ -652,9 +675,9 @@ class AppUINativeMenu
 
 		// Navigate
 		insert("navigate");
-		insert("navigate/gotoFolder", new OpenDocumentFolderCommand(_platform));
-		insert("navigate/gotoTemplate", new OpenGoToPopupCommand(_platform), "ctrl-p");
-
+		insert("navigate/gotoFolder",		   new OpenDocumentFolderCommand(_platform));
+		insert("navigate/gotoTemplate",        new OpenGoToPopupCommand(_platform), "ctrl-p");
+		
 		// Help
 		insert("help");
 		insert("help/online", new OpenOnlineDocumentationCommand(_platform));

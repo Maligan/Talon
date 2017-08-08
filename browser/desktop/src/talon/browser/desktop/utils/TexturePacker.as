@@ -27,6 +27,12 @@ package talon.browser.desktop.utils
 			var promise:Promise = new Promise();
 
 			// Errors
+			if (files.length == 0)
+			{
+				promise.fulfill(new <File>[]);
+				return promise;
+			}
+			
 			if (!NativeProcess.isSupported)
 			{
 				promise.reject(new Error("Internal Error: NativeProcess is not supported"));
@@ -73,7 +79,7 @@ package talon.browser.desktop.utils
 					
 					try { files = Vector.<File>(_tempDir.getDirectoryListing()) }
 					catch (e:Error) { promise.reject(e); return; }
-					
+
 					promise.fulfill(files);
 				}
 			}

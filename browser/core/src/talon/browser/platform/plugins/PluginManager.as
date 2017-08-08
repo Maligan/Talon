@@ -141,5 +141,13 @@ package talon.browser.platform.plugins
 		{
 			return _plugins.slice();
 		}
+		
+		public function getPlugin(type:Class):IPlugin
+		{
+			for each (var plugin:IPlugin in _plugins)
+				if (plugin is type) return plugin;
+			
+			return null;
+		}
 	}
 }

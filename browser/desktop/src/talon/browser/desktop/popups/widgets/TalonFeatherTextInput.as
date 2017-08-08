@@ -18,6 +18,7 @@ package talon.browser.desktop.popups.widgets
 	import starling.extensions.TalonQuery;
 	import starling.rendering.Painter;
 	import starling.text.BitmapFont;
+	import starling.text.ITextCompositor;
 	import starling.text.TextField;
 	import starling.text.TextField;
 	import starling.utils.Color;
@@ -70,9 +71,14 @@ package talon.browser.desktop.popups.widgets
 		private function editorFactory():ITextEditor
 		{
 			var editor:BitmapFontTextEditor = new BitmapFontTextEditor();
+			
+			var fontName:String = node.getAttributeCache(Attribute.FONT_NAME);
+			var font:ITextCompositor = TextField.getCompositor(fontName);
+			if (font == null)
+				font = TextField.getCompositor(fontName);
 
 			editor.textFormat = new BitmapFontTextFormat(
-				node.getAttributeCache(Attribute.FONT_NAME),
+				font,
 				node.getAttributeCache(Attribute.FONT_SIZE),
 				ParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR))
 			);

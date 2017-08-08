@@ -12,7 +12,6 @@ package talon.browser.desktop.utils
 		public static const EXPORT_PATTERN:String  = "export.pattern";
 		
 		// TexturePacker
-		public static const EXPORT_TPS_EXEC:String		= "export.tps.exec";
 		public static const EXPORT_TPS_ARGS:String		= "export.tps.args";
 		public static const EXPORT_TPS_TEMP:String		= "export.tps.temp";
 		public static const EXPORT_TPS_PATTERN:String	= "export.tps.pattern";

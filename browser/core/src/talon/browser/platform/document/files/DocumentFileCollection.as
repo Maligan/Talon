@@ -132,13 +132,3 @@ package talon.browser.platform.document.files
 		}
 	}
 }
-
-import talon.browser.platform.document.Document;
-import talon.browser.platform.document.files.IFileController;
-import talon.browser.platform.document.files.IFileReference;
-
-class DummyFileController implements IFileController
-{
-	public function attach(document:Document, reference:IFileReference):void { }
-	public function detach():void { }
-}

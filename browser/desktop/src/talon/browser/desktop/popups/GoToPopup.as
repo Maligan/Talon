@@ -1,6 +1,7 @@
 package talon.browser.desktop.popups
 {
 	import flash.ui.Keyboard;
+	import flash.utils.setTimeout;
 
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
@@ -60,8 +61,8 @@ package talon.browser.desktop.popups
 
 			// read prev state
 			var lastQuery:String = _app.document.properties.getValueOrDefault(LAST_QUERY, String, "");
-			var lastOffset:int = _app.document.properties.getValueOrDefault(LAST_OFFSET, int, 0);
-			var lastCursor:int = _app.document.properties.getValueOrDefault(LAST_CURSOR, int, 0);
+			var lastOffset:int   = _app.document.properties.getValueOrDefault(LAST_OFFSET, int, 0);
+			var lastCursor:int   = _app.document.properties.getValueOrDefault(LAST_CURSOR, int, 0);
 
 			// reset prev state
 			_app.document.properties.setValue(LAST_QUERY, "");
@@ -72,6 +73,7 @@ package talon.browser.desktop.popups
 			_input.text = lastQuery;
 			_input.selectRange(0, lastQuery.length);
 			refresh(lastQuery, lastOffset, lastCursor);
+			setTimeout(updateTexts, 1); // hack for text highlight
 		}
 
 		private function initializeChildren():void
@@ -235,8 +237,6 @@ package talon.browser.desktop.popups
 				var itemIndex:int = _labelsOffset + i;
 				var item:String = itemIndex < _queryItems.length ? _queryItems[itemIndex] : "";
 
-				label.batchable = false;
-
 				// Invalidation & composition (via textBounds)
 				label.text = null;
 				label.text = item;
@@ -250,7 +250,7 @@ package talon.browser.desktop.popups
 					for (var j:int = 0; j < item.length; j++)
 					{
 						var type:String = prescription[j];
-//						if (type == "M")
+						if (type == "M")
 						{
 							labelStyle.setVertexColor(j*4+0, 0x00BFFF);
 							labelStyle.setVertexColor(j*4+1, 0x00BFFF);

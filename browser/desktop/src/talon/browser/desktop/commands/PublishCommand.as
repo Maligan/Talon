@@ -19,6 +19,7 @@ package talon.browser.desktop.commands
 	import talon.browser.desktop.filetypes.XMLAtlasAsset;
 	import talon.browser.desktop.filetypes.XMLLibraryAsset;
 	import talon.browser.desktop.filetypes.XMLTemplateAsset;
+	import talon.browser.desktop.plugins.PluginConsole;
 	import talon.browser.desktop.plugins.PluginDesktopUI;
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.desktop.utils.DesktopFileReference;
@@ -106,6 +107,7 @@ package talon.browser.desktop.commands
 				}, function (e:Error):void {
 					trace(e);
 					_ui.locked = _ui.spinner = false;
+					PluginConsole(platform.plugins.getPlugin(PluginConsole)).console.println(e);
 				})
 			}
 			else

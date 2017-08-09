@@ -26,6 +26,11 @@ package talon.browser.platform.popups
 		{
 			throw new AbstractMethodError();
 		}
+		
+		public function notify():void
+		{
+			
+		}
 
 		protected final function get data():Object
 		{

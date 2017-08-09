@@ -1,5 +1,6 @@
 package talon.browser.desktop.plugins
 {
+	import starling.extensions.ITalonElement;
 	import starling.utils.StringUtil;
 
 	import talon.Attribute;
@@ -9,7 +10,6 @@ package talon.browser.desktop.plugins
 	import talon.browser.platform.plugins.IPlugin;
 	import talon.browser.platform.plugins.PluginStatus;
 	import talon.browser.platform.utils.Console;
-	import starling.extensions.ITalonElement;
 
 	public class PluginConsole implements IPlugin
 	{
@@ -184,6 +184,11 @@ package talon.browser.desktop.plugins
 			var number:int = split[1];
 			var plugin:IPlugin = _platform.plugins.getPlugins()[number - 1];
 			_platform.plugins.deactivate(plugin);
+		}
+		
+		public function get console():Console
+		{
+			return _console;
 		}
 	}
 }

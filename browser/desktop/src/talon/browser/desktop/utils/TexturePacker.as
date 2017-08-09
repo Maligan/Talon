@@ -72,7 +72,9 @@ package talon.browser.desktop.utils
 			function onProcessExit(e:NativeProcessExitEvent):void
 			{
 				if (e.exitCode != 0)
+				{
 					promise.reject(new Error(processError, e.exitCode));
+				}
 				else
 				{
 					var files:Vector.<File> = null;

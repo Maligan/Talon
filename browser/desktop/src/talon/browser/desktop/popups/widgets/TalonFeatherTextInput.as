@@ -2,30 +2,19 @@ package talon.browser.desktop.popups.widgets
 {
 	import feathers.controls.TextInput;
 	import feathers.controls.text.BitmapFontTextEditor;
-	import feathers.controls.text.TextFieldTextEditor;
 	import feathers.core.ITextEditor;
 	import feathers.events.FeathersEventType;
 	import feathers.text.BitmapFontTextFormat;
 
-	import flash.text.Font;
-	import flash.text.TextFormat;
-	import flash.text.TextFormatAlign;
-
-	import starling.display.DisplayObject;
-
 	import starling.events.Event;
+	import starling.extensions.ITalonElement;
 	import starling.extensions.TalonDisplayObjectBridge;
 	import starling.extensions.TalonQuery;
 	import starling.rendering.Painter;
-	import starling.text.BitmapFont;
-	import starling.text.ITextCompositor;
 	import starling.text.TextField;
-	import starling.text.TextField;
-	import starling.utils.Color;
 
 	import talon.Attribute;
 	import talon.Node;
-	import starling.extensions.ITalonElement;
 	import talon.utils.ParseUtil;
 
 	public class TalonFeatherTextInput extends TextInput implements ITalonElement
@@ -47,6 +36,8 @@ package talon.browser.desktop.popups.widgets
 			_bridge.setAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
 			_bridge.setAttributeChangeListener(Attribute.TEXT, onTextChange);
 			_bridge.setAttributeChangeListener(Attribute.PADDING, onPaddingChange);
+			
+			
 
 			restrict = "0-9.,";
 			maxChars = 5;
@@ -71,14 +62,9 @@ package talon.browser.desktop.popups.widgets
 		private function editorFactory():ITextEditor
 		{
 			var editor:BitmapFontTextEditor = new BitmapFontTextEditor();
-			
-			var fontName:String = node.getAttributeCache(Attribute.FONT_NAME);
-			var font:ITextCompositor = TextField.getCompositor(fontName);
-			if (font == null)
-				font = TextField.getCompositor(fontName);
 
 			editor.textFormat = new BitmapFontTextFormat(
-				font,
+				node.getAttributeCache(Attribute.FONT_NAME),
 				node.getAttributeCache(Attribute.FONT_SIZE),
 				ParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR))
 			);
@@ -148,24 +134,11 @@ package talon.browser.desktop.popups.widgets
 			_bridge.renderCustom(super.render, painter);
 		}
 
-		public function get node():Node
-		{
-			return _node;
-		}
+		public function get node():Node { return _node; }
 
-		public function query(selector:String = null):TalonQuery
-		{
-			return new TalonQuery(this).select(selector);
-		}
+		public function query(selector:String = null):TalonQuery { return new TalonQuery(this).select(selector); }
 
-		public function get manual():Boolean
-		{
-			return _manual;
-		}
-
-		public function set manual(value:Boolean):void
-		{
-			_manual = value;
-		}
+		public function get manual():Boolean { return _manual; }
+		public function set manual(value:Boolean):void { _manual = value; }
 	}
 }

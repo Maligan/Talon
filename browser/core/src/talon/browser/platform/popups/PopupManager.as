@@ -2,7 +2,6 @@ package talon.browser.platform.popups
 {
 	import starling.animation.Juggler;
 	import starling.animation.Tween;
-	import starling.core.Starling;
 	import starling.display.DisplayObjectContainer;
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
@@ -35,6 +34,8 @@ package talon.browser.platform.popups
 			var topmost:Popup = _popups.length ? _popups[0] : null;
 			if (topmost)
 			{
+				topmost.notify();
+				
 				if (_notifyTween == null)
 					_notifyTween = new Tween(topmost, 1);
 

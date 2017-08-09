@@ -1,7 +1,10 @@
 package talon.browser.desktop.popups
 {
+	import flash.display.InteractiveObject;
 	import flash.ui.Keyboard;
 	import flash.utils.setTimeout;
+
+	import starling.core.Starling;
 
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
@@ -116,6 +119,11 @@ package talon.browser.desktop.popups
 			{
 				return text.replace(/[^\w\d_]/g, "");
 			}
+		}
+ 
+		public override function notify():void
+		{
+			Starling.current.nativeStage.focus = InteractiveObject(_input.nativeFocus);
 		}
 
 		public override function dispose():void

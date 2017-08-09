@@ -19,7 +19,6 @@ package talon.browser.desktop.commands
 	import talon.browser.desktop.filetypes.XMLAtlasAsset;
 	import talon.browser.desktop.filetypes.XMLLibraryAsset;
 	import talon.browser.desktop.filetypes.XMLTemplateAsset;
-	import talon.browser.desktop.plugins.PluginConsole;
 	import talon.browser.desktop.plugins.PluginDesktopUI;
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.desktop.utils.DesktopFileReference;
@@ -38,11 +37,14 @@ package talon.browser.desktop.commands
 	{
 		private var _target:File;
 		private var _ui:PluginDesktopUI;
+		private var _packer:TexturePacker;
 
 		public function PublishCommand(platform:AppPlatform, target:File = null)
 		{
 			super(platform);
+			platform.settings.addPropertyListener(AppConstants.SETTING_TEXTURE_PACKER_BIN, onTexturePackerBinChange); onTexturePackerBinChange();
 			platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
+
 			_target = target;
 			_ui = platform.plugins.getPlugin(PluginDesktopUI) as PluginDesktopUI;
 		}
@@ -50,13 +52,34 @@ package talon.browser.desktop.commands
 		private function onDocumentChange(e:Event):void
 		{
 			dispatchEventWith(Event.CHANGE);
+			refreshPacker();
+		}
+		
+		private function onTexturePackerBinChange():void
+		{
+			var packerPath:String = platform.settings.getValueOrDefault(AppConstants.SETTING_TEXTURE_PACKER_BIN);
+			if (packerPath == null) _packer = null;
+			else _packer = new TexturePacker(new File(packerPath));
+			refreshPacker();
+		}
+		
+		private function refreshPacker():void
+		{
+			if (_packer && platform.document)
+			{
+				_packer.init(
+					getTemp(),
+					"sprites_{n}.xml",
+					platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_TP_ARGS, String, "--multipack --format sparrow --trim-mode None")
+				)	
+			}
 		}
 
 		public override function execute():void
 		{
 			if (_target != null)
 			{
-				writeDocument(_target);
+				publish(_target);
 			}
 			else
 			{
@@ -70,52 +93,50 @@ package talon.browser.desktop.commands
 		private function onExportFileSelect(e:*):void
 		{
 			var file:File = File(e.target);
-			writeDocument(file);
+			publish(file);
 		}
 
-		private function writeDocument(target:File):void
+		private function publish(target:File):void
 		{
 			var files:Object = {};
+			var list:Vector.<File> = new <File>[];
 
-			// Add cache JSON
-			var cache:Object = getCache();
-			var cacheJSON:String = JSON.stringify(cache);
-			var cacheBytes:ByteArray = new ByteArray();
-			cacheBytes.writeUTFBytes(cacheJSON);
-			files[AppConstants.BROWSER_DEFAULT_CACHE_FILENAME] = cacheBytes;
-			
-			// Add rest files
+			// Templates, CSS, Properties
+			files[AppConstants.BROWSER_DEFAULT_CACHE_FILENAME] = getCacheBytes();
+
+			// Fonts (configs), Atlases (configs & images), Images (which does not processed by packer)
 			for each (var file:IFileReference in platform.document.files.toArray())
 			{
 				var addToOutput:Boolean = !isIgnored(file) && !isCached(file) && !isPacked(file);
-				if (addToOutput)
-					files[getExportPath(file)] = file.data;
+				if (addToOutput) files[getExportPath(file)] = file.data;
+				if (isPacked(file)) list.push(DesktopFileReference(file).target);
 			}
-			
-			var packerExec:String = platform.settings.getValueOrDefault(AppConstants.SETTING_TEXTURE_PACKER_BIN);
-			if (packerExec)
+
+			// TexturePacker output
+			_ui.locked = _ui.spinner = true;
+
+			if (_packer == null) complete();
+			else _packer.exec(list)
+				.then(onPackerSuccess, onPackerError)
+				.then(complete);
+
+			function onPackerSuccess(result:Vector.<File>):void
 			{
-				_ui.locked = _ui.spinner = true;
-
-				var packer:TexturePacker = new TexturePacker(new File(packerExec), new File(platform.document.properties.getValueOrDefault(DesktopDocumentProperty.PROJECT_DIR)), getTemp(), "sprites_{n}.xml");
-				packer.exec(getImages(), platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_TPS_ARGS, String, "--multipack --format sparrow --trim-mode None")).then(function (sheets:Vector.<File>):void {
-					for each (var sheet:File in sheets)
-						files["sprites/" + sheet.name] = readBytes(sheet);
-
-					writeZip(target, files);
-					_ui.locked = _ui.spinner = false;
-				}, function (e:Error):void {
-					trace(e);
-					_ui.locked = _ui.spinner = false;
-					PluginConsole(platform.plugins.getPlugin(PluginConsole)).console.println(e);
-				})
+				for each (var file:File in result)
+					files["sprites/" + file.name] = readBytes(file);
 			}
-			else
+
+			function onPackerError(e:Error):void
 			{
-				writeZip(target, files);
+				files = null;
+				trace(e);
+			}
+
+			function complete():void
+			{
 				_ui.locked = _ui.spinner = false;
+				if (files) writeZip(target, files);
 			}
-			
 		}
 		
 		private function writeZip(file:File, content:Object):void
@@ -174,7 +195,17 @@ package talon.browser.desktop.commands
 
 			return fileReference ? fileReference.root : null;
 		}
-
+		
+		private function getCacheBytes():ByteArray
+		{
+			var cache:Object = getCache();
+			var cacheJSON:String = JSON.stringify(cache);
+			var cacheBytes:ByteArray = new ByteArray();
+			cacheBytes.writeUTFBytes(cacheJSON);
+			
+			return cacheBytes;
+		}
+		
 		private function getCache():Object
 		{
 			var files:Vector.<IFileReference> = platform.document.files.toArray();
@@ -218,15 +249,14 @@ package talon.browser.desktop.commands
 			return false;
 		}
 		
+		/** File is merged by texture atlas */
 		public function isPacked(file:IFileReference):Boolean
 		{
 			var controller:IFileController = platform.document.files.getController(file.path);
 
-			if (controller is TextureAsset)
-				return Glob.matchPattern(file.path, platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_TPS_PATTERN, String, ""))
-					&& platform.settings.getValueOrDefault(AppConstants.SETTING_TEXTURE_PACKER_BIN) != null;
-			
-			return false;
+			return controller is TextureAsset
+					&& _packer != null
+					&& Glob.matchPattern(file.path, platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_TP_PATTERN, String, ""));
 		}
 		
 		
@@ -265,11 +295,11 @@ package talon.browser.desktop.commands
 		
 		public function getTemp():File
 		{
-			var packerTempPath:String = platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_TPS_TEMP);
+			var packerTempPath:String = platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_TP_TEMP);
 			if (packerTempPath == null)
 			{
 				packerTempPath = File.createTempDirectory().nativePath;
-				platform.document.properties.setValue(DesktopDocumentProperty.EXPORT_TPS_TEMP, packerTempPath);
+				platform.document.properties.setValue(DesktopDocumentProperty.EXPORT_TP_TEMP, packerTempPath);
 			}
 			
 			return new File(packerTempPath);

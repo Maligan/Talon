@@ -9,20 +9,24 @@ package talon.browser.desktop.utils
 	public class TexturePacker
 	{
 		private var _exec:File;
-		private var _workDir:File;
-		private var _tempDir:File;
+		private var _args:String;
+		private var _temp:File;
 		private var _data:String;
 
-		public function TexturePacker(exec:File, workDir:File, tempDir:File, data:String)
+		public function TexturePacker(exec:File)
 		{
 			_exec = exec;
-			_workDir = workDir;
-			_tempDir = tempDir;
+		}
+		
+		public function init(temp:File, data:String, args:String)
+		{
+			_temp = temp;
 			_data = data;
+			_args = args;
 		}
 
 		/** Return Vector.<Files> into fulfill() or Error into reject(). */
-		public function exec(files:Vector.<File>, args:String = null):Promise
+		public function exec(files:Vector.<File>):Promise
 		{
 			var promise:Promise = new Promise();
 
@@ -51,8 +55,8 @@ package talon.browser.desktop.utils
 			try { processInfo.executable = _exec; }
 			catch (e:Error) { promise.reject(e); return promise }
 			
-			processInfo.arguments.push("--data", _tempDir.nativePath + File.separator + _data);
-			processInfo.arguments.push.apply(null, parseArgs(args));
+			processInfo.arguments.push("--data", _temp.nativePath + File.separator + _data);
+			processInfo.arguments.push.apply(null, parseArgs(_args));
 
 			for each (var file:File in files)
 				processInfo.arguments[processInfo.arguments.length] = file.nativePath;
@@ -79,7 +83,7 @@ package talon.browser.desktop.utils
 				{
 					var files:Vector.<File> = null;
 					
-					try { files = Vector.<File>(_tempDir.getDirectoryListing()) }
+					try { files = Vector.<File>(_temp.getDirectoryListing()) }
 					catch (e:Error) { promise.reject(e); return; }
 
 					promise.fulfill(files);
@@ -93,5 +97,7 @@ package talon.browser.desktop.utils
 		{
 			return args ? args.split(" ") : [];
 		}
+		
+		
 	}
 }

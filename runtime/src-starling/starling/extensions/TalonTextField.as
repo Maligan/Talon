@@ -120,8 +120,6 @@ package starling.extensions
 			if (autoScale) scale = NaN;
 
 			// find anchor chars
-			var anchors:Object = {};
-
 			var leftmostCharLeft:Number = NaN;
 			var rightmostCharRight:Number = NaN;
 			var bottommostCharTop:Number = NaN;
@@ -157,16 +155,10 @@ package starling.extensions
 
 					var charTop:Number = _sPoint.y - char.yOffset*scale;
 					if (charTop > bottommostCharTop || bottommostCharTop != bottommostCharTop)
-					{
 						bottommostCharTop = charTop;
-						anchors["bottom"] = i + ": " + String.fromCharCode(charID);
-					}
 
 					if (charTop < topmostCharTop || topmostCharTop != topmostCharTop)
-					{
 						topmostCharTop = charTop;
-						anchors["top"] = i + ": " + String.fromCharCode(charID);
-					}
 				}
 				else
 					numNonDrawableChars++;

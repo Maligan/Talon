@@ -41,9 +41,9 @@ package talon.browser.desktop.filetypes
 
 		private function isIncluded(path:String):Boolean
 		{
-			var patterns:String = document.properties.getValueOrDefault(DesktopDocumentProperty.SOURCE_PATTERN, String);
+			var patterns:String = document.properties.getValue(DesktopDocumentProperty.SOURCE_PATTERN, String, "*");
 			if (patterns == null) return true;
-			return Glob.matchPattern(path, patterns);
+			return Glob.match(path, patterns);
 		}
 
 		private function onIOError(e:IOErrorEvent):void

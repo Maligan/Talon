@@ -4,11 +4,10 @@ package talon.browser.desktop.commands
 
 	import starling.events.Event;
 
-	import talon.browser.desktop.utils.DesktopFileReference;
+	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.platform.AppPlatform;
 	import talon.browser.platform.AppPlatformEvent;
 	import talon.browser.platform.utils.Command;
-	import talon.browser.platform.document.files.IFileReference;
 
 	public class OpenDocumentFolderCommand extends Command
 	{
@@ -20,10 +19,10 @@ package talon.browser.desktop.commands
 
 		private function onDocumentChange(e:Event):void
 		{
-			dispatchEventWith(Event.CHANGE);
+			dispatchEventChange();
 		}
 
-		public override function execute():void
+		public  override function execute():void
 		{
 			getSourcePath().openWithDefaultApplication();
 		}
@@ -37,11 +36,14 @@ package talon.browser.desktop.commands
 		{
 			if (platform.document == null) return null;
 
-			// FIXME: If there is symlinks in config - return not real source root
-			var fileReferences:Vector.<IFileReference> = platform.document.files.toArray();
-			var fileReference:DesktopFileReference = fileReferences.shift() as DesktopFileReference;
-
-			return fileReference ? fileReference.root : null;
+			var documentDir:String = platform.document.properties.getValue(DesktopDocumentProperty.PROJECT_DIR);
+			var documentSourcePath:String = platform.document.properties.getValue(DesktopDocumentProperty.SOURCE_PATH);
+			
+			var documentFile:File = new File(documentDir);
+			if (documentSourcePath)
+				documentFile = documentFile.resolvePath(documentSourcePath);
+			
+			return documentFile;
 		}
 	}
 }

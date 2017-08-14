@@ -2,7 +2,7 @@ package talon.browser.desktop.utils
 {
 	public class DesktopDocumentProperty
 	{
-		public static const PROJECT_DIR:String	   = "project.dir";		// HIDDEN
+		public static const PROJECT_DIR:String	   = "project.dir";
 		public static const PROJECT_NAME:String    = "project.name";
 
 		public static const SOURCE_PATH:String     = "source.path";

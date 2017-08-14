@@ -6,22 +6,23 @@ package talon.browser.desktop.commands
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.utils.ByteArray;
-
-	import mx.core.FontAsset;
+	import flash.utils.setTimeout;
 
 	import starling.events.Event;
-	import starling.textures.TextureAtlas;
 
 	import talon.browser.desktop.filetypes.CSSAsset;
 	import talon.browser.desktop.filetypes.DirectoryAsset;
 	import talon.browser.desktop.filetypes.PropertiesAsset;
 	import talon.browser.desktop.filetypes.TextureAsset;
 	import talon.browser.desktop.filetypes.XMLAtlasAsset;
+	import talon.browser.desktop.filetypes.XMLFontAsset;
 	import talon.browser.desktop.filetypes.XMLLibraryAsset;
 	import talon.browser.desktop.filetypes.XMLTemplateAsset;
 	import talon.browser.desktop.plugins.PluginDesktopUI;
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.desktop.utils.DesktopFileReference;
+	import talon.browser.desktop.utils.FileUtil;
+	import talon.browser.desktop.utils.Promise;
 	import talon.browser.desktop.utils.TexturePacker;
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;
@@ -37,8 +38,10 @@ package talon.browser.desktop.commands
 	{
 		private var _target:File;
 		private var _ui:PluginDesktopUI;
+		
 		private var _packer:TexturePacker;
-
+		private var _packerPromise:Promise;
+		
 		public function PublishCommand(platform:AppPlatform, target:File = null)
 		{
 			super(platform);
@@ -49,15 +52,22 @@ package talon.browser.desktop.commands
 			_ui = platform.plugins.getPlugin(PluginDesktopUI) as PluginDesktopUI;
 		}
 
+		public override function get isExecutable():Boolean
+		{
+			return platform.document != null;
+		}
+
+		public override function get isExecuting():Boolean { return _packerPromise != null; }
+
 		private function onDocumentChange(e:Event):void
 		{
-			dispatchEventWith(Event.CHANGE);
+			dispatchEventChange();
 			refreshPacker();
 		}
 		
 		private function onTexturePackerBinChange():void
 		{
-			var packerPath:String = platform.settings.getValueOrDefault(AppConstants.SETTING_TEXTURE_PACKER_BIN);
+			var packerPath:String = platform.settings.getValue(AppConstants.SETTING_TEXTURE_PACKER_BIN);
 			if (packerPath == null) _packer = null;
 			else _packer = new TexturePacker(new File(packerPath));
 			refreshPacker();
@@ -68,14 +78,14 @@ package talon.browser.desktop.commands
 			if (_packer && platform.document)
 			{
 				_packer.init(
-					getTemp(),
+					getPackerTempDir(),
 					"sprites_{n}.xml",
-					platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_TP_ARGS, String, "--multipack --format sparrow --trim-mode None")
+					platform.document.properties.getValue(DesktopDocumentProperty.EXPORT_TP_ARGS, String, "--multipack --format sparrow --trim-mode None")
 				)	
 			}
 		}
 
-		public override function execute():void
+		override public function execute():void
 		{
 			if (_target != null)
 			{
@@ -99,43 +109,54 @@ package talon.browser.desktop.commands
 		private function publish(target:File):void
 		{
 			var files:Object = {};
-			var list:Vector.<File> = new <File>[];
+			var filesForPack:Vector.<File> = new <File>[];
 
 			// Templates, CSS, Properties
-			files[AppConstants.BROWSER_DEFAULT_CACHE_FILENAME] = getCacheBytes();
+			files[AppConstants.PUBLISH_CACHE_FILENAME] = getCacheBytes();
 
 			// Fonts (configs), Atlases (configs & images), Images (which does not processed by packer)
 			for each (var file:IFileReference in platform.document.files.toArray())
 			{
-				var addToOutput:Boolean = !isIgnored(file) && !isCached(file) && !isPacked(file);
-				if (addToOutput) files[getExportPath(file)] = file.data;
-				if (isPacked(file)) list.push(DesktopFileReference(file).target);
+				if (!isIgnored(file) && !isCached(file) && !isPacked(file))
+					files[getExportPath(file)] = file.data;
+				
+				if (!isIgnored(file) && isPacked(file))
+					filesForPack.push(DesktopFileReference(file).target);
 			}
 
-			// TexturePacker output
-			_ui.locked = _ui.spinner = true;
-
 			if (_packer == null) complete();
-			else _packer.exec(list)
-				.then(onPackerSuccess, onPackerError)
-				.then(complete);
+			else
+			{
+				 begin()
+					.then(onPackerSuccess, onPackerError)
+					.then(complete);
+			}
+			
+			function begin():Promise
+			{
+				setTimeout(dispatchEventChange, 500);
+				
+				return _packerPromise =_packer.exec(filesForPack);
+			}
 
 			function onPackerSuccess(result:Vector.<File>):void
 			{
 				for each (var file:File in result)
-					files["sprites/" + file.name] = readBytes(file);
+					files[AppConstants.PUBLISH_SPRITES_PREFIX + file.name] = FileUtil.readBytes(file);
 			}
 
 			function onPackerError(e:Error):void
 			{
 				files = null;
-				trace(e);
+				trace(e); // TODO: Add Error Message
 			}
 
 			function complete():void
 			{
-				_ui.locked = _ui.spinner = false;
 				if (files) writeZip(target, files);
+				
+				_packerPromise = null;
+				dispatchEventChange();
 			}
 		}
 		
@@ -161,79 +182,80 @@ package talon.browser.desktop.commands
 			}
 		}
 
-		public override function get isExecutable():Boolean
-		{
-			return platform.document != null;
-		}
-
 		//
 		// Export documents properties
 		//
 		private function getDocumentExportPath(document:Document):String
 		{
-			var sourcePath:File = getSourcePath(document);
-			if (sourcePath)
-			{
-				var exportPath:String = document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_PATH, String);
-				if (exportPath)
-					return sourcePath.resolvePath(exportPath).nativePath;
-				else
-					return sourcePath.parent.resolvePath(sourcePath.name + "." + AppConstants.BROWSER_PUBLISH_EXTENSION).nativePath;
-			}
-
-			return document.properties.getValueOrDefault(DesktopDocumentProperty.PROJECT_NAME, String)
-				+ "."
-				+ AppConstants.BROWSER_PUBLISH_EXTENSION;
+			var projectPath:String = platform.document.properties.getValue(DesktopDocumentProperty.PROJECT_DIR);
+			var projectPathFile:File = new File(projectPath);
+			
+			var exportPath:String = document.properties.getValue(DesktopDocumentProperty.EXPORT_PATH, String);
+			if (exportPath) return projectPathFile.resolvePath(exportPath).nativePath;
+			else return projectPathFile.parent.resolvePath(projectPathFile.name + "." + AppConstants.PUBLISH_EXTENSION).nativePath;
+			
+			throw new Error("PROJECT_DIR_IS_NULL");
 		}
 
-		private function getSourcePath(document:Document):File
+		public function getExportPath(file:IFileReference):String
 		{
-			if (document == null) return null;
+			var ref:DesktopFileReference = file as DesktopFileReference;
 
-			var fileReferences:Vector.<IFileReference> = document.files.toArray();
-			var fileReference:DesktopFileReference = fileReferences.shift() as DesktopFileReference;
-
-			return fileReference ? fileReference.root : null;
+			var asset:IFileController = platform.document.files.getController(ref.path);
+			if (asset is TextureAsset)  return AppConstants.PUBLISH_SPRITES_PREFIX + ref.name;
+			if (asset is XMLAtlasAsset)  return AppConstants.PUBLISH_SPRITES_PREFIX + ref.name;
+			if (asset is XMLFontAsset)	 return AppConstants.PUBLISH_FONTS_PREFIX + ref.name;
+			return ref.name;
 		}
 		
 		private function getCacheBytes():ByteArray
 		{
-			var cache:Object = getCache();
-			var cacheJSON:String = JSON.stringify(cache);
-			var cacheBytes:ByteArray = new ByteArray();
-			cacheBytes.writeUTFBytes(cacheJSON);
-			
-			return cacheBytes;
-		}
-		
-		private function getCache():Object
-		{
 			var files:Vector.<IFileReference> = platform.document.files.toArray();
 			var stash:Vector.<IFileReference> = new <IFileReference>[];
 
+			// Stash ignored files from cache
 			for each (var file:IFileReference in files)
 				if (isIgnored(file) && isCached(file))
 					platform.document.files.removeReference(stash[stash.length] = file);
 
 			var cache:Object = platform.document.factory.buildCache();
 
+			// Restore stash
 			while (stash.length > 0)
 				platform.document.files.addReference(stash.pop());
 
-			return cache;
+			// To ByteArray
+			var cacheJSON:String = JSON.stringify(cache);
+			var cacheBytes:ByteArray = new ByteArray();
+			cacheBytes.writeUTFBytes(cacheJSON);
+			
+			return cacheBytes;
 		}
 
-		/** File is ignored for export. */
+		public function getPackerTempDir():File
+		{
+			var packerTempPath:String = platform.document.properties.getValue(DesktopDocumentProperty.EXPORT_TP_TEMP);
+			if (packerTempPath == null)
+			{
+				packerTempPath = File.createTempDirectory().nativePath;
+				platform.document.properties.setValue(DesktopDocumentProperty.EXPORT_TP_TEMP, packerTempPath);
+			}
+
+			return new File(packerTempPath);
+		}
+		
+		// Flags
+
 		public function isIgnored(file:IFileReference):Boolean
 		{
 			var fileController:IFileController = platform.document.files.getController(file.path);
 			if (fileController is DirectoryAsset) return true;
 			if (fileController is DummyFileController) return true;
 			
-			var patternsString:String = platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_PATTERN, String);
+			var patternsString:String = platform.document.properties.getValue(DesktopDocumentProperty.EXPORT_PATTERN, String, "*");
 			if (patternsString == null) return false;
 			
-			return !Glob.matchPattern(file.path, patternsString);
+			return !Glob.match(file.path, patternsString);
 		}
 
 		/** File is merged into cache. */
@@ -256,70 +278,7 @@ package talon.browser.desktop.commands
 
 			return controller is TextureAsset
 					&& _packer != null
-					&& Glob.matchPattern(file.path, platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_TP_PATTERN, String, ""));
-		}
-		
-		
-		
-		public function getExportPath(file:IFileReference):String
-		{
-			var ref:DesktopFileReference = file as DesktopFileReference;
-			if (ref == null) throw new Error(); // FIXME
-			
-			var controller:IFileController = platform.document.files.getController(ref.path);
-			if (controller is TextureAsset) return "sprites/" + ref.name;
-			if (controller is TextureAtlas) return "sprites/" + ref.name;
-			if (controller is FontAsset) return "fonts/" + ref.name;
-			
-			if (controller is XMLAtlasAsset) return ref.name;
-			
-			return file.path;
-		}
-		
-		
-		// TODO
-		
-		public function getImages():Vector.<File>
-		{
-			var result:Vector.<File> = new <File>[];
-			
-			for each (var reference:IFileReference in platform.document.files.toArray())
-			{
-				var desktop:DesktopFileReference = reference as DesktopFileReference;
-				var controller:IFileController = platform.document.files.getController(reference.path);
-				if (controller is TextureAsset && isPacked(reference)) result.push(desktop.target);
-			}
-			
-			return result;
-		}
-		
-		public function getTemp():File
-		{
-			var packerTempPath:String = platform.document.properties.getValueOrDefault(DesktopDocumentProperty.EXPORT_TP_TEMP);
-			if (packerTempPath == null)
-			{
-				packerTempPath = File.createTempDirectory().nativePath;
-				platform.document.properties.setValue(DesktopDocumentProperty.EXPORT_TP_TEMP, packerTempPath);
-			}
-			
-			return new File(packerTempPath);
-		}
-
-		private function readBytes(file:File):ByteArray
-		{
-			var result:ByteArray = new ByteArray();
-			var stream:FileStream = new FileStream();
-
-			try
-			{
-				stream.open(file, FileMode.READ);
-				stream.readBytes(result, 0, stream.bytesAvailable);
-			}
-			finally
-			{
-				stream.close();
-				return result;
-			}
+					&& Glob.match(file.path, platform.document.properties.getValue(DesktopDocumentProperty.EXPORT_TP_PATTERN, String, "*"));
 		}
 	}
 }

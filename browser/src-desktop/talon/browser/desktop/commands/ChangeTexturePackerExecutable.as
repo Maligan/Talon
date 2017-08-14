@@ -18,15 +18,15 @@ package talon.browser.desktop.commands
 
 		private function onTexturePackerBinChange():void
 		{
-			dispatchEventWith(Event.CHANGE);
+			dispatchEventChange();
 		}
 
 		public override function get isActive():Boolean
 		{
-			return platform.settings.getValueOrDefault(AppConstants.SETTING_TEXTURE_PACKER_BIN);
+			return platform.settings.getValue(AppConstants.SETTING_TEXTURE_PACKER_BIN);
 		}
 
-		public override function execute():void
+		override public function execute():void
 		{
 			if (isActive) platform.settings.setValue(AppConstants.SETTING_TEXTURE_PACKER_BIN, null);
 			else

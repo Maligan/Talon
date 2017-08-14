@@ -6,10 +6,12 @@ package talon.browser.desktop.plugins
 	import talon.Attribute;
 	import talon.Node;
 	import talon.browser.platform.AppPlatform;
+	import talon.browser.platform.document.files.IFileReference;
 	import talon.browser.platform.document.log.DocumentMessage;
 	import talon.browser.platform.plugins.IPlugin;
 	import talon.browser.platform.plugins.PluginStatus;
 	import talon.browser.platform.utils.Console;
+	import talon.browser.platform.utils.Glob;
 
 	public class PluginConsole implements IPlugin
 	{
@@ -33,8 +35,7 @@ package talon.browser.desktop.plugins
 
 			_console.addCommand("errors", cmdErrors, "Print current error list");
 			_console.addCommand("tree", cmdTree, "Print current template tree", "-a attributeName");
-			_console.addCommand("resources", cmdResourceSearch, "RegExp based search project resources", "regexp");
-			_console.addCommand("resources_miss", cmdResourceMiss, "Missing used resources");
+			_console.addCommand("match", cmdMatch, "Print all files which match glob-pattern", "PATTERNs");
 		}
 
 		public function detach():void
@@ -43,44 +44,20 @@ package talon.browser.desktop.plugins
 			_console.removeCommand("tree");
 			_console.removeCommand("resources");
 			_console.removeCommand("resources_miss");
+			_console.removeCommand("match");
 
 			_platform = null;
 		}
-
-		private function cmdResourceSearch(query:String):void
+		
+		private function cmdMatch(query:String):void
 		{
-			if (_platform.document == null) throw new Error("Document not opened");
-
-			var split:Array = query.split(" ");
-			var regexp:RegExp = query.length > 1 ? new RegExp(split[1]) : /.*/;
-			var resourceIds:Vector.<String> = _platform.document.factory.resourceIds.filter(byRegExp(regexp));
-
-			if (resourceIds.length == 0) _console.println("Resources not found");
-			else
+			if (_platform.document)
 			{
-				for each (var resourceId:String in resourceIds)
-				{
-					_console.println("*", resourceId);
-				}
-			}
-		}
-
-		private function byRegExp(regexp:RegExp):Function
-		{
-			return function (value:String, index:int, vector:Vector.<String>):Boolean
-			{
-				return regexp.test(value);
-			}
-		}
-
-		private function cmdResourceMiss(query:String):void
-		{
-			if (_platform.document == null) throw new Error("Document not opened");
-			if (_platform.templateId == null) throw new Error("Prototype not selected");
-
-			for each (var resourceId:String in _platform.document.factory.missedResourceIds)
-			{
-				_console.println("*", resourceId);
+				var pattern:String = query.substr(6);
+				
+				for each (var file:IFileReference in _platform.document.files.toArray())
+					if (Glob.match(file.path, pattern))
+						console.println(file.path);
 			}
 		}
 

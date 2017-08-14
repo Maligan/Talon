@@ -19,10 +19,10 @@ package talon.browser.desktop.commands
 
 		private function onProfileChange(e:Event):void
 		{
-			dispatchEventWith(Event.CHANGE);
+			dispatchEventChange();
 		}
 
-		public override function execute():void
+		override public function execute():void
 		{
 			platform.profile.copyFrom(_profile);
 		}

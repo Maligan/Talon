@@ -16,7 +16,7 @@ package talon.browser.desktop.commands
 			_popupData = popupData;
 		}
 
-		public override function execute():void
+		override public function execute():void
 		{
 			var popup:Popup = new _popupClass();
 			platform.popups.open(popup, _popupData);

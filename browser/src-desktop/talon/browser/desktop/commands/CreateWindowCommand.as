@@ -14,7 +14,7 @@ package talon.browser.desktop.commands
 			super(null);
 		}
 
-		public override function execute():void
+		override public function execute():void
 		{
 			var windowOptions:NativeWindowInitOptions = new NativeWindowInitOptions();
 			windowOptions.renderMode = NativeWindowRenderMode.DIRECT;

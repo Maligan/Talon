@@ -3,8 +3,6 @@ package talon.browser.desktop.commands
 	import flash.display.StageDisplayState;
 	import flash.events.NativeWindowDisplayStateEvent;
 
-	import starling.events.Event;
-
 	import talon.browser.platform.AppPlatform;
 	import talon.browser.platform.utils.Command;
 
@@ -19,10 +17,10 @@ package talon.browser.desktop.commands
 
 		private function onNativeWindowDisplayStateChange(e:NativeWindowDisplayStateEvent):void
 		{
-			dispatchEventWith(Event.CHANGE);
+			dispatchEventChange();
 		}
 
-		public override function execute():void
+		override public function execute():void
 		{
 			if (isActive) platform.stage.displayState = StageDisplayState.NORMAL;
 			else platform.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;

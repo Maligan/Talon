@@ -16,10 +16,10 @@ package talon.browser.desktop.commands
 
 		private function onDocumentChange(e:Event):void
 		{
-			dispatchEventWith(Event.CHANGE);
+			dispatchEventChange();
 		}
 
-		public override function execute():void
+		override public function execute():void
 		{
 			platform.document && platform.document.dispose();
 			platform.document = null;

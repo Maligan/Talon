@@ -39,13 +39,13 @@ package talon.browser.desktop.utils
 			
 			if (!NativeProcess.isSupported)
 			{
-				promise.reject(new Error("Internal Error: NativeProcess is not supported"));
+				promise.reject(new Error("AIR_CAN'T_START_PROCESS"));
 				return promise;
 			}
 			
 			if (!_exec.exists)
 			{
-				promise.reject(new Error("File not found: " + _exec.nativePath));
+				promise.reject(new Error("TEXTURE_PACKER_BIN_NOT_FOUND"));
 				return promise;
 			}
 			
@@ -97,7 +97,5 @@ package talon.browser.desktop.utils
 		{
 			return args ? args.split(" ") : [];
 		}
-		
-		
 	}
 }

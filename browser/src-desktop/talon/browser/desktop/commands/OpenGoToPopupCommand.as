@@ -17,7 +17,7 @@ package talon.browser.desktop.commands
 
 		private function onDocumentChange(e:Event):void
 		{
-			dispatchEventWith(Event.CHANGE);
+			dispatchEventChange();
 		}
 
 		public override function get isExecutable():Boolean

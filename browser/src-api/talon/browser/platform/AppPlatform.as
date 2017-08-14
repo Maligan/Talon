@@ -45,14 +45,14 @@ package talon.browser.platform
 
 			_lastInvokeArgs = [];
 			_settings = Storage.fromSharedObject("settings");
-			_profile = _settings.getValueOrDefault(AppConstants.SETTING_PROFILE, DeviceProfile) || new DeviceProfile(stage.stageWidth, stage.stageHeight, 1, Capabilities.screenDPI);
+			_profile = _settings.getValue(AppConstants.SETTING_PROFILE, DeviceProfile) || new DeviceProfile(stage.stageWidth, stage.stageHeight, 1, Capabilities.screenDPI);
 			_factory = new TalonFactory();
 			_plugins = new PluginManager(this);
 			_popups = new PopupManager(this);
 			_locale = new Locale();
 
 			// WARNING: NOT work after starling creating!
-			var colorName:String = _settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
+			var colorName:String = _settings.getValue(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
 			var color:uint = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[colorName];
 			stage.color = color;
 			// --------------------------------------

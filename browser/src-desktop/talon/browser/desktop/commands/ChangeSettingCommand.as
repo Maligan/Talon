@@ -25,7 +25,7 @@ package talon.browser.desktop.commands
 
 		public override function get isActive():Boolean
 		{
-			return platform.settings.getValueOrDefault(_name) == _value;
+			return platform.settings.getValue(_name) == _value;
 		}
 	}
 }

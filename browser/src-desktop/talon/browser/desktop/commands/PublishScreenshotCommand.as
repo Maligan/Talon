@@ -5,13 +5,7 @@ package talon.browser.desktop.commands
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
-	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
-
-	import starling.core.Starling;
-	import starling.display.DisplayObject;
-	import starling.display.Stage;
-	import starling.rendering.Painter;
 
 	import talon.browser.desktop.plugins.PluginDesktopUI;
 	import talon.browser.platform.AppConstants;
@@ -33,7 +27,7 @@ package talon.browser.desktop.commands
 
 		private function onTemplateChange(e:*):void
 		{
-			dispatchEventWith(Event.CHANGE);
+			dispatchEventChange();
 		}
 
 		public override function get isExecutable():Boolean
@@ -41,7 +35,7 @@ package talon.browser.desktop.commands
 			return _ui.template;
 		}
 
-		public override function execute():void
+		override public function execute():void
 		{
 			if (!isExecutable) return;
 

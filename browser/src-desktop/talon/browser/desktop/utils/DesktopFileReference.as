@@ -3,8 +3,6 @@ package talon.browser.desktop.utils
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.filesystem.File;
-	import flash.filesystem.FileMode;
-	import flash.filesystem.FileStream;
 	import flash.system.System;
 	import flash.utils.ByteArray;
 
@@ -135,23 +133,8 @@ package talon.browser.desktop.utils
 		//
 		private function readBytes():ByteArray
 		{
-			var result:ByteArray = new ByteArray();
-			var stream:FileStream = new FileStream();
-
-			try
-			{
-				stream.open(target, FileMode.READ);
-				stream.readBytes(result, 0, stream.bytesAvailable);
-			}
-			catch (e:Error)
-			{
-				_cacheError = e;
-			}
-			finally
-			{
-				stream.close();
-				return result;
-			}
+			try { return FileUtil.readBytes(target); }
+			catch (e:Error) { _cacheError = e; return new ByteArray(); }
 		}
 
 		private function readXML():XML

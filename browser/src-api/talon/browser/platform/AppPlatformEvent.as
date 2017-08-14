@@ -4,6 +4,8 @@ package talon.browser.platform
 	{
 		public static const DOCUMENT_CHANGE:String = "documentChange";
 		public static const TEMPLATE_CHANGE:String = "templateChange";
+		
+		public static const COMMAND_CHANGE:String = "commandChange";
 
 		public static const STARTED:String = "started";
 		public static const INVOKE:String = "invoke";

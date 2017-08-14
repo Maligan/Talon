@@ -62,7 +62,7 @@ package talon.browser.platform.plugins
 		/** Start all detached plugins, which is not deactivated. */
 		public function start():void
 		{
-			var detached:Array = _platform.settings.getValueOrDefault(AppConstants.SETTING_DETACHED_PLUGINS, Array, []);
+			var detached:Array = _platform.settings.getValue(AppConstants.SETTING_DETACHED_PLUGINS, Array, []);
 
 			for each (var plugin:IPlugin in _plugins)
 			{
@@ -90,7 +90,7 @@ package talon.browser.platform.plugins
 				plugin.attach(_platform);
 				_pluginStatus[plugin] = PluginStatus.ATTACHED;
 
-				var detached:Array = _platform.settings.getValueOrDefault(AppConstants.SETTING_DETACHED_PLUGINS, Array, []);
+				var detached:Array = _platform.settings.getValue(AppConstants.SETTING_DETACHED_PLUGINS, Array, []);
 				var indexOf:int = detached.indexOf(plugin.id);
 				if (indexOf != -1)
 				{
@@ -118,7 +118,7 @@ package talon.browser.platform.plugins
 				plugin.detach();
 				_pluginStatus[plugin] = PluginStatus.DETACHED;
 
-				var detached:Array = _platform.settings.getValueOrDefault(AppConstants.SETTING_DETACHED_PLUGINS, Array, []);
+				var detached:Array = _platform.settings.getValue(AppConstants.SETTING_DETACHED_PLUGINS, Array, []);
 				var indexOf:int = detached.indexOf(plugin.id);
 				if (indexOf == -1)
 				{

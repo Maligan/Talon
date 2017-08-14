@@ -3,19 +3,16 @@ package talon.browser.platform.popups
 	import starling.animation.Juggler;
 	import starling.errors.AbstractMethodError;
 	import starling.events.KeyboardEvent;
-	import starling.extensions.TalonQuery;
 	import starling.extensions.TalonSprite;
 
 	public class Popup extends TalonSprite
 	{
 		private var _manager:PopupManager;
 		private var _data:Object;
-		private var _query:TalonQuery;
 		private var _juggler:Juggler;
 
 		internal final function ctor(manager:PopupManager, data:Object = null):void
 		{
-			_query = new TalonQuery(this);
 			_manager = manager;
 			_data = data;
 
@@ -50,10 +47,6 @@ package talon.browser.platform.popups
 		//
 		// Code sugar
 		//
-		public override function query(selector:String = null):TalonQuery
-		{
-			return _query.reset(this).select(selector);
-		}
 
 		protected final function close():void
 		{

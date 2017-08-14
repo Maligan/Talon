@@ -5,6 +5,7 @@ package talon.browser.desktop.commands
 
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.desktop.utils.DesktopFileReference;
+	import talon.browser.desktop.utils.FileUtil;
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;
 	import talon.browser.platform.document.Document;
@@ -42,16 +43,16 @@ package talon.browser.desktop.commands
 
 		private function openDocument(dir:File):void
 		{
-			var config:File = dir.resolvePath(AppConstants.BROWSER_DEFAULT_DOCUMENT_FILENAME);
+			var config:File = dir.resolvePath(AppConstants.BROWSER_DOCUMENT_FILENAME);
 
 			// NB! Set as current document immediately (before any references)
-			var documentProperties:Storage = config.exists ? Storage.fromPropertiesFile(config) : new Storage();
+			var documentProperties:Storage = config.exists ? Storage.fromProperties(FileUtil.readText(config)) : new Storage();
 			var document:Document = platform.document = new Document(documentProperties);
 
 			// Save project dir
 			document.properties.setValue(DesktopDocumentProperty.PROJECT_DIR, dir.url);
 			
-			var sourcePathProperty:String = document.properties.getValueOrDefault(DesktopDocumentProperty.SOURCE_PATH, String);
+			var sourcePathProperty:String = document.properties.getValue(DesktopDocumentProperty.SOURCE_PATH, String);
 			var sourcePath:File = config.parent.resolvePath(sourcePathProperty || config.parent.nativePath);
 			if (sourcePath.exists == false) sourcePath = config.parent;
 			var sourcePathReference:DesktopFileReference = new DesktopFileReference(sourcePath, sourcePath);
@@ -66,7 +67,7 @@ package talon.browser.desktop.commands
 				if (virtualPathSplit.length < 1) continue;
 
 				var virtualPath:String = String(virtualPathSplit[1]);
-				var virtualValue:String = document.properties.getValueOrDefault(virtualName);
+				var virtualValue:String = document.properties.getValue(virtualName);
 
 				var realFile:File = sourcePath.resolvePath(virtualValue);
 				var realFileReference:DesktopFileReference = new DesktopFileReference(realFile, realFile, virtualPath);
@@ -78,11 +79,11 @@ package talon.browser.desktop.commands
 			document.files.addReference(sourcePathReference);
 
 			// Set project name
-			if (document.properties.getValueOrDefault(DesktopDocumentProperty.PROJECT_NAME) == null)
+			if (document.properties.getValue(DesktopDocumentProperty.PROJECT_NAME) == null)
 				document.properties.setValue(DesktopDocumentProperty.PROJECT_NAME, sourcePath.name);
 
 			// Add document to recent list
-			var recent:Array = platform.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);
+			var recent:Array = platform.settings.getValue(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);
 			var indexOf:int = recent.indexOf(dir.nativePath);
 			if (indexOf != -1) recent.splice(indexOf, 1);
 			recent.unshift(dir.nativePath);

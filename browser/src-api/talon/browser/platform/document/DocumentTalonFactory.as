@@ -247,7 +247,7 @@ class ObjectWithAccessLogger extends Proxy
 		var result:Vector.<String> = new <String>[];
 
 		for (var key:String in _touches)
-			if (_touches[key] === _touchId && this[key] === undefined)
+			if (_touches[key] === _touchId && this[key] == null)
 				result.push(key);
 
 		return result;

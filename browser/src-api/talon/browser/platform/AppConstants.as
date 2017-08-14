@@ -25,13 +25,15 @@ package talon.browser.platform
 			}
 		}
 
-		public static const BROWSER_DOCUMENT_EXTENSION:String = "talon";
-		public static const BROWSER_PUBLISH_EXTENSION:String = "zip";
+		public static const BROWSER_DOCUMENT_FILENAME:String = ".talon";
 		public static const BROWSER_PLUGIN_EXTENSION:String = "swf";
 		public static const BROWSER_SCREENSHOT_EXTENSION:String = "png";
 		public static const BROWSER_SUPPORTED_IMAGE_EXTENSIONS:Vector.<String> = new <String>["atf", "png", "jpg", "gif"];
-		public static const BROWSER_DEFAULT_DOCUMENT_FILENAME:String = "." + BROWSER_DOCUMENT_EXTENSION;
-		public static const BROWSER_DEFAULT_CACHE_FILENAME:String = "talon.json";
+
+		public static const PUBLISH_EXTENSION:String = "zip";
+		public static const PUBLISH_CACHE_FILENAME:String = "talon.json";
+		public static const PUBLISH_FONTS_PREFIX:String = "fonts/";
+		public static const PUBLISH_SPRITES_PREFIX:String = "sprites/";
 
 		public static const PLUGINS_DIR:String = "plugins";
 		public static const ZOOM_MIN:int = 25;

@@ -10,7 +10,7 @@ package talon.browser.desktop.commands
 			super(platform);
 		}
 
-		public override function execute():void
+		public  override function execute():void
 		{
 			var max:int = Math.max(platform.profile.height, platform.profile.width);
 			var min:int = Math.min(platform.profile.height, platform.profile.width);

@@ -12,27 +12,25 @@ package talon.browser.platform.utils
 	{
 		public static const MIN_SIZE:int = 32;
 
-		public static const IPHONE:DeviceProfile = registerDeviceProfile("iPhone", 320, 480, 1, 163);
-		public static const IPHONE_RETINA:DeviceProfile = registerDeviceProfile("iPhone (Retina)", 640, 960, 2, 326);
-		public static const IPHONE_5:DeviceProfile = registerDeviceProfile("iPhone 5", 640, 1136, 2, 326);
-		public static const IPHONE_6:DeviceProfile = registerDeviceProfile("iPhone 6", 750, 1334, 2, 326);
-		public static const IPHONE_6_PLUS:DeviceProfile = registerDeviceProfile("iPhone 6+", 1080, 1920, 2, 401);
-		public static const IPAD:DeviceProfile = registerDeviceProfile("iPad", 1024, 768, 1, 132);
-		public static const IPAD_RETINA:DeviceProfile = registerDeviceProfile("iPad (Retina)", 2048, 1536, 2, 264);
-		public static const IPAD_MINI_RETINA:DeviceProfile = registerDeviceProfile("iPad Mini", 2048, 1536, 2, 326);
-		public static const XIAOMI_REDMI_NOTE_3:DeviceProfile = registerDeviceProfile("Xiaomi Redmi Note 3", 1080, 1920, 2.5, 401);
+//		public static const IPHONE:DeviceProfile = registerDeviceProfile("iPhone", 320, 480, 163, 1);
+//		public static const IPHONE_RETINA:DeviceProfile = registerDeviceProfile("iPhone (Retina)", 640, 960, 326, 2);
+//		public static const IPHONE_5:DeviceProfile = registerDeviceProfile("iPhone 5", 640, 1136, 326, 2);
+//		public static const IPHONE_6:DeviceProfile = registerDeviceProfile("iPhone 6", 750, 1334, 326, 2);
+//		public static const IPHONE_6_PLUS:DeviceProfile = registerDeviceProfile("iPhone 6+", 1080, 1920, 401, 2);
+//		public static const IPAD:DeviceProfile = registerDeviceProfile("iPad", 1024, 768, 132, 1);
+//		public static const IPAD_RETINA:DeviceProfile = registerDeviceProfile("iPad (Retina)", 2048, 1536, 264, 2);
+//		public static const IPAD_MINI_RETINA:DeviceProfile = registerDeviceProfile("iPad Mini", 2048, 1536, 326, 2);
+//		public static const XIAOMI_REDMI_NOTE_3:DeviceProfile = registerDeviceProfile("Xiaomi Redmi Note 3", 1080, 1920, 401, 2.5);
 
-		private static var _profiles:Array;
-		private static var _profilesById:Dictionary;
+		private static var _profiles:Array = [];
+		private static var _profilesById:Dictionary = new Dictionary();
 
-		public static function registerDeviceProfile(id:String, width:Number, height:Number, csf:Number, dpi:Number):DeviceProfile
+		public static function registerDeviceProfile(id:String, width:Number, height:Number, dpi:Number, csf:Number):DeviceProfile
 		{
 			var profile:DeviceProfile = new DeviceProfile(width, height, csf, dpi);
 			profile._id = id;
 
-			_profilesById ||= new Dictionary();
 			_profilesById[id] = profile;
-			_profiles ||= new Array();
 			_profiles.push(profile);
 
 			return profile;

@@ -4,8 +4,6 @@ package talon.browser.desktop.plugins
 	import flash.display.NativeWindow;
 	import flash.events.NativeWindowBoundsEvent;
 	import flash.filesystem.File;
-	import flash.filesystem.FileMode;
-	import flash.filesystem.FileStream;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
@@ -20,18 +18,19 @@ package talon.browser.desktop.plugins
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.extensions.ITalonElement;
-	import starling.extensions.TalonFactory;
-	import starling.extensions.TalonQuery;
 	import starling.extensions.TalonSprite;
 	import starling.filters.FragmentFilter;
 	import starling.text.ITextCompositor;
 	import starling.text.TextField;
 	import starling.utils.Color;
+	import starling.utils.StringUtil;
 
 	import talon.Attribute;
 	import talon.browser.desktop.commands.OpenDocumentCommand;
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
+	import talon.browser.desktop.utils.FileUtil;
+	import talon.browser.desktop.utils.Promise;
 	import talon.browser.desktop.utils.Updater;
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;
@@ -39,25 +38,21 @@ package talon.browser.desktop.plugins
 	import talon.browser.platform.document.DocumentEvent;
 	import talon.browser.platform.document.log.DocumentMessage;
 	import talon.browser.platform.plugins.IPlugin;
-	import talon.browser.platform.popups.Popup;
 	import talon.browser.platform.popups.PopupManager;
+	import talon.browser.platform.utils.Command;
 	import talon.browser.platform.utils.DeviceProfile;
+	import talon.browser.platform.utils.Storage;
 	import talon.layouts.Layout;
 	import talon.utils.ParseUtil;
-	import talon.utils.TalonFactoryBase;
 
 	public class PluginDesktopUI extends EventDispatcher implements IPlugin
 	{
 		private var _platform:AppPlatform;
 		private var _menu:AppUINativeMenu;
-		private var _popups:PopupManager;
 		private var _updater:Updater;
 
-		private var _locale:Object;
-		private var _factory:TalonFactory;
-
-		private var _interfaceFont:ITextCompositor;
-		private var _interface:TalonSprite;
+		private var _uiFont:ITextCompositor;
+		private var _ui:TalonSprite;
 		private var _isolatorContainer:TalonSprite;
 		private var _isolator:DisplayObjectContainer;
 		private var _messages:TalonSprite;
@@ -67,105 +62,171 @@ package talon.browser.desktop.plugins
 		private var _templateProduceMessage:DocumentMessage;
 		private var _locked:Boolean;
 
-		private var _query:TalonQuery;
-
 		public function get id():String { return "UI"; }
 		public function get version():String{ return "1.0.0"; }
 		public function get versionAPI():String { return "1.0.0"; }
 		public function detach():void { }
 
-		private function query(selector:String):TalonQuery
-		{
-			return _query.reset(_interface).select(selector);
-		}
 
 		/** Call after starling initialize completed. */
 		public function attach(platform:AppPlatform):void
 		{
 			_platform = platform;
+			_updater = new Updater(AppConstants.APP_UPDATE_URL, AppConstants.APP_VERSION);
+			_isolator = new Sprite();
 
+			initListeners()
+				.then(initSettings)
+				.then(initLocale)
+				.then(initUI);
+		}
+		
+		private function initListeners():Promise
+		{
 			_platform.addEventListener(AppPlatformEvent.STARTED, onPlatformStart);
 			_platform.addEventListener(AppPlatformEvent.INVOKE, onPlatformInvoke);
 
 			_platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, refreshWindowFont);
 			_platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, refreshWindowTitle);
 			_platform.addEventListener(AppPlatformEvent.TEMPLATE_CHANGE, refreshWindowTitle);
-			_platform.profile.addEventListener(Event.CHANGE, refreshWindowTitle);
+			_platform.addEventListener(AppPlatformEvent.COMMAND_CHANGE, refreshCommandLock);
 
+			_platform.profile.addEventListener(Event.CHANGE, refreshWindowTitle);
 			_platform.profile.addEventListener(Event.CHANGE, onProfileChange);
 
-			_updater = new Updater(AppConstants.APP_UPDATE_URL, AppConstants.APP_VERSION);
-
-			_query = new TalonQuery();
-
-			var fileLocale:File = File.applicationDirectory.resolvePath("locales/en_US.properties");
-			if (fileLocale.exists)
-			{
-				var localeFile:String = readFile(fileLocale).toString();
-				var localeProperties:Object = ParseUtil.parseProperties(localeFile);
-				_platform.locale.merge(localeProperties, "en_US");
-				_platform.locale.language = "en_US";
-				_locale = _platform.locale.values;
-			}
-			else
-			{
-				_platform.dispatchEventWith(AppPlatformEvent.ERROR, false, "Can't find locale file:\n" + fileLocale.nativePath);
-				return;
-			}
-
-			_isolator = new Sprite();
-			_menu = new AppUINativeMenu(_platform, this, _locale);
-
-			refreshWindowTitle();
-
-			var fileInterface:File = File.applicationDirectory.resolvePath("layouts.zip");
-			if (!fileInterface.exists)
-			{
-				_platform.dispatchEventWith(AppPlatformEvent.ERROR, false, "Can't find interface file:\n" + fileInterface.nativePath);
-				return;
-			}
-
-			_popups = _platform.popups;
-			_factory = _platform.factory;
-			_factory.setTerminal("input", TalonFeatherTextInput);
-			_factory.importResources(_locale);
-			_factory.importArchiveAsync(readFile(fileInterface), onFactoryComplete);
-
-			// Windows
+			// Window
 			_platform.stage.nativeWindow.minSize = new Point(200, 100);
 			_platform.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.MOVE, onWindowMove);
 			_platform.stage.nativeWindow.addEventListener(NativeWindowBoundsEvent.RESIZING, onWindowResizing);
 
 			// Restore window position
-			var position:Point = _platform.settings.getValueOrDefault(AppConstants.SETTING_WINDOW_POSITION, Point);
+			var position:Point = _platform.settings.getValue(AppConstants.SETTING_WINDOW_POSITION, Point);
 			if (position)
 			{
 				_platform.stage.nativeWindow.x = position.x;
 				_platform.stage.nativeWindow.y = position.y;
 			}
-
+			
 			onProfileChange(null);
+
+			refreshWindowTitle();
+
+			var promise:Promise = new Promise();
+			promise.fulfill();
+			return promise;
+		}
+		
+		private function initSettings():void
+		{
+			var settingsFile:File = File.applicationDirectory.resolvePath("settings");
+			if (settingsFile.exists)
+			{
+				var settingsData:String = FileUtil.readText(settingsFile);
+				var settings:Storage = Storage.fromProperties(settingsData);
+				
+				var profiles:Vector.<String> = settings.getNames("profile");
+				for each (var profile:String in profiles)
+				{
+					var split:Array = settings.getValue(profile).split(";");
+					
+					if (split.length != 5) continue;
+					var name:String = split[0];
+					var width:int = split[1];
+					var height:int = split[2];
+					var dpi:int = split[3];
+					var csf:Number = split[4];
+					
+					if (!name) continue;
+					if (width <= 0) continue;
+					if (height <= 0) continue;
+					if (dpi <= 0) continue;
+					if (csf != csf || csf <= 0) continue;
+					
+					DeviceProfile.registerDeviceProfile(
+						split[0],
+						split[1],
+						split[2],
+						split[3],
+						split[4]
+					)
+				}
+			}
 		}
 
-		private function readFile(file:File):ByteArray
+		private function initLocale(lang:String):void
 		{
-			var result:ByteArray = null;
-			var stream:FileStream = new FileStream();
+			lang = "en_US";
+			
+			var filePath:String = StringUtil.format("locales/{0}.properties", lang);
+			var fileLocale:File = File.applicationDirectory.resolvePath(filePath);
+			if (fileLocale.exists)
+			{
+				var localeData:String = FileUtil.readText(fileLocale);
+				var localeProperties:Object = ParseUtil.parseProperties(localeData);
+				_platform.locale.merge(localeProperties, lang);
+				_platform.locale.language = lang;
+			}
+			else
+			{
+				throw new Error("Can't find locale file:\n" + fileLocale.nativePath);
+			}
+		}
+		
+		private function initUI():void
+		{
+			_menu = new AppUINativeMenu(_platform, this, _platform.locale.values);
 
-			try
+			var filePath:String = "layouts.zip";
+			var fileInterface:File = File.applicationDirectory.resolvePath(filePath);
+			if (fileInterface.exists)
 			{
-				result = new ByteArray();
-				stream.open(file, FileMode.READ);
-				stream.readBytes(result, 0, stream.bytesAvailable);
+				var interfaceBytes:ByteArray = FileUtil.readBytes(fileInterface);
+				_platform.factory.setTerminal("input", TalonFeatherTextInput);
+				_platform.factory.importResources(_platform.locale.values);
+				_platform.factory.importArchiveAsync(interfaceBytes, function():void
+				{
+					_ui = _platform.factory.build("Interface") as TalonSprite;
+					_uiFont = TextField.getCompositor("Source_Sans_Pro");
+					DisplayObjectContainer(_platform.starling.root).addChild(_ui);
+
+					// popups container
+					_platform.popups.host = _ui.query("#popups").getElementAt(0) as DisplayObjectContainer;
+					_platform.popups.addEventListener(Event.CHANGE, onPopupManagerChange);
+
+					// messages container
+					_messages = _ui.query("#messages").getElementAt(0) as TalonSprite;
+
+					// template container - split hierarchy with isolator for stopping style/resource inheritance
+					_templateContainer = new TalonSprite();
+					_templateContainer.node.setAttribute(Attribute.LAYOUT, Layout.ANCHOR);
+
+					_isolator.alignPivot();
+					_isolator.addChild(_templateContainer);
+
+					_isolatorContainer = _ui.query("#container").getElementAt(0) as TalonSprite;
+					_isolatorContainer.addEventListener(TouchEvent.TOUCH, onIsolatorTouch);
+					_isolatorContainer.addChild(_isolator);
+
+					// listeners
+					_platform.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, onBackgroundChange); 		onBackgroundChange(null);
+					_platform.settings.addPropertyListener(AppConstants.SETTING_STATS, onStatsChange); 					onStatsChange(null);
+					_platform.settings.addPropertyListener(AppConstants.SETTING_OUTLINE, onOutlineChange); 				onOutlineChange(null);
+					_platform.settings.addPropertyListener(AppConstants.SETTING_ZOOM, onZoomChange); 					onZoomChange(null);
+					_platform.settings.addPropertyListener(AppConstants.SETTING_ALWAYS_ON_TOP, onAlwaysOnTopChange); 	onAlwaysOnTopChange(null);
+
+					_platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, refreshCurrentTemplate);
+					_platform.addEventListener(AppPlatformEvent.TEMPLATE_CHANGE, refreshCurrentTemplate);
+					_platform.addEventListener(DocumentEvent.CHANGE, refreshCurrentTemplate);
+
+					// ready
+					spinner = locked = false;
+					refreshCurrentTemplate();
+					resizeTo(_platform.profile.width, _platform.profile.height);
+				})
 			}
-			catch (e:Error)
+			else
 			{
-				result = null;
-			}
-			finally
-			{
-				stream.close();
-				return result;
+				throw new Error("Can't find interface file:\n" + fileInterface.nativePath);
 			}
 		}
 
@@ -178,7 +239,7 @@ package talon.browser.desktop.plugins
 		private function onPlatformStart(e:Event):void
 		{
 			// [UPDATE]
-			var isEnableAutoUpdate:Boolean = _platform.settings.getValueOrDefault(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, Boolean, true);
+			var isEnableAutoUpdate:Boolean = _platform.settings.getValue(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, Boolean, true);
 			// TODO: Save for have default value != null
 			_platform.settings.setValue(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, isEnableAutoUpdate);
 
@@ -191,13 +252,13 @@ package talon.browser.desktop.plugins
 
 			// Document can be opened via invoke (click on document file)
 			// in this case need omit autoReopen feature
-			var isEnableReopen:Boolean = _platform.settings.getValueOrDefault(AppConstants.SETTING_AUTO_REOPEN, Boolean, false);
+			var isEnableReopen:Boolean = _platform.settings.getValue(AppConstants.SETTING_AUTO_REOPEN, Boolean, false);
 			if (isEnableReopen && invArgs.length == 0)
 			{
-				var template:String = _platform.settings.getValueOrDefault(AppConstants.SETTING_RECENT_TEMPLATE, String);
+				var template:String = _platform.settings.getValue(AppConstants.SETTING_RECENT_TEMPLATE, String);
 				if (template != null)
 				{
-					var recentArray:Array = _platform.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array);
+					var recentArray:Array = _platform.settings.getValue(AppConstants.SETTING_RECENT_DOCUMENTS, Array);
 					var recentPath:String = recentArray && recentArray.length ? recentArray[0] : null;
 					if (recentPath)
 					{
@@ -242,7 +303,7 @@ package talon.browser.desktop.plugins
 		private function onWindowResizing(e:NativeWindowBoundsEvent):void
 		{
 			// NativeWindow#resizable is read only, this is fix:
-			var needPrevent:Boolean = _platform.settings.getValueOrDefault(AppConstants.SETTING_LOCK_RESIZE, Boolean, false);
+			var needPrevent:Boolean = _platform.settings.getValue(AppConstants.SETTING_LOCK_RESIZE, Boolean, false);
 			if (needPrevent) e.preventDefault();
 		}
 
@@ -254,50 +315,10 @@ package talon.browser.desktop.plugins
 		//
 		// Logic
 		//
-		private function onFactoryComplete():void
-		{
-			_interface = _factory.build("Interface") as TalonSprite;
-			_interfaceFont = TextField.getCompositor("Source_Sans_Pro");
-			DisplayObjectContainer(_platform.starling.root).addChild(_interface);
-
-			// popups container
-			_popups.host = query("#popups").getElementAt(0) as DisplayObjectContainer;
-			_popups.addEventListener(Event.CHANGE, onPopupManagerChange);
- 
-			// messages container
-			_messages = query("#messages").getElementAt(0) as TalonSprite;
-
-			// template container - split hierarchy with isolator for stopping style/resource inheritance
-			_templateContainer = new TalonSprite();
-			_templateContainer.node.setAttribute(Attribute.LAYOUT, Layout.ANCHOR);
-
-			_isolator.alignPivot();
-			_isolator.addChild(_templateContainer);
-
-			_isolatorContainer = query("#container").getElementAt(0) as TalonSprite;
-			_isolatorContainer.addEventListener(TouchEvent.TOUCH, onIsolatorTouch);
-			_isolatorContainer.addChild(_isolator);
-
-			// listeners
-			_platform.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, onBackgroundChange); 		onBackgroundChange(null);
-			_platform.settings.addPropertyListener(AppConstants.SETTING_STATS, onStatsChange); 					onStatsChange(null);
-			_platform.settings.addPropertyListener(AppConstants.SETTING_OUTLINE, onOutlineChange); 				onOutlineChange(null);
-			_platform.settings.addPropertyListener(AppConstants.SETTING_ZOOM, onZoomChange); 					onZoomChange(null);
-			_platform.settings.addPropertyListener(AppConstants.SETTING_ALWAYS_ON_TOP, onAlwaysOnTopChange); 	onAlwaysOnTopChange(null);
-
-			_platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, refreshCurrentTemplate);
-			_platform.addEventListener(AppPlatformEvent.TEMPLATE_CHANGE, refreshCurrentTemplate);
-			_platform.addEventListener(DocumentEvent.CHANGE, refreshCurrentTemplate);
-
-			// ready
-			spinner = locked = false;
-			resizeTo(_platform.profile.width, _platform.profile.height);
-			refreshCurrentTemplate();
-		}
 
 		private function onPopupManagerChange(e:Event):void
 		{
-			locked = _popups.hasOpenedPopup;
+			locked = _platform.popups.hasOpenedPopup;
 			refreshOutline(_template);
 		}
 
@@ -305,21 +326,21 @@ package talon.browser.desktop.plugins
 		{
 			if (e.getTouch(e.currentTarget as DisplayObject, TouchPhase.BEGAN) != null)
 			{
-				if (_popups.hasOpenedPopup)
-					_popups.notify();
+				if (_platform.popups.hasOpenedPopup)
+					_platform.popups.notify();
 			}
 		}
 
 		private function onBackgroundChange(e:Event):void
 		{
-			var styleName:String = _platform.settings.getValueOrDefault(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
-			_interface.node.classes.parse(styleName);
+			var styleName:String = _platform.settings.getValue(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
+			_ui.node.classes.parse(styleName);
 			_platform.stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[styleName];
 		}
 
 		private function onStatsChange(e:Event):void
 		{
-			Starling.current.showStats = _platform.settings.getValueOrDefault(AppConstants.SETTING_STATS, Boolean, false);
+			Starling.current.showStats = _platform.settings.getValue(AppConstants.SETTING_STATS, Boolean, false);
 		}
 
 		private function onOutlineChange(e:Event):void
@@ -329,20 +350,20 @@ package talon.browser.desktop.plugins
 
 		private function onZoomChange(e:Event):void
 		{
-			zoom = _platform.settings.getValueOrDefault(AppConstants.SETTING_ZOOM, int, 100) / 100;
+			zoom = _platform.settings.getValue(AppConstants.SETTING_ZOOM, int, 100) / 100;
 		}
 
 		private function onAlwaysOnTopChange(e:Event):void
 		{
-			_platform.stage.nativeWindow.alwaysInFront = _platform.settings.getValueOrDefault(AppConstants.SETTING_ALWAYS_ON_TOP, Boolean, false);
+			_platform.stage.nativeWindow.alwaysInFront = _platform.settings.getValue(AppConstants.SETTING_ALWAYS_ON_TOP, Boolean, false);
 		}
 
 		public function resizeTo(width:int, height:int):void
 		{
-			if (_interface && (_interface.node.bounds.width != width || _interface.node.bounds.height != height))
+			if (_ui && (_ui.node.bounds.width != width || _ui.node.bounds.height != height))
 			{
-				_interface.node.bounds.setTo(0, 0, width, height);
-				_interface.node.invalidate();
+				_ui.node.bounds.setTo(0, 0, width, height);
+				_ui.node.invalidate();
 			}
 
 			if (_templateContainer)
@@ -359,8 +380,8 @@ package talon.browser.desktop.plugins
 		private function refreshWindowFont():void
 		{
 			// If you close file which contain internal browser font :-)
-			if (_interfaceFont != null)
-				TextField.registerCompositor(_interfaceFont, "Source_Sans_Pro")
+			if (_uiFont != null)
+				TextField.registerCompositor(_uiFont, "Source_Sans_Pro")
 		}
 
 		private function refreshWindowTitle():void
@@ -370,7 +391,7 @@ package talon.browser.desktop.plugins
 			// Opened document/template
 			if (_platform.document)
 			{
-				var title:String = _platform.document.properties.getValueOrDefault(DesktopDocumentProperty.PROJECT_NAME, String);
+				var title:String = _platform.document.properties.getValue(DesktopDocumentProperty.PROJECT_NAME, String);
 				if (_platform.templateId) title += "/" + _platform.templateId;
 				result.push(title);
 			}
@@ -442,7 +463,7 @@ package talon.browser.desktop.plugins
 				for (var i:int = 0; i < _platform.document.messages.numMessages; i++)
 				{
 					var messageData:DocumentMessage = _platform.document.messages.getMessageAt(i);
-					var messageView:ITalonElement = _factory.build("Message");
+					var messageView:ITalonElement = _platform.factory.build("Message");
 					messageView.node.setAttribute("file", messageData.location);
 					messageView.node.setAttribute(Attribute.TEXT, messageData.text);
 					messageView.node.setAttribute(Attribute.CLASS, messageData.level==2?"error":"warning");
@@ -510,6 +531,13 @@ package talon.browser.desktop.plugins
 				}
 			}
 		}
+		
+		private function refreshCommandLock(e:Event):void
+		{
+			var command:Command = Command(e.data);
+			if (command.isExecuting) addLock(command)
+			else removeLock(command);
+		}
 
 		private function produce(templateId:String):DisplayObject
 		{
@@ -527,23 +555,43 @@ package talon.browser.desktop.plugins
 
 			return result;
 		}
-
+		
 		//
-		// Drag&Drop
+		// Lock
 		//
+		
+		private var _locks:Vector.<Object> = new <Object>[];
+		
+		private function addLock(object:Object):void
+		{
+			if (_locks.indexOf(object) == -1)
+			{
+				_locks.push(object);
+				locked = spinner = _locks.length > 0;
+			}
+		}
+		
+		private function removeLock(object:Object):void
+		{
+			var indexOf:int = _locks.indexOf(object);
+			if (indexOf != -1)
+			{
+				_locks.removeAt(indexOf);
+				locked = spinner = _locks.length > 0;
+			}
+		}
 
 		//
 		// Properties
 		//
-		public function get factory():TalonFactoryBase { return _factory; }
 		public function get template():DisplayObject { return _template; }
 		public function get updater():Updater { return _updater; }
-		public function get popups():PopupManager { return _popups; }
+		public function get popups():PopupManager { return _platform.popups; }
 
-		public function get spinner():Boolean { return ParseUtil.parseBoolean(_interface.query("#spinner")[Attribute.VISIBLE]); }
+		public function get spinner():Boolean { return ParseUtil.parseBoolean(_ui.query("#spinner")[Attribute.VISIBLE]); }
 		public function set spinner(value:Boolean):void
 		{
-			var spin:ITalonElement = _interface.query("#spinner").getElementAt(0);
+			var spin:ITalonElement = _ui.query("#spinner").getElementAt(0);
 			if (spin)
 			{
 				spin.node.setAttribute(Attribute.VISIBLE, value.toString());
@@ -592,7 +640,7 @@ package talon.browser.desktop.plugins
 
 		public function get outline():Boolean
 		{
-			return _platform.settings.getValueOrDefault(AppConstants.SETTING_OUTLINE, Boolean, false);
+			return _platform.settings.getValue(AppConstants.SETTING_OUTLINE, Boolean, false);
 		}
 	}
 }
@@ -660,14 +708,15 @@ class AppUINativeMenu
 		insert("view/theme/light",             new  ChangeSettingCommand(_platform, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
 		insert("view/profile");
 		insert("view/profile/custom",          new  OpenPopupCommand(_platform, ProfilePopup, platform.profile), "ctrl-0");
-		insert("view/profile/-");
 
 		var profiles:Vector.<DeviceProfile> = DeviceProfile.getProfiles();
+		if (profiles.length > 0) insert("view/profile/-");
 		for (var i:int = 0; i < profiles.length; i++)
 		{
 			var profileNumber:String = (i+1).toString();
 			var profile:DeviceProfile = profiles[i];
-			insert("view/profile/" + profile.id, new ChangeProfileCommand(_platform, profile), "ctrl-" + profileNumber);
+			var profileShortcut:String = i < 9 ? "ctrl-" + profileNumber : null;
+			insert("view/profile/" + profile.id, new ChangeProfileCommand(_platform, profile), profileShortcut);
 		}
 
 		insert("view/-");
@@ -705,7 +754,7 @@ class AppUINativeMenu
 
 	private function refreshRecentOpenedDocumentsList():void
 	{
-		var recent:Array = _platform.settings.getValueOrDefault(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []).filter(isFileByPathExist);
+		var recent:Array = _platform.settings.getValue(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []).filter(isFileByPathExist);
 		if (isEqual(recent, _prevDocuments)) return;
 		_prevDocuments = recent;
 

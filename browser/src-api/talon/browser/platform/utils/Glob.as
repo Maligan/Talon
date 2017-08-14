@@ -2,7 +2,20 @@ package talon.browser.platform.utils
 {
 	public class Glob
 	{
-		public static function parse(string:String):Glob
+		private static const _cache:Object = {};
+
+		public static function match(string:String, patterns:String, result:Boolean = false):Boolean
+		{
+			var globs:Vector.<Glob> = _cache[patterns] ||= Vector.<Glob>(patterns.split(/\s*;\s*/).map(parse));
+
+			for each (var glob:Glob in globs)
+				if (glob.regexp.exec(string))
+					return !glob.negate;
+
+			return result;
+		}
+
+		private static function parse(string:String, index:int = 0, array:Array = null):Glob
 		{
 			var glob:Glob = new Glob();
 			glob.negate = string && string.length && string.charAt(0) == "!";
@@ -32,21 +45,7 @@ package talon.browser.platform.utils
 			return string.replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'), '\\$&');
 		}
 
-		public static function matchPattern(string:String, pattern:String, result:Boolean = true):Boolean
-		{
-			var array:Array = pattern.split(";");
-
-			for each (var pattern:String in array)
-			{
-				var glob:Glob = parse(pattern);
-				if (glob.regexp.exec(string))
-					return !glob.negate;
-			}
-
-			return result;
-		}
-
-		public var regexp:RegExp;
-		public var negate:Boolean;
+		private var regexp:RegExp;
+		private var negate:Boolean;
 	}
 }

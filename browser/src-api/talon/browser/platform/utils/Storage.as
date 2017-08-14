@@ -1,14 +1,13 @@
 package talon.browser.platform.utils
 {
 	import flash.net.SharedObject;
-	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
-	import flash.utils.getDefinitionByName;
 
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
 	import talon.utils.ParseUtil;
+	import talon.utils.OrderedObject;
 
 	public class Storage extends EventDispatcher
 	{
@@ -31,35 +30,12 @@ package talon.browser.platform.utils
 
 			return storage;
 		}
-
-		public static function fromPropertiesFile(file:*):Storage
+		
+		public static function fromProperties(properties:String):Storage
 		{
 			var storage:Storage = new Storage();
-			var bytes:ByteArray = readFile(file);
-			var string:String = bytes.toString();
-			storage._inner = ParseUtil.parseProperties(string);
+			storage._inner = ParseUtil.parseProperties(properties, new OrderedObject());
 			return storage;
-		}
-
-		private static function readFile(file:*):ByteArray
-		{
-			const FileStream:Class = getDefinitionByName("flash.filesystem.FileStream") as Class;
-			const FileMode:Class = getDefinitionByName("flash.filesystem.FileMode") as Class;
-
-			var result:ByteArray = new ByteArray();
-			var stream:* = new FileStream();
-
-			try
-			{
-				stream.open(file, FileMode.READ);
-				stream.readBytes(result, 0, stream.bytesAvailable);
-			}
-			finally
-			{
-				stream.close();
-			}
-
-			return result;
 		}
 
 		private var _listeners:Dictionary;
@@ -92,7 +68,7 @@ package talon.browser.platform.utils
 			removeEventListener(Event.CHANGE, _listeners[listener]);
 		}
 
-		public function getValueOrDefault(name:String, type:Class = null, value:* = null):*
+		public function getValue(name:String, type:Class = null, value:* = null):*
 		{
 			return _inner.hasOwnProperty(name) ? (type ? _inner[name] as type : _inner[name]) : value;
 		}

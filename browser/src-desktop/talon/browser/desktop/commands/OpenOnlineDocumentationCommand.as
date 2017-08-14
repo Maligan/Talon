@@ -14,7 +14,7 @@ package talon.browser.desktop.commands
 			super(platform);
 		}
 
-		public override function execute():void
+		override public function execute():void
 		{
 			var request:URLRequest = new URLRequest(AppConstants.APP_DOCUMENTATION_URL);
 			navigateToURL(request);

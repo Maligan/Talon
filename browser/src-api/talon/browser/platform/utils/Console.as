@@ -100,7 +100,7 @@ package talon.browser.platform.utils
 			input.filters = TEXT_FILTERS;
 			input.selectable = true;
 			input.height = marker.height;
-			input.restrict = "A-Za-z0-9 ._,':{}\"\\-+\*\$;[]()?";
+			input.restrict = "A-Za-z0-9 ._,':{}\"\\-+\*\$;[]()?!";
 			input.tabEnabled = false;
 			addChild(input);
 

@@ -63,9 +63,9 @@ package talon.browser.desktop.popups
 			_wheel.addEventListener(Event.TRIGGERED, onMouseWheel);
 
 			// read prev state
-			var lastQuery:String = _app.document.properties.getValueOrDefault(LAST_QUERY, String, "");
-			var lastOffset:int   = _app.document.properties.getValueOrDefault(LAST_OFFSET, int, 0);
-			var lastCursor:int   = _app.document.properties.getValueOrDefault(LAST_CURSOR, int, 0);
+			var lastQuery:String = _app.document.properties.getValue(LAST_QUERY, String, "");
+			var lastOffset:int   = _app.document.properties.getValue(LAST_OFFSET, int, 0);
+			var lastCursor:int   = _app.document.properties.getValue(LAST_CURSOR, int, 0);
 
 			// reset prev state
 			_app.document.properties.setValue(LAST_QUERY, "");

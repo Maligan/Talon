@@ -9,7 +9,6 @@ package talon.browser.platform.popups
 	{
 		private var _manager:PopupManager;
 		private var _data:Object;
-		private var _juggler:Juggler;
 
 		internal final function ctor(manager:PopupManager, data:Object = null):void
 		{
@@ -36,7 +35,7 @@ package talon.browser.platform.popups
 
 		protected final function get juggler():Juggler
 		{
-			return _juggler;
+			return _manager.juggler;
 		}
 
 		protected final function get manager():PopupManager
@@ -48,7 +47,7 @@ package talon.browser.platform.popups
 		// Code sugar
 		//
 
-		protected final function close():void
+		public final function close():void
 		{
 			manager.close(this);
 			dispose();

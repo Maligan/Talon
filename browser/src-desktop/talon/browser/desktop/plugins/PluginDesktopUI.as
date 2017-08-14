@@ -30,8 +30,8 @@ package talon.browser.desktop.plugins
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.desktop.utils.FileUtil;
+	import talon.browser.desktop.utils.GithubUpdater;
 	import talon.browser.desktop.utils.Promise;
-	import talon.browser.desktop.utils.Updater;
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;
 	import talon.browser.platform.AppPlatformEvent;
@@ -39,7 +39,6 @@ package talon.browser.desktop.plugins
 	import talon.browser.platform.document.log.DocumentMessage;
 	import talon.browser.platform.plugins.IPlugin;
 	import talon.browser.platform.popups.PopupManager;
-	import talon.browser.platform.utils.Command;
 	import talon.browser.platform.utils.DeviceProfile;
 	import talon.browser.platform.utils.Storage;
 	import talon.layouts.Layout;
@@ -49,7 +48,7 @@ package talon.browser.desktop.plugins
 	{
 		private var _platform:AppPlatform;
 		private var _menu:AppUINativeMenu;
-		private var _updater:Updater;
+		private var _updater:GithubUpdater;
 
 		private var _uiFont:ITextCompositor;
 		private var _ui:TalonSprite;
@@ -72,7 +71,7 @@ package talon.browser.desktop.plugins
 		public function attach(platform:AppPlatform):void
 		{
 			_platform = platform;
-			_updater = new Updater(AppConstants.APP_UPDATE_URL, AppConstants.APP_VERSION);
+			_updater = new GithubUpdater("maligan/talon", "0.0.0");
 			_isolator = new Sprite();
 
 			initListeners()
@@ -89,7 +88,6 @@ package talon.browser.desktop.plugins
 			_platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, refreshWindowFont);
 			_platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, refreshWindowTitle);
 			_platform.addEventListener(AppPlatformEvent.TEMPLATE_CHANGE, refreshWindowTitle);
-			_platform.addEventListener(AppPlatformEvent.COMMAND_CHANGE, refreshCommandLock);
 
 			_platform.profile.addEventListener(Event.CHANGE, refreshWindowTitle);
 			_platform.profile.addEventListener(Event.CHANGE, onProfileChange);
@@ -219,7 +217,7 @@ package talon.browser.desktop.plugins
 					_platform.addEventListener(DocumentEvent.CHANGE, refreshCurrentTemplate);
 
 					// ready
-					spinner = locked = false;
+					locked = false;
 					refreshCurrentTemplate();
 					resizeTo(_platform.profile.width, _platform.profile.height);
 				})
@@ -244,7 +242,10 @@ package talon.browser.desktop.plugins
 			_platform.settings.setValue(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, isEnableAutoUpdate);
 
 			// FIXME: Auto check
-			// if (isEnableAutoUpdate) _updater.checkNow();
+			 if (isEnableAutoUpdate) _updater.check().then(function(url:String):void
+			 {
+				 if (url) trace("[Updater]", "There is new version:", url);
+			 });
 
 			// [REOPEN]
 			var invArgs:Array = e.data as Array;
@@ -407,7 +408,7 @@ package talon.browser.desktop.plugins
 			// Zoom (if non 100%)
 			if (zoom != 1) result.push(int(zoom * 100) + "%");
 			// Application name + version
-			result.push(AppConstants.APP_NAME + " " + AppConstants.APP_VERSION);
+			result.push([AppConstants.APP_NAME, AppConstants.APP_VERSION, AppConstants.APP_VERSION_LABEL].join(" "));
 
 			_platform.stage.nativeWindow.title = result.join(" - ");
 		}
@@ -532,13 +533,6 @@ package talon.browser.desktop.plugins
 			}
 		}
 		
-		private function refreshCommandLock(e:Event):void
-		{
-			var command:Command = Command(e.data);
-			if (command.isExecuting) addLock(command)
-			else removeLock(command);
-		}
-
 		private function produce(templateId:String):DisplayObject
 		{
 			var result:DisplayObject = null;
@@ -557,55 +551,12 @@ package talon.browser.desktop.plugins
 		}
 		
 		//
-		// Lock
-		//
-		
-		private var _locks:Vector.<Object> = new <Object>[];
-		
-		private function addLock(object:Object):void
-		{
-			if (_locks.indexOf(object) == -1)
-			{
-				_locks.push(object);
-				locked = spinner = _locks.length > 0;
-			}
-		}
-		
-		private function removeLock(object:Object):void
-		{
-			var indexOf:int = _locks.indexOf(object);
-			if (indexOf != -1)
-			{
-				_locks.removeAt(indexOf);
-				locked = spinner = _locks.length > 0;
-			}
-		}
-
-		//
 		// Properties
 		//
 		public function get template():DisplayObject { return _template; }
-		public function get updater():Updater { return _updater; }
+		public function get updater():GithubUpdater { return _updater; }
 		public function get popups():PopupManager { return _platform.popups; }
 
-		public function get spinner():Boolean { return ParseUtil.parseBoolean(_ui.query("#spinner")[Attribute.VISIBLE]); }
-		public function set spinner(value:Boolean):void
-		{
-			var spin:ITalonElement = _ui.query("#spinner").getElementAt(0);
-			if (spin)
-			{
-				spin.node.setAttribute(Attribute.VISIBLE, value.toString());
-
-				Starling.juggler.removeTweens(spin);
-				value && Starling.juggler.tween(spin, 1, {
-					repeatCount: 0,
-					onUpdate: function():void {
-						spin.node.setAttribute(Attribute.TRANSFORM, "rotate(" + (Starling.juggler.elapsedTime * 180) + "deg)");
-					}
-				})
-			}
-		}
-		
 		public function get locked():Boolean { return _locked; }
 		public function set locked(value:Boolean):void
 		{

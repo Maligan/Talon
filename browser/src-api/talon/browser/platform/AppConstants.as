@@ -10,14 +10,18 @@ package talon.browser.platform
 		public static const APP_NAME:String = "Talon Browser";
 		public static const APP_UPDATE_URL:String = "https://raw.githubusercontent.com/Maligan/Talon/master/browser/desktop/TalonBrowserUpdate.xml";
 		public static const APP_DOCUMENTATION_URL:String = "https://github.com/Maligan/Talon/blob/master/docs/index.md";
-		public static function get APP_VERSION():String
+
+		public static function get APP_VERSION_LABEL():String { return readDescriptor("versionLabel") }
+		public static function get APP_VERSION():String { return readDescriptor("versionNumber") }
+		
+		private static function readDescriptor(key:String):String
 		{
 			try
 			{
 				var napp:Class = getDefinitionByName("flash.desktop.NativeApplication") as Class;
 				var xml:XML = napp["nativeApplication"]["applicationDescriptor"];
 				var ns:Namespace = xml.namespace();
-				return xml.ns::versionNumber;
+				return xml.ns::[key];
 			}
 			catch (e:Error)
 			{

@@ -6,7 +6,6 @@ package talon.browser.desktop.commands
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.utils.ByteArray;
-	import flash.utils.setTimeout;
 
 	import starling.events.Event;
 
@@ -19,6 +18,7 @@ package talon.browser.desktop.commands
 	import talon.browser.desktop.filetypes.XMLLibraryAsset;
 	import talon.browser.desktop.filetypes.XMLTemplateAsset;
 	import talon.browser.desktop.plugins.PluginDesktopUI;
+	import talon.browser.desktop.popups.PromisePopup;
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.desktop.utils.DesktopFileReference;
 	import talon.browser.desktop.utils.FileUtil;
@@ -127,6 +127,12 @@ package talon.browser.desktop.commands
 			if (_packer == null) complete();
 			else
 			{
+				var popup:PromisePopup = new PromisePopup();
+				_ui.popups.open(popup);
+				popup.addEventListener(Event.CANCEL, _packer.stop);
+				popup.setHeader("Publish As...");
+				popup.setStateProcess("Pack sprites with TexturePacker...");
+				
 				 begin()
 					.then(onPackerSuccess, onPackerError)
 					.then(complete);
@@ -134,9 +140,7 @@ package talon.browser.desktop.commands
 			
 			function begin():Promise
 			{
-				setTimeout(dispatchEventChange, 500);
-				
-				return _packerPromise =_packer.exec(filesForPack);
+				return _packerPromise = _packer.exec(filesForPack);
 			}
 
 			function onPackerSuccess(result:Vector.<File>):void
@@ -153,9 +157,11 @@ package talon.browser.desktop.commands
 
 			function complete():void
 			{
+				popup.close();
+				_packerPromise = null;
+
 				if (files) writeZip(target, files);
 				
-				_packerPromise = null;
 				dispatchEventChange();
 			}
 		}
@@ -169,6 +175,7 @@ package talon.browser.desktop.commands
 			
 			// Save file
 			var fileStream:FileStream = new FileStream();
+
 			try
 			{
 				fileStream.open(file, FileMode.WRITE);

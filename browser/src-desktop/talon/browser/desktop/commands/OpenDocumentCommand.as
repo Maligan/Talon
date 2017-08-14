@@ -47,10 +47,9 @@ package talon.browser.desktop.commands
 
 			// NB! Set as current document immediately (before any references)
 			var documentProperties:Storage = config.exists ? Storage.fromProperties(FileUtil.readText(config)) : new Storage();
-			var document:Document = platform.document = new Document(documentProperties);
-
-			// Save project dir
+			var document:Document = new Document(documentProperties);
 			document.properties.setValue(DesktopDocumentProperty.PROJECT_DIR, dir.url);
+			platform.document = document;
 			
 			var sourcePathProperty:String = document.properties.getValue(DesktopDocumentProperty.SOURCE_PATH, String);
 			var sourcePath:File = config.parent.resolvePath(sourcePathProperty || config.parent.nativePath);

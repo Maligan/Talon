@@ -200,9 +200,9 @@ package talon.browser.desktop.utils
 		public function get command():Command { return _command; }
 		public function set command(value:Command):void
 		{
-			_command && _command.removeEventListener(Command.EVENT_CHANGE, refreshStatus);
+			_command && _command.removeEventListener(Event.CHANGE, refreshStatus);
 			_command = value;
-			_command && _command.addEventListener(Command.EVENT_CHANGE, refreshStatus);
+			_command && _command.addEventListener(Event.CHANGE, refreshStatus);
 			refreshStatus();
 		}
 

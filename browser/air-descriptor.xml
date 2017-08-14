@@ -5,8 +5,8 @@
   <filename>Talon Browser</filename>
   <name>Talon Browser</name>
   <versionNumber>0.5.1</versionNumber>
-  <supportedProfiles>desktop extendedDesktop</supportedProfiles>
-
+  <versionLabel>BETA</versionLabel>
+    
   <initialWindow>
     <content>SWF</content>
     <visible>false</visible>

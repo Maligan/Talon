@@ -1,13 +1,10 @@
 package talon.browser.desktop.popups
 {
 	import flash.ui.Keyboard;
-	import flash.ui.MouseCursor;
 
 	import starling.core.Starling;
-
 	import starling.display.DisplayObject;
 	import starling.events.Event;
-
 	import starling.utils.StringUtil;
 
 	import talon.Attribute;

@@ -4,76 +4,54 @@ Next attributes used within Talon:
 
 ### Attribute list
 
-#### `id`
-#### `type`
-class
-state
-width
-height
-minWidth
-minHeight
-maxWidth
-maxHeight
-margin
-marginTop
-marginRight
-marginBottom
-marginLeft  
-padding     
-paddingTop      
-paddingRight    
-paddingBottom   
-paddingLeft     
-anchor          
-anchorTop       
-anchorRight     
-anchorBottom      
-anchorLeft        
-backgroundImage   
-backgroundTint    
-background9Scale  
-backgroundColor   
-backgroundAlpha   
-backgroundBlendMode | `auto`                        | `auto`, `none`, `normal`, `add`, `multiply`, `screen`, `erase`, `mask`, `below`
-backgroundFillMode
-fontColor         
-fontName          
-fontSize          
-fontSharpness     
-alpha             
-blendMode           | `auto`                        | `add`, `auto`, `below`, `erase`, `mask`, `multiply`, `none`, `normal`, `screen` (from [starling.display.BlendMode](https://github.com/Gamua/Starling-Framework/blob/master/starling%2Fsrc%2Fstarling%2Fdisplay%2FBlendMode.as))
-cursor              | `auto`                        | `arrow`, `auto`, `button`, `hand`, `ibeam` (from [flash.ui.MouseCursor](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/ui/MouseCursor.html))
-layout              | `flow`                        | `flow`, `abs`, `grid`
-visible             
-filter              
-position            
-x                   
-y                   
-pivot               
-pivotX              
-pivotY              
-orientation         
-halign              
-valign             
-ihalign            
-ivalign            
-gap                
-interline          
-wrap               
-break              
-autoScale          
-src                
-text               
-
-### Types
-Gauge - measurment value in format `NUMBER[UNIT]`, example: `10px, 50%, 3*`,
-
-- Unit is optional field, by default it is equals to `px`
-- Next units is implemented: 
-	- none ?
-	- px
-	- dp
-	- mm
-	- em
-	- %
-	- *
+#### Common
+* <a href="">id</a>
+* <a href="">type</a>
+* <a href="">class</a>
+* <a href="">state</a>
+#### Fill
+* <a href="">fill</a>
+* <a href="">fillAlpha</a>
+* <a href="">fillBlendMode</a>
+* <a href="">fillTint</a>
+* <a href="">fillMode (fillModeHorizontal, fillModeVertical)</a>
+* <a href="">fillScale (fillScaleHorizontal, fillScaleVertical)</a>
+* <a href="">fillStretchGrid (fillStretchGridTop, fillStretchGridRight, fillStretchGridBottom, fillStretchGridLeft)</a>
+* <a href="">fillAlign (fillAlignHorizontal, fillAlignVertical)</a>
+#### Font
+* <a href="">fontColor</a>
+* <a href="">fontName</a>
+* <a href="">fontSize</a>
+* <a href="">fontAutoScale</a>
+#### Mouse
+* <a href="">touchMode</a>
+* <a href="">touchEvents</a>
+* <a href="">cursor</a>
+#### Layout
+* <a href="">width/height</a>
+* <a href="">minWidth/maxWidth/minHeight/maxHeight</a>
+* <a href="">margin (marginTop, marginRight, marginBottom, marginLeft)</a>
+* <a href="">padding (paddingTop, paddingRight, paddingBottom, paddingLeft)</a>
+#### Type `div` related
+* <a href="">anchor (top, right, bottom, left)</a>
+* <a href="">layout</a>
+* <a href="">orientation</a>
+* <a href="">align (halign, valign)</a>
+* <a href="">gap</a>
+* <a href="">interline</a>
+* <a href="">wrap</a>
+* <a href="">alignSelf (halignSelf, valignSelf)</a>
+* <a href="">break (breakBefore, breakAfter)</a>
+#### Type `img`
+* <a href="">source</a>
+* <a href="">sourceTint</a>
+#### Type `txt`
+* <a href="">text</a>
+#### Display
+* <a href="">meshStyle</a>
+* <a href="">blendMode</a>
+* <a href="">visible</a>
+* <a href="">filter</a>
+* <a href="">alpha</a>
+* <a href="">transform</a>
+* <a href="">pivot (pivotX, pivotY)</a>

@@ -103,7 +103,8 @@ package talon.browser.desktop.plugins
 
 		private function checkProperties(ref:DesktopFileReference):Boolean
 		{
-			return ref.extension == "properties";
+			return ref.extension == "properties"
+				|| ref.extension == "props";
 		}
 
 		private function checkDirectory(ref:DesktopFileReference):Boolean

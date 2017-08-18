@@ -95,11 +95,11 @@ Let's plunge into memories and create more complex example. For this add next fi
 
 	![coin](img/coin.png)
 
-Each of files will be loaded and processed according to theirs content. From `menu.xml` will be created new template — *Menu*, styles from `menu.css` will be merged to global style scope and `coin.png` will be loaded as picture.
-
-Look at result:
+Each of files will be loaded and processed according to theirs content. From `menu.xml` will be created new template — *Menu*, styles from `menu.css` will be merged to global style scope and `coin.png` will be loaded as picture:
 
 ![](img/intro_2_1.png)
+
+Do you have a flashback? I do.
 
 ## Templating
 Advantages of [wise templating](https://en.wikipedia.org/wiki/Code_reuse#Criticism) are simplicity in apps, speed up development and in my opinion main one - saving developers nerves.
@@ -160,23 +160,22 @@ For example go change [Starling's First Steps: Create your Game](http://gamua.co
 
 ```actionscript
 import starling.display.Sprite;
-
-import talon.utils.TalonFactory;
+import starling.extensions.TalonFactory;
 
 public class Game extends Sprite
 {
 	[Embed(source="helloworld.zip")]
 	private static const helloworld_zip:Class;
 
-    public function Game()
-    {
+	public function Game()
+	{
 		var talon:TalonFactory = new TalonFactory();
 
 		talon.importArchiveAsync(new helloworld_zip(), function():void
 		{
-			addChild(talon.build("Popup") as Sprite);
+			addChild(talon.build("BankPopup") as Sprite);
 		}
-    }
+	}
 }
 ```
 

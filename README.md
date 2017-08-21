@@ -18,7 +18,7 @@ Checkout detailed [documentation](./docs/index.md).
 3. Create new file `hello.xml` in `helloworld` folder:
 
 	```xml
-	<def ref="hello">
+	<def ref="Hello">
 		<txt text="Hello World" fontSize="32px" fontColor="white" />
 	</def>
 	```
@@ -32,7 +32,7 @@ Checkout detailed [documentation](./docs/index.md).
 
 ## How browser works?
 
-> Talon Browser follow [interactive programming](https://en.wikipedia.org/wiki/Interactive_programming) approach — it start watch any file within opened folder (recursively).  
+Talon Browser follow [interactive programming](https://en.wikipedia.org/wiki/Interactive_programming) approach — it start watch any file within opened folder (recursively).  
 And after any changes browser try to reload file and refresh result.
 
 Let's plunge into memories and create more complex example. For this add next files into `helloworld` folder:
@@ -41,21 +41,35 @@ Let's plunge into memories and create more complex example. For this add next fi
 
 	```xml
 	<def ref="Menu">
-		<div class="Menu" header="Game Menu">
-			<txt id="header" text="@header" />
+		<div class="Menu">
+			<txt id="header" text="$menu.header" />
 			<div id="buttons" layout="flow" orientation="vertical" top="16px">
-				<txt text="Help" />
-				<txt text="System" />
-				<txt text="Interface" />
-				<txt text="Macros" marginBottom="16px" />
-				<txt text="Logout" />
-				<txt text="Exit Game" marginBottom="16px"/>
-				<txt text="Return to Game" />
+				<txt text="$menu.help" />
+				<txt text="$menu.system" />
+				<txt text="$menu.interface" />
+				<txt text="$menu.macros" marginBottom="16px" />
+				<txt text="$menu.logout" />
+				<txt text="$menu.exit" marginBottom="16px"/>
+				<txt text="$menu.return" />
 			</div>
 		</div>
 	</def>
 	```
-2. Stylesheet `menu.css`
+2. Properties `lang.props` (read more about *.properties* file format on [wikipedia article](https://en.wikipedia.org/wiki/.properties))
+
+	```properties
+	menu.header = Game Menu
+	menu.help = Help
+	menu.system = System
+	menu.interface = Interface
+	menu.macros = Macros
+	menu.logout = Log Out
+	menu.exit = Exit Game
+	menu.return = Return to Game
+	```
+
+3. Stylesheet `menu.css`  
+   Do not try to understand all of properties just now (they are not same as in W3C CSS) they are explained in [other articles](#whats-next).
 
 	```css
 	.Menu {
@@ -108,9 +122,7 @@ Let's plunge into memories and create more complex example. For this add next fi
 	}
 	```
 
-	Do not try to understand all of properties just now (they are not same as in W3C CSS) they are explained in [other articles](#whats-next).
-
-3. And this carefully picked up coin image `coin.png`
+4. And this carefully picked up coin image `coin.png`
 
 	![coin](docs/img/coin.png)
 
@@ -127,51 +139,57 @@ Template — reusable tree of elements. It can be *applied* at any **leaf** node
 
 ![Screenshot2](docs/img/intro_4.png)
 
-There are two sintax way to apply template in TML — via ref and via tag, go look at this methods. Make same changes in `button.xml`:
+There are two sintax way to apply template in TML — via ref and via tag, go look at this methods on next example.
+
+Add new `bank.xml`:
 
 ```xml
-<def ref="Button" tag="button">
-	<node class="button" label="Label">
-		<label text="@label" />
-		<image source="@icon" />
-		<label text="@count" />
-	</node>
-</def>
+<lib>
+	<def ref="BankPopup">
+		<node>
+			<!-- Insert template via ref -->
+			<use ref="BankPopup_Product" update="id: buy1; price: 10" />	
+			<!-- Insert template via tag -->
+			<product id="buy10" price="50" />
+		</node>
+	</def>
+
+	<def ref="BankPopup_Product" tag="product">
+		<txt text="@price" />
+	</def>
+
+	<style>
+		.BankPopup {
+			fill: $popup;
+		}
+
+		.BankPopup_Product {
+			fill: $popup_product;
+		}
+	</style>
+
+	<props>
+		bank.header = Bank
+		bank.buy = Buy
+	</props>
+</lib>
 ```
 
-Beside new `def` attribute `tag` you can notice attriubtes *binding* (via *@-notation*). If you are not familiar with [data binding](https://en.wikipedia.org/wiki/Data_binding) technique it's not a problem — *@-notation* just bind attribute to *template root* attribute. Binded attributes changes together.
+Контейнер `lib` позволяет не создавать файл под каждый шаблон\стили\свойства а записывать их в соответсвующие теги `def`, `style`, `props`. Библиотеки позволят вам держать структуру файлов проекта в чистоте - пользуйтесь им.
 
-Lets create one more template `popup.xml`:
+Как вы могли заметить вставка шаблона производится либо по его уникальному идентификатору (который `ref`) c обновлением аттрибутов через `update`. Либо через назначение уникального тега шаблону который необходимо повторно использовать.
 
-```xml
-<def ref="Popup">
-	<node class="popup">
-		<label text="You sure want to buy Vorpal Blade?" />
-		<!-- Insert template via ref -->
-		<use ref="Button" update="label: Cancel" />
-		<!-- Insert template via tag -->
-		<button label="Buy" icon="$coin" count="30" />
-	</node>
-</def>
-```
+И ещё одна интересность - это `@-нотация` которая производить привязу аттрибутов узла к *корню шаблона*. Связанные атрибуты меняются одновременно.
 
-And add same styles for beauty `popup.css`:
+![](docs/img/intro_1.png)
 
-```css
-.popup {
-	fill: gray;
-}
-```
-
-This is result:
-
-![Screenshot2](docs/img/intro_3.png)
+<!--Beside new `def` attribute `tag` you can notice attriubtes *binding* (via *@-notation*). If you are not familiar with [data binding](https://en.wikipedia.org/wiki/Data_binding) technique it's not a problem — *@-notation* just bind attribute to *template root* attribute. Binded attributes changes together.-->
 
 ## Import layouts into apps
 
 If you use talon not only for mockups, once you need import you layouts into app. There are **really many ways** to do it, let show easiest:
 
-1. Pack to zip-archive folder via `File -> Publish` (or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd>)
+1. Pack to zip-archive via `File -> Publish As...` (or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd>)
 2. Place zip-archive into source path folder, add it to compile with `[Embed]` meta tag.
 3. Load embedded data to `starling.extensions.TalonFactory`, and use it to instantiate template.
 
@@ -200,7 +218,7 @@ public class Game extends Sprite
 
 Build and run the app, if you are lucky then you can see:
 
-![](docs/img/intro_5.png)
+![](docs/img/intro_1.png)
 
 GG, Easy.
 

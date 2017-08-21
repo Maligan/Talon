@@ -10,7 +10,7 @@ package talon.utils
 	{
 		public static const TAG_LIBRARY:String = "lib";
 		public static const TAG_TEMPLATE:String = "def";
-		public static const TAG_PROPERTIES:String = "properties";
+		public static const TAG_PROPERTIES:String = "props";
 		public static const TAG_STYLE:String = "style";
 
 		public static const ATT_TAG:String = "tag";

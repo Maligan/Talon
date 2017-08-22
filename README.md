@@ -175,11 +175,13 @@ Add new `bank.xml`:
 </lib>
 ```
 
-Контейнер `lib` позволяет не создавать файл под каждый шаблон\стили\свойства а записывать их в соответсвующие теги `def`, `style`, `props`. Библиотеки позволят вам держать структуру файлов проекта в чистоте - пользуйтесь им.
+Let's go see new used features in this example:
 
-Как вы могли заметить вставка шаблона производится либо по его уникальному идентификатору (который `ref`) c обновлением аттрибутов через `update`. Либо через назначение уникального тега шаблону который необходимо повторно использовать.
+* First you can see new tag `<lib>` it is container which allow assemble templates, styles, properties in one file (via `<def>`, `<style>` and `<props>` tags). With libs you can keep clean file hierarchy.
 
-И ещё одна интересность - это `@-нотация` которая производить привязу аттрибутов узла к *корню шаблона*. Связанные атрибуты меняются одновременно.
+* There are two way for insert template — via unique *ref* identifier with optional *update* attributes, or via linkage template to tag. This ways give 100% identical results. Good practice - use tag-method if you need global template, or use-method if you need local template.
+
+* And last one feature — `@-notation` witch allow bind any node attribute to value of *template root* attribute. Binded attrubutes changes together.
 
 ![](docs/img/intro_1.png)
 

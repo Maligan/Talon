@@ -66,7 +66,6 @@ package talon.browser.desktop.plugins
 		public function get versionAPI():String { return "1.0.0"; }
 		public function detach():void { }
 
-
 		/** Call after starling initialize completed. */
 		public function attach(platform:AppPlatform):void
 		{
@@ -436,7 +435,7 @@ package talon.browser.desktop.plugins
 
 				// Add missed resource
 				_platform.document.messages.removeMessagesByNumber(12);
-				var resources:Vector.<String> = _platform.document.factory.missedResourceIds;
+				var resources:Vector.<String> = _platform.document.factory.getResourceMissed();
 				if (resources.length != 0)
 				{
 					for each (var resource:String in resources)
@@ -444,6 +443,20 @@ package talon.browser.desktop.plugins
 						_platform.document.messages.addMessage(new DocumentMessage(
 							DocumentMessage.TEMPLATE_RESOURCE_MISS,
 							[_platform.templateId, resource]
+						));
+					}
+				}
+
+				// Add conflict resource
+				_platform.document.messages.removeMessagesByNumber(13);
+				resources = _platform.document.factory.getResourceConflict();
+				if (resources.length != 0)
+				{
+					for each (resource in resources)
+					{
+						_platform.document.messages.addMessage(new DocumentMessage(
+							DocumentMessage.RESOURCE_CONFLICT,
+							[resource]
 						));
 					}
 				}

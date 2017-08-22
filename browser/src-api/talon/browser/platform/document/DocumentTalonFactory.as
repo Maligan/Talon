@@ -163,11 +163,8 @@ package talon.browser.platform.document
 			return result.sort(byName);
 		}
 
-		public function get missedResourceIds():Vector.<String>
-		{
-			return resources.getMissed();
-		}
-
+		public function getResourceMissed():Vector.<String> { return resources.getMissed(); }
+		public function getResourceConflict():Vector.<String> { return resources.getConflicts(); }
 		
 		public function appendResources(object:Object):void
 		{
@@ -225,6 +222,7 @@ use namespace flash_proxy;
 class ObjectWithAccessLogger extends Proxy
 {
 	private var _names:Vector.<String> = new <String>[];
+	private var _overrides:Vector.<String> = new <String>[];
 	private var _stack:Vector.<Object> = new <Object>[];
 	private var _touches:Object = {};
 	private var _touchId:int = 1;
@@ -253,6 +251,11 @@ class ObjectWithAccessLogger extends Proxy
 		return result;
 	}
 	
+	public function getConflicts():Vector.<String>
+	{
+		return _overrides;
+	}
+	
 	// Stack
 	
 	public function append(object:Object):void
@@ -275,15 +278,24 @@ class ObjectWithAccessLogger extends Proxy
 	private function refreshNames():void
 	{
 		_names.length = 0;
+		_overrides.length = 0;
 		
 		var exist:Object = {};
 		for each (var object:Object in _stack)
+		{
 			for (var key:String in object)
+			{
 				if (exist[key] != true)
 				{
 					exist[key]  = true;
 					_names.push(key);
 				}
+				else
+				{
+					_overrides.push(key);
+				}
+			}
+		}
 	}
 	
 	// Proxy

@@ -168,6 +168,12 @@ package talon.browser.platform.document
 		
 		public function appendResources(object:Object):void
 		{
+			for (var key:String in object)
+			{
+				if (key == "0")
+					trace("sdf")
+			}
+			
 			resources.append(object);
 			dispatchChange();
 		}

@@ -22,6 +22,8 @@ package talon.browser.platform.document.log
 
 		public static const TEMPLATE_INSTANTIATE_ERROR:String =         "E11:   Template '{0}' instantiate throw: {1}";
 		public static const TEMPLATE_RESOURCE_MISS:String =				"W12:	Template '{0}' resource '{1}' not found";
+		
+		public static const RESOURCE_CONFLICT:String =					"E13:	Resource '{0}' already exist";
 
 		//
 		// Message

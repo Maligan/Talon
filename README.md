@@ -1,7 +1,5 @@
 # Talon
-Talon is UI toolkit for responsive interface building.
-
-Features:
+Talon is UI toolkit for responsive interface building:
 
 - Use *XML syntax* for declarative markup interface
 - Apply *CSS dialect* for easy skinning and styling
@@ -225,7 +223,9 @@ Build and run the app, if you are lucky then you can see:
 GG, Easy.
 
 ## What's next?
-After this introduction article I recommend you checkout detailed [**documentation**](./index.md). For quick explore talon's features you can read next part of documentation first:
-* [Background](./background.md) — main way to display pictures
-* [Layouts](./layouts.md) — how to position elements respect each other and free parent space
-* [CSS Dialect](./css.md) — list of **all** attributes implemented within talon
+After this introduction article I recommend you checkout detailed documentation
+* [**Documentation**](docs/index.md)
+
+For jedi mode you can learn talon by code references
+* [AS3 reference](./css.md) — runtime API for Action Script & Starling FW
+* [CSS reference](./css.md) — list of **all** attributes implemented within talon

@@ -103,7 +103,8 @@ package starling.extensions
 
 			readjustSize(node.bounds.width-paddingLeft-paddingRight, node.bounds.height-paddingTop-paddingBottom);
 		}
-
+		
+		/** @private */
 		protected override function setupVertices():void
 		{
 			super.setupVertices();
@@ -126,16 +127,19 @@ package starling.extensions
 			}
 		}
 
+		/** @private */
 		public override function render(painter:Painter):void
 		{
 			_bridge.renderCustom(super.render, painter);
 		}
 
+		/** @private */
 		public override function getBounds(targetSpace:DisplayObject, out:Rectangle = null):Rectangle
 		{
 			return _bridge.getBoundsCustom(super.getBounds, targetSpace, out);
 		}
 
+		/** @private */
 		public override function hitTest(localPoint:Point):DisplayObject
 		{
 			if (!visible || !touchable) return null;

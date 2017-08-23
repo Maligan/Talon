@@ -118,8 +118,8 @@ package talon.layouts
 			var totalPx:Number = contentWidth - childWidth;
 			var totalStars:int = numStars(childLeft) + numStars(childRight);
 
-			var leftPx:Number = childLeft.toPixels(child, childWidth, 0, totalPx, totalStars);
-			var rightPx:Number = childRight.toPixels(child, contentWidth, 0, totalPx, totalStars);
+			var leftPx:Number = childLeft.toPixels(child, childWidth, 0, totalPx/totalStars);
+			var rightPx:Number = childRight.toPixels(child, contentWidth, 0, totalPx/totalStars);
 
 			var align:Number;
 			if (childLeft.isNone && !childRight.isNone) 		align = 1;
@@ -133,7 +133,7 @@ package talon.layouts
 		{
 			var valueIsDependent:Boolean = childMainSize.isNone && !childCrossSize.isNone;
 			var valueAutoArg:Number = valueIsDependent ? childCrossSize.toPixels(child, contentCrossSize) : Infinity;
-			var value:Number = childMainSize.toPixels(child, contentMainSize, valueAutoArg, contentMainSize, totalStars);
+			var value:Number = childMainSize.toPixels(child, contentMainSize, valueAutoArg, contentMainSize/totalStars);
 
 			if (!childMainMinSize.isNone)
 			{

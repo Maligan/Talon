@@ -212,6 +212,7 @@ package starling.extensions
 		//
 		// TalonDisplayObjectBridge customization
 		//
+		/** @private */
 		public override function setRequiresRecomposition():void
 		{
 			_requiresRecompositionWithPadding = true;
@@ -249,6 +250,7 @@ package starling.extensions
 			}
 		}
 
+		/** @private */
 		public override function render(painter:Painter):void
 		{
 			_bridge.renderCustom(recomposeAndRender, painter);
@@ -263,6 +265,7 @@ package starling.extensions
 			super.render(painter);
 		}
 
+		/** @private */
 		public override function hitTest(localPoint:Point):DisplayObject
 		{
 			if (!visible || !touchable) return null;
@@ -270,17 +273,20 @@ package starling.extensions
 			return getBounds(this, _sRect).containsPoint(localPoint) ? this : null;
 		}
 
+		/** @private */
 		public override function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
 		{
 			return _bridge.getBoundsCustom(null, targetSpace, resultRect);
 		}
 
+		/** @private */
 		public override function get textBounds():Rectangle
 		{
 			recomposeWithPadding();
 			return getTrueTextBounds();
 		}
 
+		/** @private */
 		public override function dispose():void
 		{
 			_bridge.dispose();
@@ -317,14 +323,14 @@ package starling.extensions
 
 		public function query(selector:String = null):TalonQuery { return new TalonQuery(this).select(selector); }
 
-		override public function set wordWrap(value:Boolean):void {  node.setAttribute(Attribute.WRAP, value.toString()); }
-		public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
-		public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.FONT_AUTO_SCALE, value.toString()); }
+		/** @private */ public override function set wordWrap(value:Boolean):void {  node.setAttribute(Attribute.WRAP, value.toString()); }
+		/** @private */ public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
+		/** @private */ public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.FONT_AUTO_SCALE, value.toString()); }
 
-		public override function get autoSize():String { return getAutoSize(node.width.isNone, node.height.isNone); }
-		public override function set autoSize(value:String):void { trace("[TalonTextFiled]", "Ignore autoSize value, this value defined via node width/height == 'none'"); }
+		/** @private */ public override function get autoSize():String { return getAutoSize(node.width.isNone, node.height.isNone); }
+		/** @private */ public override function set autoSize(value:String):void { trace("[TalonTextFiled]", "Ignore autoSize value, this value defined via node width/height == 'none'"); }
 
-		public override function get border():Boolean { return false; }
-		public override function set border(value:Boolean):void { trace("[TalonTextFiled]", "Ignore border value, for debug draw use custom 'fill' property"); }
+		/** @private */ public override function get border():Boolean { return false; }
+		/** @private */ public override function set border(value:Boolean):void { trace("[TalonTextFiled]", "Ignore border value, for debug draw use custom 'fill' property"); }
 	}
 }

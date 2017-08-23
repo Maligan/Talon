@@ -100,18 +100,18 @@ package talon.layouts
 				if (child.width.isNone && !child.height.isNone)
 				{
 					// contentWidth && and contentHeight for auto!
-					childHeight = child.height.toPixels(node, contentHeight, Infinity, child.height.amount, child.height.amount);
-					childWidth  = child.width.toPixels(node, contentWidth, childHeight, child.width.amount, child.width.amount);
+					childHeight = child.height.toPixels(node, contentHeight, Infinity, child.height.amount/child.height.amount);
+					childWidth  = child.width.toPixels(node, contentWidth, childHeight, child.width.amount/child.width.amount);
 				}
 				else if (child.height.isNone && !child.width.isNone)
 				{
-					childWidth  = child.width.toPixels(node, contentWidth, Infinity, child.width.amount, child.width.amount);
-					childHeight = child.height.toPixels(node, contentHeight, childWidth, child.height.amount, child.height.amount);
+					childWidth  = child.width.toPixels(node, contentWidth, Infinity, child.width.amount/child.width.amount);
+					childHeight = child.height.toPixels(node, contentHeight, childWidth, child.height.amount/child.height.amount);
 				}
 				else
 				{
-					childWidth  = child.width.toPixels(node, contentWidth, Infinity, child.width.amount, child.width.amount);
-					childHeight = child.height.toPixels(node, contentHeight, Infinity, child.height.amount, child.height.amount);
+					childWidth  = child.width.toPixels(node, contentWidth, Infinity, child.width.amount/child.width.amount);
+					childHeight = child.height.toPixels(node, contentHeight, Infinity, child.height.amount/child.height.amount);
 				}
 				// ------------------------------------------
 

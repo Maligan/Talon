@@ -25,7 +25,6 @@ package talon.browser.desktop.plugins
 	import starling.utils.Color;
 	import starling.utils.StringUtil;
 
-	import talon.core.Attribute;
 	import talon.browser.desktop.commands.OpenDocumentCommand;
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
@@ -41,6 +40,7 @@ package talon.browser.desktop.plugins
 	import talon.browser.platform.popups.PopupManager;
 	import talon.browser.platform.utils.DeviceProfile;
 	import talon.browser.platform.utils.Storage;
+	import talon.core.Attribute;
 	import talon.layouts.Layout;
 	import talon.utils.ParseUtil;
 
@@ -187,11 +187,11 @@ package talon.browser.desktop.plugins
 					DisplayObjectContainer(_platform.starling.root).addChild(_ui);
 
 					// popups container
-					_platform.popups.host = _ui.query("#popups").getElementAt(0) as DisplayObjectContainer;
+					_platform.popups.host = _ui.query("#popups")[0] as DisplayObjectContainer;
 					_platform.popups.addEventListener(Event.CHANGE, onPopupManagerChange);
 
 					// messages container
-					_messages = _ui.query("#messages").getElementAt(0) as TalonSprite;
+					_messages = _ui.query("#messages")[0] as TalonSprite;
 
 					// template container - split hierarchy with isolator for stopping style/resource inheritance
 					_templateContainer = new TalonSprite();
@@ -200,7 +200,7 @@ package talon.browser.desktop.plugins
 					_isolator.alignPivot();
 					_isolator.addChild(_templateContainer);
 
-					_isolatorContainer = _ui.query("#container").getElementAt(0) as TalonSprite;
+					_isolatorContainer = _ui.query("#container")[0] as TalonSprite;
 					_isolatorContainer.addEventListener(TouchEvent.TOUCH, onIsolatorTouch);
 					_isolatorContainer.addChild(_isolator);
 

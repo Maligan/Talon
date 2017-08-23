@@ -314,10 +314,10 @@ package talon.utils
 				var attributes:Array = styleObject["attributes"];
 				var style:Style = _styles[_styles.length] = new Style(selector);
 
-				for (var i:int = 0; i < attributes.length; i+=2)
+				for (var j:int = 0; j < attributes.length; j+=2)
 				{
-					var name:String = attributes[i];
-					var value:String = attributes[i+1];
+					name = attributes[j];
+					value = attributes[j+1];
 					style.values[name] = value;
 				}
 			}
@@ -404,7 +404,7 @@ package talon.utils
 
 			var cacheResources:Object = cache["resources"] = {};
 
-			for (var key:String in _resources)
+			for (key in _resources)
 			{
 				var value:* = _resources[key];
 				if (value is String)

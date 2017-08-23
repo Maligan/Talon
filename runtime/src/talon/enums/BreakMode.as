@@ -6,10 +6,10 @@ package talon.enums
 		public static const SOFT:String = "soft";
 		public static const HARD:String = "hard";
 
-		[Deprecated] public static const AUTO:String = "auto";
-		[Deprecated] public static const BEFORE:String = "before";
-		[Deprecated] public static const AFTER:String = "after";
-		[Deprecated] public static const BOTH:String = "both";
+		public static const AUTO:String = "auto";
+		public static const BEFORE:String = "before";
+		public static const AFTER:String = "after";
+		public static const BOTH:String = "both";
 
 		/** Indicates whether the given break string is valid. */
 		public static function isValid(mode:String):Boolean

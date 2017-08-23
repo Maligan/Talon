@@ -257,20 +257,14 @@ package talon.core
 		/** Actual node bounds in pixels. */
 		public function get bounds():Rectangle { return _bounds; }
 
-		/** @private Gauge units metrics within current node. */
+		/** Gauge units metrics within current node. */
 		public function get metrics():Metrics { return _metrics; }
 		
 		/** This is default 'auto' callback for gauges: width, minWidth, maxWidth. */
-		private function measureAutoWidth(height:Number):Number
-		{
-			return layout.measureWidth(this, height);
-		}
+		private function measureAutoWidth(height:Number):Number { return layout.measureWidth(this, height); }
 
 		/** This is default 'auto' callback for gauges: height, minHeight, maxHeight. */
-		private function measureAutoHeight(width:Number):Number
-		{
-			return layout.measureHeight(this, width);
-		}
+		private function measureAutoHeight(width:Number):Number { return layout.measureHeight(this, width); }
 
 		/** Node layout strategy class. */
 		private function get layout():Layout

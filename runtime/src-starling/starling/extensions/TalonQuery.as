@@ -47,7 +47,6 @@ package starling.extensions
 		// Selection
 		//
 
-		/** FIXME: Remember about num spaces */
 		public function select(selector:String):TalonQuery
 		{
 			if (selector == null) return this;
@@ -84,13 +83,6 @@ package starling.extensions
 				for (var i:int = 0; i < elementAsContainer.numChildren; i++)
 					selectInternal(elementAsContainer.getChildAt(i) as ITalonDisplayObject, selector, result);
 		}
-
-		//
-		// Enumeration
-		//
-		public function get numElements():int { return _elements.length; }
-		public function getElementAt(index:int):ITalonDisplayObject { return (index>-1 && index<_elements.length) ? _elements[index] : null; }
-		public function getElementIndex(element:ITalonDisplayObject):int { return _elements.indexOf(element); }
 
 		//
 		// Common
@@ -157,7 +149,7 @@ package starling.extensions
 			return this;
 		}
 
-		public function onTap(listener:Function, numTapsRequired:int = 1):TalonQuery
+		public function onTap(listener:Function):TalonQuery
 		{
 			onEvent(TouchEvent.TOUCH, function(e:TouchEvent):void
 			{
@@ -185,6 +177,8 @@ package starling.extensions
 		// Flash Proxy
 		//
 		public function get length():int { return _elements.length }
+		
+		public function indexOf(element:ITalonDisplayObject):int { return _elements.indexOf(element) }
 		
 		// Enumeration of elements
 		flash_proxy override function nextNameIndex(index:int):int { return index < _elements.length ? index+1 : 0; }

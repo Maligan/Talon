@@ -20,6 +20,7 @@ package talon.core
 	/** Removed from parent node. */
 	[Event(name="removed")]
 
+	/**  */
 	public final class Node
 	{
 		private var _attributes:Dictionary = new Dictionary();

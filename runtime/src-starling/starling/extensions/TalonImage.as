@@ -147,6 +147,7 @@ package starling.extensions
 			return getBounds(this, _sRectangle).containsPoint(localPoint) ? this : null;
 		}
 
+		/** @private */
 		public override function dispose():void
 		{
 			_bridge.dispose();

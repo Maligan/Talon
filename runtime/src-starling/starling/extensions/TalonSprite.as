@@ -29,7 +29,7 @@ package starling.extensions
 		//
 		// Children
 		//
-		/** @inherit */
+		/** @private */
 		public override function addChildAt(child:DisplayObject, index:int):DisplayObject
 		{
 			child = super.addChildAt(child, index);
@@ -37,7 +37,7 @@ package starling.extensions
 			return child;
 		}
 
-		/** @inherit */
+		/** @private */
 		public override function removeChildAt(index:int, dispose:Boolean = false):DisplayObject
 		{
 			var child:DisplayObject = super.removeChildAt(index, dispose);
@@ -74,16 +74,20 @@ package starling.extensions
 		//
 		// Background customization
 		//
+
+		/** @private */
 		public override function render(painter:Painter):void
 		{
 			_bridge.renderCustom(super.render, painter);
 		}
 
+		/** @private */
 		public override function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
 		{
 			return _bridge.getBoundsCustom(super.getBounds, targetSpace, resultRect);
 		}
 
+		/** @private */
 		public override function hitTest(localPoint:Point):DisplayObject
 		{
 			var localX:Number = localPoint.x;
@@ -106,6 +110,7 @@ package starling.extensions
 			return result;
 		}
 
+		/** @private */
 		public override function dispose():void
 		{
 			_bridge.dispose();
@@ -113,28 +118,20 @@ package starling.extensions
 		}
 
 		//
-		// Properties
+		// ITalonDisplayObject
 		//
-		public function get node():Node
-		{
-			return _node;
-		}
+		public function query(selector:String = null):TalonQuery { return new TalonQuery(this).select(selector); }
 
-		public function query(selector:String = null):TalonQuery
-		{
-			return new TalonQuery(this).select(selector);
-		}
+		public function get node():Node { return _node; }
 
-		public function get manual():Boolean
-		{
-			return _manual;
-		}
-
-		public function set manual(value:Boolean):void
-		{
-			_manual = value;
-		}
-
+		public function get manual():Boolean { return _manual; }
+		public function set manual(value:Boolean):void { _manual = value; }
+		
+		//
+		// Properties override 
+		//
+		
+		/** @private */
 		public override function set pivotX(value:Number):void { node.setAttribute(Attribute.PIVOT_X, value.toString()); }
 		public override function set pivotY(value:Number):void { node.setAttribute(Attribute.PIVOT_Y, value.toString()); }
 	}

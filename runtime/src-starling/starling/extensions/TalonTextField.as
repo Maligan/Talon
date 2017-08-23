@@ -314,15 +314,19 @@ package starling.extensions
 		}
 
 		//
-		// Properties
+		// ITalonDisplayObject
 		//
+		public function query(selector:String = null):TalonQuery { return new TalonQuery(this).select(selector); }
+
 		public function get node():Node { return _node; }
 
 		public function get manual():Boolean { return _manual; }
 		public function set manual(value:Boolean):void { _manual = value; }
-
-		public function query(selector:String = null):TalonQuery { return new TalonQuery(this).select(selector); }
-
+		
+		//
+		// Properties override
+		//
+		
 		/** @private */ public override function set wordWrap(value:Boolean):void {  node.setAttribute(Attribute.WRAP, value.toString()); }
 		/** @private */ public override function set text(value:String):void { node.setAttribute(Attribute.TEXT, value) }
 		/** @private */ public override function set autoScale(value:Boolean):void { node.setAttribute(Attribute.FONT_AUTO_SCALE, value.toString()); }

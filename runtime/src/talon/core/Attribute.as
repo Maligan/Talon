@@ -405,8 +405,8 @@ class InheritableSolver extends SimpleSolver
 	{
 		_based = based;
 		_attribute = attribute;
-		_attribute.node.addTriggerListener(Event.ADDED, onAdded);
-		_attribute.node.addTriggerListener(Event.REMOVED, onRemoved);
+		_attribute.node.addListener(Event.ADDED, onAdded);
+		_attribute.node.addListener(Event.REMOVED, onRemoved);
 	}
 
 	private function onAdded():void

@@ -37,9 +37,9 @@ package starling.extensions
 
 			_node = new Node();
 			_node.getOrCreateAttribute(Attribute.WRAP).inited = "true";
-			_node.addTriggerListener(Event.RESIZE, onNodeResize);
-			_node.addTriggerListener(Event.ADDED, onNodeParentChange);
-			_node.addTriggerListener(Event.REMOVED, onNodeParentChange);
+			_node.addListener(Event.RESIZE, onNodeResize);
+			_node.addListener(Event.ADDED, onNodeParentChange);
+			_node.addListener(Event.REMOVED, onNodeParentChange);
 			_node.width.auto = measureWidth;
 			_node.height.auto = measureHeight;
 

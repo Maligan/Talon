@@ -44,7 +44,7 @@ package talon.core
 				getOrCreateAttribute(attributeName);
 
 			// Listen attribute change
-			addTriggerListener(Event.CHANGE, onSelfAttributeChange);
+			addListener(Event.CHANGE, onSelfAttributeChange);
 
 			// Setup typed attributes
 			width.auto = measureAutoWidth;
@@ -314,7 +314,7 @@ package talon.core
 			child._parent = this;
             child.refreshStyle();
             child.refreshResource();
-			child.addTriggerListener(Event.CHANGE, onChildAttributeChange);
+			child.addListener(Event.CHANGE, onChildAttributeChange);
 			child.dispatch(Event.ADDED);
 			invalidate();
 		}
@@ -325,7 +325,7 @@ package talon.core
 			if (child._parent != this) throw new ArgumentError("Child must be child of node");
 
 			_children.removeAt(_children.indexOf(child));
-			child.removeTriggerListener(Event.CHANGE, onChildAttributeChange);
+			child.removeListener(Event.CHANGE, onChildAttributeChange);
 			child.dispatch(Event.REMOVED);
 			child._parent = null;
 			child.refreshStyle();
@@ -350,7 +350,7 @@ package talon.core
 		//
 		// Dispatcher pattern
 		//
-		public function addTriggerListener(type:String, listener:Function):void
+		public function addListener(type:String, listener:Function):void
 		{
 			var trigger:Trigger = _triggers[type];
 			if (trigger == null)
@@ -359,7 +359,7 @@ package talon.core
 			trigger.addListener(listener);
 		}
 
-		public function removeTriggerListener(type:String, listener:Function):void
+		public function removeListener(type:String, listener:Function):void
 		{
 			var trigger:Trigger = _triggers[type];
 			if (trigger != null)

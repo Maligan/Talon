@@ -22,7 +22,7 @@ package starling.extensions
 		public function TalonSprite()
 		{
 			_node = new Node();
-			_node.addTriggerListener(Event.RESIZE, onNodeResize);
+			_node.addListener(Event.RESIZE, onNodeResize);
 			_bridge = new TalonDisplayObjectBridge(this, node);
 		}
 

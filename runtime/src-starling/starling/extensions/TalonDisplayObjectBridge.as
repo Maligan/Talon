@@ -200,8 +200,8 @@ package starling.extensions
 			_transform = new Matrix();
 
 			_node = node;
-			_node.addTriggerListener(Event.RESIZE, onNodeResize);
-			_node.addTriggerListener(Event.CHANGE, onNodeChange);
+			_node.addListener(Event.RESIZE, onNodeResize);
+			_node.addListener(Event.CHANGE, onNodeChange);
 
 			_background = new FillModeMesh();
 			_background.pixelSnapping = true;

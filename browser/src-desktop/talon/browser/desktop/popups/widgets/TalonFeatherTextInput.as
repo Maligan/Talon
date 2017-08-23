@@ -28,7 +28,7 @@ package talon.browser.desktop.popups.widgets
 		public function TalonFeatherTextInput()
 		{
 			_node = new Node();
-			_node.addTriggerListener(Event.RESIZE, onResize);
+			_node.addListener(Event.RESIZE, onResize);
 
 			_bridge = new TalonDisplayObjectBridge(this, _node);
 			_bridge.setAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange);

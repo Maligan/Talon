@@ -32,7 +32,7 @@ package starling.extensions
 			_node = new Node();
 			_node.width.auto = measureWidth;
 			_node.height.auto = measureHeight;
-			_node.addTriggerListener(Event.RESIZE, onNodeResize);
+			_node.addListener(Event.RESIZE, onNodeResize);
 
 			_bridge = new TalonDisplayObjectBridge(this, node);
 			_bridge.setAttributeChangeListener(Attribute.SOURCE, onSourceChange);

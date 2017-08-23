@@ -3,15 +3,11 @@ package talon.utils
 	import talon.core.Attribute;
 	import talon.core.Node;
 
-	/** */
 	public class StringSet
 	{
-		private static const sArray:Array = [];
-
-		private var _container:Vector.<String> = new Vector.<String>();
+		private var _strings:Array = [];
 		private var _change:Trigger = new Trigger();
-		private var _locked:Boolean;
-		private var _changed:Boolean;
+		private var _ignore:Boolean;
 
 		private var _node:Node;
 		private var _attributeName:String;
@@ -22,6 +18,30 @@ package talon.utils
 			_node = node;
 			_attributeName = attributeName;
 		}
+		
+		public function set(string:String, value:Boolean):void
+		{
+			initialize();
+			
+			var index:int = _strings.indexOf(string);
+			if (value && index == -1)
+			{
+				_strings[_strings.length] = string;
+				dispatchChange(true);
+			}
+			else if (!value && index != -1)
+			{
+				_strings.removeAt(index);
+				dispatchChange(true);
+			}
+		}
+		
+		public function has(string:String):Boolean
+		{
+			initialize();
+			
+			return _strings.indexOf(string) != -1;
+		}
 
 		private function initialize():void
 		{
@@ -29,100 +49,37 @@ package talon.utils
 			{
 				_attribute = _node.getOrCreateAttribute(_attributeName);
 				_attribute.change.addListener(onChange);
-				parse(_attribute.valueCache, false);
+				_strings = String(_attribute.valueCache).split(" ");
 			}
 		}
 
 		private function onChange():void
 		{
-			parse(_attribute.valueCache);
+			if (_ignore) return;
+			
+			_strings = String(_attribute.valueCache).split(" ");
+			dispatchChange(true);
 		}
 
-		public function toggle(string:String, value:Boolean):void
+		private function dispatchChange(updateAttribute:Boolean):void
 		{
-			initialize();
-			if (value) insert(string);
-			else remove(string);
-		}
-
-		public function contains(string:String):Boolean
-		{
-			initialize();
-			return _container.indexOf(string) != -1;
-		}
-
-		public function insert(string:String):void
-		{
-			if (!contains(string))
+			if (updateAttribute)
 			{
-				_container[_container.length] = string;
-				dispatchChange();
+				_ignore = true;
+				_attribute.setted = value;
+				_ignore = false;
 			}
+			
+			_change.dispatch();
 		}
 
-		public function remove(string:String):void
+		public function get change():Trigger { return _change; }
+
+		public function get value():String { return _strings.join(" ") }
+		public function set value(string:String):void
 		{
-			initialize();
-
-			var indexOf:int = _container.indexOf(string);
-			if (indexOf != -1)
-			{
-				_container.removeAt(indexOf);
-				dispatchChange();
-			}
-		}
-
-		public function lock():void
-		{
-			_locked = true;
-		}
-
-		public function unlock():void
-		{
-			if (_locked)
-			{
-				var changed:Boolean = _changed;
-				_locked = false;
-				_changed = false;
-				if (changed) dispatchChange();
-			}
-		}
-
-		public function get change():Trigger
-		{
-			return _change;
-		}
-
-		private function dispatchChange():void
-		{
-			if (_locked)
-				_changed = true;
-			else
-				_change.dispatch();
-		}
-
-		public function parse(string:String, dispatch:Boolean = true):void
-		{
-			_container.length = 0;
-
-			if (string)
-			{
-				var split:Array = string.split(" ");
-				for each (var element:String in split)
-					_container[_container.length] = element;
-			}
-
-			if (dispatch) dispatchChange();
-		}
-
-		public function toString():String
-		{
-			sArray.length = 0;
-
-			for each (var element:String in _container)
-				sArray[sArray.length] = element;
-
-			return sArray.join(" ");
+			_strings = string.split(" ");
+			dispatchChange(true);
 		}
 	}
 }

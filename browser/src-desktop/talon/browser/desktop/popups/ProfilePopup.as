@@ -61,8 +61,7 @@ package talon.browser.desktop.popups
 
 				input.addEventListener(FeathersEventType.FOCUS_OUT, function():void {
 					var valid:Boolean = NUMBER.test(input.text) && parseInt(input.text)>0;
-					if (valid) input.node.states.remove("error");
-					else input.node.states.insert("error");
+					input.node.states.set("error", !valid);
 				});
 			}
 		}

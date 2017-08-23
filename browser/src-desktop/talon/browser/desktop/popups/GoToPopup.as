@@ -5,7 +5,6 @@ package talon.browser.desktop.popups
 	import flash.utils.setTimeout;
 
 	import starling.core.Starling;
-
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
 	import starling.display.MeshBatch;
@@ -275,12 +274,7 @@ package talon.browser.desktop.popups
 		private function updateCursor():void
 		{
 			for (var i:int = 0; i < _labels.length; i++)
-			{
-				if (_labelsCursor == _labelsOffset + i)
-					_labels[i].node.classes.insert("selected");
-				else
-					_labels[i].node.classes.remove("selected");
-			}
+				_labels[i].node.classes.set("selected", _labelsCursor == _labelsOffset + i);
 		}
 
 		private function moveCursorToNext():void { refreshList(_labelsOffset, _labelsCursor + 1); }

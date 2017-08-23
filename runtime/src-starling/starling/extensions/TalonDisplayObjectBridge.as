@@ -438,43 +438,39 @@ package starling.extensions
 		{
 			var touch:Touch = e.getTouch(_target);
 
-			_node.states.lock();
-
 			if (touch == null)
 			{
-				_node.states.remove("hover");
-				_node.states.remove("active");
+				_node.states.set("hover", false);
+				_node.states.set("active", false);
 			}
 			else if (touch.phase == TouchPhase.HOVER)
 			{
-				_node.states.insert("hover");
+				_node.states.set("hover", true);
 			}
-			else if (touch.phase == TouchPhase.BEGAN && !_node.states.contains("active"))
+			else if (touch.phase == TouchPhase.BEGAN && !_node.states.has("active"))
 			{
-				_node.states.insert("active");
+				_node.states.set("active", true);
 			}
 			else if (touch.phase == TouchPhase.MOVED)
 			{
 				var isWithinBounds:Boolean = _target.getBounds(_target.stage).contains(touch.globalX, touch.globalY);
 
-				if (_node.states.contains("active") && !isWithinBounds)
+				if (_node.states.has("active") && !isWithinBounds)
 				{
-					_node.states.remove("hover");
-					_node.states.remove("active");
+					_node.states.set("hover", false);
+					_node.states.set("active", false);
 				}
-				else if (!_node.states.contains("active") && isWithinBounds)
+				else if (!_node.states.has("active") && isWithinBounds)
 				{
-					_node.states.insert("hover");
-					_node.states.insert("active");
+					_node.states.set("hover", true);
+					_node.states.set("active", true);
 				}
 			}
 			else if (touch.phase == TouchPhase.ENDED)
 			{
-				_node.states.remove("hover");
-				_node.states.remove("active");
+				_node.states.set("hover", false);
+				_node.states.set("active", false);
 			}
-
-			_node.states.unlock();
 		}
 
 		// Public methods which must be used in target DisplayObject

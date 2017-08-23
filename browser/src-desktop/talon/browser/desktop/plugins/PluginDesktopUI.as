@@ -334,7 +334,7 @@ package talon.browser.desktop.plugins
 		private function onBackgroundChange(e:Event):void
 		{
 			var styleName:String = _platform.settings.getValue(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
-			_ui.node.classes.parse(styleName);
+			_ui.node.classes.value = styleName;
 			_platform.stage.color = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[styleName];
 		}
 

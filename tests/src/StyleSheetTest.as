@@ -2,29 +2,28 @@ package
 {
 	import org.flexunit.Assert;
 
-	import talon.Attribute;
-
 	import talon.Node;
-	import talon.utils.StyleSheet;
+	import talon.Style;
+	import talon.utils.ParseUtil;
+	import talon.utils.StyleUtil;
 
 	public class StyleSheetTest
 	{
 		private var node:Node;
-		private var sheet:StyleSheet;
+		private var sheet:Vector.<Style>;
 
 		[Before]
 		public function reset():void
 		{
 			node = new Node();
-			sheet = new StyleSheet();
 		}
 
 		[Test]
 		public function testAttributeOrder():void
 		{
-			sheet.parse("* { a1: 0; a2: 0; a3: 0; a4: 0; a5: 0 }");
+			sheet = ParseUtil.parseCSS("* { a1: 0; a2: 0; a3: 0; a4: 0; a5: 0 }");
 
-			var styles:Object = sheet.getStyle(node);
+			var styles:Object = StyleUtil.style(node, sheet);
 			var array:Array = [];
 			for (var name:String in styles)
 				array.push(name);

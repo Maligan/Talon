@@ -5,6 +5,8 @@ package talon.utils
 
 	[Event(type="flash.events.Event", name="elementBegin")]
 	[Event(type="flash.events.Event", name="elementEnd")]
+	
+	/** @private */
 	public final class TMLParser extends EventDispatcher
 	{
 		public static const EVENT_BEGIN:String = "begin";

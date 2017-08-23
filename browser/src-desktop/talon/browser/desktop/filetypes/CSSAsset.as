@@ -1,17 +1,15 @@
 package talon.browser.desktop.filetypes
 {
-	import talon.utils.StyleSheet;
 	import talon.browser.platform.document.log.DocumentMessage;
+	import talon.utils.ParseUtil;
 
 	public class CSSAsset extends Asset
 	{
 		internal static function isCSS(css:String):Boolean
 		{
-			var style:StyleSheet = new StyleSheet();
-
 			try
 			{
-				style.parse(css);
+				ParseUtil.parseCSS(css);
 				return true;
 			}
 			catch (e:Error)

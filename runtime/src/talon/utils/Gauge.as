@@ -3,7 +3,7 @@ package talon.utils
 	import talon.Attribute;
 	import talon.Node;
 
-	/** @private Measured size. Defined by 'units' and 'amount'. */
+	/** Measured size. Defined by 'units' and 'amount'. */
 	public final class Gauge
 	{
 		/** Value is not set. This is <code>null</code> analog. */
@@ -24,11 +24,11 @@ package talon.utils
 		private static const sFormat:RegExp = /^(-?\d*\.?\d+)(px|dp|mm|em|%|\*|)$/;
 		private static const sGauge:Gauge = new Gauge(null, null);
 
-		public static function toPixels(string:String, node:Node, pp100p:Number = 0, auto:Function = null, aa:Number = 0, ppts:Number = 0, ts:int = 0):Number
+		public static function toPixels(string:String, node:Node, pp100p:Number = 0, auto:Function = null, aa:Number = 0, pps:Number = 0):Number
 		{
 			sGauge.parse(string);
 			sGauge.auto = auto;
-			return sGauge.toPixels(node, pp100p, aa, ppts, ts);
+			return sGauge.toPixels(node, pp100p, aa, pps);
 		}
 
 		private var _node:Node;
@@ -93,10 +93,9 @@ package talon.utils
 		 * @param ppdp pixels per density-independent point
 		 * @param pp100p pixels per 100%
 		 * @param aa argument for auto measure
-		 * @param ppts pixels per total stars
-		 * @param ts total stars amount
+		 * @param pps pixels per star
 		 */
-		public function toPixels(node:Node, pp100p:Number = 0, aa:Number = Infinity, ppts:Number = 0, ts:int = 0):Number
+		public function toPixels(node:Node, pp100p:Number = 0, aa:Number = Infinity, pps:Number = 0):Number
 		{
 			switch (unit)
 			{
@@ -106,7 +105,7 @@ package talon.utils
 				case EM:        return amount * node.ppem;
 				case DP:        return amount * node.ppdp;
 				case PERCENT:   return amount * pp100p/100;
-				case STAR:		return amount * (ts?(ppts/ts):0);
+				case STAR:		return amount * pps;
 				default:		throw new Error("Unknown gauge unit: " + unit);
 			}
 		}

@@ -6,9 +6,9 @@ package talon
 	import flash.utils.Dictionary;
 
 	import talon.layouts.Layout;
-	import talon.utils.StyleSheet;
 	import talon.utils.Gauge;
 	import talon.utils.StringSet;
+	import talon.utils.StyleUtil;
 	import talon.utils.Trigger;
 
 	/** Any attribute changed. */
@@ -23,9 +23,10 @@ package talon
 	public final class Node
 	{
 		private var _attributes:Dictionary = new Dictionary();
-		private var _style:StyleSheet;
+		private var _styles:Vector.<Style>;
 		private var _styleTouches:Dictionary = new Dictionary();
 		private var _styleTouch:int = -1;
+		
 		private var _resources:Object;
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
@@ -135,18 +136,10 @@ package talon
 		//
 		// Styling
 		//
-		public function setStyleSheet(style:StyleSheet):void
+		public function setStyles(styles:Vector.<Style>):void
 		{
-			_style = style;
+			_styles = styles;
 			refreshStyle();
-		}
-
-		public function getStyle(node:Node):Object
-		{
-			if (_style == null && _parent != null) return _parent.getStyle(node);
-			if (_style != null && _parent == null) return _style.getStyle(node);
-			if (_style != null && _parent != null) return _style.getStyle(node, _parent.getStyle(node));
-			return new Object();
 		}
 
 		/** Recursive apply style to current node. */
@@ -154,7 +147,7 @@ package talon
 		{
 			if (_freeze) return;
 
-			var style:Object = getStyle(this);
+			var style:Object = requestStyle(this);
 
 			_styleTouch++;
 
@@ -176,7 +169,15 @@ package talon
 			for (var i:int = 0; i < numChildren; i++)
 				getChildAt(i).refreshStyle();
 		}
-
+		
+		private function requestStyle(node:Node):Object
+		{
+			if (_styles == null && _parent != null) return _parent.requestStyle(node);
+			if (_styles != null && _parent == null) return StyleUtil.style(node, _styles);
+			if (_styles != null && _parent != null) return StyleUtil.style(node, _styles, _parent.requestStyle(node));
+			return {};
+		}
+		
 		//
 		// Resource
 		//
@@ -237,7 +238,7 @@ package talon
 		/** Commit node bounds (and validate node layout):
 		 *
 		 *  1) Dispatch RESIZE event.
-		 *  2) Arrange children with layout algorithm & commit them.
+		 *  2) Arrange children with layout algorithm and commit them.
 		 *  3) Reset invalidated flag.
 		 *
 		 *  Call this method after manually change 'bounds' property to validate layout.
@@ -402,7 +403,7 @@ package talon
 		//
 		public function dispose():void
 		{
-			_style = null;
+			_styles = null;
 			_resources = null;
 
 			for each (var child:Node in _children)

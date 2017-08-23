@@ -4,6 +4,7 @@ package talon.utils
 
 	import talon.Attribute;
 	import talon.Node;
+	import talon.Style;
 
 	/** Base class for Starling's TalonFactory */
 	public class TalonFactoryBase
@@ -16,7 +17,7 @@ package talon.utils
 		public static const ATT_TAG:String = "tag";
 
 		protected var _resources:Object;
-		protected var _styles:StyleSheet;
+		protected var _styles:Vector.<Style>;
 		protected var _linkage:Object;
 		
 		protected var _parser:TMLParser;
@@ -31,7 +32,7 @@ package talon.utils
 		{
 			_resources = {};
 			_linkage = {};
-			_styles = new StyleSheet();
+			_styles = new <Style>[];
 
 			_parserCache = {};
 			_parserStack = new Vector.<Object>();
@@ -93,7 +94,7 @@ package talon.utils
 			if (resultNode)
 			{
 				if (includeResources) resultNode.setResources(_resources);
-				if (includeStyleSheet) resultNode.setStyleSheet(_styles);
+				if (includeStyleSheet) resultNode.setStyles(_styles);
 			}
 
 			// Result
@@ -160,7 +161,7 @@ package talon.utils
 		}
 
 		// For override
-
+		
 		protected function getNode(element:*):Node
 		{
 			throw new Error("Abstract method");
@@ -204,7 +205,7 @@ package talon.utils
 		public function addResource(id:String, resource:*):void { _resources[id] = resource; }
 		
 		/** Add style to global factory scope. */
-		public function addStyle(style:StyleSheet):void { _styles.merge(style); }
+		public function addStyle(styles:Vector.<Style>):void { _styles = _styles.concat(styles); }
 
 		/** Add template (non terminal symbol) definition. Template name equals @res attribute. */
 		public function addTemplate(xml:XML):void
@@ -244,7 +245,7 @@ package talon.utils
 						addTemplate(child);
 						break;
 					case TAG_STYLE:
-						addStyle(new StyleSheet(child.text()));
+						addStyle(ParseUtil.parseCSS(child.text()));
 						break;
 					case TAG_PROPERTIES:
 						importResources(ParseUtil.parseProperties(child.text()));
@@ -307,17 +308,17 @@ package talon.utils
 			}
 
 			// Styles
-			for each (var style:Object in cache["styles"])
+			for each (var styleObject:Object in cache["styles"])
 			{
-				var selector:String = style["selector"];
-				var attributes:Array = style["attributes"];
-				var styles:Object = _styles.selectors[selector] ||= new OrderedObject();
+				var selector:String = styleObject["selector"];
+				var attributes:Array = styleObject["attributes"];
+				var style:Style = _styles[_styles.length] = new Style(selector);
 
 				for (var i:int = 0; i < attributes.length; i+=2)
 				{
 					var name:String = attributes[i];
 					var value:String = attributes[i+1];
-					styles[name] = value;
+					style.values[name] = value;
 				}
 			}
 			
@@ -361,6 +362,8 @@ package talon.utils
 
 			function onParser(e:Event):void
 			{
+				e.stopImmediatePropagation();
+
 				var event:Object = cacheTemplateBuild[cacheTemplateBuild.length] = { type: e.type };
 
 				if (e.type == TMLParser.EVENT_BEGIN)
@@ -379,8 +382,6 @@ package talon.utils
 							tmp1.push(name, attributes[name])
 					}
 				}
-
-				e.stopImmediatePropagation();
 			}
 
 			_parser.removeEventListener(TMLParser.EVENT_BEGIN, onParser);
@@ -390,13 +391,13 @@ package talon.utils
 
 			var cacheStyles:Object = cache["styles"] = [];
 
-			for (var selector:String in _styles.selectors)
+			for each (var style:Style in _styles)
 			{
-				var cacheStyleSelector:Object = cacheStyles[cacheStyles.length] = { selector: selector }
+				var cacheStyleSelector:Object = cacheStyles[cacheStyles.length] = { selector: style.name };
 				var cacheStyleProps:Object = cacheStyleSelector["attributes"] = [];
 
-				for (var key:String in _styles.selectors[selector])
-					cacheStyleProps.push(key, _styles.selectors[selector][key]);
+				for (var key:String in style.values)
+					cacheStyleProps.push(key, style.values[key]);
 			}
 
 			// Resources

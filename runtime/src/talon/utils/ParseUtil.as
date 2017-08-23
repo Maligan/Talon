@@ -1,8 +1,11 @@
 package talon.utils
 {
 	import avmplus.getQualifiedClassName;
+
 	import flash.utils.Dictionary;
+
 	import talon.Node;
+	import talon.Style;
 
 	/** This is utility class for work with strings in different formats and notation. */
 	public final class ParseUtil
@@ -172,16 +175,9 @@ package talon.utils
 		// From AS3Commons StringUtils class
 		//
 
-		/** Character code for the WINDOWS line break. */
 		private static var WIN_BREAK:String = String.fromCharCode(13) + String.fromCharCode(10);
-
-		/** Character code for the APPLE line break. */
 		private static var MAC_BREAK:String = String.fromCharCode(13);
-
-		/** Default map for escaping strings. */
 		private static var DEFAULT_ESCAPE_MAP:Array = ["\\t", "\t", "\\n", "\n", "\\r", "\r", "\\\"", "\"", "\\\\", "\\", "\\'", "\'", "\\f", "\f", "\\b", "\b", "\\", ""];
-
-		/** The characters that have to be escaped. */
 		private static var PROPERTIES_ESCAPE_MAP:Array = ["\\t", "\t", "\\n", "\n", "\\r", "\r", "\\\"", "\"", "\\\\", "\\", "\\'", "\'", "\\f", "\f"];
 
 		/**
@@ -233,7 +229,7 @@ package talon.utils
 						{
 							var char:String = line.charAt(j);
 							if (char == "'") j++;
-							else if (char == ":" || char == "=" || char == "	") break;
+							else if (char == ":" || char == "=" || char == "\t") break;
 						}
 						sep = ((j == l) ? line.length : j);
 						key = trim(line.substr(0, sep), false, true);
@@ -333,6 +329,111 @@ package talon.utils
 			if (right) result = result.replace(/\s*$/, '');
 
 			return result;
+		}
+		
+		//
+		// Parse CSS
+		//
+
+		//
+		// Recursive descent parser (BNF):
+		//
+		// <css>      ::= { <rule> }
+		// <rule>     ::= <selector> {',' <selector>} '{' <style> '}'
+		// <selector> ::= 'ident' | .'ident' | #'ident' | <selector> <selector> | 'ident':'ident'
+		// <style>    ::= { 'ident' ':' 'ident' ';' }
+		//
+		public static function parseCSS(string:String):Vector.<Style>
+		{
+			var styles:Object = new OrderedObject();
+			var cursor:Vector.<String> = new <String>[];
+
+			parseCSS(string);
+			
+			// [Parse]
+			
+			function parseCSS(input:String):void
+			{
+				input = uncomment(input);
+				input = trim(input);
+
+				while (input.length != 0)
+				{
+					input = parseRule(input);
+					input = trim(input);
+				}
+			}
+
+			function parseRule(input:String):String
+			{
+				input = parseSelector(input);
+				input = parseStyle(input);
+				return input;
+			}
+
+			function parseSelector(input:String):String
+			{
+				var startIndex:int = 0;
+				var endIndex:int = input.indexOf('{');
+
+				cursor.length = 0;
+				var selectors:Array = input.substr(startIndex, endIndex).split(',');
+				for each (var selector:String in selectors)
+					cursor[cursor.length] = trim(selector).replace(/\s\+/, ' ');
+
+				return input.substr(endIndex);
+			}
+
+			function parseStyle(input:String):String
+			{
+				var startIndex:int = input.indexOf('{');
+				var endIndex:int = input.indexOf('}');
+				var style:Array = input.substring(startIndex + 1, endIndex).split(';');
+
+				for each (var property:String in style)
+				{
+					property = trim(property);
+
+					if (property.length > 0)
+					{
+						var splitProperty:Array = property.split(':');
+						var name:String = trim(splitProperty[0]);
+						var value:String = trim(splitProperty[1]);
+						addCursorSelectorsProperty(name, value);
+					}
+				}
+
+				return input.substr(endIndex + 1);
+			}
+
+			//
+			// [Calls]
+			//
+
+			function addCursorSelectorsProperty(name:String, value:String):void
+			{
+				for each (var selector:String in cursor)
+				{
+					var style:Style = styles[selector] ||= new Style(selector);
+					style.values[name] = value;
+				}
+			}
+			
+			//
+			// [Result]
+			//
+			var result:Vector.<Style> = new <Style>[];
+
+			for each (var style:Style in styles)
+				result[result.length] = style;
+			
+			return result;
+		}
+
+		/** Remove CSS comments. */
+		private static function uncomment(string:String):String
+		{
+			return string.replace(/\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\//g, '');
 		}
 	}
 }

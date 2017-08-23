@@ -3,7 +3,7 @@ package talon.utils
 	import talon.Attribute;
 	import talon.Node;
 
-	/** @private */
+	/** */
 	public class StringSet
 	{
 		private static const sArray:Array = [];

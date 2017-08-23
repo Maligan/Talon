@@ -12,6 +12,7 @@ package starling.extensions
 	import talon.enums.FillMode;
 	import talon.utils.ParseUtil;
 
+	/** @private */
 	public class FillModeMesh extends Mesh
 	{
 		private static var _byX:Vector.<Ruler>;

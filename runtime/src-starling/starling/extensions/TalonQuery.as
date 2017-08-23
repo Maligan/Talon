@@ -13,7 +13,7 @@ package starling.extensions
 	import starling.events.TouchPhase;
 	import starling.utils.Pool;
 
-	import talon.utils.StyleSheet;
+	import talon.utils.StyleUtil;
 
 	use namespace flash_proxy;
 
@@ -75,7 +75,7 @@ package starling.extensions
 			if (element == null) return;
 
 			// Check self
-			if (StyleSheet.match(element.node, selector))
+			if (StyleUtil.match(element.node, selector) != -1)
 				result[result.length] = element;
 
 			// Recursive

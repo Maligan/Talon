@@ -7,7 +7,7 @@ package talon.browser.platform.document
 	import starling.extensions.TalonFactory;
 
 	import talon.Node;
-	import talon.utils.StyleSheet;
+	import talon.Style;
 
 	/** Extended version of TalonFactory for browser purpose. */
 	public final class DocumentTalonFactory extends TalonFactory
@@ -192,7 +192,7 @@ package talon.browser.platform.document
 		//
 		// Styles
 		//
-		public override function addStyle(style:StyleSheet):void
+		public override function addStyle(styles:Vector.<Style>):void
 		{
 			throw new Error("Use addStyleSheetWithId");
 		}
@@ -221,7 +221,8 @@ import flash.utils.Dictionary;
 import flash.utils.Proxy;
 import flash.utils.flash_proxy;
 
-import talon.utils.StyleSheet;
+import talon.Style;
+import talon.utils.ParseUtil;
 
 use namespace flash_proxy;
 
@@ -330,7 +331,7 @@ class ObjectWithAccessLogger extends Proxy
 
 class StyleSheetCollection
 {
-	private var _cache:StyleSheet;
+	private var _cache:Vector.<Style>;
 	private var _sources:Dictionary = new Dictionary();
 	private var _keys:Vector.<String> = new <String>[];
 
@@ -351,16 +352,16 @@ class StyleSheetCollection
 		}
 	}
 
-	public function getMergedStyleSheet():StyleSheet
+	public function getMergedStyleSheet():Vector.<Style>
 	{
 		if (_cache == null)
 		{
-			_cache = new StyleSheet();
+			_cache = new Vector.<Style>;
 
 			for each (var key:String in _keys)
 			{
 				var source:String = _sources[key];
-				_cache.parse(source);
+				_cache = _cache.concat(ParseUtil.parseCSS(source));
 			}
 		}
 

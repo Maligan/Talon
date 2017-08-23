@@ -10,6 +10,7 @@ package starling.extensions
 	import talon.Node;
 	import talon.utils.TalonFactoryBase;
 
+	/** Frontend tool for build UI. */
 	public class TalonFactory extends TalonFactoryBase
 	{
 		/** @private */
@@ -27,12 +28,14 @@ package starling.extensions
 		}
 
 		// override methods
-
+		
+		/** @private */
 		protected override function getNode(element:*):Node
 		{
 			return ITalonElement(element).node;
 		}
 
+		/** @private */
 		protected override function addChild(parent:*, child:*):void
 		{
 			var parentAsDisplayObject:DisplayObjectContainer = DisplayObjectContainer(parent);

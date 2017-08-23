@@ -223,7 +223,7 @@ package talon
 		/** This value used as fallback value for inheritable attributes with value == 'inherit' but without parent. */
 		public function get based():String { return isInheritable ? InheritableSolver(_solver).based : null; }
 
-		/** Value calculated from (inited->styled->setted) & inherit parent attribute. */
+		/** Value calculated from (inited->styled->setted) and inherit parent attribute. */
 		public function get value():String { return _solver.value; }
 
 		/** NB! Optimized <code>value</code>property. Which can extract mapped resource. */

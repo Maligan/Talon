@@ -7,7 +7,7 @@ package starling.extensions
 	import starling.display.DisplayObjectContainer;
 	import starling.utils.AssetManager;
 
-	import talon.Node;
+	import talon.core.Node;
 	import talon.utils.TalonFactoryBase;
 
 	/** Frontend tool for build UI. */

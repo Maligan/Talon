@@ -27,11 +27,10 @@ package starling.extensions
 	import starling.utils.Color;
 	import starling.utils.MatrixUtil;
 
-	import talon.Attribute;
-	import talon.Node;
+	import talon.core.Attribute;
+	import talon.core.Node;
 	import talon.enums.TouchMode;
 	import talon.utils.Gauge;
-	import talon.utils.ParseUtil;
 	import talon.utils.ParseUtil;
 
 	/** @private Provide method for synchronize starling display tree and talon tree. */

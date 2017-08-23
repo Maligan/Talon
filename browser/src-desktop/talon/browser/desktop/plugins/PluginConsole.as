@@ -3,8 +3,8 @@ package talon.browser.desktop.plugins
 	import starling.extensions.ITalonElement;
 	import starling.utils.StringUtil;
 
-	import talon.Attribute;
-	import talon.Node;
+	import talon.core.Attribute;
+	import talon.core.Node;
 	import talon.browser.platform.AppPlatform;
 	import talon.browser.platform.document.files.IFileReference;
 	import talon.browser.platform.document.log.DocumentMessage;

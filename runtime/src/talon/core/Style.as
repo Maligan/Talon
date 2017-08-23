@@ -1,4 +1,4 @@
-package talon
+package talon.core
 {
 	import talon.utils.OrderedObject;
 

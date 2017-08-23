@@ -4,8 +4,8 @@ package talon.utils
 
 	import flash.utils.Dictionary;
 
-	import talon.Node;
-	import talon.Style;
+	import talon.core.Node;
+	import talon.core.Style;
 
 	/** This is utility class for work with strings in different formats and notation. */
 	public final class ParseUtil

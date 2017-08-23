@@ -2,11 +2,11 @@ package talon.utils
 {
 	import flash.events.Event;
 
-	import talon.Attribute;
-	import talon.Node;
-	import talon.Style;
+	import talon.core.Attribute;
+	import talon.core.Node;
+	import talon.core.Style;
 
-	/** Base class for Starling's TalonFactory */
+	/** External independent abstract factory class. */
 	public class TalonFactoryBase
 	{
 		public static const TAG_LIBRARY:String = "lib";

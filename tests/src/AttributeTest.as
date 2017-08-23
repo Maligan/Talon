@@ -2,8 +2,8 @@ package
 {
 	import flexunit.framework.Assert;
 
-	import talon.Attribute;
-	import talon.Node;
+	import talon.core.Attribute;
+	import talon.core.Node;
 
 	public class AttributeTest
 	{

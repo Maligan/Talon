@@ -1,7 +1,7 @@
 package talon.layouts
 {
-	import talon.Attribute;
-	import talon.Node;
+	import talon.core.Attribute;
+	import talon.core.Node;
 	import talon.utils.Gauge;
 	import talon.utils.ParseUtil;
 

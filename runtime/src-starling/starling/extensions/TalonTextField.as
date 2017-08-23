@@ -12,8 +12,8 @@ package starling.extensions
 	import starling.text.TextField;
 	import starling.text.TextFieldAutoSize;
 
-	import talon.Attribute;
-	import talon.Node;
+	import talon.core.Attribute;
+	import talon.core.Node;
 	import talon.layouts.Layout;
 	import talon.utils.Gauge;
 	import talon.utils.ParseUtil;

@@ -1,6 +1,6 @@
 package talon.layouts
 {
-	import talon.Node;
+	import talon.core.Node;
 
 	public class FlexLayout extends Layout
 	{
@@ -42,7 +42,7 @@ package talon.layouts
 
 import flash.geom.Point;
 
-import talon.Node;
+import talon.core.Node;
 import talon.enums.BreakMode;
 
 class FlexContainer

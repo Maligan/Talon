@@ -13,8 +13,8 @@ package talon.browser.desktop.popups.widgets
 	import starling.rendering.Painter;
 	import starling.text.TextField;
 
-	import talon.Attribute;
-	import talon.Node;
+	import talon.core.Attribute;
+	import talon.core.Node;
 	import talon.utils.ParseUtil;
 
 	public class TalonFeatherTextInput extends TextInput implements ITalonElement

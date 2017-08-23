@@ -1,7 +1,7 @@
 package talon.utils
 {
-	import talon.Attribute;
-	import talon.Node;
+	import talon.core.Attribute;
+	import talon.core.Node;
 
 	/** */
 	public class StringSet

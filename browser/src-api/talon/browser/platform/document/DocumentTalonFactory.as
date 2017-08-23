@@ -6,8 +6,8 @@ package talon.browser.platform.document
 	import starling.extensions.ITalonElement;
 	import starling.extensions.TalonFactory;
 
-	import talon.Node;
-	import talon.Style;
+	import talon.core.Node;
+	import talon.core.Style;
 
 	/** Extended version of TalonFactory for browser purpose. */
 	public final class DocumentTalonFactory extends TalonFactory
@@ -221,7 +221,7 @@ import flash.utils.Dictionary;
 import flash.utils.Proxy;
 import flash.utils.flash_proxy;
 
-import talon.Style;
+import talon.core.Style;
 import talon.utils.ParseUtil;
 
 use namespace flash_proxy;

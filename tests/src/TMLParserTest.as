@@ -5,7 +5,7 @@ package
 
 	import org.flexunit.Assert;
 
-	import talon.Node;
+	import talon.core.Node;
 	import talon.utils.TMLParser;
 
 	public class TMLParserTest

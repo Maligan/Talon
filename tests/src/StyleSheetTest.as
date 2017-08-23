@@ -2,8 +2,8 @@ package
 {
 	import org.flexunit.Assert;
 
-	import talon.Node;
-	import talon.Style;
+	import talon.core.Node;
+	import talon.core.Style;
 	import talon.utils.ParseUtil;
 	import talon.utils.StyleUtil;
 

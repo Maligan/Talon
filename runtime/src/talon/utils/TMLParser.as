@@ -6,7 +6,7 @@ package talon.utils
 	[Event(type="flash.events.Event", name="elementBegin")]
 	[Event(type="flash.events.Event", name="elementEnd")]
 	
-	/** @private */
+	/** @private Template Markup Language parser works like XML - SAX Parser. */
 	public final class TMLParser extends EventDispatcher
 	{
 		public static const EVENT_BEGIN:String = "begin";

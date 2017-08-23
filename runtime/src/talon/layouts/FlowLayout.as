@@ -2,11 +2,10 @@ package talon.layouts
 {
 	import flash.geom.Rectangle;
 
-	import talon.Attribute;
-	import talon.Node;
+	import talon.core.Attribute;
+	import talon.core.Node;
 	import talon.enums.Orientation;
 	import talon.utils.Gauge;
-	import talon.utils.ParseUtil;
 	import talon.utils.ParseUtil;
 
 	public class FlowLayout extends Layout

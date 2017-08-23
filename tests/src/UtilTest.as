@@ -3,7 +3,6 @@ package
 	import flexunit.framework.Assert;
 
 	import talon.utils.OrderedObject;
-
 	import talon.utils.ParseUtil;
 
 	public class UtilTest

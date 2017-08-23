@@ -1,7 +1,7 @@
 package talon.utils
 {
-	import talon.Node;
-	import talon.Style;
+	import talon.core.Node;
+	import talon.core.Style;
 
 	public class StyleUtil
 	{
@@ -34,8 +34,8 @@ package talon.utils
 	}
 }
 
-import talon.Attribute;
-import talon.Node;
+import talon.core.Attribute;
+import talon.core.Node;
 
 class StyleSelector
 {

@@ -7,7 +7,7 @@ package talon.browser.desktop.popups
 	import starling.events.Event;
 	import starling.utils.StringUtil;
 
-	import talon.Attribute;
+	import talon.core.Attribute;
 	import talon.browser.desktop.utils.Updater;
 	import talon.browser.platform.popups.Popup;
 

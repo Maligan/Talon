@@ -2,7 +2,7 @@ package talon.layouts
 {
 	import flash.utils.Dictionary;
 
-	import talon.Node;
+	import talon.core.Node;
 
 	public class Layout
 	{

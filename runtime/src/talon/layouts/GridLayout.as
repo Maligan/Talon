@@ -1,6 +1,6 @@
 package talon.layouts
 {
-	import talon.Node;
+	import talon.core.Node;
 
 	public class GridLayout extends Layout
 	{

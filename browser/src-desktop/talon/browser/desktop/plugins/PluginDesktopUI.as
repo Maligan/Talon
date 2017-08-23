@@ -25,7 +25,7 @@ package talon.browser.desktop.plugins
 	import starling.utils.Color;
 	import starling.utils.StringUtil;
 
-	import talon.Attribute;
+	import talon.core.Attribute;
 	import talon.browser.desktop.commands.OpenDocumentCommand;
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
 	import talon.browser.desktop.utils.DesktopDocumentProperty;

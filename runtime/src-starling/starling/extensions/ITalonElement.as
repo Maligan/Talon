@@ -1,6 +1,6 @@
 package starling.extensions
 {
-	import talon.Node;
+	import talon.core.Node;
 
 	public interface ITalonElement
 	{

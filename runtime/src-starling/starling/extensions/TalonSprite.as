@@ -8,8 +8,8 @@ package starling.extensions
 	import starling.events.Event;
 	import starling.rendering.Painter;
 
-	import talon.Attribute;
-	import talon.Node;
+	import talon.core.Attribute;
+	import talon.core.Node;
 
 	public class TalonSprite extends Sprite implements ITalonElement
 	{

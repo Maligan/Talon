@@ -10,8 +10,8 @@ package starling.extensions
 	import starling.textures.Texture;
 	import starling.utils.Pool;
 
-	import talon.Attribute;
-	import talon.Node;
+	import talon.core.Attribute;
+	import talon.core.Node;
 	import talon.utils.ParseUtil;
 
 	public class TalonImage extends Quad implements ITalonElement

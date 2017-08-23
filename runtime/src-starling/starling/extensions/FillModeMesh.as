@@ -237,31 +237,31 @@ package starling.extensions
 			}
 		}
 
-		private function recomposeRulers(horizontal:Vector.<Ruler>, vertical:Vector.<Ruler>):void
+		private function recomposeRulers(hor:Vector.<Ruler>, ver:Vector.<Ruler>):void
 		{
 			if (texture)
 			{
 				switch (horizontalFillMode)
 				{
-					case FillMode.STRETCH:  fillStretch(width, texture.width * _horizontalScale, _stretchOffsets[3] * _horizontalScale, _stretchOffsets[1] * _horizontalScale, horizontal); break;
-					case FillMode.REPEAT:   fillRepeat(width, texture.width * _horizontalScale, ParseUtil.parseAlign(horizontalAlign), horizontal); break;
-					case FillMode.NONE:     fillNone(width, texture.width * _horizontalScale, ParseUtil.parseAlign(horizontalAlign), horizontal); break;
+					case FillMode.STRETCH:  fillStretch(width, texture.width * _horizontalScale, _stretchOffsets[3] * _horizontalScale, _stretchOffsets[1] * _horizontalScale, hor); break;
+					case FillMode.REPEAT:   fillRepeat(width, texture.width * _horizontalScale, ParseUtil.parseAlign(horizontalAlign), hor); break;
+					case FillMode.NONE:     fillNone(width, texture.width * _horizontalScale, ParseUtil.parseAlign(horizontalAlign), hor); break;
 				}
 
 				switch (verticalFillMode)
 				{
-					case FillMode.STRETCH:  fillStretch(height, texture.height * _verticalScale, _stretchOffsets[0] * _horizontalScale, _stretchOffsets[2] * _horizontalScale, vertical); break;
-					case FillMode.REPEAT:   fillRepeat(height, texture.height * _verticalScale, ParseUtil.parseAlign(verticalAlign), vertical); break;
-					case FillMode.NONE:     fillNone(height, texture.height * _verticalScale, ParseUtil.parseAlign(verticalAlign), vertical); break;
+					case FillMode.STRETCH:  fillStretch(height, texture.height * _verticalScale, _stretchOffsets[0] * _horizontalScale, _stretchOffsets[2] * _horizontalScale, ver); break;
+					case FillMode.REPEAT:   fillRepeat(height, texture.height * _verticalScale, ParseUtil.parseAlign(verticalAlign), ver); break;
+					case FillMode.NONE:     fillNone(height, texture.height * _verticalScale, ParseUtil.parseAlign(verticalAlign), ver); break;
 				}
 			}
 			else if (!transparent)
 			{
-				horizontal.push(Ruler.getRuler(0, 0, 1));
-				horizontal.push(Ruler.getRuler(width, 0, 1));
+				hor.push(Ruler.getRuler(0, 0, 1));
+				hor.push(Ruler.getRuler(width, 0, 1));
 
-				vertical.push(Ruler.getRuler(0, 0, 1));
-				vertical.push(Ruler.getRuler(height, 0, 1));
+				ver.push(Ruler.getRuler(0, 0, 1));
+				ver.push(Ruler.getRuler(height, 0, 1));
 			}
 		}
 

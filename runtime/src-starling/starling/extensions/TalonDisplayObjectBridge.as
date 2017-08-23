@@ -15,12 +15,8 @@ package starling.extensions
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
-	import starling.filters.BlurFilter;
-	import starling.filters.ColorMatrixFilter;
-	import starling.filters.FilterChain;
 	import starling.filters.FragmentFilter;
 	import starling.rendering.Painter;
-	import starling.styles.DistanceFieldStyle;
 	import starling.styles.MeshStyle;
 	import starling.text.TextField;
 	import starling.textures.Texture;
@@ -37,151 +33,6 @@ package starling.extensions
 	/** @private Provide method for synchronize starling display tree and talon tree. */
 	public class TalonDisplayObjectBridge
 	{
-		ParseUtil.registerClassParser(Matrix, function(value:String, node:Node, out:Matrix):Matrix
-		{
-			out ||= new Matrix();
-			out.identity();
-
-			var funcs:Array = value.split(/\s+(?=scale|rotate|skew|translate|matrix)/g);
-			for each (var func:String in funcs)
-			{
-				var split:Array = ParseUtil.parseFunction(func);
-				if (split == null || split.length < 2) continue;
-
-				var name:String = split[0];
-				var float1:Number = parseFloat(split[1]);
-				var angle1:Number = ParseUtil.parseAngle(split[1], 0);
-
-				/**/ if (name == "scale") out.scale(float1, float1);
-				else if (name == "scaleX") out.scale(float1, 1);
-				else if (name == "scaleY") out.scale(1, float1);
-				else if (name == "rotate") out.rotate(angle1);
-				else if (name == "translate") out.translate(float1, float1);
-				else if (name == "translateX") out.translate(float1, 0);
-				else if (name == "translateY") out.translate(0, float1);
-				else if (name == "skewX") MatrixUtil.skew(out, angle1, 0);
-				else if (name == "skewY") MatrixUtil.skew(out, 0, angle1);
-				else if (name == "matrix")
-				{
-					if (split.length < 7) continue;
-					split.shift();
-					out.setTo.apply(null, split);
-				}
-			}
-
-			return out;
-		});
-
-		ParseUtil.registerClassParser(FragmentFilter, function(value:String, node:Node, out:FragmentFilter):FragmentFilter
-		{
-			// TODO: Extract from outChain blur/colormatrix
-			var outChain:FilterChain = out as FilterChain;
-			var outBlur:BlurFilter = out as BlurFilter;
-			if (outBlur) outBlur.blurX = outBlur.blurY = 0;
-			var outColorMatrix:ColorMatrixFilter = out as ColorMatrixFilter;
-			if (outColorMatrix) outColorMatrix.reset();
-
-			var filters:Array = value.split(/\s+(?=none|blur|saturate|brightness|contrast|hue|tint)/g);
-			if (filters.length == 1 && filters[0] == "none")
-			{
-				out && out.dispose();
-				out = null;
-			}
-
-			for each (var filter:String in filters)
-			{
-				var args:Array = ParseUtil.parseFunction(filter);
-				if (args == null || args.length == 0) continue;
-
-				var float1:Number = parseFloat(args[1]) || 0;
-				var angle1:Number = ParseUtil.parseAngle(args[1], 0);
-				var color1:uint = ParseUtil.parseColor(args[1]);
-
-				switch (args[0])
-				{
-					case "saturate":
-					case "brightness":
-					case "contrast":
-					case "hue":
-					case "tint":
-						outColorMatrix ||= new ColorMatrixFilter();
-						/**/ if (args[0] == "saturate")   outColorMatrix.adjustSaturation(float1);
-						else if (args[0] == "brightness") outColorMatrix.adjustBrightness(float1);
-						else if (args[0] == "contrast")   outColorMatrix.adjustContrast(float1);
-						else if (args[0] == "hue")        outColorMatrix.adjustHue(angle1);
-						else if (args[0] == "tint")       outColorMatrix.tint(color1, ParseUtil.parseNumber(args[2], 1));
-						break;
-
-					case "blur":
-						outBlur ||= new BlurFilter();
-						outBlur.blurX = float1;
-						outBlur.blurY = ParseUtil.parseNumber(args[2], float1);
-						break;
-				}
-			}
-
-			if (outColorMatrix && outBlur)
-			{
-				out = outChain = new FilterChain();
-				outChain.addFilter(outColorMatrix);
-				outChain.addFilter(outBlur);
-			}
-			else if (outColorMatrix)
-				out = outColorMatrix;
-			else if (outBlur)
-				out = outBlur;
-
-			return out;
-		});
-
-		ParseUtil.registerClassParser(MeshStyle, function(value:String, node:Node, out:MeshStyle):MeshStyle
-		{
-			var split:Array = ParseUtil.parseFunction(value);
-			if (split == null || split[0] == Attribute.NONE)
-				return null;
-
-			var dfs:DistanceFieldStyle = out as DistanceFieldStyle;
-			if (dfs == null)
-				dfs = new DistanceFieldStyle();
-
-			dfs.softness  = ParseUtil.parseNumber(split[1], 0.125);
-			dfs.threshold = ParseUtil.parseNumber(split[2], 0.5);
-
-			switch (split[0])
-			{
-				case "dfs":
-					dfs.setupBasic();
-					break;
-				case "dfs-glow":
-					dfs.setupGlow(
-						ParseUtil.parseNumber(split[3], 0.2),
-						ParseUtil.parseColor(split[4], 0x0),
-						ParseUtil.parseNumber(split[5], 0.5)
-					);
-					break;
-				case "dfs-shadow":
-					dfs.setupDropShadow(
-						ParseUtil.parseNumber(split[3], 0.2),
-						ParseUtil.parseNumber(split[4], 2),
-						ParseUtil.parseNumber(split[5], 2),
-						ParseUtil.parseColor(split[6], 0x0),
-						ParseUtil.parseNumber(split[7], 0.5)
-					);
-					break;
-				case "dfs-outline":
-					dfs.setupOutline(
-						ParseUtil.parseNumber(split[3], 0.25),
-						ParseUtil.parseColor(split[4], 0x0),
-						ParseUtil.parseNumber(split[5], 1)
-					);
-					break;
-				default:
-					return null;
-			}
-
-			return dfs;
-		});
-
 		private const sMatrix:Matrix = new Matrix();
 		private const sPoint:Point = new Point();
 
@@ -194,6 +45,8 @@ package starling.extensions
 
 		public function TalonDisplayObjectBridge(target:DisplayObject, node:Node):void
 		{
+			Parsers.registerParsers();
+			
 			_target = target;
 			_target.addEventListener(EnterFrameEvent.ENTER_FRAME, validate);
 			_listeners = new Dictionary();
@@ -562,5 +415,180 @@ package starling.extensions
 				|| _transform.tx != 0.0
 				|| _transform.ty != 0.0;
 		}
+	}
+}
+
+import flash.geom.Matrix;
+
+import starling.filters.BlurFilter;
+import starling.filters.ColorMatrixFilter;
+import starling.filters.FilterChain;
+import starling.filters.FragmentFilter;
+import starling.styles.DistanceFieldStyle;
+import starling.styles.MeshStyle;
+import starling.utils.MatrixUtil;
+
+import talon.core.Attribute;
+import talon.core.Node;
+import talon.utils.ParseUtil;
+
+class Parsers
+{
+	private static var _init:Boolean = false;
+	
+	public static function registerParsers():void
+	{
+		if (_init == false)
+		{
+			_init = true;
+			ParseUtil.registerClassParser(Matrix, Parsers.parseMatrix);
+			ParseUtil.registerClassParser(FragmentFilter, Parsers.parseFragmentFilter);
+			ParseUtil.registerClassParser(MeshStyle, Parsers.parseMeshStyle);
+		}
+	}
+	
+	private static function parseMatrix(value:String, node:Node, out:Matrix):Matrix
+	{
+		out ||= new Matrix();
+		out.identity();
+	
+		var funcs:Array = value.split(/\s+(?=scale|rotate|skew|translate|matrix)/g);
+		for each (var func:String in funcs)
+		{
+			var split:Array = ParseUtil.parseFunction(func);
+			if (split == null || split.length < 2) continue;
+	
+			var name:String = split[0];
+			var float1:Number = parseFloat(split[1]);
+			var angle1:Number = ParseUtil.parseAngle(split[1], 0);
+	
+			if (name == "scale") out.scale(float1, float1);
+			else if (name == "scaleX") out.scale(float1, 1);
+			else if (name == "scaleY") out.scale(1, float1);
+			else if (name == "rotate") out.rotate(angle1);
+			else if (name == "translate") out.translate(float1, float1);
+			else if (name == "translateX") out.translate(float1, 0);
+			else if (name == "translateY") out.translate(0, float1);
+			else if (name == "skewX") MatrixUtil.skew(out, angle1, 0);
+			else if (name == "skewY") MatrixUtil.skew(out, 0, angle1);
+			else if (name == "matrix")
+			{
+				if (split.length < 7) continue;
+				split.shift();
+				out.setTo.apply(null, split);
+			}
+		}
+	
+		return out;
+	}
+
+	private static function parseFragmentFilter(value:String, node:Node, out:FragmentFilter):FragmentFilter
+	{
+		// TODO: Extract from outChain blur/colormatrix
+		var outChain:FilterChain = out as FilterChain;
+		var outBlur:BlurFilter = out as BlurFilter;
+		if (outBlur) outBlur.blurX = outBlur.blurY = 0;
+		var outColorMatrix:ColorMatrixFilter = out as ColorMatrixFilter;
+		if (outColorMatrix) outColorMatrix.reset();
+	
+		var filters:Array = value.split(/\s+(?=none|blur|saturate|brightness|contrast|hue|tint)/g);
+		if (filters.length == 1 && filters[0] == "none")
+		{
+			out && out.dispose();
+			out = null;
+		}
+	
+		for each (var filter:String in filters)
+		{
+			var args:Array = ParseUtil.parseFunction(filter);
+			if (args == null || args.length == 0) continue;
+	
+			var float1:Number = parseFloat(args[1]) || 0;
+			var angle1:Number = ParseUtil.parseAngle(args[1], 0);
+			var color1:uint = ParseUtil.parseColor(args[1]);
+	
+			switch (args[0])
+			{
+				case "saturate":
+				case "brightness":
+				case "contrast":
+				case "hue":
+				case "tint":
+					outColorMatrix ||= new ColorMatrixFilter();
+					/**/ if (args[0] == "saturate")   outColorMatrix.adjustSaturation(float1);
+					else if (args[0] == "brightness") outColorMatrix.adjustBrightness(float1);
+					else if (args[0] == "contrast")   outColorMatrix.adjustContrast(float1);
+					else if (args[0] == "hue")        outColorMatrix.adjustHue(angle1);
+					else if (args[0] == "tint")       outColorMatrix.tint(color1, ParseUtil.parseNumber(args[2], 1));
+					break;
+	
+				case "blur":
+					outBlur ||= new BlurFilter();
+					outBlur.blurX = float1;
+					outBlur.blurY = ParseUtil.parseNumber(args[2], float1);
+					break;
+			}
+		}
+	
+		if (outColorMatrix && outBlur)
+		{
+			out = outChain = new FilterChain();
+			outChain.addFilter(outColorMatrix);
+			outChain.addFilter(outBlur);
+		}
+		else if (outColorMatrix)
+			out = outColorMatrix;
+		else if (outBlur)
+			out = outBlur;
+	
+		return out;
+	}
+
+	private static function parseMeshStyle(value:String, node:Node, out:MeshStyle):MeshStyle
+	{
+		var split:Array = ParseUtil.parseFunction(value);
+		if (split == null || split[0] == Attribute.NONE)
+			return null;
+	
+		var dfs:DistanceFieldStyle = out as DistanceFieldStyle;
+		if (dfs == null)
+			dfs = new DistanceFieldStyle();
+	
+		dfs.softness  = ParseUtil.parseNumber(split[1], 0.125);
+		dfs.threshold = ParseUtil.parseNumber(split[2], 0.5);
+	
+		switch (split[0])
+		{
+			case "dfs":
+				dfs.setupBasic();
+				break;
+			case "dfs-glow":
+				dfs.setupGlow(
+					ParseUtil.parseNumber(split[3], 0.2),
+					ParseUtil.parseColor(split[4], 0x0),
+					ParseUtil.parseNumber(split[5], 0.5)
+				);
+				break;
+			case "dfs-shadow":
+				dfs.setupDropShadow(
+					ParseUtil.parseNumber(split[3], 0.2),
+					ParseUtil.parseNumber(split[4], 2),
+					ParseUtil.parseNumber(split[5], 2),
+					ParseUtil.parseColor(split[6], 0x0),
+					ParseUtil.parseNumber(split[7], 0.5)
+				);
+				break;
+			case "dfs-outline":
+				dfs.setupOutline(
+					ParseUtil.parseNumber(split[3], 0.25),
+					ParseUtil.parseColor(split[4], 0x0),
+					ParseUtil.parseNumber(split[5], 1)
+				);
+				break;
+			default:
+				return null;
+		}
+	
+		return dfs;
 	}
 }

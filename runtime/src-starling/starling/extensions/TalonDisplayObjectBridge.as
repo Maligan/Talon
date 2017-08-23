@@ -273,10 +273,10 @@ package starling.extensions
 				// TODO: Respect percentages & min/max size
 
 				if (_node.bounds.width != _node.bounds.width)
-					_node.bounds.width = _node.width.toPixels(_node, 0);
+					_node.bounds.width = _node.width.toPixels(_node.metrics, 0);
 
 				if (_node.bounds.height != _node.bounds.height)
-					_node.bounds.height = _node.height.toPixels(_node, 0);
+					_node.bounds.height = _node.height.toPixels(_node.metrics, 0);
 
 				_node.commit();
 			}
@@ -336,10 +336,10 @@ package starling.extensions
 
 			_background.setStretchOffsets
 			(
-				Gauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_TOP), _node, textureHeight),
-				Gauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_RIGHT), _node, textureWidth),
-				Gauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_BOTTOM), _node, textureHeight),
-				Gauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_LEFT), _node, textureWidth)
+				Gauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_TOP), _node.metrics, textureHeight),
+				Gauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_RIGHT), _node.metrics, textureWidth),
+				Gauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_BOTTOM), _node.metrics, textureHeight),
+				Gauge.toPixels(_node.getAttributeCache(Attribute.FILL_STRETCH_GRID_LEFT), _node.metrics, textureWidth)
 			);
 		}
 

@@ -56,8 +56,8 @@ package talon.browser.platform.document
 
 			if (node)
 			{
-				if (csf == csf) node.ppdp = csf;
-				if (dpi == dpi) node.ppmm = dpi / 25.4;
+				if (csf == csf) node.metrics.ppdp = csf;
+				if (dpi == dpi) node.metrics.ppmm = dpi / 25.4;
 			}
 
 			return node;

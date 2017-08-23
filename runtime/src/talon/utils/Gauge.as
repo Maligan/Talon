@@ -24,11 +24,11 @@ package talon.utils
 		private static const sFormat:RegExp = /^(-?\d*\.?\d+)(px|dp|mm|em|%|\*|)$/;
 		private static const sGauge:Gauge = new Gauge(null, null);
 
-		public static function toPixels(string:String, node:Node, pp100p:Number = 0, auto:Function = null, aa:Number = 0, pps:Number = 0):Number
+		public static function toPixels(string:String, metrics:Metrics, pp100p:Number = 0, auto:Function = null, aa:Number = 0, pps:Number = 0):Number
 		{
 			sGauge.parse(string);
 			sGauge.auto = auto;
-			return sGauge.toPixels(node, pp100p, aa, pps);
+			return sGauge.toPixels(metrics, pp100p, aa, pps);
 		}
 
 		private var _node:Node;
@@ -83,27 +83,22 @@ package talon.utils
 		}
 
 		/**
-		 * @private
 		 * Transform gauge to pixels.
 		 *
-		 * Core & Hardcore function - I wrote this method first from all Talon code :-)
-		 *
-		 * @param ppmm pixels per millimeter
-		 * @param ppem pixels per em
-		 * @param ppdp pixels per density-independent point
+		 * @param metrics - ppmm (pixels per millimeter), ppem (pixels per em), ppdp (pixels per density-independent point)
 		 * @param pp100p pixels per 100%
 		 * @param aa argument for auto measure
 		 * @param pps pixels per star
 		 */
-		public function toPixels(node:Node, pp100p:Number = 0, aa:Number = Infinity, pps:Number = 0):Number
+		public function toPixels(metrics:Metrics, pp100p:Number = 0, aa:Number = Infinity, pps:Number = 0):Number
 		{
 			switch (unit)
 			{
 				case NONE:		return auto ? auto(aa) : 0;
 				case PX:		return amount;
-				case MM:		return amount * node.ppmm;
-				case EM:        return amount * node.ppem;
-				case DP:        return amount * node.ppdp;
+				case MM:		return amount * metrics.ppmm;
+				case EM:        return amount * metrics.ppem;
+				case DP:        return amount * metrics.ppdp;
 				case PERCENT:   return amount * pp100p/100;
 				case STAR:		return amount * pps;
 				default:		throw new Error("Unknown gauge unit: " + unit);

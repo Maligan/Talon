@@ -428,8 +428,8 @@ package talon.browser.desktop.plugins
 
 			if (_template != null)
 			{
-				_templateContainer.node.ppmm = ITalonDisplayObject(_template).node.ppmm;
-				_templateContainer.node.ppdp = ITalonDisplayObject(_template).node.ppdp;
+				_templateContainer.node.metrics.ppmm = ITalonDisplayObject(_template).node.metrics.ppmm;
+				_templateContainer.node.metrics.ppdp = ITalonDisplayObject(_template).node.metrics.ppdp;
 				_templateContainer.addChild(_template);
 				resizeTo(_platform.profile.width, _platform.profile.height);
 

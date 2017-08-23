@@ -119,10 +119,10 @@ package talon.browser.desktop.popups.widgets
 		private function onTextChange():void { text = node.getAttributeCache(Attribute.TEXT); }
 		private function onPaddingChange():void
 		{
-			paddingLeft = node.paddingLeft.toPixels(node);
-			paddingRight = node.paddingRight.toPixels(node);
-			paddingTop = node.paddingTop.toPixels(node);
-			paddingBottom = node.paddingBottom.toPixels(node);
+			paddingLeft = node.paddingLeft.toPixels(node.metrics);
+			paddingRight = node.paddingRight.toPixels(node.metrics);
+			paddingTop = node.paddingTop.toPixels(node.metrics);
+			paddingBottom = node.paddingBottom.toPixels(node.metrics);
 		}
 
 		private function get textFormat():BitmapFontTextFormat

@@ -67,10 +67,10 @@ package starling.extensions
 		{
 			var trueTypeCorrection:int = getCompositor(format.font) ? 0 : TRUE_TYPE_CORRECTION;
 
-			var paddingTop:Number = node.paddingTop.toPixels(node);
-			var paddingRight:Number = node.paddingRight.toPixels(node);
-			var paddingBottom:Number = node.paddingBottom.toPixels(node);
-			var paddingLeft:Number = node.paddingLeft.toPixels(node);
+			var paddingTop:Number = node.paddingTop.toPixels(node.metrics);
+			var paddingRight:Number = node.paddingRight.toPixels(node.metrics);
+			var paddingBottom:Number = node.paddingBottom.toPixels(node.metrics);
+			var paddingLeft:Number = node.paddingLeft.toPixels(node.metrics);
 
 			super.autoSize = getAutoSize(availableWidth == Infinity, availableHeight == Infinity);
 			super.width = availableWidth - paddingLeft - paddingRight + trueTypeCorrection;
@@ -189,8 +189,8 @@ package starling.extensions
 		private function onNodeResize():void
 		{
 			// TODO: Make pivot/position in bridge?
-			pivotX = node.pivotX.toPixels(node, node.bounds.width);
-			pivotY = node.pivotY.toPixels(node, node.bounds.height);
+			pivotX = node.pivotX.toPixels(node.metrics, node.bounds.width);
+			pivotY = node.pivotY.toPixels(node.metrics, node.bounds.height);
 
 			if (!manual)
 			{
@@ -226,10 +226,10 @@ package starling.extensions
 				// Crop padding from result size
 				var trueTypeCorrection:int = getCompositor(format.font) ? 0 : TRUE_TYPE_CORRECTION;
 
-				var paddingTop:Number = node.paddingTop.toPixels(node);
-				var paddingRight:Number = node.paddingRight.toPixels(node);
-				var paddingBottom:Number = node.paddingBottom.toPixels(node);
-				var paddingLeft:Number = node.paddingLeft.toPixels(node);
+				var paddingTop:Number = node.paddingTop.toPixels(node.metrics);
+				var paddingRight:Number = node.paddingRight.toPixels(node.metrics);
+				var paddingBottom:Number = node.paddingBottom.toPixels(node.metrics);
+				var paddingLeft:Number = node.paddingLeft.toPixels(node.metrics);
 
 				width = _node.bounds.width - paddingLeft - paddingRight + trueTypeCorrection;
 				height = _node.bounds.height - paddingTop - paddingBottom + trueTypeCorrection;
@@ -298,13 +298,13 @@ package starling.extensions
 		//
 
 		private function onFontColorChange():void { format.color = ParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
-		private function onFontSizeChange():void { format.size = node.ppem }
+		private function onFontSizeChange():void { format.size = node.metrics.ppem }
 		private function onFontNameChange():void { format.font = node.getAttributeCache(Attribute.FONT_NAME); }
 		private function onHAlignChange():void { format.horizontalAlign = _node.getAttributeCache(Attribute.HALIGN) }
 		private function onVAlignChange():void { format.verticalAlign = _node.getAttributeCache(Attribute.VALIGN) }
 		private function onAutoScaleChange():void { super.autoScale = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.FONT_AUTO_SCALE)); }
 		private function onWrapChange():void { super.wordWrap = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.WRAP)); }
-		private function onInterlineChange():void { format.leading = Gauge.toPixels(_node.getAttributeCache(Attribute.INTERLINE), _node); invalidateIfAutoSize(); }
+		private function onInterlineChange():void { format.leading = Gauge.toPixels(_node.getAttributeCache(Attribute.INTERLINE), _node.metrics); invalidateIfAutoSize(); }
 		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); invalidateIfAutoSize(); }
 
 		private function invalidateIfAutoSize():void

@@ -2,11 +2,11 @@ package talon.core
 {
 	import flash.events.Event;
 	import flash.geom.Rectangle;
-	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
 
 	import talon.layouts.Layout;
 	import talon.utils.Gauge;
+	import talon.utils.Metrics;
 	import talon.utils.StringSet;
 	import talon.utils.StyleUtil;
 	import talon.utils.Trigger;
@@ -27,14 +27,12 @@ package talon.core
 		private var _styles:Vector.<Style>;
 		private var _styleTouches:Dictionary = new Dictionary();
 		private var _styleTouch:int = -1;
-		
 		private var _resources:Object;
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
 		private var _bounds:Rectangle = new Rectangle(0, 0, NaN, NaN);
 		private var _triggers:Dictionary = new Dictionary();
-		private var _ppdp:Number = 1;
-		private var _ppmm:Number = Capabilities.screenDPI / 25.4;  // 25.4mm in 1 inch
+		private var _metrics:Metrics = new Metrics(this);
 		private var _invalidated:Boolean = true;
 		private var _freeze:Boolean = false;
 
@@ -259,33 +257,9 @@ package talon.core
 		/** Actual node bounds in pixels. */
 		public function get bounds():Rectangle { return _bounds; }
 
-		/** Pixel per density-independent point (in Starling also known as content scale factor [csf]). */
-		public function get ppdp():Number { return _ppdp; }
-
-		/** @private */
-		public function set ppdp(value:Number):void { _ppdp = value; }
-
-		/** Pixels per millimeter (in current node). */
-		public function get ppmm():Number { return _ppmm; }
-
-		/** @private */
-		public function set ppmm(value:Number):void { _ppmm = value; }
-
-		/** Current node 'fontSize' expressed in pixels.*/
-		public function get ppem():Number
-		{
-			// Avoid loops (toPixels() <-> ppem) with EM or PERCENT units
-			// 12 is hardcoded version of fontSize 'based' value
-			
-			if (fontSize.unit == Gauge.EM)
-				return fontSize.amount * (parent ? parent.ppem : 12);
-
-			else if (fontSize.unit == Gauge.PERCENT)
-				return fontSize.amount * (parent ? parent.ppem : 12) / 100;
-
-			return fontSize.toPixels(this);
-		}
-
+		/** @private Gauge units metrics within current node. */
+		public function get metrics():Metrics { return _metrics; }
+		
 		/** This is default 'auto' callback for gauges: width, minWidth, maxWidth. */
 		private function measureAutoWidth(height:Number):Number
 		{

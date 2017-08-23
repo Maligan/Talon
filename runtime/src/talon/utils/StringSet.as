@@ -72,14 +72,23 @@ package talon.utils
 			
 			_change.dispatch();
 		}
-
-		public function get change():Trigger { return _change; }
-
-		public function get value():String { return _strings.join(" ") }
+		
+		public function get value():String
+		{
+			initialize();
+			return _strings.join(" ");
+		}
+		
 		public function set value(string:String):void
 		{
+			initialize();
 			_strings = string.split(" ");
 			dispatchChange(true);
+		}
+
+		public function get change():Trigger
+		{
+			return _change;
 		}
 	}
 }

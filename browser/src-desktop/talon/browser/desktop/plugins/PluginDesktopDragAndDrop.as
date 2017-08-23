@@ -15,6 +15,7 @@ package talon.browser.desktop.plugins
 	import talon.browser.platform.AppPlatform;
 	import talon.browser.platform.plugins.IPlugin;
 	import talon.browser.platform.utils.DisplayTreeUtil;
+	import talon.enums.State;
 
 	public class PluginDesktopDragAndDrop implements IPlugin
 	{
@@ -50,13 +51,13 @@ package talon.browser.desktop.plugins
 		private function activate():void
 		{
 			var overlay:TalonSprite = DisplayTreeUtil.findChildByName(_platform.starling.root as DisplayObjectContainer, "drag") as TalonSprite;
-			if (overlay) overlay.node.classes.set("active", true);
+			if (overlay) overlay.node.classes.set(State.ACTIVE, true);
 		}
 
 		private function deactivate():void
 		{
 			var overlay:TalonSprite = DisplayTreeUtil.findChildByName(_platform.starling.root as DisplayObjectContainer, "drag") as TalonSprite;
-			if (overlay) overlay.node.classes.set("active", false);
+			if (overlay) overlay.node.classes.set(State.ACTIVE, false);
 		}
 
 		public function detach():void

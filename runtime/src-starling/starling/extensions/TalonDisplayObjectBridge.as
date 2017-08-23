@@ -29,6 +29,7 @@ package starling.extensions
 
 	import talon.core.Attribute;
 	import talon.core.Node;
+	import talon.enums.State;
 	import talon.enums.TouchMode;
 	import talon.utils.Gauge;
 	import talon.utils.ParseUtil;
@@ -438,38 +439,33 @@ package starling.extensions
 		{
 			var touch:Touch = e.getTouch(_target);
 
-			if (touch == null)
+			if (touch == null || touch.phase == TouchPhase.ENDED)
 			{
-				_node.states.set("hover", false);
-				_node.states.set("active", false);
+				_node.states.set(State.HOVER, false);
+				_node.states.set(State.ACTIVE, false);
 			}
 			else if (touch.phase == TouchPhase.HOVER)
 			{
-				_node.states.set("hover", true);
+				_node.states.set(State.HOVER, true);
 			}
-			else if (touch.phase == TouchPhase.BEGAN && !_node.states.has("active"))
+			else if (touch.phase == TouchPhase.BEGAN)
 			{
-				_node.states.set("active", true);
+				_node.states.set(State.ACTIVE, true);
 			}
 			else if (touch.phase == TouchPhase.MOVED)
 			{
 				var isWithinBounds:Boolean = _target.getBounds(_target.stage).contains(touch.globalX, touch.globalY);
 
-				if (_node.states.has("active") && !isWithinBounds)
+				if (_node.states.has(State.ACTIVE) && !isWithinBounds)
 				{
-					_node.states.set("hover", false);
-					_node.states.set("active", false);
+					_node.states.set(State.HOVER, false);
+					_node.states.set(State.ACTIVE, false);
 				}
-				else if (!_node.states.has("active") && isWithinBounds)
+				else if (!_node.states.has(State.ACTIVE) && isWithinBounds)
 				{
-					_node.states.set("hover", true);
-					_node.states.set("active", true);
+					_node.states.set(State.HOVER, true);
+					_node.states.set(State.ACTIVE, true);
 				}
-			}
-			else if (touch.phase == TouchPhase.ENDED)
-			{
-				_node.states.set("hover", false);
-				_node.states.set("active", false);
 			}
 		}
 

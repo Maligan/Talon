@@ -15,12 +15,11 @@ package talon.browser.desktop.popups.widgets
 
 	import talon.core.Attribute;
 	import talon.core.Node;
+	import talon.enums.State;
 	import talon.utils.ParseUtil;
 
 	public class TalonFeatherTextInput extends TextInput implements ITalonDisplayObject
 	{
-		private static const STATE_FOCUS:String = "focus";
-
 		private var _node:Node;
 		private var _bridge:TalonDisplayObjectBridge;
 		private var _manual:Boolean;
@@ -91,12 +90,12 @@ package talon.browser.desktop.popups.widgets
 
 		private function onFocusIn(e:*):void
 		{
-			node.states.set(STATE_FOCUS, true);
+			node.states.set(State.FOCUS, true);
 		}
 
 		private function onFocusOut(e:*):void
 		{
-			node.states.set(STATE_FOCUS, false);
+			node.states.set(State.FOCUS, false);
 		}
 
 		// node

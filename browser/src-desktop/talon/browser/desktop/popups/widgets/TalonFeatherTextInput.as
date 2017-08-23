@@ -7,7 +7,7 @@ package talon.browser.desktop.popups.widgets
 	import feathers.text.BitmapFontTextFormat;
 
 	import starling.events.Event;
-	import starling.extensions.ITalonElement;
+	import starling.extensions.ITalonDisplayObject;
 	import starling.extensions.TalonDisplayObjectBridge;
 	import starling.extensions.TalonQuery;
 	import starling.rendering.Painter;
@@ -17,7 +17,7 @@ package talon.browser.desktop.popups.widgets
 	import talon.core.Node;
 	import talon.utils.ParseUtil;
 
-	public class TalonFeatherTextInput extends TextInput implements ITalonElement
+	public class TalonFeatherTextInput extends TextInput implements ITalonDisplayObject
 	{
 		private static const STATE_FOCUS:String = "focus";
 

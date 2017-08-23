@@ -19,19 +19,19 @@ package starling.extensions
 
 	public final dynamic class TalonQuery extends Proxy
 	{
-		private var _elements:Vector.<ITalonElement>;
-		private var _elementsBackBuffer:Vector.<ITalonElement>;
+		private var _elements:Vector.<ITalonDisplayObject>;
+		private var _elementsBackBuffer:Vector.<ITalonDisplayObject>;
 		private var _elementsAreBusy:Boolean;
 
-		public function TalonQuery(element:ITalonElement = null):void
+		public function TalonQuery(element:ITalonDisplayObject = null):void
 		{
 			
-			_elements = new <ITalonElement>[];
-			_elementsBackBuffer = new <ITalonElement>[];
+			_elements = new <ITalonDisplayObject>[];
+			_elementsBackBuffer = new <ITalonDisplayObject>[];
 			if (element) reset(element);
 		}
 
-		public function reset(element:ITalonElement = null):TalonQuery
+		public function reset(element:ITalonDisplayObject = null):TalonQuery
 		{
 			if (_elementsAreBusy) return clone().reset(element);
 			else
@@ -56,9 +56,9 @@ package starling.extensions
 			else
 			{
 				// Select
-				var result:Vector.<ITalonElement> = _elementsBackBuffer;
+				var result:Vector.<ITalonDisplayObject> = _elementsBackBuffer;
 
-				for each (var element:ITalonElement in _elements)
+				for each (var element:ITalonDisplayObject in _elements)
 					selectInternal(element, selector, result);
 
 				// Swap
@@ -70,7 +70,7 @@ package starling.extensions
 			}
 		}
 
-		private function selectInternal(element:ITalonElement, selector:String, result:Vector.<ITalonElement>):void
+		private function selectInternal(element:ITalonDisplayObject, selector:String, result:Vector.<ITalonDisplayObject>):void
 		{
 			if (element == null) return;
 
@@ -82,22 +82,22 @@ package starling.extensions
 			var elementAsContainer:DisplayObjectContainer = element as DisplayObjectContainer;
 			if (elementAsContainer)
 				for (var i:int = 0; i < elementAsContainer.numChildren; i++)
-					selectInternal(elementAsContainer.getChildAt(i) as ITalonElement, selector, result);
+					selectInternal(elementAsContainer.getChildAt(i) as ITalonDisplayObject, selector, result);
 		}
 
 		//
 		// Enumeration
 		//
 		public function get numElements():int { return _elements.length; }
-		public function getElementAt(index:int):ITalonElement { return (index>-1 && index<_elements.length) ? _elements[index] : null; }
-		public function getElementIndex(element:ITalonElement):int { return _elements.indexOf(element); }
+		public function getElementAt(index:int):ITalonDisplayObject { return (index>-1 && index<_elements.length) ? _elements[index] : null; }
+		public function getElementIndex(element:ITalonDisplayObject):int { return _elements.indexOf(element); }
 
 		//
 		// Common
 		//
 		public function setAttribute(name:String, value:*):TalonQuery
 		{
-			for each (var element:ITalonElement in _elements)
+			for each (var element:ITalonDisplayObject in _elements)
 				element.node.setAttribute(name, value);
 
 			return this;
@@ -108,7 +108,7 @@ package starling.extensions
 		   if (juggler == null)
 		       juggler = Starling.juggler;
 
-		   for each (var element:ITalonElement in _elements)
+		   for each (var element:ITalonDisplayObject in _elements)
 		       juggler.tween(element, time, properties);
 
 			return this;
@@ -119,7 +119,7 @@ package starling.extensions
 			if (juggler == null)
 				juggler = Starling.juggler;
 
-			for each (var element:ITalonElement in _elements)
+			for each (var element:ITalonDisplayObject in _elements)
 				juggler.removeTweens(element);
 
 			return this;
@@ -151,7 +151,7 @@ package starling.extensions
 		//
 		public function onEvent(type:String, listener:Function):TalonQuery
 		{
-			for each (var element:ITalonElement in _elements)
+			for each (var element:ITalonDisplayObject in _elements)
 				DisplayObject(element).addEventListener(type, listener);
 
 			return this;

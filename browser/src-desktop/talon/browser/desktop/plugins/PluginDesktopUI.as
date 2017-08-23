@@ -17,7 +17,7 @@ package talon.browser.desktop.plugins
 	import starling.events.EventDispatcher;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
-	import starling.extensions.ITalonElement;
+	import starling.extensions.ITalonDisplayObject;
 	import starling.extensions.TalonSprite;
 	import starling.filters.FragmentFilter;
 	import starling.text.ITextCompositor;
@@ -428,8 +428,8 @@ package talon.browser.desktop.plugins
 
 			if (_template != null)
 			{
-				_templateContainer.node.ppmm = ITalonElement(_template).node.ppmm;
-				_templateContainer.node.ppdp = ITalonElement(_template).node.ppdp;
+				_templateContainer.node.ppmm = ITalonDisplayObject(_template).node.ppmm;
+				_templateContainer.node.ppdp = ITalonDisplayObject(_template).node.ppdp;
 				_templateContainer.addChild(_template);
 				resizeTo(_platform.profile.width, _platform.profile.height);
 
@@ -477,7 +477,7 @@ package talon.browser.desktop.plugins
 				for (var i:int = 0; i < _platform.document.messages.numMessages; i++)
 				{
 					var messageData:DocumentMessage = _platform.document.messages.getMessageAt(i);
-					var messageView:ITalonElement = _platform.factory.build("Message");
+					var messageView:ITalonDisplayObject = _platform.factory.build("Message");
 					messageView.node.setAttribute("file", messageData.location);
 					messageView.node.setAttribute(Attribute.TEXT, messageData.text);
 					messageView.node.setAttribute(Attribute.CLASS, messageData.level==2?"error":"warning");
@@ -505,7 +505,7 @@ package talon.browser.desktop.plugins
 				var helper:Rectangle = new Rectangle();
 				var helperPoint:Point = new Point();
 
-				var displayObjectAsTalonElement:ITalonElement = displayObject as ITalonElement;
+				var displayObjectAsTalonElement:ITalonDisplayObject = displayObject as ITalonDisplayObject;
 				if (displayObjectAsTalonElement)
 				{
 					var bounds:Rectangle = displayObjectAsTalonElement.node.bounds;

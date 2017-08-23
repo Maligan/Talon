@@ -11,7 +11,7 @@ package starling.extensions
 	import talon.core.Attribute;
 	import talon.core.Node;
 
-	public class TalonSprite extends Sprite implements ITalonElement
+	public class TalonSprite extends Sprite implements ITalonDisplayObject
 	{
 		private static var _helperRect:Rectangle = new Rectangle();
 
@@ -33,7 +33,7 @@ package starling.extensions
 		public override function addChildAt(child:DisplayObject, index:int):DisplayObject
 		{
 			child = super.addChildAt(child, index);
-			if (child is ITalonElement) addChildNodeAt(child as ITalonElement, index);
+			if (child is ITalonDisplayObject) addChildNodeAt(child as ITalonDisplayObject, index);
 			return child;
 		}
 
@@ -41,16 +41,16 @@ package starling.extensions
 		public override function removeChildAt(index:int, dispose:Boolean = false):DisplayObject
 		{
 			var child:DisplayObject = super.removeChildAt(index, dispose);
-			if (child is ITalonElement) removeChildNode(child as ITalonElement);
+			if (child is ITalonDisplayObject) removeChildNode(child as ITalonDisplayObject);
 			return child;
 		}
 
-		private function addChildNodeAt(child:ITalonElement, index:int):void
+		private function addChildNodeAt(child:ITalonDisplayObject, index:int):void
 		{
 			node.addChild(child.node, index);
 		}
 
-		private function removeChildNode(child:ITalonElement):void
+		private function removeChildNode(child:ITalonDisplayObject):void
 		{
 			node.removeChild(child.node);
 		}

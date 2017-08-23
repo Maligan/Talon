@@ -18,7 +18,7 @@ package starling.extensions
 	import talon.utils.Gauge;
 	import talon.utils.ParseUtil;
 
-	public class TalonTextField extends TextField implements ITalonElement
+	public class TalonTextField extends TextField implements ITalonDisplayObject
 	{
 		// There are 2px padding & 1px flash.text.TextField bug with autoSize disharmony
 		private static const TRUE_TYPE_CORRECTION:int = 4 + 1;

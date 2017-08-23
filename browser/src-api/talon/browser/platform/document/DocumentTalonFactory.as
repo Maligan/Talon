@@ -3,7 +3,7 @@ package talon.browser.platform.document
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 
-	import starling.extensions.ITalonElement;
+	import starling.extensions.ITalonDisplayObject;
 	import starling.extensions.TalonFactory;
 
 	import talon.core.Node;
@@ -42,7 +42,7 @@ package talon.browser.platform.document
 			_document.tasks.end();
 		}
 
-		public override function build(source:Object, includeStyleSheet:Boolean = true, includeResources:Boolean = true):ITalonElement
+		public override function build(source:Object, includeStyleSheet:Boolean = true, includeResources:Boolean = true):ITalonDisplayObject
 		{
 			resources.reset();
 			_styles = _stylesCollection.getMergedStyleSheet();

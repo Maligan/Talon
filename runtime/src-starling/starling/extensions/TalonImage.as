@@ -14,7 +14,7 @@ package starling.extensions
 	import talon.core.Node;
 	import talon.utils.ParseUtil;
 
-	public class TalonImage extends Quad implements ITalonElement
+	public class TalonImage extends Quad implements ITalonDisplayObject
 	{
 		private static var _sRectangle:Rectangle = new Rectangle();
 

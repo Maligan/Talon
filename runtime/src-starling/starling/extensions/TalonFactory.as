@@ -22,9 +22,9 @@ package starling.extensions
 		}
 
 		/** Create display object from template or xml-markup. */
-		public function build(xmlOrKey:Object, includeStyleSheet:Boolean = true, includeResources:Boolean = true):ITalonElement
+		public function build(xmlOrKey:Object, includeStyleSheet:Boolean = true, includeResources:Boolean = true):ITalonDisplayObject
 		{
-			return buildObject(xmlOrKey, includeStyleSheet, includeResources) as ITalonElement;
+			return buildObject(xmlOrKey, includeStyleSheet, includeResources) as ITalonDisplayObject;
 		}
 
 		// override methods
@@ -32,7 +32,7 @@ package starling.extensions
 		/** @private */
 		protected override function getNode(element:*):Node
 		{
-			return ITalonElement(element).node;
+			return ITalonDisplayObject(element).node;
 		}
 
 		/** @private */

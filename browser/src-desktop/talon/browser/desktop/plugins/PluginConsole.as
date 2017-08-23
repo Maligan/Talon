@@ -1,6 +1,6 @@
 package talon.browser.desktop.plugins
 {
-	import starling.extensions.ITalonElement;
+	import starling.extensions.ITalonDisplayObject;
 	import starling.utils.StringUtil;
 
 	import talon.core.Attribute;
@@ -69,7 +69,7 @@ package talon.browser.desktop.plugins
 			var useAttrs:Boolean = split.length > 1 && split[1] == "-a";
 			var attrs:Array = useAttrs ? split[2].split(/\s*,\s*/) : [];
 
-			var template:ITalonElement = ITalonElement(null /* FIXME */);
+			var template:ITalonDisplayObject = ITalonDisplayObject(null /* FIXME */);
 			var node:Node = template.node;
 			traceNode(node, 0, attrs);
 		}

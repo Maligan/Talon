@@ -227,7 +227,6 @@ package talon.core
 			if (_invalidated === false)
 			{
 				_invalidated = true;
-				dispatch(Event.CHANGE); // FIXME: Change event type (CHANGE used for attribute changing)
 
 				if (_parent && (width.isNone||height.isNone))
 					_parent.invalidate();
@@ -275,7 +274,6 @@ package talon.core
 
 		private function onSelfAttributeChange(attribute:Attribute):void
 		{
-			if (attribute == null) return;
 			var layoutName:String = getAttributeCache(Attribute.LAYOUT);
 			var layoutInvalidated:Boolean = Layout.isObservableSelfAttribute(layoutName, attribute.name);
 			if (layoutInvalidated) invalidate();
@@ -283,7 +281,6 @@ package talon.core
 
 		private function onChildAttributeChange(attribute:Attribute):void
 		{
-			if (attribute == null) return;
 			var layoutName:String = getAttributeCache(Attribute.LAYOUT);
 			var layoutInvalidated:Boolean = Layout.isObservableChildAttribute(layoutName, attribute.name);
 			if (layoutInvalidated) invalidate();

@@ -37,7 +37,6 @@ package starling.extensions
 		{
 			child = super.addChildAt(child, index);
 			if (child is ITalonDisplayObject) addChildNodeAt(child as ITalonDisplayObject, index);
-			sortChildren(byLayer);
 			return child;
 		}
 
@@ -52,11 +51,29 @@ package starling.extensions
 		private function addChildNodeAt(child:ITalonDisplayObject, index:int):void
 		{
 			node.addChild(child.node, index);
+
+			child.node.addListener(Event.CHANGE, onChildChange);
+			
+			if (_layers || child.node.getAttributeCache(Attribute.LAYER) != 0)
+			{
+				_layers = true;
+				sortChildren(byLayer);
+			}
+		}
+		
+		private function onChildChange(attribute:Attribute):void
+		{
+			if (attribute.name == Attribute.LAYER)
+			{
+				_layers = true;
+				sortChildren(byLayer);
+			}
 		}
 
 		private function removeChildNode(child:ITalonDisplayObject):void
 		{
 			node.removeChild(child.node);
+			child.node.removeListener(Event.CHANGE, onChildChange);
 		}
 		
 		private function byLayer(c1:DisplayObject, c2:DisplayObject):int

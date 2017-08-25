@@ -106,7 +106,7 @@ package talon.core
 
 		public static const TEXT:String                            = registerAttribute("text");
 		public static const SOURCE:String                          = registerAttribute("source");
-		public static const SOURCE_TINT:String                     = registerAttribute("sourceTint",			"#FFFFFF");
+		public static const TINT:String                     	   = registerAttribute("tint",					"#FFFFFF");
 
 		//
 		// Defaults

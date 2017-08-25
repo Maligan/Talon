@@ -38,7 +38,7 @@ package starling.extensions
 
 			_bridge = new TalonDisplayObjectBridge(this, node);
 			_bridge.setAttributeChangeListener(Attribute.SOURCE, onSourceChange);
-			_bridge.setAttributeChangeListener(Attribute.SOURCE_TINT, onSourceTintChange);
+			_bridge.setAttributeChangeListener(Attribute.TINT, onSourceTintChange);
 
 			_vertexOffset = new Point();
 
@@ -82,7 +82,7 @@ package starling.extensions
 
 		private function onSourceTintChange():void
 		{
-			color = ParseUtil.parseColor(_node.getAttributeCache(Attribute.SOURCE_TINT));
+			color = ParseUtil.parseColor(_node.getAttributeCache(Attribute.TINT));
 		}
 
 		private function onNodeResize():void

@@ -6,6 +6,8 @@ package talon.utils
 	/** @private */
 	public class StyleUtil
 	{
+		public static function normalize(selector:String):String { return StyleSelector.normalize(selector) }
+		
 		public static function match(node:Node, selector:String):int { return StyleSelector.match(node, selector) }
 		
 		public static function style(node:Node, styles:Vector.<Style>, out:Object = null):Object
@@ -51,10 +53,22 @@ class StyleSelector
 
 	private static function getSelector(source:String):StyleSelector
 	{
+		source = normalize(source);
+		
 		var selector:StyleSelector = _sSelectors[source];
 		if (selector == null)
 			selector = _sSelectors[source] = new StyleSelector(source);
 
+		return selector;
+	}
+	
+	public static function normalize(selector:String):String
+	{
+		// TODO: Trim
+		selector = selector.replace(/\s+/, ' ');
+		selector = selector.replace(' > ', '>');
+		selector = selector.replace(' + ', '+');
+		selector = selector.replace(' ~ ', '~');
 		return selector;
 	}
 
@@ -62,11 +76,48 @@ class StyleSelector
 	{
 		return (b << 16) | (c << 8) | d;
 	}
+	
+	private static function decompose(string:String, chars:String):Array
+	{
+		var lastChar:String = null;
+		var lastCharIndex:int = -1;
+		
+		for (var c:int = 0; c < chars.length; c++)
+		{
+			var char:String = chars.charAt(c);
+			var charLastIndex:int = string.lastIndexOf(char);
+			if (charLastIndex != -1)
+			{
+				if (lastCharIndex < charLastIndex)
+				{
+					lastCharIndex = charLastIndex;
+					lastChar = char;
+				}
+			}
+		}
+		
+		var result:Array = [];
+		
+		if (lastChar)
+		{
+			result.char = lastChar;
+			result[0] = string.substring(0, lastCharIndex);
+			result[1] = string.substring(lastCharIndex + 1);
+		}
+		else
+		{
+			result[0] = string;
+		}
+		
+		return result;
+	}
 
 	private var _priority:int;
 	private var _source:String;
 
-	private var _ancestor:StyleSelector;
+	private var _related:StyleSelector;
+	private var _relatedType:String;
+	
 	private var _id:String;
 	private var _type:String;
 	private var _classes:Vector.<String>;
@@ -80,14 +131,21 @@ class StyleSelector
 		_classes = new <String>[];
 		_states = new <Object>[];
 
-		var split:Array = _source.split(' ');
+		var split:Array = decompose(_source, " +~>");
 		var current:String = split.pop();
 
 		// Parent selector
-		if (split.length > 0) _ancestor = getSelector(split.join(' '));
+		if (split.length > 0)
+		{
+			if (split.char == "+")
+				trace("Stop");
+			
+			_relatedType = split.char;
+			_related = getSelector(split.join(split.char));
+		}
 
 		// This selector
-		var pattern:RegExp = /\*|[.#:]?[\w-()+-]+/;
+		var pattern:RegExp = /\*|[.#:]?[\w\d\(\)-]+/;
 		while (current.length)
 		{
 			var token:String = pattern.exec(current)[0];
@@ -95,16 +153,16 @@ class StyleSelector
 			var tokenValue:String = token.substring(1);
 
 			/**/ if (tokenType == '#') _id = tokenValue;
-		else if (tokenType == '.') _classes.push(tokenValue);
+			else if (tokenType == '.') _classes.push(tokenValue);
 			else if (tokenType == ':') _states.push(NthToken.fromString(tokenValue) || tokenValue);
-				else if (tokenType != '*') _type = token;
+			else if (tokenType != '*') _type = token;
 
 			// Continue parse
 			current = current.substring(token.length);
 		}
 
 		// CSS Selector Priority (@see http://www.w3.org/wiki/CSS/Training/Priority_level_of_selector) merged to one integer
-		_priority = (_ancestor ? _ancestor.priority : 0) + getPriorityMerge(_id?1:0, _classes.length + _states.length, _type?1:0);
+		_priority = (_related ? _related.priority : 0) + getPriorityMerge(_id?1:0, _classes.length + _states.length, _type?1:0);
 	}
 
 	public function get source():String
@@ -117,7 +175,7 @@ class StyleSelector
 		return node
 			&& byId(node)
 			&& byType(node)
-			&& byAncestor(node)
+			&& byRelated(node)
 			&& byClasses(node)
 			&& byStates(node)
 	}
@@ -127,18 +185,63 @@ class StyleSelector
 		return !_type || (node.getAttributeCache(Attribute.TYPE) == _type);
 	}
 
-	private function byAncestor(node:Node):Boolean
+	private function byRelated(node:Node):Boolean
 	{
-		if (_ancestor == null) return true;
-
+		if (_related == null) return true;
+		
+		switch (_relatedType)
+		{
+			case " ": return byRelated_Ancestor(node);
+			case ">": return byRelated_Parent(node);
+			case "~": return byRelated_SiblingBefore(node);
+			case "+": return byRelated_SiblingBeforeImmediately(node);
+			default:
+				throw new Error("Unsupported related type = '" + _relatedType + "'");
+		}
+	}
+	
+	private function byRelated_Ancestor(node:Node):Boolean
+	{
 		node = node.parent;
 
 		while (node)
 		{
-			if (_ancestor.match(node)) return true;
+			if (_related.match(node)) return true;
 			node = node.parent;
 		}
 
+		return false;
+	}
+
+	private function byRelated_Parent(node:Node):Boolean
+	{
+		if (node.parent == null) return false;
+
+		return _related.match(node.parent);
+	}
+	
+	private function byRelated_SiblingBeforeImmediately(node:Node):Boolean
+	{
+		if (node.parent == null) return false;
+
+		var indexOf:int = node.parent.getChildIndex(node);
+		if (indexOf == 0) return false;
+		
+		var sibling:Node = node.parent.getChildAt(indexOf-1);
+		return _related.match(sibling);
+	}
+	
+	private function byRelated_SiblingBefore(node:Node):Boolean
+	{
+		if (node.parent == null) return false;
+		
+		var indexOf:int = node.parent.getChildIndex(node);
+		while (--indexOf >= 0)
+		{
+			var sibling:Node = node.parent.getChildAt(indexOf);
+			if (_related.match(sibling)) return true;	
+		}
+		
 		return false;
 	}
 

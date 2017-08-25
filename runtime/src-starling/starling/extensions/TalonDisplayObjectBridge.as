@@ -95,12 +95,9 @@ package starling.extensions
 
 		private function onNodeChange(attribute:Attribute):void
 		{
-			if (attribute)
-			{
-				var listener:Function = _listeners[attribute.name];
-				if (listener)
-					listener();
-			}
+			var listener:Function = _listeners[attribute.name];
+			if (listener)
+				listener();
 		}
 
 		private function onNodeResize():void

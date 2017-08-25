@@ -7,7 +7,7 @@ package talon.utils
 	import talon.core.Node;
 	import talon.core.Style;
 
-	/** This is utility class for work with strings in different formats and notation. */
+	/** @private This is utility class for work with strings in different formats and notation. */
 	public final class ParseUtil
 	{
 		private static const _parsers:Dictionary = new Dictionary();

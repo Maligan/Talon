@@ -3,7 +3,7 @@ package talon.utils
 	import talon.core.Attribute;
 	import talon.core.Node;
 
-	/** Measured size. Defined by 'units' and 'amount'. */
+	/** @private Measured size. Defined by 'units' and 'amount'. */
 	public final class Gauge
 	{
 		/** Value is not set. This is <code>null</code> analog. */

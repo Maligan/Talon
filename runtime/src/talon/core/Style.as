@@ -2,18 +2,23 @@ package talon.core
 {
 	import talon.utils.OrderedObject;
 
+	/** Reflection from selector to values.*/
 	public class Style
 	{
-		private var _name:String;
+		private var _selector:String;
 		private var _values:Object;
 		
-		public function Style(name:String)
+		/** @private */
+		public function Style(selector:String)
 		{
-			_name = name;
+			_selector = selector;
 			_values = new OrderedObject();
 		}
 		
-		public function get name():String { return _name }
+		/** Style CSS-like selector. */
+		public function get selector():String { return _selector }
+
+		/** Style key/value pairs. */
 		public function get values():Object { return _values }
 	}
 }

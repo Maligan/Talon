@@ -63,7 +63,7 @@ package talon.utils
 			{
 				template = _parser.templates[xmlOrKey];
 				templateTag = _parser.getUseTag(xmlOrKey as String);
-				if (template == null) throw new ArgumentError("Template with id: " + xmlOrKey + " doesn't exist");
+				if (template === null) throw new ArgumentError("Template with id: " + xmlOrKey + " doesn't exist");
 			}
 
 			// Parse template, while parsing events dispatched (onElementBegin, onElementEnd)
@@ -86,6 +86,10 @@ package talon.utils
 
 			// Get result
 			var result:* = _parserStack.pop();
+			
+			// In case of empty template
+			if (result == null) return null;
+			
 			var resultNode:Node = getNode(result);
 
 			resultNode.unfreeze();
@@ -393,7 +397,7 @@ package talon.utils
 
 			for each (var style:Style in _styles)
 			{
-				var cacheStyleSelector:Object = cacheStyles[cacheStyles.length] = { selector: style.name };
+				var cacheStyleSelector:Object = cacheStyles[cacheStyles.length] = { selector: style.selector };
 				var cacheStyleProps:Object = cacheStyleSelector["attributes"] = [];
 
 				for (var key:String in style.values)

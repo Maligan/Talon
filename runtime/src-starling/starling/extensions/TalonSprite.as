@@ -11,6 +11,7 @@ package starling.extensions
 	import talon.core.Attribute;
 	import talon.core.Node;
 
+	/** starling.display.Sprite which implements ITalonDisplayObject. */
 	public class TalonSprite extends Sprite implements ITalonDisplayObject
 	{
 		private static var _helperRect:Rectangle = new Rectangle();
@@ -18,7 +19,9 @@ package starling.extensions
 		private var _node:Node;
 		private var _bridge:TalonDisplayObjectBridge;
 		private var _manual:Boolean;
+		private var _layers:Boolean;
 
+		/** @private */
 		public function TalonSprite()
 		{
 			_node = new Node();
@@ -34,6 +37,7 @@ package starling.extensions
 		{
 			child = super.addChildAt(child, index);
 			if (child is ITalonDisplayObject) addChildNodeAt(child as ITalonDisplayObject, index);
+			sortChildren(byLayer);
 			return child;
 		}
 
@@ -53,6 +57,13 @@ package starling.extensions
 		private function removeChildNode(child:ITalonDisplayObject):void
 		{
 			node.removeChild(child.node);
+		}
+		
+		private function byLayer(c1:DisplayObject, c2:DisplayObject):int
+		{
+			var l1:int = (c1 is ITalonDisplayObject) ? ITalonDisplayObject(c1).node.getAttributeCache(Attribute.LAYER) : 0;
+			var l2:int = (c2 is ITalonDisplayObject) ? ITalonDisplayObject(c2).node.getAttributeCache(Attribute.LAYER) : 0;
+			return l1 - l2;
 		}
 
 		//

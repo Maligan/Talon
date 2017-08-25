@@ -8,6 +8,7 @@ package talon.layouts
 	import talon.utils.Gauge;
 	import talon.utils.ParseUtil;
 
+	/** @private */
 	public class FlowLayout extends Layout
 	{
 		public override function measureWidth(node:Node, availableHeight:Number):Number

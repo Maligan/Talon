@@ -4,13 +4,14 @@ package talon.core
 	import talon.layouts.Layout;
 	import talon.utils.*;
 
+	/** String key/value pair, contains complex value calculation flow.
+	 * @see #name
+	 * @see #value
+	 */
 	public final class Attribute
 	{
-        public static const INHERIT:String      = "inherit";
-        public static const NONE:String         = "none";
-
-        private static const FALSE:String        = "false";
-        private static const TRUE:String         = "true";
+		/** @private */ public static const INHERIT:String      = "inherit";
+		/** @private */ public static const NONE:String         = "none";
 
 		//
 		// Standard Attribute list
@@ -71,16 +72,17 @@ package talon.core
 		public static const FONT_AUTO_SCALE:String                 = registerAttribute("fontAutoScale",         INHERIT, "false");
 
 		public static const TOUCH_MODE:String                      = registerAttribute("touchMode",             TouchMode.BRANCH);
-		public static const TOUCH_EVENTS:String                    = registerAttribute("touchEvents",           FALSE);
+		public static const TOUCH_EVENTS:String                    = registerAttribute("touchEvents",           "false");
 		public static const CURSOR:String                          = registerAttribute("cursor",                "auto");
 
 		public static const LAYOUT:String                          = registerAttribute("layout",                Layout.ANCHOR);
 		public static const TRANSFORM:String 					   = registerAttribute("transform",			    NONE);
 		public static const MESH_STYLE:String 					   = registerAttribute("meshStyle",			    NONE);
 		public static const BLEND_MODE:String                      = registerAttribute("blendMode",             "auto");
-		public static const VISIBLE:String                         = registerAttribute("visible",               TRUE);
+		public static const VISIBLE:String                         = registerAttribute("visible",               "true");
 		public static const FILTER:String                          = registerAttribute("filter",                NONE);
 		public static const ALPHA:String                           = registerAttribute("alpha",                 "1");
+		public static const LAYER:String						   = registerAttribute("layer",					"0");
 
 		public static const PIVOT_X:String                         = registerAttribute("pivotX",                NONE);
 		public static const PIVOT_Y:String                         = registerAttribute("pivotY",                NONE);
@@ -93,7 +95,7 @@ package talon.core
 		public static const ORIENTATION:String                     = registerAttribute("orientation",           Orientation.HORIZONTAL);
 		public static const GAP:String                             = registerAttribute("gap",                   NONE);
 		public static const INTERLINE:String                       = registerAttribute("interline",             NONE);
-		public static const WRAP:String                            = registerAttribute("wrap",                  FALSE);
+		public static const WRAP:String                            = registerAttribute("wrap",                  "false");
 		public static const HALIGN_SELF:String                     = registerAttribute("halignSelf",            "left");
 		public static const VALIGN_SELF:String                     = registerAttribute("valignSelf",            "top");
 		public static const ALIGN_SELF:String					   = registerComposite("alignSelf",				[HALIGN_SELF, VALIGN_SELF]);
@@ -109,37 +111,39 @@ package talon.core
 		//
 		// Defaults
 		//
-		private static var _defInited:Object;
-		private static var _defInherit:Object;
-		private static var _defIsStyleable:Object;
-		private static var _defCompositeFormat:Object;
+		private static var _sInited:Object;
+		private static var _sInherit:Object;
+		private static var _sIsStyleable:Object;
+		private static var _sCompositeFormat:Object;
 
-		private static var _inheritable:Vector.<String>;
+		private static var _sInheritable:Vector.<String>;
 
+		/** @private Register attribute defaults and behaviour. */
 		public static function registerAttribute(name:String, inited:String = null, inherit:String = null, isStyleable:Boolean = true):String
 		{
-			_defInited ||= {};
-			_defInited[name] = inited;
+			_sInited ||= {};
+			_sInited[name] = inited;
 
-			_defInherit ||= {};
-			_defInherit[name] = inherit;
+			_sInherit ||= {};
+			_sInherit[name] = inherit;
 
-			_defIsStyleable ||= {};
-			_defIsStyleable[name] = isStyleable;
+			_sIsStyleable ||= {};
+			_sIsStyleable[name] = isStyleable;
 
 			if (inherit != null)
 			{
-				_inheritable ||= new <String>[];
-				_inheritable[_inheritable.length] = name;
+				_sInheritable ||= new <String>[];
+				_sInheritable[_sInheritable.length] = name;
 			}
 
 			return name;
 		}
 
+		/** @private Register attribute as composition from another attributes. */
 		public static function registerComposite(name:String, attributes:Array):String
 		{
-			_defCompositeFormat ||= {};
-			_defCompositeFormat[name] = attributes;
+			_sCompositeFormat ||= {};
+			_sCompositeFormat[name] = attributes;
 
 			return name;
 		}
@@ -147,12 +151,12 @@ package talon.core
 		/** @private */
 		public static function getInheritableAttributeNames():Vector.<String>
 		{
-			return _inheritable || new Vector.<String>();
+			return _sInheritable || new Vector.<String>();
 		}
 
 		private static function buildSolver(attribute:Attribute):ISolver
 		{
-			var attributes:Array = _defCompositeFormat[attribute.name];
+			var attributes:Array = _sCompositeFormat[attribute.name];
 			if (attributes)
 			{
 				var format:String = attributes.length == 4 ? CompositeSolver.FORMAT_QUAD : CompositeSolver.FORMAT_PAIR;
@@ -163,18 +167,19 @@ package talon.core
 
 				return new CompositeSolver(format, solvers);
 			}
-			else if (_defInherit[attribute.name])
+			else if (_sInherit[attribute.name])
 			{
-				return new InheritableSolver(attribute, _defInherit[attribute.name]);
+				return new InheritableSolver(attribute, _sInherit[attribute.name]);
 			}
 
-			var styleable:Boolean = attribute.name in _defIsStyleable ? _defIsStyleable[attribute.name] : true;
+			var styleable:Boolean = attribute.name in _sIsStyleable ? _sIsStyleable[attribute.name] : true;
 			return new SimpleSolver(styleable ? -1 : 1);
 		}
 
 		//
 		// Attribute Implementation
 		//
+		
 		private var _node:Node;
 		private var _name:String;
 		private var _change:Trigger;
@@ -196,37 +201,39 @@ package talon.core
 			_solver = buildSolver(this);
 			_solver.change.addListener(dispatchChange);
 
-			if (!isComposite) inited = _defInited[name];
+			if (!isComposite) inited = _sInited[name];
 		}
+
+
+		/** The node that contains this attribute. */
+		public function get node():Node { return _node; }
+
+		/** Unique attribute key within node. */
+		public function get name():String { return _name; }
 
 		//
 		// Value
 		//
-		/** The node that contains this attribute. */
-		public function get node():Node { return _node; }
-
-		/** Unique (in-node) attribute name. */
-		public function get name():String { return _name; }
 
 		/** Default attribute value. */
 		public function get inited():String { return _solver.getValue(0, name); }
 		public function set inited(value:String):void { _solver.setValue(0, name, value); }
 
-		/** Attribute value from node style sheet. */
+		/** Value fetched from styles. */
 		public function get styled():String { return _solver.getValue(1, name); }
 		public function set styled(value:String):void { _solver.setValue(1, name, value); }
 
-		/** Explicit setted attribute value via code or markup. */
+		/** Value explicit setted via code or markup. */
 		public function get setted():String { return _solver.getValue(2, name); }
 		public function set setted(value:String):void { _solver.setValue(2, name, value); }
 
-		/** This value used as fallback value for inheritable attributes with value == 'inherit' but without parent. */
+		/** Fallback used for inheritable attributes which value == 'inherit' but without parent. */
 		public function get based():String { return isInheritable ? InheritableSolver(_solver).based : null; }
 
-		/** Value calculated from (inited->styled->setted) and inherit parent attribute. */
+		/** Value calculated from (inited -> styled -> setted) and additional dependencies (like inheritance or composition). */
 		public function get value():String { return _solver.value; }
 
-		/** NB! Optimized <code>value</code>property. Which can extract mapped resource. */
+		/** Cached value property, if value refers to resource return it, else return value string.*/
 		public function get valueCache():*
 		{
 			if (_valueCached == false)
@@ -252,27 +259,29 @@ package talon.core
 		}
 
 		//
-		// Props
+		// Info
 		//
-		/** Use styled property when calculating attribute value. */
+		
+		/** Attribute is respecting 'styled' property when calculating 'value' property. */
 		public function get isStyleable():Boolean { return SimpleSolver(_solver).ignore != 1; }
 
-		/** Attribute has composite format. */
+		/** Attribute has composite format and depends on another attributes (like <code>padding = paddingTop paddingRight paddingBottom paddingLeft</code>). */
 		public function get isComposite():Boolean { return _solver is CompositeSolver; }
 
-		/** If attribute value == 'inherit' concrete value must be taken from parent node. */
+		/** Attribute has inheritance 'value' property calculation must respect parent node attribute value (like <code>fontSize</code>) */
 		public function get isInheritable():Boolean { return _solver is InheritableSolver; }
 
-		/** Attribute 'value' is inherit from parent. */
+		/** Property 'value' is inheriting parent node value. */
 		public function get isInherit():Boolean { return isInheritable && InheritableSolver(_solver).isInherit; }
 
-		/** Attribute 'value' is mapped to resource. */
+		/** Property 'value' is referring to resource with &#64;-notation. */
 		public function get isResource():Boolean { valueCache; return _valueCacheIsResource; }
 
 		//
-		// Misc
+		// Utils
 		//
-		/** @private */
+		
+		/** @private Bind value to another attribute. */
 		public function upstream(attribute:Attribute):void
 		{
 			_solver.change.removeListener(dispatchChange);
@@ -281,6 +290,7 @@ package talon.core
 			dispatchChange();
 		}
 
+		/** @private Dispose attribute, remove all listeners. */
 		public function dispose():void
 		{
 			_valueCache = null;
@@ -294,6 +304,7 @@ package talon.core
 			return _change;
 		}
 
+		/** @private */
 		internal function dispatchChange():void
 		{
 			_valueCache = null;
@@ -301,6 +312,7 @@ package talon.core
 			change.dispatch();
 		}
 
+		/** @private  */
 		public function toString():String
 		{
 			return '[Attribute name="' + name + '", value="' + value + '"]';

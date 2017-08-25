@@ -13,6 +13,7 @@ package talon.utils
 		private var _attributeName:String;
 		private var _attribute:Attribute;
 
+		/** @private */
 		public function StringSet(node:Node, attributeName:String)
 		{
 			_node = node;
@@ -86,6 +87,7 @@ package talon.utils
 			dispatchChange(true);
 		}
 
+		/** @private */
 		public function get change():Trigger
 		{
 			return _change;

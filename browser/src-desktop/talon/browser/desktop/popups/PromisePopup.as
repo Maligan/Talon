@@ -5,8 +5,8 @@ package talon.browser.desktop.popups
 	import starling.display.DisplayObject;
 	import starling.events.Event;
 
-	import talon.core.Attribute;
 	import talon.browser.platform.popups.Popup;
+	import talon.core.Attribute;
 
 	public class PromisePopup extends Popup
 	{
@@ -17,8 +17,8 @@ package talon.browser.desktop.popups
 			addChild(manager.factory.build("PromisePopup") as DisplayObject);
 			node.commit();
 
-			query().setAttribute("header", "Hello World");
-			query("#detailsInfo").setAttribute(Attribute.VISIBLE, _details);
+			query().set("header", "Hello World");
+			query("#detailsInfo").set(Attribute.VISIBLE, _details);
 
 			query("#cancel").onTap(onCancelClick);
 			query("#details").onTap(onDetailsClick);
@@ -34,44 +34,46 @@ package talon.browser.desktop.popups
 		private function onDetailsClick():void
 		{
 			_details = !_details;
-			query("#details").setAttribute(Attribute.TRANSFORM, _details ? "rotate(-90deg)" : "none");
-			query("#detailsInfo").setAttribute(Attribute.VISIBLE, _details);
+			query("#details").set(Attribute.TRANSFORM, _details ? "rotate(-90deg)" : "none");
+			query("#detailsInfo").set(Attribute.VISIBLE, _details);
 		}
 		
 		public function setHeader(string:String):void
 		{
-			query("#header").setAttribute(Attribute.TEXT, string);
+			query("#header").set(Attribute.TEXT, string);
 		}
 		
 		public function setStateProcess(status:String):void
 		{
 			query("#status")
-				.setAttribute(Attribute.TEXT, status);
+				.set(Attribute.TEXT, status);
 
 			query("#spinner")
-				.setAttribute(Attribute.VISIBLE, true)
-				.tween(1, { repeatCount: 0, onUpdate: function ():void {
-					query("#spinner").setAttribute(Attribute.TRANSFORM, "rotate(" + (juggler.elapsedTime*180) + "deg)");
-				}}, juggler);
-
+				.set(Attribute.VISIBLE, true)
+				.forEach(juggler.tween, 1, {
+						repeatCount: 0,
+						onUpdate: function():void { query("#spinner").set(Attribute.TRANSFORM, "rotate({0})", juggler.elapsedTime*180); }
+					}
+				);
+				
 			query("#details")
-				.setAttribute(Attribute.VISIBLE, false);
+				.set(Attribute.VISIBLE, false);
 		}
 		
 		public function setStateComplete(status:String = null, details:String = null):void
 		{
 			if (status) query("#status")
-				.setAttribute(Attribute.TEXT, status);
+				.set(Attribute.TEXT, status);
 			
 			query("#spinner")
-				.setAttribute(Attribute.VISIBLE, false)
-				.tweenKill(juggler);
+				.set(Attribute.VISIBLE, false)
+				.forEach(juggler.removeTweens);
 
 			query("#details")
-				.setAttribute(Attribute.VISIBLE, details != null);
+				.set(Attribute.VISIBLE, details != null);
 
 			query("#detailsInfo")
-				.setAttribute(Attribute.TEXT, details);
+				.set(Attribute.TEXT, details);
 		}
 	}
 }

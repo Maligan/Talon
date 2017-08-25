@@ -1,0 +1,109 @@
+<lib>
+
+	<def ref="Inspector">
+		<div class="Inspector" left="0" width="220" height="100%" layout="flow" orientation="vertical">
+			<!-- DisplayTree -->
+			<txt class="header" text="Hierarhy" width="100%" padding="6px" />
+			<div width="100%" layout="flow" orientation="vertical">
+				<use ref="DisplayTree_Item" update="iconT: rotate(270)"/>
+				<use ref="DisplayTree_Item" update="offset:18; icon: 1; info:(DisplayTree_Item)"/>
+				<use ref="DisplayTree_Item" update="offset:18; icon: 0; text: txt"/>
+				<use ref="DisplayTree_Item" update="offset:18; icon: 1; iconT: rotate(270); info:(DisplayTree_Item)"/>
+				<use ref="DisplayTree_Item" update="offset:32; icon: 0; text: img"/>
+				<use ref="DisplayTree_Item" update="offset:32; icon: 1; info: (DisplayTree_Item)"/>
+				<use ref="DisplayTree_Item" update="offset:32; icon: 0; text: img"/>
+				<use ref="DisplayTree_Item" update="offset:18; icon: 0; text: txt"/>
+			</div>
+
+			<!-- Separator -->
+			<div width="100%" height="8px" margin="-4px none" fill="red" fillAlpha="0" layer="1" cursor="ibeam"/>
+
+			<!-- Attributes -->
+			<div class="header" layout="flow" width="100%">
+				<txt text="Name" width="50%" padding="6px" />
+				<txt text="Value" width="50%" padding="6px" />
+			</div>
+			<div id="attributes" width="100%" layout="flow" orientation="vertical">
+				<use ref="Attribute" update="name:fill; value:#FF0000" />
+				<use ref="Attribute" update="name:fillMode; value:stretch; composite: 1" />
+				<use ref="Attribute" update="name:padding; value:none; composite: 1" />
+				<use ref="Attribute" update="name:align; value:top left; composite: 1" />
+				<use ref="Attribute" update="name:text; value:Label" />
+			</div>
+		</div>
+	</def>
+
+	<def ref="DisplayTree_Item">
+		<div class="DisplayTree_Item" layout="flow" text="div" info="" iconT="rotate(180)" icon="1" width="100%" gap="4px" padding="4px" offset="4px" paddingLeft="@offset" >
+			<img alignSelf="center" source="$drop_down" pivot="50%" transform="@iconT" alpha="@icon"  />
+			<div layout="flow">
+				<txt alignSelf="center" text="@text" />
+				<txt alignSelf="center" text="@info" fontColor="#888888" />
+			</div>
+			<!--<checkbox alignSelf="center" text="@text" />-->
+		</div>
+	</def>
+
+	<def ref="Attribute">
+		<div class="Attribute" width="100%" layout="flow" name="Name" value="Value" composite="0" fontColor="gray">
+			<img source="$drop_down" alignSelf="center" pivot="50%" transform="rotate(180)" marginLeft="4" alpha="@composite"/>
+			<txt id="name" text="@name" width="*" padding="6px" />
+			<txt id="value" text="@value" width="*" padding="6px" />
+		</div>
+	</def>
+
+	<style>
+
+		.Inspector {
+			fill: #4b4d4e;
+			fontColor: #F0F1F1;
+		}
+
+		.Inspector .header {
+			fill: #595B5B;
+
+			touchMode: leaf;
+			touchEvents: true;
+			cursor: button;
+		}
+
+		.Inspector .header:hover {
+			fill: gray;
+		}
+
+		.DisplayTree_Item {
+			touchMode: leaf;
+			touchEvents: true;
+			cursor: button;
+
+			fill: #4b4d4e;
+		}
+
+		.DisplayTree_Item:hover {
+			fill: gray;
+		}
+
+		.Attribute txt {
+			touchEvents: true;
+		}
+
+		.Attribute txt:hover {
+			fontColor: white;
+		}
+
+		.Attribute #name {
+			cursor: button;
+		}
+
+		.Attribute #value {
+			cursor: button;
+		}
+	</style>
+
+
+
+
+
+
+
+</lib>

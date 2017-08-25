@@ -4,6 +4,7 @@ package talon.utils
 
 	import talon.core.Node;
 
+	/** @private */
 	public class Metrics
 	{
 		private static const PPMM:Number = Capabilities.screenDPI / 25.4;  // 25.4mm in 1 inch

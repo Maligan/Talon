@@ -10,7 +10,7 @@ package starling.extensions
 	import talon.core.Node;
 	import talon.utils.TalonFactoryBase;
 
-	/** Frontend tool for build UI. */
+	/** End point talon runtime class for build UI in Starling Framework. */
 	public class TalonFactory extends TalonFactoryBase
 	{
 		/** @private */
@@ -18,7 +18,7 @@ package starling.extensions
 		{
 			setTerminal("div", TalonSprite);
 			setTerminal("txt", TalonTextField);
-			setTerminal("img", TalonImage);
+			setTerminal("img", TalonQuad);
 		}
 
 		/** Create display object from template or xml-markup. */

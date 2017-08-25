@@ -114,9 +114,9 @@
 	</def>
 
 	<def ref="Checkbox" tag="checkbox">
-		<div type="checkbox" label="Checkbox" layout="flow">
+		<div type="checkbox" text="Checkbox" layout="flow">
 			<img source="@image" />
-			<txt text="@label" alignSelf="center" marginTop="1px"/>
+			<txt text="@text" alignSelf="center" marginTop="1px"/>
 		</div>
 	</def>
 

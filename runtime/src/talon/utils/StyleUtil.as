@@ -3,6 +3,7 @@ package talon.utils
 	import talon.core.Node;
 	import talon.core.Style;
 
+	/** @private */
 	public class StyleUtil
 	{
 		public static function match(node:Node, selector:String):int { return StyleSelector.match(node, selector) }
@@ -14,7 +15,7 @@ package talon.utils
 			var priorities:Object = {};
 			for each (var style:Style in styles)
 			{
-				var priority:int = match(node, style.name);
+				var priority:int = match(node, style.selector);
 				if (priority == -1) continue;
 
 				var props:Object = style.values;

@@ -4,6 +4,7 @@ package talon.layouts
 
 	import talon.core.Node;
 
+	/** @private */
 	public class Layout
 	{
 		//

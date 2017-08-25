@@ -2,6 +2,7 @@ package talon.layouts
 {
 	import talon.core.Node;
 
+	/** @private */
 	public class FlexLayout extends Layout
 	{
 		public override function measureWidth(node:Node, availableHeight:Number):Number

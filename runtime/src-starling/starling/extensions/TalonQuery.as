@@ -4,24 +4,24 @@ package starling.extensions
 	import flash.utils.Proxy;
 	import flash.utils.flash_proxy;
 
-	import starling.animation.Juggler;
-	import starling.core.Starling;
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
+	import starling.events.EventDispatcher;
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.utils.Pool;
+	import starling.utils.StringUtil;
 
 	import talon.utils.StyleUtil;
 
 	use namespace flash_proxy;
 
+	/** Utility class which allow make CSS query to display tree and batch changes. */
 	public final dynamic class TalonQuery extends Proxy
 	{
 		private var _elements:Vector.<ITalonDisplayObject>;
 		private var _elementsBackBuffer:Vector.<ITalonDisplayObject>;
-		private var _elementsAreBusy:Boolean;
 
 		public function TalonQuery(element:ITalonDisplayObject = null):void
 		{
@@ -33,14 +33,10 @@ package starling.extensions
 
 		public function reset(element:ITalonDisplayObject = null):TalonQuery
 		{
-			if (_elementsAreBusy) return clone().reset(element);
-			else
-			{
-				_elements.length = 0;
-				_elementsBackBuffer.length = 0;
-				_elements[0] = element;
-				return this;
-			}
+			_elements.length = 0;
+			_elementsBackBuffer.length = 0;
+			_elements[0] = element;
+			return this;
 		}
 
 		//
@@ -51,22 +47,18 @@ package starling.extensions
 		{
 			if (selector == null) return this;
 			
-			if (_elementsAreBusy) return clone().select(selector);
-			else
-			{
-				// Select
-				var result:Vector.<ITalonDisplayObject> = _elementsBackBuffer;
+			// Select
+			var result:Vector.<ITalonDisplayObject> = _elementsBackBuffer;
 
-				for each (var element:ITalonDisplayObject in _elements)
-					selectInternal(element, selector, result);
+			for each (var element:ITalonDisplayObject in _elements)
+				selectInternal(element, selector, result);
 
-				// Swap
-				_elementsBackBuffer = _elements;
-				_elementsBackBuffer.length = 0;
-				_elements = result;
+			// Swap
+			_elementsBackBuffer = _elements;
+			_elementsBackBuffer.length = 0;
+			_elements = result;
 
-				return this;
-			}
+			return this;
 		}
 
 		private function selectInternal(element:ITalonDisplayObject, selector:String, result:Vector.<ITalonDisplayObject>):void
@@ -87,94 +79,74 @@ package starling.extensions
 		//
 		// Common
 		//
-		public function setAttribute(name:String, value:*):TalonQuery
+		
+		public function set(name:String, value:*, ...args):TalonQuery
 		{
+			if (args.length)
+			{
+				args.unshift(value);
+				value = StringUtil.format.apply(null, args);
+			}
+			
 			for each (var element:ITalonDisplayObject in _elements)
 				element.node.setAttribute(name, value);
 
 			return this;
 		}
-
-		public function tween(time:Number, properties:Object, juggler:Juggler = null):TalonQuery
+		
+		public function forEach(callback:Function, ...args):TalonQuery
 		{
-		   if (juggler == null)
-		       juggler = Starling.juggler;
-
-		   for each (var element:ITalonDisplayObject in _elements)
-		       juggler.tween(element, time, properties);
-
-			return this;
-		}
-
-		public function tweenKill(juggler:Juggler = null):TalonQuery
-		{
-			if (juggler == null)
-				juggler = Starling.juggler;
-
-			for each (var element:ITalonDisplayObject in _elements)
-				juggler.removeTweens(element);
-
-			return this;
-		}
-
-		public function forEach(callback:Function):TalonQuery
-		{
-			_elementsAreBusy = true;
-
 			for (var i:int = 0; i < _elements.length; i++)
-				if (callback.length == 3) callback(_elements[i], i, _elements);
-				else if (callback.length == 2) callback(_elements[i], i);
-				else callback(_elements[i]);
-
-			_elementsAreBusy = false;
-
+			{
+				if (args.length == 0)
+				{
+				   if (callback.length == 3) callback(_elements[i], i, _elements);
+				   else if (callback.length == 2) callback(_elements[i], i);
+				   else callback(_elements[i]);
+				}
+				else
+				{
+					args.unshift(_elements[i]);
+					callback.apply(null, args);
+				}
+			}
+			
 			return this;
-		}
-
-		public function clone():TalonQuery
-		{
-			var query:TalonQuery = new TalonQuery();
-			query._elements = _elements.slice();
-			return query;
 		}
 
 		//
 		// Event Listeners
 		//
-		public function onEvent(type:String, listener:Function):TalonQuery
-		{
-			for each (var element:ITalonDisplayObject in _elements)
-				DisplayObject(element).addEventListener(type, listener);
-
-			return this;
-		}
 
 		public function onTap(listener:Function):TalonQuery
 		{
-			onEvent(TouchEvent.TOUCH, function(e:TouchEvent):void
+			forEach(function(element:EventDispatcher):void
 			{
-				var target:DisplayObject = e.target as DisplayObject;
-				var touch:Touch = e.getTouch(target, TouchPhase.ENDED);
-				if (touch)
+				element.addEventListener(TouchEvent.TOUCH, function(e:TouchEvent):void
 				{
-					var local:Point = touch.getLocation(target, Pool.getPoint());
-					var within:Boolean = target.hitTest(local);
-					Pool.putPoint(local);
-
-					if (within)
+					var target:DisplayObject = e.target as DisplayObject;
+					var touch:Touch = e.getTouch(target, TouchPhase.ENDED);
+					if (touch)
 					{
-						listener.length
-							? listener(e)
-							: listener();
+						var local:Point = touch.getLocation(target, Pool.getPoint());
+						var within:Boolean = target.hitTest(local);
+						Pool.putPoint(local);
+
+						if (within)
+						{
+							listener.length
+								? listener(e)
+								: listener();
+						}
 					}
-				}
+				})
 			});
 
 			return this;
 		}
 		
 		//
-		// Flash Proxy
+		// Flash Proxy & Enumeration
 		//
 		public function get length():int { return _elements.length }
 		
@@ -202,7 +174,7 @@ package starling.extensions
 			if (name is String)
 				throw new ArgumentError();
 			
-			setAttribute(name, value);
+			set(name, value);
 		}
 	}
 }

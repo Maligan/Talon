@@ -18,6 +18,7 @@ package starling.extensions
 	import talon.utils.Gauge;
 	import talon.utils.ParseUtil;
 
+	/** starling.display.TextField which implements ITalonDisplayObject. */
 	public class TalonTextField extends TextField implements ITalonDisplayObject
 	{
 		// There are 2px padding & 1px flash.text.TextField bug with autoSize disharmony
@@ -31,6 +32,7 @@ package starling.extensions
 		private var _requiresRecompositionWithPadding:Boolean;
 		private var _manual:Boolean;
 
+		/** @private */
 		public function TalonTextField()
 		{
 			super(0, 0, null);

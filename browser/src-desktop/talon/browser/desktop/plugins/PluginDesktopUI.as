@@ -30,6 +30,7 @@ package talon.browser.desktop.plugins
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.desktop.utils.FileUtil;
 	import talon.browser.desktop.utils.GithubUpdater;
+	import talon.browser.desktop.utils.Inspector;
 	import talon.browser.desktop.utils.Promise;
 	import talon.browser.platform.AppConstants;
 	import talon.browser.platform.AppPlatform;
@@ -56,6 +57,7 @@ package talon.browser.desktop.plugins
 		private var _isolator:DisplayObjectContainer;
 		private var _messages:TalonSprite;
 		private var _templateContainer:TalonSprite;
+		private var _inspector:Inspector;
 
 		private var _template:DisplayObject;
 		private var _templateProduceMessage:DocumentMessage;
@@ -196,6 +198,10 @@ package talon.browser.desktop.plugins
 					// template container - split hierarchy with isolator for stopping style/resource inheritance
 					_templateContainer = new TalonSprite();
 					_templateContainer.node.setAttribute(Attribute.LAYOUT, Layout.ANCHOR);
+					
+					// inspector
+					_inspector = new Inspector(_platform.factory);
+					_ui.addChild(_inspector.view);
 
 					_isolator.alignPivot();
 					_isolator.addChild(_templateContainer);
@@ -432,6 +438,9 @@ package talon.browser.desktop.plugins
 				_templateContainer.node.metrics.ppdp = ITalonDisplayObject(_template).node.metrics.ppdp;
 				_templateContainer.addChild(_template);
 				resizeTo(_platform.profile.width, _platform.profile.height);
+
+				_inspector.view.visible = _platform.templateId != "Inspector";
+				_inspector.setTree(ITalonDisplayObject(_template).node);
 
 				// Add missed resource
 				_platform.document.messages.removeMessagesByNumber(12);

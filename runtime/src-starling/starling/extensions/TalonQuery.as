@@ -2,7 +2,9 @@ package starling.extensions
 {
 	import flash.geom.Point;
 	import flash.utils.Proxy;
+	import flash.utils.clearInterval;
 	import flash.utils.flash_proxy;
+	import flash.utils.setTimeout;
 
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
@@ -118,10 +120,13 @@ package starling.extensions
 		// Event Listeners
 		//
 
-		public function onTap(listener:Function):TalonQuery
+		public function onTap(listener:Function, numTapRequired:int = 1):TalonQuery
 		{
 			forEach(function(element:EventDispatcher):void
 			{
+				var numTap:int = 0;
+				var numTapClearId:int;
+				
 				element.addEventListener(TouchEvent.TOUCH, function(e:TouchEvent):void
 				{
 					var target:DisplayObject = e.target as DisplayObject;
@@ -134,12 +139,30 @@ package starling.extensions
 
 						if (within)
 						{
-							listener.length
-								? listener(e)
-								: listener();
+							numTap++;
+							
+							if (numTapRequired == numTap)
+							{
+								numTap = 0;
+								clearInterval(numTapClearId);
+								
+								listener.length
+									? listener(e)
+									: listener();
+							}
+							else
+							{
+								clearInterval(numTapClearId);
+								numTapClearId = numTapClear();
+							}
 						}
 					}
 				})
+				
+				function numTapClear():int
+				{
+					return setTimeout(function():void { numTap = 0 }, 50)
+				}
 			});
 
 			return this;

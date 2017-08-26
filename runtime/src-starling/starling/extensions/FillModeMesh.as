@@ -35,8 +35,8 @@ package starling.extensions
 
 		public function FillModeMesh()
 		{
-			var vertexData:VertexData = new VertexData(MeshStyle.VERTEX_FORMAT, 4);
-			var indexData:IndexData = new IndexData(6);
+			var vertexData:VertexData = new VertexData(MeshStyle.VERTEX_FORMAT);
+			var indexData:IndexData = new IndexData();
 
 			super(vertexData, indexData, style);
 

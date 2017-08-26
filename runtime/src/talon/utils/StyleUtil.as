@@ -8,7 +8,7 @@ package talon.utils
 	{
 		public static function normalize(selector:String):String { return StyleSelector.normalize(selector) }
 		
-		public static function match(node:Node, selector:String):int { return StyleSelector.match(node, selector) }
+		public static function match(node:Node, selector:String):int { return StyleSelector.match(node, selector, false) }
 		
 		public static function style(node:Node, styles:Vector.<Style>, out:Object = null):Object
 		{
@@ -17,7 +17,7 @@ package talon.utils
 			var priorities:Object = {};
 			for each (var style:Style in styles)
 			{
-				var priority:int = match(node, style.selector);
+				var priority:int = StyleSelector.match(node, style.selector, true);
 				if (priority == -1) continue;
 
 				var props:Object = style.values;
@@ -45,16 +45,15 @@ class StyleSelector
 	private static const _sSelectors:Object = {};
 
 	/** Return match priority or -1 */
-	public static function match(node:Node, source:String):int
+	public static function match(node:Node, source:String, normalized:Boolean):int
 	{
+		if (!normalized) source = normalize(source);
 		var selector:StyleSelector = getSelector(source);
 		return selector.match(node) ? selector.priority : -1;
 	}
 
 	private static function getSelector(source:String):StyleSelector
 	{
-		source = normalize(source);
-		
 		var selector:StyleSelector = _sSelectors[source];
 		if (selector == null)
 			selector = _sSelectors[source] = new StyleSelector(source);

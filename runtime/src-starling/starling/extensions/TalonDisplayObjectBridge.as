@@ -179,7 +179,7 @@ package starling.extensions
 			_background.horizontalAlign = _node.getAttributeCache(Attribute.FILL_ALIGN_HORIZONTAL);
 			_background.verticalAlign = _node.getAttributeCache(Attribute.FILL_ALIGN_VERTICAAL);
 		}
-
+		
 		private function onFillStretchGridChange():void
 		{
 			var textureWidth:int = _background.texture ? _background.texture.width : 0;

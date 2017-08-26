@@ -20,6 +20,7 @@ package talon.browser.desktop
 	import talon.browser.platform.AppPlatform;
 	import talon.browser.platform.AppPlatformEvent;
 	import talon.browser.platform.utils.Glob;
+	import talon.utils.StyleUtil;
 
 	[SWF(frameRate="60")]
 	public class DesktopLauncher extends Sprite

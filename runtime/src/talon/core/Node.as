@@ -108,6 +108,9 @@ package talon.core
 		//
 		// Attributes
 		//
+		/** @private */
+		public function get attributes():Object { return _attributes; }
+		
 		/** Get attribute <strong>cached</strong> value. */
 		public function getAttributeCache(name:String):* { return getOrCreateAttribute(name).valueCache; }
 

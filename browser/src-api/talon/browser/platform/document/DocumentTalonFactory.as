@@ -26,6 +26,18 @@ package talon.browser.platform.document
 			_timer = new Timer(1);
 			_timer.addEventListener(TimerEvent.TIMER, onTimer);
 		}
+		
+		public function getNodeMeta(node:Node):*
+		{
+			return {
+				template: "Template",
+				source: {
+					file: "path/to/template.xml",
+					line: "0",
+					char: "0"
+				}
+			}
+		}
 
 		private function dispatchChange():void
 		{

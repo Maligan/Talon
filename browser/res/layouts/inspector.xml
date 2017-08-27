@@ -2,10 +2,14 @@
 
 	<def ref="Inspector">
 		<div class="Inspector" left="0" width="220" height="100%" layout="flow" orientation="vertical">
-			<!-- DisplayTree -->
-			<txt class="header" text="Tree" width="100%" padding="6px" />
-			<div id="tree" width="100%" layout="flow" orientation="vertical">
 
+			<!-- DisplayTree -->
+			<div class="header" width="100%">
+				<txt text="Tree" left="6px" />
+				<img id="filter" source="$funnel" right="0px" padding="4px"/>
+			</div>
+
+			<div id="tree" width="100%" layout="flow" orientation="vertical">
 				<use ref="TreeItem" update="text: PopupBank; icon: $drop_down;" />
 				<use ref="TreeItem" update="text: Label; icon: $drop_none; paddingLeft: 14" />
 				<use ref="TreeItem" update="text: Container; icon: $drop_down; paddingLeft: 14" />
@@ -48,14 +52,8 @@
 
 	<def ref="Attribute">
 		<div class="Attribute" width="100%" layout="flow" name="Name" value="Value"> 
-
 			<use ref="Toggle" update="text:@name; width: 50%"/>
-			<!--<txt id="name" alignSelf="center" class="toggle" text="@name" width="50%" fillAlpha="@composite" />-->
-
-			<div id="right" layout="flow" width="50%" height="100%">
-				<txt id="value" text="@value" width="*" height="100%" align="left center" />
-				<img id="delete" source="$delete" alignSelf="center" padding="3px"  />
-			</div>
+			<txt id="value" text="@value" width="50%" height="100%" align="left center" />
 		</div>
 	</def>
 
@@ -70,8 +68,18 @@
 		}
 
 		.Inspector .header {
-			//fill: #595B5B;
 			fill: $color.base1;
+		}
+
+		.Inspector #filter {
+			tint: #626262;
+			touchMode: leaf;
+			touchEvents: true;
+			cursor: button;
+		}
+
+		.Inspector #filter:hover {
+			tint: #C5C5C5;
 		}
 
 
@@ -123,29 +131,15 @@
 			fontColor: white;
 		}
 
-		.Attribute #right {
+		.Attribute #value {
 			fill: white;
 			fillAlpha: 0;
 
-			touchMode: branch;
+			touchMode: leaf;
 			touchEvents: true;
 			cursor: button;
 		}
 
-		.Attribute #right #delete {
-			alpha: 0;
-			tint: gray;
-
-			touchEvents: true;
-		}
-
-		.Attribute #right:hover #delete {
-			alpha: 1;
-		}
-
-		.Attribute #right:hover #delete:hover {
-			tint: white;
-		}
 
 	</style>
 

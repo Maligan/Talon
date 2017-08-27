@@ -48,11 +48,12 @@ package talon.browser.desktop.utils
 			_factory = factory;
 			_view = factory.build(REF_INSPECTOR);
 
-			_view.query("#attributesHeader").onTap(function():void
+			_view.query("#filter").onTap(function():void
 			{
 				_css = !_css;
-				setAttributes(_selection);
-			}, 2);
+				if (_selection)
+					setAttributes(_mapToData[_selection]);
+			});
 
 			_scroller = new Scroller();
 			_scroller.content = _view;

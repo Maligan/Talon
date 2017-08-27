@@ -6,7 +6,6 @@
 .popup {
 	fontSize: 13px;
 	fontColor: white;
-	fontSharpness: -1;
 
 	fill: $bg_dialog;
 	fillStretchGrid: 18px;

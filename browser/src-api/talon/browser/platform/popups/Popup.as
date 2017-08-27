@@ -58,9 +58,13 @@ package talon.browser.platform.popups
 			addEventListener(type, function(e:KeyboardEvent):void
 			{
 				if (keyCode == -1 || keyCode == e.keyCode)
+				{
 					listener.length
 						? listener(e)
 						: listener();
+
+					e.stopImmediatePropagation();
+				}
 			});
 		}
 	}

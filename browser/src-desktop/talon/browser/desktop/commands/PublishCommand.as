@@ -157,7 +157,7 @@ package talon.browser.desktop.commands
 
 			function complete():void
 			{
-				popup.close();
+				popup && popup.close();
 				_packerPromise = null;
 
 				if (files) writeZip(target, files);

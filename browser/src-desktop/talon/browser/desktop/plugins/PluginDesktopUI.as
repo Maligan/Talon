@@ -440,7 +440,7 @@ package talon.browser.desktop.plugins
 				resizeTo(_platform.profile.width, _platform.profile.height);
 
 				_inspector.view.visible = _platform.templateId != "Inspector";
-				_inspector.setTree(ITalonDisplayObject(_template).node);
+				_inspector.view.visible && _inspector.setTree(ITalonDisplayObject(_template).node);
 
 				// Add missed resource
 				_platform.document.messages.removeMessagesByNumber(12);
@@ -693,7 +693,7 @@ class AppUINativeMenu
 		}
 
 		insert("view/-");
-		insert("view/fullScreen",              new  ToggleFullScreenCommand(_platform), "ctrl-f");
+		insert("view/fullScreen",              new  ToggleFullScreenCommand(_platform), "F11"); // FIXME: F11
 
 		// Navigate
 		insert("navigate");
@@ -713,7 +713,7 @@ class AppUINativeMenu
 		var labelKey:String = "menu." + path.replace(/\//g, ".");
 		var label:String = labelKey in _locale ? _locale[labelKey] : path.split("/").pop();
 
-		var keyPattern:RegExp = /^(SHIFT-)?(CTRL-)?(ALT-)?(.)$/;
+		var keyPattern:RegExp = /^(SHIFT-)?(CTRL-)?(ALT-)?(.+)$/;
 		var keySplit:Array = (shortcut ? keyPattern.exec(shortcut.toUpperCase()) : null) || [];
 		var keyModifiers:Array = [];
 		if (keySplit[1]) keyModifiers.push(Keyboard.SHIFT);

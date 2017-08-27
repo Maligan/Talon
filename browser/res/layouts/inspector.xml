@@ -5,23 +5,21 @@
 			<!-- DisplayTree -->
 			<txt class="header" text="Tree" width="100%" padding="6px" />
 			<div id="tree" width="100%" layout="flow" orientation="vertical">
-				<use ref="TreeItem" update="text:	div; paddingLeft: 4; icon: $drop_right"/>
-				<use ref="TreeItem" update="text:	div; paddingLeft:18; icon: $drop_right"/>
-				<use ref="TreeItem" update="text:	txt; paddingLeft:18; icon: none"/>
-				<use ref="TreeItem" update="text:	div#accept; paddingLeft:18; icon: $drop_down;"/>
-				<use ref="TreeItem" update="text:	div#item1; paddingLeft:32; icon: $drop_right; info: TreeItem"/>
-				<use ref="TreeItem" update="text:	div#item2; paddingLeft:32; icon: $drop_right; info: TreeItem"/>
-				<use ref="TreeItem" update="text:	div#item3; paddingLeft:32; icon: $drop_right; info: TreeItem"/>
-				<use ref="TreeItem" update="text:	img; paddingLeft:18; icon: none"/>
+
+				<use ref="TreeItem" update="text: PopupBank; icon: $drop_down;" />
+				<use ref="TreeItem" update="text: Label; icon: $drop_none; paddingLeft: 14" />
+				<use ref="TreeItem" update="text: Container; icon: $drop_down; paddingLeft: 14" />
+				<use ref="TreeItem" update="text: Image; icon: $drop_none; paddingLeft: 28" />
+				<use ref="TreeItem" update="text: PopupBank_Product; icon: $drop_right; paddingLeft: 28" />
+				<use ref="TreeItem" update="text: PopupBank_Product; icon: $drop_right; paddingLeft: 28" />
+				<use ref="TreeItem" update="text: PopupBank_Product; icon: $drop_right; paddingLeft: 28" />
+				<use ref="TreeItem" update="text: Image; icon: $drop_none; paddingLeft: 28" />
+
 			</div>
 
-			<!-- Separator -->
-			<!--<div class="separator" width="100%" height="8px" margin="-4px none" layer="1" cursor="ibeam"/>-->
-
 			<!-- Attributes -->
-			<div class="header" layout="flow" width="100%">
+			<div id="attributesHeader" class="header" layout="flow" width="100%">
 				<txt text="Name" width="50%" padding="6px" />
-				<!--<div class="separator" width="8px" height="100%" margin="none -4px" layer="1" cursor="ibeam" />-->
 				<txt text="Value" width="50%" padding="6px" />
 			</div>
 			<div id="attributes" width="100%" layout="flow" orientation="vertical">
@@ -34,19 +32,29 @@
 		</div>
 	</def>
 
+	<def ref="Toggle">
+		<div class="Toggle" text="Toggle" layout="flow">
+			<img id="icon" source="@icon" padding="5px" />
+			<txt id="text" text="@text" align="center" height="100%"/>
+		</div>
+	</def>
+
 	<def ref="TreeItem">
-		<div class="TreeItem" layout="flow" text="div" info="" width="100%" paddingLeft="4px">
-			<txt id="text" class="toggle" alignSelf="center" text="@text" width="*" fill="@icon" />
-			<txt id="info" alignSelf="center" text="@info" marginRight="4px" />
+		<div class="TreeItem" text="TreeItem" info="" layout="anchor" width="100%"> 
+			<use ref="Toggle" update="id: toggle; left: 0px; text: @text" />
+			<txt text="@info" right="0" paddingRight="4px" fontColor="gray" />
 		</div>
 	</def>
 
 	<def ref="Attribute">
-		<div class="Attribute" width="100%" layout="flow" name="Name" value="Value" composite="0" paddingLeft="4px">
-			<txt id="name" alignSelf="center" class="toggle" text="@name" width="50%" fillAlpha="@composite" />
-			<div id="right" layout="flow" width="50%">
-				<txt id="value" text="@value" width="*" padding="6px" />
-				<img id="delete" source="$delete" alignSelf="center" marginRight="4" />
+		<div class="Attribute" width="100%" layout="flow" name="Name" value="Value"> 
+
+			<use ref="Toggle" update="text:@name; width: 50%"/>
+			<!--<txt id="name" alignSelf="center" class="toggle" text="@name" width="50%" fillAlpha="@composite" />-->
+
+			<div id="right" layout="flow" width="50%" height="100%">
+				<txt id="value" text="@value" width="*" height="100%" align="left center" />
+				<img id="delete" source="$delete" alignSelf="center" padding="3px"  />
 			</div>
 		</div>
 	</def>
@@ -66,34 +74,26 @@
 			fill: $color.base1;
 		}
 
-		.Inspector .separator {
-			touchEvents: true;
-			fill: white;
-			fillAlpha: 0;
-		}
 
-		.Inspector .separator:hover {
-			fill: #333333;
-			fillAlpha: 1;
-		}
 
-		.Inspector .toggle {
-			fill: $drop_right;
-			fillTint: gray;
-			fillMode: none;
-			fillAlign: left center;
+		/* Toggle Icon */
+		.Toggle { icon: $drop_right }
+		.Toggle:checked { icon: $drop_down }
+		.Toggle:empty { icon: $drop_none }
 
-			align: left center;
-			padding: 6px 6px 6px 16px;
-
+		/* Toggle Icon Tint */
+		.Toggle #icon:hover { tint: white; }
+		.Toggle #icon {
 			touchMode: leaf;
 			touchEvents: true;
 			cursor: button;
+			tint: gray;
 		}
 
-		.Inspector .toggle:hover {
-			fillTint: white;
-		}
+
+
+
+
 
 		.TreeItem {
 			touchMode: branch;
@@ -106,8 +106,8 @@
 		.TreeItem:hover { fill: $color.base1; }
 		.TreeItem:checked { fill: $color.blue; }
 
-		.TreeItem #info { fontColor: #888888; touchEvents: true }
-		.TreeItem #info:hover { fontColor: #00BFFF; }
+		.TreeItem #link { fontColor: #888888; touchEvents: true }
+		.TreeItem #link:hover { fontColor: #00BFFF; }
 
 
 		/* Attributes */

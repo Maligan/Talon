@@ -5,9 +5,12 @@ package talon.browser.desktop.utils
 	import com.doitflash.consts.Orientation;
 
 	import flash.geom.Point;
+	import flash.ui.Keyboard;
 	import flash.utils.Dictionary;
 
 	import starling.display.DisplayObject;
+	import starling.events.Event;
+	import starling.events.KeyboardEvent;
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
@@ -17,6 +20,7 @@ package talon.browser.desktop.utils
 
 	import talon.core.Attribute;
 	import talon.core.Node;
+	import talon.enums.State;
 	import talon.utils.ParseUtil;
 
 	public class Inspector
@@ -33,6 +37,7 @@ package talon.browser.desktop.utils
 		
 		private var _tree:Node;
 		private var _selection:Node;
+		private var _css:Boolean;
 		
 		private var _mapToData:Dictionary;
 		private var _mapToView:Dictionary;
@@ -42,6 +47,12 @@ package talon.browser.desktop.utils
 		{
 			_factory = factory;
 			_view = factory.build(REF_INSPECTOR);
+
+			_view.query("#attributesHeader").onTap(function():void
+			{
+				_css = !_css;
+				setAttributes(_selection);
+			}, 2);
 
 			_scroller = new Scroller();
 			_scroller.content = _view;
@@ -69,6 +80,68 @@ package talon.browser.desktop.utils
 				}
 			});
 
+
+			view.addEventListener(Event.ADDED_TO_STAGE, onStageChange);
+		}
+
+		private function onStageChange(e:Event):void
+		{
+			if (e.type == Event.ADDED_TO_STAGE)
+				view.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			else
+				view.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+		}
+
+		private function onKeyDown(e:KeyboardEvent):void
+		{
+			if (_selection)
+			{
+				switch (e.keyCode)
+				{
+					case Keyboard.LEFT:
+						if (Node(_mapToData[_selection]).numChildren > 0 && ParseUtil.parseBoolean(_selection.getAttributeCache("toggle")) == true)
+							toggleNode(_selection, e.shiftKey || e.ctrlKey || e.altKey);
+						else if (_parents[_selection])
+							setSelection(_parents[_selection]);
+						break;
+
+					case Keyboard.RIGHT:
+						if (ParseUtil.parseBoolean(_selection.getAttributeCache("toggle")) == false)
+							toggleNode(_selection, e.shiftKey || e.ctrlKey || e.altKey);
+						else if (Node(_mapToData[_selection]).numChildren > 0)
+							setSelection(findVisibleSibling(_selection, +1));
+						break;
+
+					case Keyboard.ENTER:
+						toggleNode(_selection, e.shiftKey || e.ctrlKey || e.altKey);
+						break;
+
+					case Keyboard.DOWN:
+						var nextChild:Node = findVisibleSibling(_selection, +1);
+						if (nextChild) setSelection(nextChild);
+						break;
+
+					case Keyboard.UP:
+						var prevChild:Node = findVisibleSibling(_selection, -1);
+						if (prevChild) setSelection(prevChild);
+						break;
+				}
+			}
+		}
+
+		private function findVisibleSibling(node:Node, step:int = +1):Node
+		{
+			var length:int = node.parent.numChildren;
+			var index:int = node.parent.getChildIndex(node);
+
+			for (var i:int=index+step; i>=0 && i<length; i += step)
+			{
+				var child:Node = node.parent.getChildAt(i);
+				var visible:String = child.getAttributeCache(Attribute.VISIBLE);
+				if (ParseUtil.parseBoolean(visible)) return child;
+			}
+
+			return null;
 		}
 		
 		public function setTree(tree:Node):void
@@ -79,6 +152,8 @@ package talon.browser.desktop.utils
 			_tree = tree;
 
 			addTreeItems(_view.query("#tree")[0], _tree);
+			_selection = _mapToView[_tree];
+			_selection.setAttribute(Attribute.FILL, "$color.blue");
 			setAttributes(_tree);
 		}
 		
@@ -90,20 +165,23 @@ package talon.browser.desktop.utils
 			var item:ITalonDisplayObject = _factory.build(REF_TREE_ITEM);
 			var itemOffset:int = (4 + depth*14);
 			var itemName:String = node.getAttributeCache(Attribute.TYPE);
-			
-			if (node.getAttributeCache(Attribute.ID) != null)
-				itemName = "#" + node.getAttributeCache(Attribute.ID);
+
+			if (itemName == "div") itemName = "Container";
+			if (itemName == "img") itemName = "Image";
+			if (itemName == "txt") itemName = "Label";
+			itemName = itemName.charAt(0).toUpperCase() + itemName.substr(1);
 
 			item.query()
 				.set("text", itemName)
-				.set("icon", node.numChildren > 0 ? "$drop_right" : "none")
-				.set("info", "")
+				.set("info", node.getAttributeCache(Attribute.ID))
 				.set("depth", depth)
 				.set("paddingLeft", itemOffset)
 				.set("visible", depth==0)
-				.onTap(onTreeItemTap, 1);
-//				.onTap(onTreeItemTap2, 2);
-			
+				.onTap(onTreeItemTap1, 1)
+				.onTap(onTreeItemTap2, 2);
+
+			item.node.getChildAt(0).states.set("empty", node.numChildren == 0);
+
 			tree.addChild(item as DisplayObject);
 			
 			if (parent) _parents[item.node] = parent;
@@ -114,31 +192,44 @@ package talon.browser.desktop.utils
 			for (var i:int = 0; i < node.numChildren; i++)
 				addTreeItems(tree, node.getChildAt(i), depth + 1, item.node);
 		}
-		
-		private function onTreeItemTap(e:TouchEvent):void
+
+		private function onTreeItemTap1(e:TouchEvent):void
 		{
-			if (_selection) _selection.setAttribute(Attribute.FILL, null);
-			_selection = ITalonDisplayObject(e.currentTarget).node;
-			_selection.setAttribute(Attribute.FILL, "$color.blue");
-			setAttributes(_mapToData[_selection]);
-			
-			onTreeItemTap2(e);
+			if (ITalonDisplayObject(e.target).node.getAttributeCache(Attribute.ID) == "icon")
+				onTreeItemTap2(e);
+			else
+				setSelection(ITalonDisplayObject(e.currentTarget).node)
 		}
-		
-		private function onTreeItemTap2(e:TouchEvent):void
+
+		private function setSelection(selection:Node):void
 		{
-			// Toggle
-			var depth:int = _selection.getAttributeCache("depth");
-			var index:int = _selection.parent.getChildIndex(_selection);
-
-			var toggle:Boolean = ParseUtil.parseBoolean(_selection.getAttributeCache("toggle"));
-
-			_selection.setAttribute("toggle", String(!toggle));
-			_selection.setAttribute("icon", Node(_mapToData[_selection]).numChildren ? (toggle ? "$drop_right" : "$drop_down") : "none");
-
-			for (var i:int = index+1; i < _selection.parent.numChildren; i++)
+			if (_selection != selection)
 			{
-				var nextChild:Node = _selection.parent.getChildAt(i);
+				if (_selection)
+					_selection.setAttribute(Attribute.FILL, null);
+
+				_selection = selection;
+				_selection.setAttribute(Attribute.FILL, "$color.blue");
+				setAttributes(_mapToData[_selection]);
+			}
+		}
+
+		private function toggleNode(toggled:Node, deep:Boolean = false):void
+		{
+			if (Node(_mapToData[toggled]).numChildren == 0) return;
+
+			// Toggle
+			var depth:int = toggled.getAttributeCache("depth");
+			var index:int = toggled.parent.getChildIndex(toggled);
+
+			var toggle:Boolean = !ParseUtil.parseBoolean(toggled.getAttributeCache("toggle"));
+
+			toggled.setAttribute("toggle", toggle.toString());
+			toggled.getChildAt(0).states.set(State.CHECKED, toggle);
+
+			for (var i:int = index+1; i < toggled.parent.numChildren; i++)
+			{
+				var nextChild:Node = toggled.parent.getChildAt(i);
 				var nextChildDepth:int = nextChild.getAttributeCache("depth");
 				if (nextChildDepth > depth)
 				{
@@ -146,15 +237,26 @@ package talon.browser.desktop.utils
 					var parentToggle:Boolean = ParseUtil.parseBoolean(nextChildParent.getAttributeCache("toggle"));
 					var parentVisible:Boolean = ParseUtil.parseBoolean(nextChildParent.getAttributeCache("visible"));
 
-					nextChild.setAttribute(
-						Attribute.VISIBLE,
-						(parentVisible && parentToggle).toString()
-					);
+					var expanded:Boolean = (parentVisible && parentToggle);
+
+					nextChild.setAttribute(Attribute.VISIBLE, expanded.toString());
+					if (deep)
+					{
+						nextChild.setAttribute("toggle", expanded.toString());
+						nextChild.getChildAt(0).states.set(State.CHECKED, expanded);
+					}
 				}
 				else if (nextChildDepth == depth)
 					break;
 
 			}
+		}
+
+		private function onTreeItemTap2(e:TouchEvent):void
+		{
+			var toggled:Node = ITalonDisplayObject(e.currentTarget).node;
+			var deep:Boolean = e.shiftKey || e.ctrlKey;
+			toggleNode(toggled, deep);
 		}
 		
 		private function setAttributes(node:Node):void
@@ -162,23 +264,42 @@ package talon.browser.desktop.utils
 			var attributes:TalonSprite = _view.query("#attributes")[0] as TalonSprite;
 			while (attributes.numChildren > 0) _attCache.push(attributes.removeChildAt(0));
 
+			for each (var attributeName:String in getList(node, _css))
+			{
+				var attribute:Attribute = node.getOrCreateAttribute(attributeName);
+				var item:ITalonDisplayObject = _attCache.pop() || _factory.build(REF_ATTRIBUTE);
+
+				item.query()
+					.set("name", attribute.name)
+					.set("value", attribute.isResource ? attribute.value.substr(1) : attribute.value);
+
+				item.node.getChildAt(0).states.set("empty", true);
+
+				item.node.classes.set("setted", attribute.setted != null);
+
+				attributes.addChild(item as DisplayObject);
+			}
+		}
+
+		private function getList(node:Node, styled:Boolean):Vector.<String>
+		{
+			var result:Vector.<String> = new <String>[];
+
 			for each (var attribute:Attribute in node.attributes)
 			{
 				if (attribute.name == Attribute.TYPE) continue;
-				if (attribute.setted || attribute.styled)
-				{
-					var item:ITalonDisplayObject = _attCache.pop() || _factory.build(REF_ATTRIBUTE);
-					
-					item.query()
-						.set("name", attribute.name)
-						.set("value", attribute.value)
-						.set("composite", 0);
-
-					item.node.classes.set("setted", attribute.setted);
-					
-					attributes.addChild(item as DisplayObject);
-				}
+				if (attribute.setted !== null || (styled && attribute.styled !== null))
+					result.push(attribute.name)
 			}
+
+			result.sort(function(s1:String, s2:String):int
+			{
+				if (s1 > s2) return +1;
+				if (s1 < s2) return -1;
+				return 0;
+			});
+
+			return result;
 		}
 
 		public function get view():DisplayObject

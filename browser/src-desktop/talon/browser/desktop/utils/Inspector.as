@@ -103,7 +103,7 @@ package talon.browser.desktop.utils
 						if (Node(_mapToData[_selection]).numChildren > 0 && ParseUtil.parseBoolean(_selection.getAttributeCache("toggle")) == true)
 							toggleNode(_selection, e.shiftKey || e.ctrlKey || e.altKey);
 						else if (_parents[_selection])
-							setSelection(_parents[_selection]);
+							setSelection(findVisibleSibling(_selection, -1) || _parents[_selection]);
 						break;
 
 					case Keyboard.RIGHT:
@@ -263,23 +263,36 @@ package talon.browser.desktop.utils
 		private function setAttributes(node:Node):void
 		{
 			var attributes:TalonSprite = _view.query("#attributes")[0] as TalonSprite;
-			while (attributes.numChildren > 0) _attCache.push(attributes.removeChildAt(0));
+			var i:int = 0;
 
 			for each (var attributeName:String in getList(node, _css))
 			{
 				var attribute:Attribute = node.getOrCreateAttribute(attributeName);
-				var item:ITalonDisplayObject = _attCache.pop() || _factory.build(REF_ATTRIBUTE);
+				
+				var item:ITalonDisplayObject = null;
+				if (i < attributes.numChildren)
+				{
+					item = attributes.getChildAt(i) as ITalonDisplayObject;
+					item.node.setAttribute(Attribute.VISIBLE, "true");
+				}
+				else
+				{
+					item = _factory.build(REF_ATTRIBUTE);
+					attributes.addChild(item as DisplayObject);
+				}
 
 				item.query()
 					.set("name", attribute.name)
 					.set("value", attribute.isResource ? attribute.value.substr(1) : attribute.value);
 
 				item.node.getChildAt(0).states.set("empty", true);
-
 				item.node.classes.set("setted", attribute.setted != null);
 
-				attributes.addChild(item as DisplayObject);
+				i++;
 			}
+			
+			for (var j:int = i; j < attributes.numChildren; j++)
+				ITalonDisplayObject(attributes.getChildAt(j)).node.setAttribute(Attribute.VISIBLE, "false");
 		}
 
 		private function getList(node:Node, styled:Boolean):Vector.<String>

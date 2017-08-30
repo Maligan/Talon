@@ -90,7 +90,7 @@ package talon.layouts
 					child.bounds.bottom = height - paddingBottom - child.bottom.toPixels(child.metrics, contentHeight);
 				}
 
-				child.commit();
+				child.validate();
 			}
 		}
 

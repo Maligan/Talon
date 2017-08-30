@@ -77,7 +77,7 @@ package starling.extensions
 			var currW:int = texture ? texture.width  : -1;
 			var currH:int = texture ? texture.height : -1;
 
-			if (node.width.isNone && (prevW != currW) || node.height.isNone && (prevH != currH)) node.invalidate();
+			if ((prevW != currW) || (prevH != currH)) node.invalidate();
 		}
 
 		private function onSourceTintChange():void

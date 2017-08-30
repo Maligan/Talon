@@ -198,10 +198,6 @@ package talon.browser.desktop.plugins
 					// template container - split hierarchy with isolator for stopping style/resource inheritance
 					_templateContainer = new TalonSprite();
 					_templateContainer.node.setAttribute(Attribute.LAYOUT, Layout.ANCHOR);
-					
-					// inspector
-					_inspector = new Inspector(_platform.factory);
-					_ui.addChild(_inspector.view);
 
 					_isolator.alignPivot();
 					_isolator.addChild(_templateContainer);
@@ -375,7 +371,7 @@ package talon.browser.desktop.plugins
 			if (_templateContainer)
 			{
 				_templateContainer.node.bounds.setTo(0, 0, width/zoom, height/zoom);
-				_templateContainer.node.commit();
+				_templateContainer.node.validate();
 				refreshOutline(_template);
 			}
 		}
@@ -439,9 +435,18 @@ package talon.browser.desktop.plugins
 				_templateContainer.addChild(_template);
 				resizeTo(_platform.profile.width, _platform.profile.height);
 
-				_inspector.view.visible = _platform.templateId != "Inspector";
-				_inspector.view.visible && _inspector.setTree(ITalonDisplayObject(_template).node);
-
+				if (_inspector == null)
+				{
+					_inspector = new Inspector(_platform.factory);
+					_ui.addChild(_inspector.view);	
+				}
+				
+				if (_inspector != null)
+				{
+					_inspector.view.visible = _platform.templateId != "Inspector";
+					_inspector.view.visible && _inspector.setTree(ITalonDisplayObject(_template).node);
+				}
+				
 				// Add missed resource
 				_platform.document.messages.removeMessagesByNumber(12);
 				var resources:Vector.<String> = _platform.document.factory.getResourceMissed();
@@ -626,7 +631,6 @@ import flash.ui.Keyboard;
 import talon.browser.desktop.commands.*;
 import talon.browser.desktop.plugins.PluginDesktopUI;
 import talon.browser.desktop.popups.ProfilePopup;
-import talon.browser.desktop.popups.UpdatePopup;
 import talon.browser.desktop.utils.NativeMenuAdapter;
 import talon.browser.platform.AppConstants;
 import talon.browser.platform.AppPlatform;
@@ -693,7 +697,7 @@ class AppUINativeMenu
 		}
 
 		insert("view/-");
-		insert("view/fullScreen",              new  ToggleFullScreenCommand(_platform), "F11"); // FIXME: F11
+		insert("view/fullScreen",              new  ToggleFullScreenCommand(_platform)); // FIXME: F11
 
 		// Navigate
 		insert("navigate");
@@ -703,7 +707,7 @@ class AppUINativeMenu
 		// Help
 		insert("help");
 		insert("help/online", new OpenOnlineDocumentationCommand(_platform));
-		insert("help/update", new OpenPopupCommand(_platform, UpdatePopup, ui.updater));
+//		insert("help/update", new OpenPopupCommand(_platform, UpdatePopup, ui.updater));
 
 		if (NativeWindow.supportsMenu) platform.stage.nativeWindow.menu = _menu.nativeMenu;
 	}

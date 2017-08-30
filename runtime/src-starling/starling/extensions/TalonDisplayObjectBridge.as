@@ -10,7 +10,6 @@ package starling.extensions
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Mesh;
-	import starling.events.EnterFrameEvent;
 	import starling.events.Event;
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
@@ -48,7 +47,7 @@ package starling.extensions
 			Parsers.registerParsers();
 			
 			_target = target;
-			_target.addEventListener(EnterFrameEvent.ENTER_FRAME, validate);
+			_target.setRequiresRedraw();
 			_listeners = new Dictionary();
 
 			_transform = new Matrix();
@@ -56,6 +55,7 @@ package starling.extensions
 			_node = node;
 			_node.addListener(Event.RESIZE, onNodeResize);
 			_node.addListener(Event.CHANGE, onNodeChange);
+			_node.addListener(Event.UPDATE, _target.setRequiresRedraw);
 
 			_background = new FillModeMesh();
 			_background.pixelSnapping = true;
@@ -105,7 +105,7 @@ package starling.extensions
 			_background.width = _node.bounds.width;
 			_background.height = _node.bounds.height;
 		}
-
+		
 		//
 		// Validation
 		//
@@ -115,22 +115,22 @@ package starling.extensions
 
 		public function validate():void
 		{
-			if (_node.invalidated && (_node.parent == null || !_node.parent.invalidated))
+			if (_node.parent == null)
 			{
-				// isNaN() check for element bounds
-				// This may be if current element is topmost in talon hierarchy
-				// and there is no user setups of its sizes
-
 				// TODO: Respect percentages & min/max size
 
+				// isNaN() check for element bounds
+				// This may be if current element is topmost in talon hierarchy
+				// and there is no user setup for its sizes
+				
 				if (_node.bounds.width != _node.bounds.width)
 					_node.bounds.width = _node.width.toPixels(_node.metrics, 0);
 
 				if (_node.bounds.height != _node.bounds.height)
 					_node.bounds.height = _node.height.toPixels(_node.metrics, 0);
-
-				_node.commit();
 			}
+
+			_node.validate();
 		}
 
 		// Listeners: Background
@@ -323,6 +323,8 @@ package starling.extensions
 
 		public function renderCustom(render:Function, painter:Painter):void
 		{
+			validate();
+			
 			pushTransform(painter);
 			renderBackground(painter);
 			render(painter);

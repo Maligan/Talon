@@ -31,14 +31,17 @@ package starling.extensions
 		private var _bridge:TalonDisplayObjectBridge;
 		private var _requiresRecompositionWithPadding:Boolean;
 		private var _manual:Boolean;
-
+		
+		private var _cacheWidth:Number;
+		private var _cacheHeight:Number;
+		
 		/** @private */
 		public function TalonTextField()
 		{
 			super(0, 0, null);
 
 			_node = new Node();
-			_node.getOrCreateAttribute(Attribute.WRAP).inited = "true";
+			_node.getOrCreateAttribute(Attribute.WRAP).inited = "true"; // FIXME: Bad Ya?
 			_node.addListener(Event.RESIZE, onNodeResize);
 			_node.addListener(Event.ADDED, onNodeParentChange);
 			_node.addListener(Event.REMOVED, onNodeParentChange);
@@ -63,10 +66,16 @@ package starling.extensions
 		//
 		// Measure size
 		//
-		private function measureWidth(availableHeight:Number):Number { return measure(Infinity, availableHeight).width; }
-		private function measureHeight(availableWidth:Number):Number { return measure(availableWidth, Infinity).height; }
+		private function measureWidth(availableHeight:Number):Number { return _cacheWidth = measure(Infinity, availableHeight).width; }
+		private function measureHeight(availableWidth:Number):Number { return _cacheHeight = measure(availableWidth, Infinity).height; }
 		private function measure(availableWidth:Number, availableHeight:Number):Rectangle
 		{
+			if (_cacheWidth == _cacheWidth && _cacheHeight == _cacheHeight)
+			{
+				_sRect.setTo(0, 0, x, y);
+				return _sRect;
+			}
+			
 			var trueTypeCorrection:int = getCompositor(format.font) ? 0 : TRUE_TYPE_CORRECTION;
 
 			var paddingTop:Number = node.paddingTop.toPixels(node.metrics);
@@ -77,7 +86,6 @@ package starling.extensions
 			super.autoSize = getAutoSize(availableWidth == Infinity, availableHeight == Infinity);
 			super.width = availableWidth - paddingLeft - paddingRight + trueTypeCorrection;
 			super.height = availableHeight - paddingTop - paddingBottom + trueTypeCorrection;
-			super.setRequiresRecomposition();
 			super.getBounds(this, _sRect);				// call super.recompose();
 			getTrueTextBounds(_sRect);					// calculate true text bounds (which respect font lineHeight)
 			super.autoSize = TextFieldAutoSize.NONE;	// restore super.autoSize value
@@ -91,10 +99,11 @@ package starling.extensions
 			// Ceiling used for compensate those errors
 			_sRect.width  = Math.ceil(_sRect.width);
 			_sRect.height = Math.ceil(_sRect.height);
-
+			
 			return _sRect;
 		}
 
+		/** This text bounds respect font lineHeight and it height can be only (lineHeight*scale * N). */
 		private function getTrueTextBounds(out:Rectangle = null):Rectangle
 		{
 			out ||= new Rectangle();
@@ -202,6 +211,8 @@ package starling.extensions
 
 			width = node.bounds.width;
 			height = node.bounds.height;
+			
+			recomposeWithPadding();
 		}
 
 		private function onNodeParentChange():void
@@ -210,13 +221,15 @@ package starling.extensions
 			if (unit == Gauge.EM || unit == Gauge.PERCENT || node.getOrCreateAttribute(Attribute.FONT_SIZE).isInherit)
 				onFontSizeChange();
 		}
-
+		
 		//
 		// TalonDisplayObjectBridge customization
 		//
 		/** @private */
 		public override function setRequiresRecomposition():void
 		{
+			_cacheWidth = NaN;
+			_cacheHeight = NaN;
 			_requiresRecompositionWithPadding = true;
 			super.setRequiresRecomposition();
 		}
@@ -260,7 +273,7 @@ package starling.extensions
 
 		private function recomposeAndRender(painter:Painter):void
 		{
-			if (_requiresRecompositionWithPadding) recomposeWithPadding();
+			recomposeWithPadding();
 
 			// In this call recompose() nether will be invoked (already invoked)
 			// and now this is analog of super.super.render() :-)
@@ -311,8 +324,7 @@ package starling.extensions
 
 		private function invalidateIfAutoSize():void
 		{
-			if (autoSize != TextFieldAutoSize.NONE)
-				node.invalidate();
+			node.invalidate();
 		}
 
 		//

@@ -2,6 +2,7 @@ package talon.layouts
 {
 	import flash.utils.Dictionary;
 
+	import talon.core.Attribute;
 	import talon.core.Node;
 
 	/** @private */
@@ -10,64 +11,45 @@ package talon.layouts
 		//
 		// Static Layout Registry
 		//
-		public static const ABSOLUTE:String = "abs";
 		public static const FLOW:String = "flow";
-
-		public static const FLEX:String = "flex";
 		public static const ANCHOR:String = "anchor";
 
-		private static var _initialized:Boolean = false;
-		private static var _layout:Dictionary = new Dictionary();
-		private static var _observableSelfAttribute:Dictionary = new Dictionary();
-		private static var _observableChildAttribute:Dictionary = new Dictionary();
+		private static const COMMON:Array = [
+			// Width
+			Attribute.MIN_WIDTH,
+			Attribute.WIDTH,
+			Attribute.MAX_WIDTH,
+			// Height
+			Attribute.HEIGHT,
+			Attribute.MIN_HEIGHT,
+			Attribute.MAX_HEIGHT,
+			// Misc
+			Attribute.VISIBLE,
+			Attribute.FILTER
+		];
+		
+		private static var _layouts:Dictionary;
 
-		public static function registerLayoutAlias(aliasName:String, layout:Layout, observableSelfAttribute:Array = null, observableChildAttribute:Array = null):void
+		public static function registerLayout(name:String, layout:Layout):void
 		{
-			if (_layout[aliasName] != null) throw new ArgumentError("Layout alias " + aliasName + "already registered");
-
-			_layout[aliasName] = layout;
-
-			var helper:Dictionary;
-			var attribute:String;
-
-			helper = new Dictionary();
-			for each (attribute in observableSelfAttribute) helper[attribute] = true;
-			_observableSelfAttribute[aliasName] = helper;
-
-			helper = new Dictionary();
-			for each (attribute in observableChildAttribute) helper[attribute] = true;
-			_observableChildAttribute[aliasName] = helper;
+			initialize();
+			_layouts[name] = layout;
 		}
 
 		/** Get layout strategy by it's name. */
-		public static function getLayoutByAlias(aliasName:String):Layout
+		public static function getLayout(name:String):Layout
 		{
 			initialize();
-			return _layout[aliasName];
-		}
-
-		/** Layout must be invalidated if node attribute changed. */
-		public static function isObservableSelfAttribute(layout:String, attributeName:String):Boolean
-		{
-			initialize();
-			return _observableSelfAttribute[layout] && _observableSelfAttribute[layout][attributeName];
-		}
-
-		/** Layout must be invalidated if node child attribute changed. */
-		public static function isObservableChildAttribute(layout:String, attributeName:String):Boolean
-		{
-			initialize();
-			return _observableChildAttribute[layout] && _observableChildAttribute[layout][attributeName];
+			return _layouts[name];
 		}
 
 		private static function initialize():void
 		{
-			if (_initialized == false)
+			if (_layouts == null)
 			{
-				_initialized = true;
-				if (!_layout[ANCHOR]) registerLayoutAlias(ANCHOR, new AnchorLayout(), ["padding"], ["visible", "top", "right", "bottom", "left", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight"]);
-				if (!_layout[FLOW]) registerLayoutAlias(FLOW, new FlowLayout(), ["gap", "interline", "wrap", "orientation"], ["visible", "width", "height", "filter"]);
-				if (!_layout[FLEX]) registerLayoutAlias(FLEX, new FlexLayout());
+				_layouts = new Dictionary();
+				registerLayout(ANCHOR, new AnchorLayout());
+				registerLayout(FLOW, new FlowLayout()); // ["gap", "interline", "wrap", "orientation"]
 			}
 		}
 
@@ -84,21 +66,24 @@ package talon.layouts
 		// Layout methods
 		//
 		/** This method will be call while arranging, and must calculate node width in pixels, based on node children. */
-		public function measureWidth(node:Node, availableHeight:Number):Number
-		{
-			throw new Error("Method not implemented");
-		}
+		public function measureWidth(node:Node, availableHeight:Number):Number { throw new Error("Method not implemented"); }
 
 		/** This method will be call while arranging, and must calculate node height in pixels, based on node children. */
-		public function measureHeight(node:Node, availableWidth:Number):Number
-		{
-			throw new Error("Method not implemented");
-		}
+		public function measureHeight(node:Node, availableWidth:Number):Number { throw new Error("Method not implemented"); }
 
 		/** Arrange (define bounds and commit) children within size. */
-		public function arrange(node:Node, width:Number, height:Number):void
+		public function arrange(node:Node, width:Number, height:Number):void { throw new Error("Method not implemented"); }
+
+		/** Change of attribute must invoke node invalidation. */
+		public function isObservable(node:Node, attribute:Attribute):Boolean
 		{
-			throw new Error("Method not implemented");
+			if (attribute.node == node)
+				return attribute.name == Attribute.PADDING;
+			
+			else if (attribute.node.parent == node)
+				return COMMON.indexOf(attribute.name) != -1;
+			
+			return false;
 		}
 	}
 }

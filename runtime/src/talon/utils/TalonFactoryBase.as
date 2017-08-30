@@ -92,8 +92,6 @@ package talon.utils
 			
 			var resultNode:Node = getNode(result);
 
-			resultNode.unfreeze();
-
 			// Add style and resources
 			if (resultNode)
 			{
@@ -111,7 +109,6 @@ package talon.utils
 			var elementClass:Class = getLinkageClass(_parserTags);
 			var element:* = new elementClass();
 			var elementNode:Node = getNode(element);
-			elementNode.freeze();
 
 			// Copy attributes to node
 			elementNode.setAttribute(Attribute.TYPE, _parserTags[0]);

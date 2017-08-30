@@ -41,7 +41,7 @@ package talon.layouts
 				if (childVisible == false) continue;
 				var childBounds:Rectangle = flow.getChildBounds(flowChildIndex++, orientation);
 				child.bounds.copyFrom(childBounds);
-				child.commit();
+				child.validate();
 			}
 
 			flow.dispose();

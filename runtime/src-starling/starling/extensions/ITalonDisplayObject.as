@@ -5,7 +5,7 @@ package starling.extensions
 	public interface ITalonDisplayObject
 	{
 		function query(selector:String = null):TalonQuery;
-
+		
 		function get node():Node
 
 		/** DEPRECATED */

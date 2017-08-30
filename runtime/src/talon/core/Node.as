@@ -19,10 +19,16 @@ package talon.core
 	[Event(name="added")]
 	/** Removed from parent node. */
 	[Event(name="removed")]
+	/** Node is changed (visual cache must be ignored). */
+	[Event(name="update")]
 
 	/**  */
 	public final class Node
 	{
+		private static const RESOURCE:int = 0x1;
+		private static const STYLE:int	  = 0x2;
+		private static const LAYOUT:int   = 0x4;
+		
 		private var _attributes:Dictionary = new Dictionary();
 		private var _styles:Vector.<Style>;
 		private var _styleTouches:Dictionary = new Dictionary();
@@ -33,9 +39,10 @@ package talon.core
 		private var _bounds:Rectangle = new Rectangle(0, 0, NaN, NaN);
 		private var _triggers:Dictionary = new Dictionary();
 		private var _metrics:Metrics = new Metrics(this);
-		private var _invalidated:Boolean = true;
-		private var _freeze:Boolean = false;
-
+		private var _reset:int = RESOURCE | STYLE | LAYOUT;
+		
+		private var _cache:Rectangle = new Rectangle();
+		
 		/** @private */
 		public function Node():void
 		{
@@ -44,13 +51,13 @@ package talon.core
 				getOrCreateAttribute(attributeName);
 
 			// Listen attribute change
-			addListener(Event.CHANGE, onSelfAttributeChange);
+			addListener(Event.CHANGE, onSelfOrChildAttributeChange);
 
 			// Setup typed attributes
 			width.auto = measureAutoWidth;
 			height.auto = measureAutoHeight;
-			states.change.addListener(refreshStyle);
-			classes.change.addListener(refreshStyle);
+			states.change.addListener(resetStyle);
+			classes.change.addListener(resetStyle);
 		}
 
 		//
@@ -90,22 +97,6 @@ package talon.core
 		/** @private */ public const states:StringSet = new StringSet(this, Attribute.STATE);
 
 		//
-		// Freeze
-		//
-		public function freeze():void
-		{
-			_freeze = true;
-		}
-
-		public function unfreeze():void
-		{
-			_freeze = false;
-
-			for (var i:int = 0; i < numChildren; i++)
-				getChildAt(i).unfreeze();
-		}
-
-		//
 		// Attributes
 		//
 		/** @private */
@@ -140,6 +131,7 @@ package talon.core
 		//
 		public function setStyles(styles:Vector.<Style>):void
 		{
+			reset |= STYLE;
 			_styles = styles;
 			refreshStyle();
 		}
@@ -147,8 +139,8 @@ package talon.core
 		/** Recursive apply style to current node. */
 		private function refreshStyle():void
 		{
-			if (_freeze) return;
-
+			reset &= ~STYLE;
+			
 			var style:Object = requestStyle(this);
 
 			_styleTouch++;
@@ -162,10 +154,8 @@ package talon.core
 
 			// Clear all previous styles
 			for each (var attribute:Attribute in _attributes)
-			{
 				if (_styleTouches[attribute.name] != _styleTouch)
 					attribute.styled = null;
-			}
 
 			// Recursive children restyling
 			for (var i:int = 0; i < numChildren; i++)
@@ -180,12 +170,18 @@ package talon.core
 			return {};
 		}
 		
+		private function resetStyle():void
+		{
+			reset |= STYLE;
+		}
+		
 		//
 		// Resource
 		//
 		/** Set current node resources (an object containing key-value pairs). */
 		public function setResources(resources:Object):void
 		{
+			reset |= RESOURCE;
 			_resources = resources;
 			refreshResource();
 		}
@@ -204,7 +200,7 @@ package talon.core
 
 		private function refreshResource():void
 		{
-			if (_freeze) return;
+			reset &= ~RESOURCE;
 
 			// Notify resource change
 			for each (var attribute:Attribute in _attributes)
@@ -218,44 +214,52 @@ package talon.core
 		//
 		// Layout
 		//
-		/** This flag means that current automatic width/height is changed from last measurement. */
-		public function get invalidated():Boolean
-		{
-			return _invalidated;
-		}
 
-		/** Raise (only!) invalidated flag. */
-		public function invalidate():void
+		private function get reset():int { return _reset }
+		private function set reset(value:int):void
 		{
-			if (_invalidated === false)
+			if (_reset != value)
 			{
-				_invalidated = true;
-
-				if (_parent && (width.isNone||height.isNone))
-					_parent.invalidate();
+				var changed:int = ~_reset && value;	// Bits which was setted to one
+				_reset = value;
+				if (changed != 0) dispatch("update");	// There is not flash.events.Event.UPDATE (but there is in Starling)
 			}
 		}
 
-		/** Commit node bounds (and validate node layout):
-		 *
-		 *  1) Dispatch RESIZE event.
-		 *  2) Arrange children with layout algorithm and commit them.
-		 *  3) Reset invalidated flag.
-		 *
-		 *  Call this method after manually change 'bounds' property to validate layout.
-		 *  NB! Node layout will be validated independently invalidated flag is true or false. */
-		public function commit():void
+		/** Invalidate - auto width/height was changed. */
+		public function invalidate():void
 		{
-			// Update self view object attached to node
-			dispatch(Event.RESIZE);
-
-			// Update children nodes
-			layout.arrange(this, bounds.width, bounds.height);
-
-			// Check validation complete
-			_invalidated = false;
+			reset |= LAYOUT;
+			
+			if (width.isNone || height.isNone)
+				parent && parent.invalidate();
 		}
 
+		public function validate():void
+		{
+			if (reset & STYLE)		refreshStyle();
+			if (reset & RESOURCE)	refreshResource();
+			
+			// Layout can be invalidated or bounds manually changed from layout or user code
+			if (reset & LAYOUT || boundsIsChanged)
+			{
+				dispatch(Event.RESIZE);
+				layout.arrange(this, bounds.width, bounds.height);
+				reset &= ~Node.LAYOUT;
+
+				_cache.copyFrom(bounds);
+			}
+		}
+		
+		/** Bonds was changed from external code. */
+		private function get boundsIsChanged():Boolean
+		{
+			return _cache.x != bounds.x
+				|| _cache.y != bounds.y
+				|| _cache.width != bounds.width
+				|| _cache.height != bounds.height;
+		}
+		
 		/** Actual node bounds in pixels. */
 		public function get bounds():Rectangle { return _bounds; }
 
@@ -263,30 +267,23 @@ package talon.core
 		public function get metrics():Metrics { return _metrics; }
 		
 		/** This is default 'auto' callback for gauges: width, minWidth, maxWidth. */
-		private function measureAutoWidth(height:Number):Number { return layout.measureWidth(this, height); }
+		private function measureAutoWidth(height:Number):Number { return (reset&LAYOUT) ? layout.measureWidth(this, height) : bounds.width; }
 
 		/** This is default 'auto' callback for gauges: height, minHeight, maxHeight. */
-		private function measureAutoHeight(width:Number):Number { return layout.measureHeight(this, width); }
+		private function measureAutoHeight(width:Number):Number { return (reset&LAYOUT) ? layout.measureHeight(this, width) : bounds.height; }
 
 		/** Node layout strategy class. */
 		private function get layout():Layout
 		{
-			var layoutAlias:String = getAttributeCache(Attribute.LAYOUT);
-			return Layout.getLayoutByAlias(layoutAlias);
+			var name:String = getAttributeCache(Attribute.LAYOUT);
+			return Layout.getLayout(name);
 		}
 
-		private function onSelfAttributeChange(attribute:Attribute):void
+		private function onSelfOrChildAttributeChange(attribute:Attribute):void
 		{
-			var layoutName:String = getAttributeCache(Attribute.LAYOUT);
-			var layoutInvalidated:Boolean = Layout.isObservableSelfAttribute(layoutName, attribute.name);
-			if (layoutInvalidated) invalidate();
-		}
-
-		private function onChildAttributeChange(attribute:Attribute):void
-		{
-			var layoutName:String = getAttributeCache(Attribute.LAYOUT);
-			var layoutInvalidated:Boolean = Layout.isObservableChildAttribute(layoutName, attribute.name);
-			if (layoutInvalidated) invalidate();
+			var layoutChanged:Boolean = layout.isObservable(this, attribute);
+			if (layoutChanged)
+				invalidate();
 		}
 
 		//
@@ -306,10 +303,10 @@ package talon.core
 
 			_children.insertAt(index, child);
 			child._parent = this;
-            child.refreshStyle();
-            child.refreshResource();
-			child.addListener(Event.CHANGE, onChildAttributeChange);
+			child.addListener(Event.CHANGE, onSelfOrChildAttributeChange);
 			child.dispatch(Event.ADDED);
+			child.reset |= STYLE | RESOURCE;
+
 			invalidate();
 		}
 
@@ -319,11 +316,11 @@ package talon.core
 			if (child._parent != this) throw new ArgumentError("Child must be child of node");
 
 			_children.removeAt(_children.indexOf(child));
-			child.removeListener(Event.CHANGE, onChildAttributeChange);
+			child.removeListener(Event.CHANGE, onSelfOrChildAttributeChange);
 			child.dispatch(Event.REMOVED);
+			child.reset |= STYLE | RESOURCE;
 			child._parent = null;
-			child.refreshStyle();
-			child.refreshResource();
+
 			invalidate();
 		}
 
@@ -348,7 +345,7 @@ package talon.core
 		{
 			var trigger:Trigger = _triggers[type];
 			if (trigger == null)
-				trigger = _triggers[type] = new Trigger();
+				trigger = _triggers[type] = new Trigger(this);
 
 			trigger.addListener(listener);
 		}

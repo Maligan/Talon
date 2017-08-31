@@ -5,3 +5,7 @@ profile[2] = iPhone 6;750;1334;326;2
 profile[3] = iPhone 6+;1080;1920;401;2
 profile[4] = iPad (Retina);2048;1536;264;2
 profile[5] = iPad Mini (Retina);2048;1536;326;2
+
+# Keybinds
+key[file/open] = ctrl+o
+key[file/publish] = shift+ctrl+s

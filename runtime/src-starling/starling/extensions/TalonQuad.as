@@ -22,7 +22,6 @@ package starling.extensions
 		private var _bridge:TalonDisplayObjectBridge;
 		private var _node:Node;
 		private var _vertexOffset:Point;
-		private var _manual:Boolean;
 
 		/** @private */
 		public function TalonQuad()
@@ -90,11 +89,8 @@ package starling.extensions
 			pivotX = node.pivotX.toPixels(node.metrics, node.bounds.width);
 			pivotY = node.pivotY.toPixels(node.metrics, node.bounds.height);
 
-			if (!manual)
-			{
-				x = node.bounds.x + pivotX;
-				y = node.bounds.y + pivotY;
-			}
+			x = node.bounds.x + pivotX;
+			y = node.bounds.y + pivotY;
 
 			var paddingLeft:Number = node.paddingLeft.toPixels(node.metrics);
 			var paddingRight:Number = node.paddingRight.toPixels(node.metrics);
@@ -156,24 +152,11 @@ package starling.extensions
 			super.dispose();
 		}
 
-		public function get node():Node
-		{
-			return _node;
-		}
+		//
+		// ITalonDisplayObject
+		//
+		public function query(selector:String = null):TalonQuery { return new TalonQuery(this).select(selector); }
 
-		public function query(selector:String = null):TalonQuery
-		{
-			return new TalonQuery(this).select(selector);
-		}
-
-		public function get manual():Boolean
-		{
-			return _manual;
-		}
-
-		public function set manual(value:Boolean):void
-		{
-			_manual = value;
-		}
+		public function get node():Node { return _node; }
 	}
 }

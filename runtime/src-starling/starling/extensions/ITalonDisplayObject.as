@@ -7,9 +7,5 @@ package starling.extensions
 		function query(selector:String = null):TalonQuery;
 		
 		function get node():Node
-
-		/** DEPRECATED */
-		function get manual():Boolean
-		function set manual(value:Boolean):void
 	}
 }

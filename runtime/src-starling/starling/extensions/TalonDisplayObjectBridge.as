@@ -106,33 +106,6 @@ package starling.extensions
 			_background.height = _node.bounds.height;
 		}
 		
-		//
-		// Validation
-		//
-		// Validation subsystem based on render methods/rules/context etc.
-		// thus why I do not include invalidation/validation in Talon core
-		//
-
-		public function validate():void
-		{
-			if (_node.parent == null)
-			{
-				// TODO: Respect percentages & min/max size
-
-				// isNaN() check for element bounds
-				// This may be if current element is topmost in talon hierarchy
-				// and there is no user setup for its sizes
-				
-				if (_node.bounds.width != _node.bounds.width)
-					_node.bounds.width = _node.width.toPixels(_node.metrics, 0);
-
-				if (_node.bounds.height != _node.bounds.height)
-					_node.bounds.height = _node.height.toPixels(_node.metrics, 0);
-			}
-
-			_node.validate();
-		}
-
 		// Listeners: Background
 
 		private function onFillChange():void
@@ -320,10 +293,10 @@ package starling.extensions
 		}
 
 		// Public methods which must be used in target DisplayObject
-
+		
 		public function renderCustom(render:Function, painter:Painter):void
 		{
-			validate();
+			validate(false);
 			
 			pushTransform(painter);
 			renderBackground(painter);
@@ -331,6 +304,39 @@ package starling.extensions
 			popTransform(painter);
 		}
 
+		private function validate(bubbles:Boolean):void
+		{
+			if (ITalonDisplayObject(_target).node.invalidated)
+			{
+				var base:DisplayObject = _target;
+
+				// Bubbles while parent is invalidated too
+				if (bubbles)
+					while (base.parent is ITalonDisplayObject && ITalonDisplayObject(base.parent).node.invalidated)
+						base = base.parent;
+			
+				// In case target doesn't has parent talon display object
+				var node:Node = ITalonDisplayObject(base).node;
+				if (node.parent == null)
+				{
+					// TODO: Respect percentages & min/max size
+	
+					// isNaN() check for element bounds
+					// This may be if current element is topmost in talon hierarchy
+					// and there is no user setup for its sizes
+	
+					if (node.bounds.width != node.bounds.width)
+						node.bounds.width = node.width.toPixels(node.metrics);
+	
+					if (node.bounds.height != node.bounds.height)
+						node.bounds.height = node.height.toPixels(node.metrics);
+				}
+
+				// Validate
+				node.validate();
+			}
+		}
+		
 		private function renderBackground(painter:Painter):void
 		{
 			if (hasOpaqueBackground)
@@ -370,6 +376,8 @@ package starling.extensions
 
 		public function getBoundsCustom(getBounds:Function, targetSpace:DisplayObject, resultRect:Rectangle):Rectangle
 		{
+			validate(true);
+			
 			if (resultRect == null) resultRect = new Rectangle();
 			else resultRect.setEmpty();
 
@@ -391,7 +399,7 @@ package starling.extensions
 
 			return resultRect;
 		}
-
+		
 		public function dispose():void
 		{
 			_node.dispose();

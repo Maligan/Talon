@@ -46,6 +46,8 @@ package talon.browser.desktop.popups
 		protected override function initialize():void
 		{
 			initializeChildren();
+			
+			getBounds(this);
 
 			_app = data as AppPlatform;
 			_app.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);

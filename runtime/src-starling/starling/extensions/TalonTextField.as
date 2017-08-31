@@ -30,7 +30,6 @@ package starling.extensions
 		private var _node:Node;
 		private var _bridge:TalonDisplayObjectBridge;
 		private var _requiresRecompositionWithPadding:Boolean;
-		private var _manual:Boolean;
 		
 		private var _cacheWidth:Number;
 		private var _cacheHeight:Number;
@@ -203,11 +202,8 @@ package starling.extensions
 			pivotX = node.pivotX.toPixels(node.metrics, node.bounds.width);
 			pivotY = node.pivotY.toPixels(node.metrics, node.bounds.height);
 
-			if (!manual)
-			{
-				x = node.bounds.x + pivotX;
-				y = node.bounds.y + pivotY;
-			}
+			x = node.bounds.x + pivotX;
+			y = node.bounds.y + pivotY;
 
 			width = node.bounds.width;
 			height = node.bounds.height;
@@ -333,9 +329,6 @@ package starling.extensions
 		public function query(selector:String = null):TalonQuery { return new TalonQuery(this).select(selector); }
 
 		public function get node():Node { return _node; }
-
-		public function get manual():Boolean { return _manual; }
-		public function set manual(value:Boolean):void { _manual = value; }
 		
 		//
 		// Properties override

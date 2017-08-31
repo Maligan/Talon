@@ -71,7 +71,7 @@ class StyleSelector
 		return selector;
 	}
 
-	private static function getPriorityMerge(b:int, c:int, d:int):int
+	private static function getPriority(b:int, c:int, d:int):int
 	{
 		return (b << 16) | (c << 8) | d;
 	}
@@ -136,9 +136,6 @@ class StyleSelector
 		// Parent selector
 		if (split.length > 0)
 		{
-			if (split.char == "+")
-				trace("Stop");
-			
 			_relatedType = split.char;
 			_related = getSelector(split.join(split.char));
 		}
@@ -161,7 +158,7 @@ class StyleSelector
 		}
 
 		// CSS Selector Priority (@see http://www.w3.org/wiki/CSS/Training/Priority_level_of_selector) merged to one integer
-		_priority = (_related ? _related.priority : 0) + getPriorityMerge(_id?1:0, _classes.length + _states.length, _type?1:0);
+		_priority = (_related ? _related.priority : 0) + getPriority(_id?1:0, _classes.length + _states.length, _type?1:0);
 	}
 
 	public function get source():String
@@ -169,6 +166,11 @@ class StyleSelector
 		return _source;
 	}
 
+	public function get priority():int
+	{
+		return _priority;
+	}
+	
 	public function match(node:Node):Boolean
 	{
 		return node
@@ -278,11 +280,6 @@ class StyleSelector
 		}
 
 		return true;
-	}
-
-	public function get priority():int
-	{
-		return _priority;
 	}
 }
 

@@ -37,11 +37,10 @@ package talon.core
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
 		private var _bounds:Rectangle = new Rectangle(0, 0, NaN, NaN);
+		private var _boundsCache:Rectangle = new Rectangle();
 		private var _triggers:Dictionary = new Dictionary();
 		private var _metrics:Metrics = new Metrics(this);
 		private var _reset:int = RESOURCE | STYLE | LAYOUT;
-		
-		private var _cache:Rectangle = new Rectangle();
 		
 		/** @private */
 		public function Node():void
@@ -215,18 +214,7 @@ package talon.core
 		// Layout
 		//
 
-		private function get reset():int { return _reset }
-		private function set reset(value:int):void
-		{
-			if (_reset != value)
-			{
-				var changed:int = ~_reset && value;	// Bits which was setted to one
-				_reset = value;
-				if (changed != 0) dispatch("update");	// There is not flash.events.Event.UPDATE (but there is in Starling)
-			}
-		}
-
-		/** Invalidate - auto width/height was changed. */
+		/** Node layout was changed. */
 		public function invalidate():void
 		{
 			reset |= LAYOUT;
@@ -237,27 +225,33 @@ package talon.core
 
 		public function validate():void
 		{
-			if (reset & STYLE)		refreshStyle();
-			if (reset & RESOURCE)	refreshResource();
-			
-			// Layout can be invalidated or bounds manually changed from layout or user code
-			if (reset & LAYOUT || boundsIsChanged)
-			{
-				dispatch(Event.RESIZE);
-				layout.arrange(this, bounds.width, bounds.height);
-				reset &= ~Node.LAYOUT;
+			if (reset & STYLE) refreshStyle();
+			if (reset & RESOURCE) refreshResource();
 
-				_cache.copyFrom(bounds);
+			if (boundsIsChanged)
+				dispatch(Event.RESIZE);
+
+			if (boundsIsResized || reset & LAYOUT)
+			{
+				layout.arrange(this, bounds.width, bounds.height);
+				reset &= ~LAYOUT;
 			}
+ 
+			_boundsCache.copyFrom(bounds);
 		}
 		
 		/** Bonds was changed from external code. */
 		private function get boundsIsChanged():Boolean
 		{
-			return _cache.x != bounds.x
-				|| _cache.y != bounds.y
-				|| _cache.width != bounds.width
-				|| _cache.height != bounds.height;
+			return boundsIsResized
+				|| _boundsCache.x != _bounds.x
+				|| _boundsCache.y != _bounds.y;
+		}
+		
+		private function get boundsIsResized():Boolean
+		{
+			return _boundsCache.width != _bounds.width
+				|| _boundsCache.height != _bounds.height;
 		}
 		
 		/** Actual node bounds in pixels. */
@@ -267,10 +261,10 @@ package talon.core
 		public function get metrics():Metrics { return _metrics; }
 		
 		/** This is default 'auto' callback for gauges: width, minWidth, maxWidth. */
-		private function measureAutoWidth(height:Number):Number { return (reset&LAYOUT) ? layout.measureWidth(this, height) : bounds.width; }
+		private function measureAutoWidth(height:Number):Number { return (reset&LAYOUT) ? layout.measureWidth(this, height) : _boundsCache.width; }
 
 		/** This is default 'auto' callback for gauges: height, minHeight, maxHeight. */
-		private function measureAutoHeight(width:Number):Number { return (reset&LAYOUT) ? layout.measureHeight(this, width) : bounds.height; }
+		private function measureAutoHeight(width:Number):Number { return (reset&LAYOUT) ? layout.measureHeight(this, width) : _boundsCache.height; }
 
 		/** Node layout strategy class. */
 		private function get layout():Layout
@@ -284,6 +278,20 @@ package talon.core
 			var layoutChanged:Boolean = layout.isObservable(this, attribute);
 			if (layoutChanged)
 				invalidate();
+		}
+
+		//
+		// Helper for validation
+		//
+		private function get reset():int { return _reset }
+		private function set reset(value:int):void
+		{
+			if (_reset != value)
+			{
+				var changed:int = ~_reset && value;		// Bits which was setted to one
+				_reset = value;
+				if (changed != 0) dispatch("update");	// There is not flash.events.Event.UPDATE (but there is in Starling)
+			}
 		}
 
 		//

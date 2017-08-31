@@ -437,8 +437,8 @@ package talon.browser.desktop.plugins
 
 				if (_inspector == null)
 				{
-					_inspector = new Inspector(_platform.factory);
-					_ui.addChild(_inspector.view);	
+//					_inspector = new Inspector(_platform.factory);
+//					_ui.addChild(_inspector.view);	
 				}
 				
 				if (_inspector != null)
@@ -678,6 +678,7 @@ class AppUINativeMenu
 		insert("view/zoomOut",                 new  ChangeZoomCommand(_platform, -25), "ctrl--");
 		insert("view/-");
 		insert("view/outline",				   new  ChangeSettingCommand(_platform, AppConstants.SETTING_OUTLINE, true, false), "ctrl-l");
+		insert("view/inspector",			   null, "ctrl-i");
 		insert("view/-");
 		insert("view/rotate",                  new  RotateCommand(_platform), "ctrl-r");
 		insert("view/theme");

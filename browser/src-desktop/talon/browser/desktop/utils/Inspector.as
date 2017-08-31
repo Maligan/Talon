@@ -58,12 +58,19 @@ package talon.browser.desktop.utils
 			_scroller = new Scroller();
 			_scroller.content = _view;
 			_scroller.orientation = Orientation.VERTICAL;
-			_scroller.easeType = Easing.Quad_easeOut;
+			_scroller.easeType = Easing.Linear_easeNone;
 			_scroller.duration = 0.3;
 			_scroller.holdArea = 10;
 			_scroller.isStickTouch = true;
 			_scroller.yPerc = 0;
-			_scroller.boundHeight = 600;
+			
+			_view.node.addListener(Event.RESIZE, function():void
+			{
+				_scroller.boundHeight = DisplayObject(_view).stage.stageHeight;
+				_scroller.content.y = 0;
+				_scroller.computeYPerc(false);
+				trace(_scroller.boundHeight);
+			});
 
 			DisplayObject(_view).addEventListener(TouchEvent.TOUCH, function(e:TouchEvent):void
 			{
@@ -164,7 +171,6 @@ package talon.browser.desktop.utils
 				tree.removeChildren();
 
 			var item:ITalonDisplayObject = _factory.build(REF_TREE_ITEM);
-			var itemOffset:int = (4 + depth*14);
 			var itemName:String = node.getAttributeCache(Attribute.TYPE);
 
 			if (itemName == "div") itemName = "Container";
@@ -176,7 +182,7 @@ package talon.browser.desktop.utils
 				.set("text", itemName)
 				.set("info", node.getAttributeCache(Attribute.ID))
 				.set("depth", depth)
-				.set("paddingLeft", itemOffset)
+				.set("paddingLeft", depth * 14)
 				.set("visible", depth==0)
 				.onTap(onTreeItemTap1, 1)
 				.onTap(onTreeItemTap2, 2);

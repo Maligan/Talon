@@ -44,7 +44,7 @@
 	</def>
 
 	<def ref="TreeItem">
-		<div class="TreeItem" text="TreeItem" info="" layout="anchor" width="100%"> 
+		<div class="TreeItem" text="TreeItem" info="" width="100%"> 
 			<use ref="Toggle" update="id: toggle; left: 0px; text: @text" />
 			<txt text="@info" right="0" paddingRight="4px" fontColor="gray" />
 		</div>

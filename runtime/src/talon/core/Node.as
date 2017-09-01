@@ -36,7 +36,7 @@ package talon.core
 		private var _resources:Object;
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
-		private var _bounds:Rectangle = new Rectangle(0, 0, NaN, NaN);
+		private var _bounds:Rectangle = new Rectangle();
 		private var _boundsCache:Rectangle = new Rectangle();
 		private var _triggers:Dictionary = new Dictionary();
 		private var _metrics:Metrics = new Metrics(this);
@@ -240,7 +240,7 @@ package talon.core
 
 			if (boundsIsChanged)
 				dispatch(Event.RESIZE);
-
+			
 			if (invalidated)
 				layout.arrange(this, bounds.width, bounds.height);
 
@@ -269,7 +269,7 @@ package talon.core
 		public function get metrics():Metrics { return _metrics; }
 		
 		/** This is default 'auto' callback for gauges: width, minWidth, maxWidth. */
-		private function measureAutoWidth(height:Number):Number { return invalidated ? layout.measureWidth(this, height) : _boundsCache.width; }
+		private function measureAutoWidth(height:Number):Number { return (invalidated) ? layout.measureWidth(this, height) : _boundsCache.width; }
 
 		/** This is default 'auto' callback for gauges: height, minHeight, maxHeight. */
 		private function measureAutoHeight(width:Number):Number { return invalidated ? layout.measureHeight(this, width) : _boundsCache.height; }

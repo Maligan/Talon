@@ -6,9 +6,9 @@ package talon.browser.desktop.commands
 
 	public class ChangeZoomCommand extends Command
 	{
-		private var _delta:int;
+		private var _delta:Number;
 
-		public function ChangeZoomCommand(platform:AppPlatform, delta:int)
+		public function ChangeZoomCommand(platform:AppPlatform, delta:Number)
 		{
 			super(platform);
 			platform.settings.addPropertyListener(AppConstants.SETTING_ZOOM, dispatchEventChange);
@@ -17,7 +17,7 @@ package talon.browser.desktop.commands
 
 		override public function execute():void
 		{
-			var temp:int = zoom + _delta;
+			var temp:Number = zoom + _delta;
 			temp = Math.min(temp, AppConstants.ZOOM_MAX);
 			temp = Math.max(temp, AppConstants.ZOOM_MIN);
 			zoom = temp;
@@ -30,7 +30,7 @@ package talon.browser.desktop.commands
 			return true;
 		}
 
-		private function get zoom():int { return platform.settings.getValue(AppConstants.SETTING_ZOOM, int, 100) }
-		private function set zoom(value:int):void { platform.settings.setValue(AppConstants.SETTING_ZOOM, value) }
+		private function get zoom():Number { return platform.settings.getValue(AppConstants.SETTING_ZOOM, Number, 1) }
+		private function set zoom(value:Number):void { platform.settings.setValue(AppConstants.SETTING_ZOOM, value) }
 	}
 }

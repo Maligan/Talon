@@ -40,6 +40,7 @@ package talon.browser.platform
 		{
 			_stage = stage;
 
+			registerClassAlias(Rectangle);
 			registerClassAlias(Point);
 			registerClassAlias(DeviceProfile);
 
@@ -63,11 +64,11 @@ package talon.browser.platform
 			_starling = new Starling(Sprite, stage, null, null, "auto", Context3DProfile.BASELINE);
 			_starling.skipUnchangedFrames = true;
 			_starling.addEventListener(Event.ROOT_CREATED, onStarlingRootCreated);
+			_starling.stage.addEventListener(Event.RESIZE, onStageResize);
 
 			// Resize listeners
 			_stage.stageWidth = _profile.width;
 			_stage.stageHeight = _profile.height;
-			_stage.addEventListener(Event.RESIZE, onStageResize);
 			_profile.addEventListener(Event.CHANGE, onProfileChange);
 		}
 
@@ -171,14 +172,9 @@ package talon.browser.platform
 		//
 		private function onStageResize(e:* = null):void
 		{
-			if (_starling)
-			{
-				_starling.stage.stageWidth = _stage.stageWidth;
-				_starling.stage.stageHeight = _stage.stageHeight;
-				_starling.viewPort = new Rectangle(0, 0, _stage.stageWidth, _stage.stageHeight);
-			}
-
-			_profile.setSize(_stage.stageWidth, _stage.stageHeight);
+			_starling.stage.stageWidth = _stage.stageWidth;
+			_starling.stage.stageHeight = _stage.stageHeight;
+			_starling.viewPort = new Rectangle(0, 0, _stage.stageWidth, _stage.stageHeight);
 		}
 
 		private function onProfileChange(e:*):void

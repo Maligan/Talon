@@ -17,8 +17,6 @@ package starling.extensions
 	/** starling.display.Quad which implements ITalonDisplayObject. */
 	public class TalonQuad extends Quad implements ITalonDisplayObject
 	{
-		private static var _sRectangle:Rectangle = new Rectangle();
-
 		private var _bridge:TalonDisplayObjectBridge;
 		private var _node:Node;
 		private var _vertexOffset:Point;
@@ -134,9 +132,7 @@ package starling.extensions
 		/** @private */
 		public override function hitTest(localPoint:Point):DisplayObject
 		{
-			if (!visible || !touchable) return null;
-			if (mask && !hitTestMask(localPoint)) return null;
-			return getBounds(this, _sRectangle).containsPoint(localPoint) ? this : null;
+			return _bridge.hitTestCustom(localPoint);
 		}
 
 		/** @private */

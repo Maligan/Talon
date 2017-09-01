@@ -12,7 +12,7 @@ package talon.browser.desktop.commands
 		public function ChangeSettingCommand(platform:AppPlatform, name:String, value:*, alternate:* = null)
 		{
 			super(platform);
-			platform.settings.addPropertyListener(name, dispatchEvent);
+			platform.settings.addPropertyListener(name, dispatchEventChange);
 			_name = name;
 			_value = value;
 			_alternate = alternate;

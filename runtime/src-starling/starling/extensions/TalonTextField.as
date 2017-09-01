@@ -24,8 +24,8 @@ package starling.extensions
 		// There are 2px padding & 1px flash.text.TextField bug with autoSize disharmony
 		private static const TRUE_TYPE_CORRECTION:int = 4 + 1;
 
-		private static var _sRect:Rectangle = new Rectangle();
-		private static var _sPoint:Point = new Point();
+		private static var sRect:Rectangle = new Rectangle();
+		private static var sPoint:Point = new Point();
 
 		private var _node:Node;
 		private var _bridge:TalonDisplayObjectBridge;
@@ -69,11 +69,11 @@ package starling.extensions
 		private function measureHeight(availableWidth:Number):Number { return _cacheHeight = measure(availableWidth, Infinity).height; }
 		private function measure(availableWidth:Number, availableHeight:Number):Rectangle
 		{
-			if (_cacheWidth == _cacheWidth && _cacheHeight == _cacheHeight)
-			{
-				_sRect.setTo(0, 0, x, y);
-				return _sRect;
-			}
+//			if (_cacheWidth == _cacheWidth && _cacheHeight == _cacheHeight)
+//			{
+//				sRect.setTo(0, 0, x, y);
+//				return sRect;
+//			}
 			
 			var trueTypeCorrection:int = getCompositor(format.font) ? 0 : TRUE_TYPE_CORRECTION;
 
@@ -85,21 +85,21 @@ package starling.extensions
 			super.autoSize = getAutoSize(availableWidth == Infinity, availableHeight == Infinity);
 			super.width = availableWidth - paddingLeft - paddingRight + trueTypeCorrection;
 			super.height = availableHeight - paddingTop - paddingBottom + trueTypeCorrection;
-			super.getBounds(this, _sRect);				// call super.recompose();
-			getTrueTextBounds(_sRect);					// calculate true text bounds (which respect font lineHeight)
+			super.getBounds(this, sRect);				// call super.recompose();
+			getTrueTextBounds(sRect);					// calculate true text bounds (which respect font lineHeight)
 			super.autoSize = TextFieldAutoSize.NONE;	// restore super.autoSize value
 
-			_sRect.width  += paddingLeft + paddingRight;
-			_sRect.height += paddingTop + paddingBottom;
+			sRect.width  += paddingLeft + paddingRight;
+			sRect.height += paddingTop + paddingBottom;
 
 			// BitmapFont#arrangeChars has floating point error:
 			// If TextField used some combination of font, size and text
 			// containerWidth & containerHeight have small delta.
 			// Ceiling used for compensate those errors
-			_sRect.width  = Math.ceil(_sRect.width);
-			_sRect.height = Math.ceil(_sRect.height);
+			sRect.width  = Math.ceil(sRect.width);
+			sRect.height = Math.ceil(sRect.height);
 			
-			return _sRect;
+			return sRect;
 		}
 
 		/** This text bounds respect font lineHeight and it height can be only (lineHeight*scale * N). */
@@ -149,21 +149,21 @@ package starling.extensions
 				{
 					if (scale != scale)
 					{
-						var quadHeight:Number = mesh.getVertexPosition(charQuadIndex*4 + 3, _sPoint).y
-											  - mesh.getVertexPosition(charQuadIndex*4 + 0, _sPoint).y;
+						var quadHeight:Number = mesh.getVertexPosition(charQuadIndex*4 + 3, sPoint).y
+											  - mesh.getVertexPosition(charQuadIndex*4 + 0, sPoint).y;
 
 						scale = quadHeight / char.height;
 					}
 
-					var charLeft:Number = mesh.getVertexPosition(charQuadIndex*4 + 0, _sPoint).x - char.xOffset*scale;
+					var charLeft:Number = mesh.getVertexPosition(charQuadIndex*4 + 0, sPoint).x - char.xOffset*scale;
 					if (charLeft < leftmostCharLeft || leftmostCharLeft != leftmostCharLeft)
 						leftmostCharLeft = charLeft;
 
-					var charRight:Number = mesh.getVertexPosition(charQuadIndex*4 + 1, _sPoint).x;
+					var charRight:Number = mesh.getVertexPosition(charQuadIndex*4 + 1, sPoint).x;
 					if (charRight > rightmostCharRight || rightmostCharRight != rightmostCharRight)
 						rightmostCharRight = charRight;
 
-					var charTop:Number = _sPoint.y - char.yOffset*scale;
+					var charTop:Number = sPoint.y - char.yOffset*scale;
 					if (charTop > bottommostCharTop || bottommostCharTop != bottommostCharTop)
 						bottommostCharTop = charTop;
 
@@ -246,16 +246,16 @@ package starling.extensions
 				height = _node.bounds.height - paddingTop - paddingBottom + trueTypeCorrection;
 
 				// Call super.recompose();
-				super.getBounds(this, _sRect);
+				super.getBounds(this, sRect);
 
 				// Add padding to mesh
-				getTrueTextBounds(_sRect);
+				getTrueTextBounds(sRect);
 				var halign:Number = ParseUtil.parseAlign(format.horizontalAlign);
 				var valign:Number = ParseUtil.parseAlign(format.verticalAlign);
 				var mesh:DisplayObject = getChildAt(0);
 
-				mesh.x = Layout.pad(_node.bounds.width, _sRect.width, paddingLeft, paddingRight, halign) - _sRect.x;
-				mesh.y = Layout.pad(_node.bounds.height, _sRect.height, paddingTop, paddingBottom, valign) - _sRect.y;
+				mesh.x = Layout.pad(_node.bounds.width, sRect.width, paddingLeft, paddingRight, halign) - sRect.x;
+				mesh.y = Layout.pad(_node.bounds.height, sRect.height, paddingTop, paddingBottom, valign) - sRect.y;
 
 				_requiresRecompositionWithPadding = false;
 			}
@@ -279,9 +279,7 @@ package starling.extensions
 		/** @private */
 		public override function hitTest(localPoint:Point):DisplayObject
 		{
-			if (!visible || !touchable) return null;
-			if (mask && !hitTestMask(localPoint)) return null;
-			return getBounds(this, _sRect).containsPoint(localPoint) ? this : null;
+			return _bridge.hitTestCustom(localPoint);
 		}
 
 		/** @private */

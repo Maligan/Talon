@@ -12,12 +12,7 @@ package talon.browser.desktop.commands
 
 		public  override function execute():void
 		{
-			var max:int = Math.max(platform.profile.height, platform.profile.width);
-			var min:int = Math.min(platform.profile.height, platform.profile.width);
-
-			var isPortrait:Boolean = platform.stage.stageHeight > platform.stage.stageWidth;
-			if (isPortrait) platform.profile.setSize(max, min);
-			else platform.profile.setSize(min, max);
+			platform.profile.setSize(platform.profile.height, platform.profile.width);
 		}
 	}
 }

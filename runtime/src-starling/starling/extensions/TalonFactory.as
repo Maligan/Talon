@@ -75,13 +75,14 @@ package starling.extensions
 		 * 3) Import AssetManager into factory (@see importAssetManager).
 		 * 
 		 * This method works only if you link FZip library (https://github.com/claus/fzip) int swf. */
-		public function importArchiveAsync(bytes:ByteArray, onProgress:Function):void
+		public function importArchiveAsync(bytes:ByteArray, onProgress:Function):AssetManager
 		{
 			var hasFZipLibrary:Boolean = ApplicationDomain.currentDomain.hasDefinition("deng.fzip.FZip");
 			if (hasFZipLibrary == false) throw new Error("FZip library required for archive import: https://github.com/claus/fzip");
 			if (bytes == null) throw new ArgumentError("Parameter bytes must be non-null");
 
 			var manager:AssetManagerZip = new AssetManagerZip();
+			manager.verbose = false;
 			manager.enqueueZip(bytes);
 			manager.loadQueue(onProgressInner);
 
@@ -95,6 +96,8 @@ package starling.extensions
 				else if (ratio == 1)
 					onProgress();
 			}
+			
+			return manager;
 		}
 	}
 }

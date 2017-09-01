@@ -124,6 +124,7 @@ package talon.layouts
 				// Setup child flow values
 				flow.beginChild();
 				flow.setChildBreakMode(child.getAttributeCache(Attribute.BREAK));
+				
 				if (orientation == Orientation.HORIZONTAL)
 				{
 					flow.setChildLength(childWidth, child.width.unit == Gauge.STAR);

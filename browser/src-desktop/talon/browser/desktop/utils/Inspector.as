@@ -1,19 +1,14 @@
 package talon.browser.desktop.utils
 {
 	import com.doitflash.Scroller;
-	import com.doitflash.consts.Easing;
-	import com.doitflash.consts.Orientation;
 
-	import flash.geom.Point;
 	import flash.ui.Keyboard;
 	import flash.utils.Dictionary;
 
 	import starling.display.DisplayObject;
 	import starling.events.Event;
 	import starling.events.KeyboardEvent;
-	import starling.events.Touch;
 	import starling.events.TouchEvent;
-	import starling.events.TouchPhase;
 	import starling.extensions.ITalonDisplayObject;
 	import starling.extensions.TalonFactory;
 	import starling.extensions.TalonSprite;
@@ -43,10 +38,10 @@ package talon.browser.desktop.utils
 		private var _mapToView:Dictionary;
 		private var _parents:Dictionary;
 		
-		public function Inspector(factory:TalonFactory)
+		public function Inspector(factory:TalonFactory, view:TalonSprite)
 		{
 			_factory = factory;
-			_view = factory.build(REF_INSPECTOR);
+			_view = view; // factory.build(REF_INSPECTOR);
 
 			_view.query("#filter").onTap(function():void
 			{
@@ -54,42 +49,47 @@ package talon.browser.desktop.utils
 				if (_selection)
 					setAttributes(_mapToData[_selection]);
 			});
-
-			_scroller = new Scroller();
-			_scroller.content = _view;
-			_scroller.orientation = Orientation.VERTICAL;
-			_scroller.easeType = Easing.Linear_easeNone;
-			_scroller.duration = 0.3;
-			_scroller.holdArea = 10;
-			_scroller.isStickTouch = true;
-			_scroller.yPerc = 0;
 			
-			_view.node.addListener(Event.RESIZE, function():void
-			{
-				_scroller.boundHeight = DisplayObject(_view).stage.stageHeight;
-				_scroller.content.y = 0;
-				_scroller.computeYPerc(false);
-				trace(_scroller.boundHeight);
-			});
+			
 
-			DisplayObject(_view).addEventListener(TouchEvent.TOUCH, function(e:TouchEvent):void
-			{
-				var touch:Touch = e.getTouch(_scroller.content);
-				if (touch)
-				{
-					var point:Point = new Point(touch.globalX, touch.globalY);
+//			_scroller = new Scroller();
+//			_scroller.content = _view;
+//			_scroller.orientation = Orientation.VERTICAL;
+//			_scroller.easeType = Easing.Linear_easeNone;
+//			_scroller.duration = 0.3;
+//			_scroller.holdArea = 10;
+//			_scroller.isStickTouch = true;
+//			_scroller.yPerc = 0;
+			
+//			_view.node.addListener(Event.RESIZE, function():void
+//			{
+//				_scroller.boundHeight = DisplayObject(_view).stage.stageHeight;
+//				_scroller.content.y = 0;
+//				_scroller.computeYPerc(false);
+//				trace(_scroller.boundHeight);
+//			});
 
-					if (touch.phase == TouchPhase.BEGAN)
-						_scroller.startScroll(point);
-					else if (touch.phase == TouchPhase.MOVED)
-						_scroller.startScroll(point);
-					else if (touch.phase == TouchPhase.ENDED)
-						_scroller.fling();
-				}
-			});
+//			DisplayObject(_view).addEventListener(TouchEvent.TOUCH, function(e:TouchEvent):void
+//			{
+//				var touch:Touch = e.getTouch(_scroller.content);
+//				if (touch)
+//				{
+//					var point:Point = new Point(touch.globalX, touch.globalY);
+//
+//					if (touch.phase == TouchPhase.BEGAN)
+//						_scroller.startScroll(point);
+//					else if (touch.phase == TouchPhase.MOVED)
+//						_scroller.startScroll(point);
+//					else if (touch.phase == TouchPhase.ENDED)
+//						_scroller.fling();
+//				}
+//			});
 
-
-			view.addEventListener(Event.ADDED_TO_STAGE, onStageChange);
+			
+//			view.addEventListener(Event.ADDED_TO_STAGE, onStageChange);
+//			view.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			view.visible = false;
+			view.removeFromParent(true);
 		}
 
 		private function onStageChange(e:Event):void
@@ -154,6 +154,8 @@ package talon.browser.desktop.utils
 		
 		public function setTree(tree:Node):void
 		{
+			return;
+			
 			_mapToData = new Dictionary();
 			_mapToView = new Dictionary();
 			_parents = new Dictionary();
@@ -326,5 +328,8 @@ package talon.browser.desktop.utils
 		{
 			return _view as DisplayObject;
 		}
+		
+		public function get visible():Boolean { return ParseUtil.parseBoolean(_view.node.getAttributeCache(Attribute.VISIBLE)) }
+		public function set visible(value:Boolean):void { view.visible = value; _view.node.setAttribute(Attribute.VISIBLE, value.toString()) }
 	}
 }

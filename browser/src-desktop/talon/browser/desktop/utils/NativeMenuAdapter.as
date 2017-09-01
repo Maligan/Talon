@@ -34,6 +34,9 @@ package talon.browser.desktop.utils
 			item.label = null;
 			item._children.length = 0;
 			item._parent = null;
+			item._nativeItem.keyEquivalent = null;
+			item._nativeItem.keyEquivalentModifiers = null;
+			item._nativeItem.data = null;
 
 			var list:Vector.<NativeMenuAdapter> = item.isSeparator ? sPoolSeparator : sPool;
 			list[list.length] = item;

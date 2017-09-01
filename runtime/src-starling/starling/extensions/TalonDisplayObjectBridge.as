@@ -34,6 +34,7 @@ package starling.extensions
 	{
 		private const sMatrix:Matrix = new Matrix();
 		private const sPoint:Point = new Point();
+		private const sRect:Rectangle = new Rectangle();
 
 		private var _target:DisplayObject;
 		private var _node:Node;
@@ -296,7 +297,7 @@ package starling.extensions
 		
 		public function renderCustom(render:Function, painter:Painter):void
 		{
-			validate();
+			validate("render");
 			
 			pushTransform(painter);
 			renderBackground(painter);
@@ -304,36 +305,41 @@ package starling.extensions
 			popTransform(painter);
 		}
 
-		private function validate():void
+		private function validate(from:String = null):void
 		{
-			if (ITalonDisplayObject(_target).node.invalidated)
+			if (!ITalonDisplayObject(_target).node.invalidated) return;
+
+			var base:DisplayObject = _target;
+			var baseLength:int = 0;
+
+			// Bubbles while parent is invalidated too
+			while (base.parent is ITalonDisplayObject && ITalonDisplayObject(base.parent).node.invalidated)
 			{
-				var base:DisplayObject = _target;
-
-				// Bubbles while parent is invalidated too
-				while (base.parent is ITalonDisplayObject && ITalonDisplayObject(base.parent).node.invalidated)
-					base = base.parent;
-			
-				// In case target doesn't has parent talon display object
-				var node:Node = ITalonDisplayObject(base).node;
-				if (node.parent == null)
-				{
-					// TODO: Respect percentages & min/max size
-	
-					// isNaN() check for element bounds
-					// This may be if current element is topmost in talon hierarchy
-					// and there is no user setup for its sizes
-	
-					if (node.bounds.width != node.bounds.width)
-						node.bounds.width = node.width.toPixels(node.metrics);
-	
-					if (node.bounds.height != node.bounds.height)
-						node.bounds.height = node.height.toPixels(node.metrics);
-				}
-
-				// Validate
-				node.validate();
+				base = base.parent;
+				baseLength++;
 			}
+			
+
+			if (base.visible == false) return;
+			// In case target doesn't has parent talon display object
+			var node:Node = ITalonDisplayObject(base).node;
+			if (node.parent == null)
+			{
+				// TODO: Respect percentages & min/max size
+
+				// isNaN() check for element bounds
+				// This may be if current element is topmost in talon hierarchy
+				// and there is no user setup for its sizes
+
+				if (node.bounds.width != node.bounds.width)
+					node.bounds.width = node.width.toPixels(node.metrics);
+
+				if (node.bounds.height != node.bounds.height)
+					node.bounds.height = node.height.toPixels(node.metrics);
+			}
+
+			// Validate
+			node.validate();
 		}
 		
 		private function renderBackground(painter:Painter):void
@@ -375,7 +381,7 @@ package starling.extensions
 
 		public function getBoundsCustom(getBounds:Function, targetSpace:DisplayObject, resultRect:Rectangle):Rectangle
 		{
-			validate();
+			validate("bounds");
 			
 			if (resultRect == null) resultRect = new Rectangle();
 			else resultRect.setEmpty();
@@ -397,6 +403,13 @@ package starling.extensions
 			if (isEmpty || resultRect.bottom<bottomRight.y) resultRect.bottom = bottomRight.y;
 
 			return resultRect;
+		}
+		
+		/** For background hit test */
+		public function hitTestCustom(localPoint:Point):DisplayObject
+		{
+			if (!_target.visible || !_target.touchable || !_target.hitTestMask(localPoint)) return null;
+			return getBoundsCustom(_target.getBounds, _target, sRect).containsPoint(localPoint) ? _target : null;
 		}
 		
 		public function dispose():void

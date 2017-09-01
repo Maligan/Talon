@@ -107,8 +107,7 @@ checkbox {
 	fillStretchGrid: 8px;
 }
 
-#interface.dark #container  { fill: $('bg_dark'); }
-#interface.light #container { fill: $('bg_light'); }
+#interface #container { fill: #282828; }
 
 /* Messages */
 

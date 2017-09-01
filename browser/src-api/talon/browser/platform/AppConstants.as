@@ -40,8 +40,8 @@ package talon.browser.platform
 		public static const PUBLISH_SPRITES_PREFIX:String = "sprites/";
 
 		public static const PLUGINS_DIR:String = "plugins";
-		public static const ZOOM_MIN:int = 25;
-		public static const ZOOM_MAX:int = 300;
+		public static const ZOOM_MIN:Number = 0.25;
+		public static const ZOOM_MAX:Number = 3.00;
 		public static const RECENT_HISTORY:int = 10;
 
 		public static const SETTING_BACKGROUND:String = "background";
@@ -50,16 +50,18 @@ package talon.browser.platform
 		public static const SETTING_BACKGROUND_DEFAULT:String = SETTING_BACKGROUND_DARK;
 		public static const SETTING_BACKGROUND_STAGE_COLOR:Object = { "dark": 0x3F4142, "light": 0xBFBFBF };
 		public static const SETTING_STATS:String = "stats";
-		public static const SETTING_OUTLINE:String = "outline";
+		public static const SETTING_SHOW_OUTLINE:String = "showOutline";
+		public static const SETTING_SHOW_INSPECTOR:String = "showInspector";
 		public static const SETTING_ZOOM:String = "zoom";
-		public static const SETTING_LOCK_RESIZE:String = "lockWindowResize";
 		public static const SETTING_ALWAYS_ON_TOP:String = "alwaysOnTop";
 		public static const SETTING_AUTO_REOPEN:String = "autoReopen";
 		public static const SETTING_RECENT_DOCUMENTS:String = "recentDocuments";
 		public static const SETTING_RECENT_TEMPLATE:String = "recentTemplate";
 		public static const SETTING_PROFILE:String = "profile";
+		public static const SETTING_PROFILE_BIND_MODE:String = "profileBindMode";
 		public static const SETTING_CHECK_FOR_UPDATE_ON_STARTUP:String = "checkForUpdateOnStartup";
-		public static const SETTING_WINDOW_POSITION:String = "windowPosition";
+		public static const SETTING_WINDOW_SIZE:String = "windowSize";
+		public static const SETTING_WINDOW_SIZE_LOCK:String = "windowSizeLock";
 		public static const SETTING_DETACHED_PLUGINS:String = "detachedPlugins";
 		public static const SETTING_TEXTURE_PACKER_BIN:String = "texturePackerBin";
 

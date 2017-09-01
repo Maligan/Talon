@@ -15,7 +15,6 @@ package talon.browser.desktop.popups
 		protected override function initialize():void
 		{
 			addChild(manager.factory.build("PromisePopup") as DisplayObject);
-			node.validate();
 
 			query().set("header", "Hello World");
 			query("#detailsInfo").set(Attribute.VISIBLE, _details);

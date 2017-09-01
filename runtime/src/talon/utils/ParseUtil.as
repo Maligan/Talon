@@ -377,9 +377,6 @@ package talon.utils
 				var startIndex:int = 0;
 				var endIndex:int = input.indexOf('{');
 
-				if (input.substr(startIndex, endIndex).indexOf(".Attribute #value + .action") != -1)
-					trace("sdf")
-				
 				cursor.length = 0;
 				var selectors:Array = input.substr(startIndex, endIndex).split(',');
 				for each (var selector:String in selectors)

@@ -363,10 +363,7 @@ package talon.browser.desktop.plugins
 		public function resizeTo(width:int, height:int):void
 		{
 			if (_ui && (_ui.node.bounds.width != width || _ui.node.bounds.height != height))
-			{
 				_ui.node.bounds.setTo(0, 0, width, height);
-				_ui.node.invalidate();
-			}
 
 			if (_templateContainer)
 			{

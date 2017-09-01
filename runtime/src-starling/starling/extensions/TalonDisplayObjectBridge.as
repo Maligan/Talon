@@ -296,7 +296,7 @@ package starling.extensions
 		
 		public function renderCustom(render:Function, painter:Painter):void
 		{
-			validate(false);
+			validate();
 			
 			pushTransform(painter);
 			renderBackground(painter);
@@ -304,16 +304,15 @@ package starling.extensions
 			popTransform(painter);
 		}
 
-		private function validate(bubbles:Boolean):void
+		private function validate():void
 		{
 			if (ITalonDisplayObject(_target).node.invalidated)
 			{
 				var base:DisplayObject = _target;
 
 				// Bubbles while parent is invalidated too
-				if (bubbles)
-					while (base.parent is ITalonDisplayObject && ITalonDisplayObject(base.parent).node.invalidated)
-						base = base.parent;
+				while (base.parent is ITalonDisplayObject && ITalonDisplayObject(base.parent).node.invalidated)
+					base = base.parent;
 			
 				// In case target doesn't has parent talon display object
 				var node:Node = ITalonDisplayObject(base).node;
@@ -376,7 +375,7 @@ package starling.extensions
 
 		public function getBoundsCustom(getBounds:Function, targetSpace:DisplayObject, resultRect:Rectangle):Rectangle
 		{
-			validate(true);
+			validate();
 			
 			if (resultRect == null) resultRect = new Rectangle();
 			else resultRect.setEmpty();

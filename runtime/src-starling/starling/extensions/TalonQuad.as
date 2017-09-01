@@ -30,7 +30,7 @@ package starling.extensions
 
 			super(1, 1);
 
-			_node = new Node();
+			_node = new Node([Attribute.SOURCE]);
 			_node.width.auto = measureWidth;
 			_node.height.auto = measureHeight;
 			_node.addListener(Event.RESIZE, onNodeResize);
@@ -70,13 +70,7 @@ package starling.extensions
 
 		private function onSourceChange():void
 		{
-			var prevW:int = texture ? texture.width  : -1;
-			var prevH:int = texture ? texture.height : -1;
 			texture = node.getAttributeCache(Attribute.SOURCE) as Texture;
-			var currW:int = texture ? texture.width  : -1;
-			var currH:int = texture ? texture.height : -1;
-
-			if ((prevW != currW) || (prevH != currH)) node.invalidate();
 		}
 
 		private function onSourceTintChange():void

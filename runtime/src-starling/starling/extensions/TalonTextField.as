@@ -39,7 +39,7 @@ package starling.extensions
 		{
 			super(0, 0, null);
 
-			_node = new Node();
+			_node = new Node([Attribute.TEXT, Attribute.INTERLINE]);
 			_node.getOrCreateAttribute(Attribute.WRAP).inited = "true"; // FIXME: Bad Ya?
 			_node.addListener(Event.RESIZE, onNodeResize);
 			_node.addListener(Event.ADDED, onNodeParentChange);
@@ -315,13 +315,8 @@ package starling.extensions
 		private function onVAlignChange():void { format.verticalAlign = _node.getAttributeCache(Attribute.VALIGN) }
 		private function onAutoScaleChange():void { super.autoScale = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.FONT_AUTO_SCALE)); }
 		private function onWrapChange():void { super.wordWrap = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.WRAP)); }
-		private function onInterlineChange():void { format.leading = Gauge.toPixels(_node.getAttributeCache(Attribute.INTERLINE), _node.metrics); invalidateIfAutoSize(); }
-		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); invalidateIfAutoSize(); }
-
-		private function invalidateIfAutoSize():void
-		{
-			node.invalidate();
-		}
+		private function onInterlineChange():void { format.leading = Gauge.toPixels(_node.getAttributeCache(Attribute.INTERLINE), _node.metrics); }
+		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); }
 
 		//
 		// ITalonDisplayObject

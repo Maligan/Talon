@@ -42,9 +42,14 @@ package talon.core
 		private var _metrics:Metrics = new Metrics(this);
 		private var _status:int = RESOURCE | STYLE | LAYOUT;
 		
+		// TODO: make const layout
+		private var _observable:Array;
+		
 		/** @private */
-		public function Node():void
+		public function Node(observable:Array = null):void
 		{
+			_observable = observable || [];
+			
 			// Initialize all inheritable attributes (initialize theirs listeners)
 			for each (var attributeName:String in Attribute.getInheritableAttributeNames())
 				getOrCreateAttribute(attributeName);
@@ -214,8 +219,7 @@ package talon.core
 		// Layout
 		//
 
-		/** Node layout was changed. */
-		public function invalidate():void
+		private function invalidate():void
 		{
 			status |= LAYOUT;
 			
@@ -225,7 +229,8 @@ package talon.core
 		
 		public function get invalidated():Boolean
 		{
-			return status > 0;
+			return status > 0
+				|| boundsIsResized;
 		}
 
 		public function validate():void
@@ -236,12 +241,11 @@ package talon.core
 			if (boundsIsChanged)
 				dispatch(Event.RESIZE);
 
-			if (boundsIsResized || status & LAYOUT)
-			{
+			if (invalidated)
 				layout.arrange(this, bounds.width, bounds.height);
-				status &= ~LAYOUT;
-				_boundsCache.copyFrom(bounds);
-			}
+
+			status &= ~LAYOUT;
+			_boundsCache.copyFrom(bounds);
 		}
 		
 		/** Bonds was changed from external code. */
@@ -265,10 +269,10 @@ package talon.core
 		public function get metrics():Metrics { return _metrics; }
 		
 		/** This is default 'auto' callback for gauges: width, minWidth, maxWidth. */
-		private function measureAutoWidth(height:Number):Number { return (status&LAYOUT) ? layout.measureWidth(this, height) : _boundsCache.width; }
+		private function measureAutoWidth(height:Number):Number { return invalidated ? layout.measureWidth(this, height) : _boundsCache.width; }
 
 		/** This is default 'auto' callback for gauges: height, minHeight, maxHeight. */
-		private function measureAutoHeight(width:Number):Number { return (status&LAYOUT) ? layout.measureHeight(this, width) : _boundsCache.height; }
+		private function measureAutoHeight(width:Number):Number { return invalidated ? layout.measureHeight(this, width) : _boundsCache.height; }
 
 		/** Node layout strategy class. */
 		private function get layout():Layout
@@ -279,8 +283,9 @@ package talon.core
 
 		private function onSelfOrChildAttributeChange(attribute:Attribute):void
 		{
+			var selfChanged:Boolean = attribute.node == this && _observable.indexOf(attribute.name) != -1;
 			var layoutChanged:Boolean = layout.isObservable(this, attribute);
-			if (layoutChanged)
+			if (layoutChanged || selfChanged)
 				invalidate();
 		}
 
@@ -292,7 +297,7 @@ package talon.core
 		{
 			if (_status != value)
 			{
-				var changed:int = ~_status && value;		// Bits which was setted to one
+				var changed:int = ~_status && value;	// Bits which was setted to one
 				_status = value;
 				if (changed != 0) dispatch("update");	// There is not flash.events.Event.UPDATE (but there is in Starling)
 			}

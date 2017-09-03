@@ -226,7 +226,7 @@ package talon.browser.desktop.plugins
 					var isolator:Sprite = new Sprite();
 					
 					_templateContainer = new TalonSprite();
-					_templateContainer.name = "isolator";
+					_templateContainer.node.setAttribute(Attribute.ID, "isolator");
 					_templateContainer.node.setAttribute(Attribute.LAYOUT, Layout.ANCHOR);
 					_templateContainer.node.setAttribute(Attribute.FILL_MODE, FillMode.REPEAT);
 					_templateContainer.node.setResources({
@@ -476,11 +476,7 @@ package talon.browser.desktop.plugins
 				_templateContainer.node.metrics.ppdp = ITalonDisplayObject(_template).node.metrics.ppdp;
 				_templateContainer.addChild(_template);
 				
-				if (_inspector != null)
-				{
-					_inspector.view.visible = _platform.templateId != "Inspector";
-					_inspector.view.visible && _inspector.setTree(ITalonDisplayObject(_template).node);
-				}
+				_inspector.setTree(ITalonDisplayObject(_template).node);
 				
 				// Add missed resource
 				_platform.document.messages.removeMessagesByNumber(12);
@@ -522,14 +518,12 @@ package talon.browser.desktop.plugins
 		{
 			if (_templateContainer)
 			{
-				_ui.getBounds(_ui, null);
-				var pw:Number = ITalonDisplayObject(_templateContainer.parent.parent).node.bounds.width;
-				var ph:Number = ITalonDisplayObject(_templateContainer.parent.parent).node.bounds.height;
-//				var pw:Number = _platform.starling.stage.stageWidth;
-//				var ph:Number = _platform.starling.stage.stageHeight;
-				
 				var cw:Number = _platform.profile.width;
 				var ch:Number = _platform.profile.height;
+				_templateContainer.node.bounds.setTo(0, 0, cw, ch);
+
+				var pw:Number = _templateContainer.parent.parent.width;
+				var ph:Number = _templateContainer.parent.parent.height;
 
 				// Recalculate zoom
 				zoom = Math.min(1, pw/cw, ph/ch);
@@ -538,8 +532,6 @@ package talon.browser.desktop.plugins
 				_templateContainer.parent.scale = zoom;
 				_templateContainer.parent.x = (pw - cw*zoom)/2;
 				_templateContainer.parent.y = (ph - ch*zoom)/2;
-				_templateContainer.node.bounds.setTo(0, 0, cw, ch);
-				
 				_templateContainer.node.setAttribute(Attribute.FILL_SCALE, (1/zoom).toString())
 			}
 		}
@@ -737,7 +729,7 @@ class AppUINativeMenu
 		insert("view/zoomOut",                 new  ChangeZoomCommand(_platform, -0.25), "ctrl--");
 		insert("view/-");
 		insert("view/outline",				   new  ChangeSettingCommand(_platform, AppConstants.SETTING_SHOW_OUTLINE, true, false), "ctrl-l");
-//		insert("view/inspector",			   new  ChangeSettingCommand(_platform, AppConstants.SETTING_SHOW_INSPECTOR, true, false), "ctrl-i");
+		insert("view/inspector",			   new  ChangeSettingCommand(_platform, AppConstants.SETTING_SHOW_INSPECTOR, true, false), "ctrl-i");
 		insert("view/-");
 		insert("view/rotate",                  new  RotateCommand(_platform), "ctrl-r");
 		insert("view/theme");

@@ -156,5 +156,10 @@ package starling.extensions
 		/** @private */
 		public override function set pivotX(value:Number):void { node.setAttribute(Attribute.PIVOT_X, value.toString()); }
 		public override function set pivotY(value:Number):void { node.setAttribute(Attribute.PIVOT_Y, value.toString()); }
+		public override function set visible(value:Boolean):void
+		{
+			super.visible = value;
+			node.setAttribute(Attribute.VISIBLE, value.toString());
+		}
 	}
 }

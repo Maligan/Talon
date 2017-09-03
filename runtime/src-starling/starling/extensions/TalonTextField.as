@@ -39,7 +39,7 @@ package starling.extensions
 		{
 			super(0, 0, null);
 
-			_node = new Node([Attribute.TEXT, Attribute.INTERLINE]);
+			_node = new Node();
 			_node.getOrCreateAttribute(Attribute.WRAP).inited = "true"; // FIXME: Bad Ya?
 			_node.addListener(Event.RESIZE, onNodeResize);
 			_node.addListener(Event.ADDED, onNodeParentChange);
@@ -74,6 +74,9 @@ package starling.extensions
 //				sRect.setTo(0, 0, x, y);
 //				return sRect;
 //			}
+			
+			if (format.font == "mini")
+				trace("Node is not style, invalidated:", _node.invalidated);
 			
 			var trueTypeCorrection:int = getCompositor(format.font) ? 0 : TRUE_TYPE_CORRECTION;
 
@@ -307,14 +310,14 @@ package starling.extensions
 		//
 
 		private function onFontColorChange():void { format.color = ParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
-		private function onFontSizeChange():void { format.size = node.metrics.ppem }
-		private function onFontNameChange():void { format.font = node.getAttributeCache(Attribute.FONT_NAME); }
+		private function onFontSizeChange():void { format.size = node.metrics.ppem; _node.invalidate(); }
+		private function onFontNameChange():void { format.font = node.getAttributeCache(Attribute.FONT_NAME); _node.invalidate(); }
 		private function onHAlignChange():void { format.horizontalAlign = _node.getAttributeCache(Attribute.HALIGN) }
 		private function onVAlignChange():void { format.verticalAlign = _node.getAttributeCache(Attribute.VALIGN) }
 		private function onAutoScaleChange():void { super.autoScale = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.FONT_AUTO_SCALE)); }
-		private function onWrapChange():void { super.wordWrap = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.WRAP)); }
-		private function onInterlineChange():void { format.leading = Gauge.toPixels(_node.getAttributeCache(Attribute.INTERLINE), _node.metrics); }
-		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); }
+		private function onWrapChange():void { super.wordWrap = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.WRAP)); _node.invalidate(); }
+		private function onInterlineChange():void { format.leading = Gauge.toPixels(_node.getAttributeCache(Attribute.INTERLINE), _node.metrics); _node.invalidate(); }
+		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); _node.invalidate(); }
 
 		//
 		// ITalonDisplayObject

@@ -25,7 +25,7 @@ package talon.core
 	/**  */
 	public final class Node
 	{
-		private static const RESOURCE:int = 0x1;
+		private static const RESOURCES:int = 0x1;
 		private static const STYLE:int	  = 0x2;
 		private static const LAYOUT:int   = 0x4;
 		
@@ -36,20 +36,15 @@ package talon.core
 		private var _resources:Object;
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
-		private var _bounds:Rectangle = new Rectangle();
-		private var _boundsCache:Rectangle = new Rectangle();
+		public var _bounds:Rectangle = new Rectangle(0, 0, -1, -1);
+		public var _boundsCache:Rectangle = new Rectangle();
 		private var _triggers:Dictionary = new Dictionary();
 		private var _metrics:Metrics = new Metrics(this);
-		private var _status:int = RESOURCE | STYLE | LAYOUT;
-		
-		// TODO: make const layout
-		private var _observable:Array;
+		public var _status:int = RESOURCES | STYLE | LAYOUT;
 		
 		/** @private */
-		public function Node(observable:Array = null):void
+		public function Node():void
 		{
-			_observable = observable || [];
-			
 			// Initialize all inheritable attributes (initialize theirs listeners)
 			for each (var attributeName:String in Attribute.getInheritableAttributeNames())
 				getOrCreateAttribute(attributeName);
@@ -137,30 +132,32 @@ package talon.core
 		{
 			status |= STYLE;
 			_styles = styles;
-			refreshStyle();
 		}
 
 		/** Recursive apply style to current node. */
 		private function refreshStyle():void
 		{
-			status &= ~STYLE;
-			
-			var style:Object = requestStyle(this);
-
-			_styleTouch++;
-
-			// Set styled values (NB! Order is important)
-			for (var name:String in style)
+			if (status & STYLE)
 			{
-				getOrCreateAttribute(name).styled = style[name];
-				_styleTouches[name] = _styleTouch;
+				status &= ~STYLE;
+
+				var style:Object = requestStyle(this);
+
+				_styleTouch++;
+
+				// Set styled values (NB! Order is important)
+				for (var name:String in style)
+				{
+					getOrCreateAttribute(name).styled = style[name];
+					_styleTouches[name] = _styleTouch;
+				}
+
+				// Clear all previous styles
+				for each (var attribute:Attribute in _attributes)
+					if (_styleTouches[attribute.name] != _styleTouch)
+						attribute.styled = null;
 			}
-
-			// Clear all previous styles
-			for each (var attribute:Attribute in _attributes)
-				if (_styleTouches[attribute.name] != _styleTouch)
-					attribute.styled = null;
-
+			
 			// Recursive children restyling
 			for (var i:int = 0; i < numChildren; i++)
 				getChildAt(i).refreshStyle();
@@ -185,9 +182,8 @@ package talon.core
 		/** Set current node resources (an object containing key-value pairs). */
 		public function setResources(resources:Object):void
 		{
-			status |= RESOURCE;
+			status |= RESOURCES;
 			_resources = resources;
-			refreshResource();
 		}
 
 		/** Find resource in self or ancestors resources. */
@@ -204,22 +200,25 @@ package talon.core
 
 		private function refreshResource():void
 		{
-			status &= ~RESOURCE;
-
-			// Notify resource change
-			for each (var attribute:Attribute in _attributes)
-				if (attribute.isResource) attribute.dispatchChange();
-
-			// Recursive children notify resource change
-			for (var i:int = 0; i < numChildren; i++)
-				getChildAt(i).refreshResource();
+			if (status & RESOURCES)
+			{
+				status &= ~RESOURCES;
+	
+				// Notify resource change
+				for each (var attribute:Attribute in _attributes)
+					if (attribute.isResource) attribute.dispatchChange();
+	
+				// Recursive children notify resource change
+				for (var i:int = 0; i < numChildren; i++)
+					getChildAt(i).refreshResource();
+			}
 		}
 
 		//
 		// Layout
 		//
-
-		private function invalidate():void
+		
+		public function invalidate():void
 		{
 			status |= LAYOUT;
 			
@@ -230,33 +229,40 @@ package talon.core
 		public function get invalidated():Boolean
 		{
 			return status > 0
-				|| boundsIsResized;
+				|| boundsIsChanged;
 		}
 
 		public function validate():void
 		{
-			if (status & STYLE) refreshStyle();
-			if (status & RESOURCE) refreshResource();
+			refreshStyle();
+			refreshResource();
+			refreshLayout();
+		}
+		
+		private function refreshLayout():void
+		{
+			if (status & LAYOUT || boundsIsResized)
+			{
+				status &= ~LAYOUT;
+				layout.arrange(this, bounds.width, bounds.height);
+			}
 
 			if (boundsIsChanged)
+			{
 				dispatch(Event.RESIZE);
-			
-			if (invalidated)
-				layout.arrange(this, bounds.width, bounds.height);
-
-			status &= ~LAYOUT;
-			_boundsCache.copyFrom(bounds);
+				_boundsCache.copyFrom(bounds);
+			}
 		}
 		
 		/** Bonds was changed from external code. */
-		private function get boundsIsChanged():Boolean
+		public function get boundsIsChanged():Boolean
 		{
 			return boundsIsResized
 				|| _boundsCache.x != _bounds.x
 				|| _boundsCache.y != _bounds.y;
 		}
-		
-		private function get boundsIsResized():Boolean
+
+		public function get boundsIsResized():Boolean
 		{
 			return _boundsCache.width != _bounds.width
 				|| _boundsCache.height != _bounds.height;
@@ -283,9 +289,8 @@ package talon.core
 
 		private function onSelfOrChildAttributeChange(attribute:Attribute):void
 		{
-			var selfChanged:Boolean = attribute.node == this && _observable.indexOf(attribute.name) != -1;
 			var layoutChanged:Boolean = layout.isObservable(this, attribute);
-			if (layoutChanged || selfChanged)
+			if (layoutChanged)
 				invalidate();
 		}
 
@@ -322,7 +327,7 @@ package talon.core
 			child._parent = this;
 			child.addListener(Event.CHANGE, onSelfOrChildAttributeChange);
 			child.dispatch(Event.ADDED);
-			child.status |= STYLE | RESOURCE;
+			child.status |= STYLE | RESOURCES;
 
 			invalidate();
 		}
@@ -335,7 +340,7 @@ package talon.core
 			_children.removeAt(_children.indexOf(child));
 			child.removeListener(Event.CHANGE, onSelfOrChildAttributeChange);
 			child.dispatch(Event.REMOVED);
-			child.status |= STYLE | RESOURCE;
+			child.status |= STYLE | RESOURCES;
 			child._parent = null;
 
 			invalidate();

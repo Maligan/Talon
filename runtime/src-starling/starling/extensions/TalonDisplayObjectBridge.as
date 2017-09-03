@@ -297,7 +297,7 @@ package starling.extensions
 		
 		public function renderCustom(render:Function, painter:Painter):void
 		{
-			validate("render");
+			validate(false);
 			
 			pushTransform(painter);
 			renderBackground(painter);
@@ -305,24 +305,21 @@ package starling.extensions
 			popTransform(painter);
 		}
 
-		private function validate(from:String = null):void
+		private function validate(bubble:Boolean):void
 		{
-			if (!ITalonDisplayObject(_target).node.invalidated) return;
+			var node = _node;
 
-			var base:DisplayObject = _target;
-			var baseLength:int = 0;
-
-			// Bubbles while parent is invalidated too
-			while (base.parent is ITalonDisplayObject && ITalonDisplayObject(base.parent).node.invalidated)
+			if (bubble)
 			{
-				base = base.parent;
-				baseLength++;
+				var parent:Node = node;
+				while (parent = parent.parent)
+					if (parent.invalidated)
+						node = parent;
 			}
 			
+			if (node.invalidated == false) return;
 
-			if (base.visible == false) return;
 			// In case target doesn't has parent talon display object
-			var node:Node = ITalonDisplayObject(base).node;
 			if (node.parent == null)
 			{
 				// TODO: Respect percentages & min/max size
@@ -331,10 +328,10 @@ package starling.extensions
 				// This may be if current element is topmost in talon hierarchy
 				// and there is no user setup for its sizes
 
-				if (node.bounds.width != node.bounds.width)
+				if (node.bounds.width == -1)
 					node.bounds.width = node.width.toPixels(node.metrics);
 
-				if (node.bounds.height != node.bounds.height)
+				if (node.bounds.height == -1)
 					node.bounds.height = node.height.toPixels(node.metrics);
 			}
 
@@ -381,13 +378,13 @@ package starling.extensions
 
 		public function getBoundsCustom(getBounds:Function, targetSpace:DisplayObject, resultRect:Rectangle):Rectangle
 		{
-			validate("bounds");
+			validate(true);
 			
 			if (resultRect == null) resultRect = new Rectangle();
 			else resultRect.setEmpty();
 
-			if (getBounds != null)
-				resultRect = getBounds(targetSpace, resultRect);
+//			if (getBounds != null)
+//				resultRect = getBounds(targetSpace, resultRect);
 
 			var isEmpty:Boolean = resultRect.isEmpty();
 

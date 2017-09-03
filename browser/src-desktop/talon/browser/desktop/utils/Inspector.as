@@ -85,11 +85,9 @@ package talon.browser.desktop.utils
 //				}
 //			});
 
-			
-//			view.addEventListener(Event.ADDED_TO_STAGE, onStageChange);
-//			view.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			view.visible = false;
-			view.removeFromParent(true);
+			view.addEventListener(Event.ADDED_TO_STAGE, onStageChange);
+			view.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+//			view.removeFromParent(true);
 		}
 
 		private function onStageChange(e:Event):void
@@ -154,7 +152,7 @@ package talon.browser.desktop.utils
 		
 		public function setTree(tree:Node):void
 		{
-			return;
+			if (!view.visible) return;
 			
 			_mapToData = new Dictionary();
 			_mapToView = new Dictionary();

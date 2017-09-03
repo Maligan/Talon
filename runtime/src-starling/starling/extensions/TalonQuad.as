@@ -28,7 +28,7 @@ package starling.extensions
 
 			super(1, 1);
 
-			_node = new Node([Attribute.SOURCE]);
+			_node = new Node();
 			_node.width.auto = measureWidth;
 			_node.height.auto = measureHeight;
 			_node.addListener(Event.RESIZE, onNodeResize);
@@ -74,6 +74,8 @@ package starling.extensions
 		private function onSourceTintChange():void
 		{
 			color = ParseUtil.parseColor(_node.getAttributeCache(Attribute.TINT));
+			
+			_node.invalidate();
 		}
 
 		private function onNodeResize():void

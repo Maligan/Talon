@@ -270,15 +270,13 @@ package talon.utils
 			if (cache["type"] != "application/x-talon-cache") throw new Error("Cache mimeType is invalid");
 			
 			// Templates
-			var templates:Object = cache["templates"];
-			
-			for each (var template:Object in templates)
+			for each (var template:Object in cache["templates"])
 			{
-				var ref:String = template["ref"];
+				var name:String = template["name"];
 				var tag:String = template["tag"];
 				var build:Array = template["build"];
 
-				var events:Vector.<CacheEvent> = _parserCache[ref] = new Vector.<CacheEvent>();
+				var events:Vector.<CacheEvent> = _parserCache[name] = new Vector.<CacheEvent>();
 
 				for each (var command:Object in build)
 				{
@@ -324,7 +322,10 @@ package talon.utils
 			}
 			
 			// Resources
-			importResources(cache["resources"]);
+			var resources:Array = cache["resources"];
+			if (resources)
+				for (var k:int = 0; k < resources.length; k+=2)
+					addResource(resources[k], resources[k+1]);
 		}
 		
 		// Utils
@@ -342,7 +343,7 @@ package talon.utils
 
 			// Templates
 
-			var cacheTemplates:Object = cache["templates"] = {};
+			var cacheTemplates:Array = cache["templates"] = [];
 			var cacheTemplate:Object;
 			var cacheTemplateBuild:Array;
 
@@ -351,7 +352,7 @@ package talon.utils
 
 			for (var templateName:String in _parser.templates)
 			{
-				cacheTemplate = cacheTemplates[templateName] = { ref: templateName };
+				cacheTemplate = cacheTemplates[cacheTemplates.length] = { name: templateName };
 				cacheTemplateBuild = cacheTemplate["build"] = [];
 
 				var templateXML:XML = _parser.templates[templateName];
@@ -403,13 +404,13 @@ package talon.utils
 
 			// Resources
 
-			var cacheResources:Object = cache["resources"] = {};
+			var cacheResources:Object = cache["resources"] = [];
 
 			for (key in _resources)
 			{
 				var value:* = _resources[key];
 				if (value is String)
-					cacheResources[key] = value;
+					cacheResources.push(key, value);
 			}
 
 			// Result

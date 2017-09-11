@@ -106,10 +106,7 @@
 	</def>
 
 	<def ref="Message" tag="message">
-		<div text="Message" file="/path/to/file" layout="flow">
-			<txt id="file" text="@file" />
-			<txt id="text" text="@text" />
-		</div>
+		<txt text="Status message" />
 	</def>
 
 	<def ref="Input" tag="input">

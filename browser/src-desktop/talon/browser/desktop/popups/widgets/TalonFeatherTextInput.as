@@ -34,8 +34,6 @@ package talon.browser.desktop.popups.widgets
 			_bridge.setAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
 			_bridge.setAttributeChangeListener(Attribute.TEXT, onTextChange);
 			_bridge.setAttributeChangeListener(Attribute.PADDING, onPaddingChange);
-			
-			
 
 			restrict = "0-9.,";
 			maxChars = 5;

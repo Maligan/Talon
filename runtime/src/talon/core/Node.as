@@ -7,6 +7,7 @@ package talon.core
 	import talon.layouts.Layout;
 	import talon.utils.Gauge;
 	import talon.utils.Metrics;
+	import talon.utils.ParseUtil;
 	import talon.utils.StringSet;
 	import talon.utils.StyleUtil;
 	import talon.utils.Trigger;
@@ -25,9 +26,9 @@ package talon.core
 	/**  */
 	public final class Node
 	{
-		private static const RESOURCES:int = 0x1;
-		private static const STYLE:int	  = 0x2;
-		private static const LAYOUT:int   = 0x4;
+		private static const RESOURCES:int	= 0x1;
+		private static const STYLE:int		= 0x2;
+		private static const LAYOUT:int		= 0x4;
 		
 		private var _attributes:Dictionary = new Dictionary();
 		private var _styles:Vector.<Style>;
@@ -36,11 +37,11 @@ package talon.core
 		private var _resources:Object;
 		private var _parent:Node;
 		private var _children:Vector.<Node> = new Vector.<Node>();
-		public var _bounds:Rectangle = new Rectangle(0, 0, -1, -1);
-		public var _boundsCache:Rectangle = new Rectangle();
+		private var _bounds:Rectangle = new Rectangle(0, 0, -1, -1);
+		private var _boundsCache:Rectangle = new Rectangle();
 		private var _triggers:Dictionary = new Dictionary();
 		private var _metrics:Metrics = new Metrics(this);
-		public var _status:int = RESOURCES | STYLE | LAYOUT;
+		private var _status:int = RESOURCES | STYLE | LAYOUT;
 		
 		/** @private */
 		public function Node():void
@@ -132,6 +133,7 @@ package talon.core
 		{
 			status |= STYLE;
 			_styles = styles;
+//			refreshStyle();
 		}
 
 		/** Recursive apply style to current node. */
@@ -140,18 +142,18 @@ package talon.core
 			if (status & STYLE)
 			{
 				status &= ~STYLE;
-
+				
 				var style:Object = requestStyle(this);
-
+		
 				_styleTouch++;
-
+		
 				// Set styled values (NB! Order is important)
 				for (var name:String in style)
 				{
 					getOrCreateAttribute(name).styled = style[name];
 					_styleTouches[name] = _styleTouch;
 				}
-
+		
 				// Clear all previous styles
 				for each (var attribute:Attribute in _attributes)
 					if (_styleTouches[attribute.name] != _styleTouch)
@@ -174,6 +176,9 @@ package talon.core
 		private function resetStyle():void
 		{
 			status |= STYLE;
+
+			for (var i:int = 0; i < numChildren; i++)
+				getChildAt(i).resetStyle();
 		}
 		
 		//
@@ -207,17 +212,36 @@ package talon.core
 				// Notify resource change
 				for each (var attribute:Attribute in _attributes)
 					if (attribute.isResource) attribute.dispatchChange();
-	
-				// Recursive children notify resource change
-				for (var i:int = 0; i < numChildren; i++)
-					getChildAt(i).refreshResource();
 			}
+
+			// Recursive children notify resource change
+			for (var i:int = 0; i < numChildren; i++)
+				getChildAt(i).refreshResource();
 		}
 
 		//
 		// Layout
 		//
 		
+		private function refreshLayout():void
+		{
+			if (boundsIsResized || status | LAYOUT)
+			{
+				status &= ~LAYOUT;
+				layout.arrange(this, bounds.width, bounds.height);
+			}
+
+			if (boundsIsChanged)
+			{
+				_boundsCache.copyFrom(bounds);
+				dispatch(Event.RESIZE);
+			}
+
+			// TODO: Visible Children Only
+			for (var i:int = 0; i < numChildren; i++)
+				getChildAt(i).refreshLayout();
+		}
+
 		public function invalidate():void
 		{
 			status |= LAYOUT;
@@ -232,37 +256,44 @@ package talon.core
 				|| boundsIsChanged;
 		}
 
-		public function validate():void
+		public function validate(layout:Boolean = true):void
 		{
 			refreshStyle();
 			refreshResource();
-			refreshLayout();
+			
+			if (layout) refreshLayout();
 		}
 		
-		private function refreshLayout():void
+		public function val():void
 		{
-			if (status & LAYOUT || boundsIsResized)
-			{
-				status &= ~LAYOUT;
-				layout.arrange(this, bounds.width, bounds.height);
-			}
-
-			if (boundsIsChanged)
-			{
-				dispatch(Event.RESIZE);
-				_boundsCache.copyFrom(bounds);
-			}
+//			// Phase 1
+//			var rootStyle:Node = null;
+//			var rootResource:Node = null;
+//			
+//			var node:Node = null;
+//			do 
+//			{
+//				if (node & STYLE) rootStyle = node;
+//				if (node & RESOURCES) rootResource = node;
+//			}
+//			while (node = node.parent);
+//			
+//			if (rootStyle) rootStyle.refreshStyle();
+//			if (rootResource) rootResource.refreshResource();
+//
+//			// Phase 2
+//			var rootLayout:Node = null;
 		}
 		
 		/** Bonds was changed from external code. */
-		public function get boundsIsChanged():Boolean
+		private function get boundsIsChanged():Boolean
 		{
 			return boundsIsResized
 				|| _boundsCache.x != _bounds.x
 				|| _boundsCache.y != _bounds.y;
 		}
-
-		public function get boundsIsResized():Boolean
+		
+		private function get boundsIsResized():Boolean
 		{
 			return _boundsCache.width != _bounds.width
 				|| _boundsCache.height != _bounds.height;
@@ -275,7 +306,7 @@ package talon.core
 		public function get metrics():Metrics { return _metrics; }
 		
 		/** This is default 'auto' callback for gauges: width, minWidth, maxWidth. */
-		private function measureAutoWidth(height:Number):Number { return (invalidated) ? layout.measureWidth(this, height) : _boundsCache.width; }
+		private function measureAutoWidth(height:Number):Number { return invalidated ? layout.measureWidth(this, height) : _boundsCache.width; }
 
 		/** This is default 'auto' callback for gauges: height, minHeight, maxHeight. */
 		private function measureAutoHeight(width:Number):Number { return invalidated ? layout.measureHeight(this, width) : _boundsCache.height; }

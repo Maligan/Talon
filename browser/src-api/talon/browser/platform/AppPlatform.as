@@ -5,12 +5,20 @@ package talon.browser.platform
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.system.Capabilities;
+	import flash.utils.ByteArray;
 
 	import starling.core.Starling;
+	import starling.display.DisplayObjectContainer;
+	import starling.display.DisplayObjectContainer;
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 	import starling.extensions.TalonFactory;
+	import starling.text.BitmapFont;
+	import starling.text.TextField;
+	import starling.text.TextFieldAutoSize;
+	import starling.textures.Texture;
+	import starling.utils.Align;
 
 	import talon.browser.platform.document.Document;
 	import talon.browser.platform.document.DocumentEvent;

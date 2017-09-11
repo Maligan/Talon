@@ -41,7 +41,6 @@ package talon.layouts
 				if (childVisible == false) continue;
 				var childBounds:Rectangle = flow.getChildBounds(flowChildIndex++, orientation);
 				child.bounds.copyFrom(childBounds);
-				child.validate();
 			}
 
 			flow.dispose();
@@ -94,27 +93,8 @@ package talon.layouts
 				var childVisible:Boolean = ParseUtil.parseBoolean(child.getAttributeCache(Attribute.VISIBLE));
 				if (childVisible == false) continue;
 
-				// ------------------------------------------
-				var childWidth:Number = 0;
-				var childHeight:Number = 0;
-
-				if (child.width.isNone && !child.height.isNone)
-				{
-					// contentWidth && and contentHeight for auto!
-					childHeight = child.height.toPixels(node.metrics, contentHeight, Infinity, child.height.amount/child.height.amount);
-					childWidth  = child.width.toPixels(node.metrics, contentWidth, childHeight, child.width.amount/child.width.amount);
-				}
-				else if (child.height.isNone && !child.width.isNone)
-				{
-					childWidth  = child.width.toPixels(node.metrics, contentWidth, Infinity, child.width.amount/child.width.amount);
-					childHeight = child.height.toPixels(node.metrics, contentHeight, childWidth, child.height.amount/child.height.amount);
-				}
-				else
-				{
-					childWidth  = child.width.toPixels(node.metrics, contentWidth, Infinity, child.width.amount/child.width.amount);
-					childHeight = child.height.toPixels(node.metrics, contentHeight, Infinity, child.height.amount/child.height.amount);
-				}
-				// ------------------------------------------
+				var childWidth:Number = calcSize(child, child.width, child.height, contentWidth, contentHeight, child.minWidth, child.maxWidth, 1);
+				var childHeight:Number = calcSize(child, child.height, child.width, contentHeight, contentWidth, child.minHeight, child.maxHeight, 1);
 
 				var childMarginLeft:Number      = child.marginLeft.toPixels(node.metrics, contentWidth);
 				var childMarginRight:Number     = child.marginRight.toPixels(node.metrics, contentWidth);
@@ -145,6 +125,27 @@ package talon.layouts
 			}
 
 			return flow;
+		}
+
+		private function calcSize(child:Node, childMainSize:Gauge, childCrossSize:Gauge, contentMainSize:Number, contentCrossSize:Number, childMainMinSize:Gauge, childMainMaxSize:Gauge, pps:Number):Number
+		{
+			var valueIsDependent:Boolean = childMainSize.isNone && !childCrossSize.isNone;
+			var valueAutoArg:Number = valueIsDependent ? childCrossSize.toPixels(child.metrics, contentCrossSize) : Infinity;
+			var value:Number = childMainSize.toPixels(child.metrics, contentMainSize, valueAutoArg, pps); // NB! Different
+
+			if (!childMainMinSize.isNone)
+			{
+				var min:Number = childMainMinSize.toPixels(child.metrics, contentMainSize);
+				if (min > value) return min;
+			}
+
+			if (!childMainMaxSize.isNone)
+			{
+				var max:Number = childMainMaxSize.toPixels(child.metrics, contentMainSize);
+				if (max < value) return max;
+			}
+
+			return value;
 		}
 
 		private function getWrap(node:Node):Boolean { return ParseUtil.parseBoolean(node.getAttributeCache(Attribute.WRAP)); }

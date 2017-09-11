@@ -221,6 +221,7 @@ package talon.browser.desktop.plugins
 					// inspector
 					_inspector = new Inspector(_platform.factory, _ui.query("#inspector")[0]);
 					_inspector.visible = false;
+					_platform.settings.setValue(AppConstants.SETTING_SHOW_INSPECTOR, false);
 
 					// template container - split hierarchy with isolator for stopping style/resource inheritance
 					var isolator:Sprite = new Sprite();
@@ -522,8 +523,9 @@ package talon.browser.desktop.plugins
 				var ch:Number = _platform.profile.height;
 				_templateContainer.node.bounds.setTo(0, 0, cw, ch);
 
-				var pw:Number = _templateContainer.parent.parent.width;
-				var ph:Number = _templateContainer.parent.parent.height;
+				_ui.bounds;
+				var pw:Number = ITalonDisplayObject(_templateContainer.parent.parent).node.bounds.width;
+				var ph:Number = ITalonDisplayObject(_templateContainer.parent.parent).node.bounds.height;
 
 				// Recalculate zoom
 				zoom = Math.min(1, pw/cw, ph/ch);
@@ -533,6 +535,8 @@ package talon.browser.desktop.plugins
 				_templateContainer.parent.x = (pw - cw*zoom)/2;
 				_templateContainer.parent.y = (ph - ch*zoom)/2;
 				_templateContainer.node.setAttribute(Attribute.FILL_SCALE, (1/zoom).toString())
+
+				_template && refreshOutline(_template);
 			}
 		}
 
@@ -546,9 +550,8 @@ package talon.browser.desktop.plugins
 				{
 					var messageData:DocumentMessage = _platform.document.messages.getMessageAt(i);
 					var messageView:ITalonDisplayObject = _platform.factory.build("Message");
-					messageView.node.setAttribute("file", messageData.location);
 					messageView.node.setAttribute(Attribute.TEXT, messageData.text);
-					messageView.node.setAttribute(Attribute.CLASS, messageData.level==2?"error":"warning");
+					messageView.node.setAttribute(Attribute.CLASS, messageData.level==2 ? "error" : "warning");
 					_messages.addChild(messageView as DisplayObject);
 				}
 			}
@@ -725,12 +728,9 @@ class AppUINativeMenu
 
 		// View
 		insert("view");
-		insert("view/zoomIn",                  new  ChangeZoomCommand(_platform, +0.25), "ctrl-=");
-		insert("view/zoomOut",                 new  ChangeZoomCommand(_platform, -0.25), "ctrl--");
-		insert("view/-");
-		insert("view/outline",				   new  ChangeSettingCommand(_platform, AppConstants.SETTING_SHOW_OUTLINE, true, false), "ctrl-l");
-		insert("view/inspector",			   new  ChangeSettingCommand(_platform, AppConstants.SETTING_SHOW_INSPECTOR, true, false), "ctrl-i");
-		insert("view/-");
+//		insert("view/zoomIn",                  new  ChangeZoomCommand(_platform, +0.25), "ctrl-=");
+//		insert("view/zoomOut",                 new  ChangeZoomCommand(_platform, -0.25), "ctrl--");
+//		insert("view/-");
 		insert("view/rotate",                  new  RotateCommand(_platform), "ctrl-r");
 		insert("view/theme");
 		insert("view/theme/dark",              new  ChangeSettingCommand(_platform, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
@@ -750,10 +750,14 @@ class AppUINativeMenu
 
 		insert("view/profile/-");
 		insert("view/profile/bind",  		   new  ChangeProfileModeCommand(_platform));
+
+		insert("view/-");
+		insert("view/outline",				   new  ChangeSettingCommand(_platform, AppConstants.SETTING_SHOW_OUTLINE, true, false), "ctrl-l");
+		insert("view/inspector",			   new  ChangeSettingCommand(_platform, AppConstants.SETTING_SHOW_INSPECTOR, true, false), "ctrl-i");
 		
 		insert("view/-");
 		insert("view/fullScreen",              new  ToggleFullScreenCommand(_platform)); // FIXME: F11
-
+		
 		// Navigate
 		insert("navigate");
 		insert("navigate/gotoFolder",		   new OpenDocumentFolderCommand(_platform));

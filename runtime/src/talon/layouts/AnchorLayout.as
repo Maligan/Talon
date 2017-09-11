@@ -65,6 +65,7 @@ package talon.layouts
 			for (var i:int = 0; i < node.numChildren; i++)
 			{
 				var child:Node = node.getChildAt(i);
+				if (!isVisible(child)) continue;
 
 				// x-axis
 				if (isRespectingSize(child.left, child.right))
@@ -89,8 +90,6 @@ package talon.layouts
 					child.bounds.top = paddingTop + child.top.toPixels(child.metrics, contentHeight);
 					child.bounds.bottom = height - paddingBottom - child.bottom.toPixels(child.metrics, contentHeight);
 				}
-
-				child.validate();
 			}
 		}
 

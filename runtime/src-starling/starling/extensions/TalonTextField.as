@@ -7,8 +7,11 @@ package starling.extensions
 	import starling.display.Mesh;
 	import starling.events.Event;
 	import starling.rendering.Painter;
+	import starling.styles.DistanceFieldStyle;
+	import starling.styles.MeshStyle;
 	import starling.text.BitmapChar;
 	import starling.text.BitmapFont;
+	import starling.text.ITextCompositor;
 	import starling.text.TextField;
 	import starling.text.TextFieldAutoSize;
 
@@ -17,6 +20,7 @@ package starling.extensions
 	import talon.layouts.Layout;
 	import talon.utils.Gauge;
 	import talon.utils.ParseUtil;
+	import talon.utils.ParseUtil;
 
 	/** starling.display.TextField which implements ITalonDisplayObject. */
 	public class TalonTextField extends TextField implements ITalonDisplayObject
@@ -24,8 +28,8 @@ package starling.extensions
 		// There are 2px padding & 1px flash.text.TextField bug with autoSize disharmony
 		private static const TRUE_TYPE_CORRECTION:int = 4 + 1;
 
-		private static var sRect:Rectangle = new Rectangle();
-		private static var sPoint:Point = new Point();
+		private static var _sRect:Rectangle = new Rectangle();
+		private static var _sPoint:Point = new Point();
 
 		private var _node:Node;
 		private var _bridge:TalonDisplayObjectBridge;
@@ -58,6 +62,7 @@ package starling.extensions
 			_bridge.setAttributeChangeListener(Attribute.INTERLINE, onInterlineChange);
 			_bridge.setAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
 			_bridge.setAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
+			_bridge.setAttributeChangeListener(Attribute.FONT_EFFECT, onFontEffectChange);
 
 			batchable = true; // TODO: Allow setup batchable flag
 		}
@@ -69,14 +74,11 @@ package starling.extensions
 		private function measureHeight(availableWidth:Number):Number { return _cacheHeight = measure(availableWidth, Infinity).height; }
 		private function measure(availableWidth:Number, availableHeight:Number):Rectangle
 		{
-//			if (_cacheWidth == _cacheWidth && _cacheHeight == _cacheHeight)
-//			{
-//				sRect.setTo(0, 0, x, y);
-//				return sRect;
-//			}
-			
-			if (format.font == "mini")
-				trace("Node is not style, invalidated:", _node.invalidated);
+			if (_cacheWidth == _cacheWidth && _cacheHeight == _cacheHeight)
+			{
+				_sRect.setTo(0, 0, x, y);
+				return _sRect;
+			}
 			
 			var trueTypeCorrection:int = getCompositor(format.font) ? 0 : TRUE_TYPE_CORRECTION;
 
@@ -88,21 +90,21 @@ package starling.extensions
 			super.autoSize = getAutoSize(availableWidth == Infinity, availableHeight == Infinity);
 			super.width = availableWidth - paddingLeft - paddingRight + trueTypeCorrection;
 			super.height = availableHeight - paddingTop - paddingBottom + trueTypeCorrection;
-			super.getBounds(this, sRect);				// call super.recompose();
-			getTrueTextBounds(sRect);					// calculate true text bounds (which respect font lineHeight)
+			super.getBounds(this, _sRect);				// call super.recompose();
+			getTrueTextBounds(_sRect);					// calculate true text bounds (which respect font lineHeight)
 			super.autoSize = TextFieldAutoSize.NONE;	// restore super.autoSize value
 
-			sRect.width  += paddingLeft + paddingRight;
-			sRect.height += paddingTop + paddingBottom;
+			_sRect.width  += paddingLeft + paddingRight;
+			_sRect.height += paddingTop + paddingBottom;
 
 			// BitmapFont#arrangeChars has floating point error:
 			// If TextField used some combination of font, size and text
 			// containerWidth & containerHeight have small delta.
 			// Ceiling used for compensate those errors
-			sRect.width  = Math.ceil(sRect.width);
-			sRect.height = Math.ceil(sRect.height);
+			_sRect.width  = Math.ceil(_sRect.width);
+			_sRect.height = Math.ceil(_sRect.height);
 			
-			return sRect;
+			return _sRect;
 		}
 
 		/** This text bounds respect font lineHeight and it height can be only (lineHeight*scale * N). */
@@ -152,21 +154,21 @@ package starling.extensions
 				{
 					if (scale != scale)
 					{
-						var quadHeight:Number = mesh.getVertexPosition(charQuadIndex*4 + 3, sPoint).y
-											  - mesh.getVertexPosition(charQuadIndex*4 + 0, sPoint).y;
+						var quadHeight:Number = mesh.getVertexPosition(charQuadIndex*4 + 3, _sPoint).y
+											  - mesh.getVertexPosition(charQuadIndex*4 + 0, _sPoint).y;
 
 						scale = quadHeight / char.height;
 					}
 
-					var charLeft:Number = mesh.getVertexPosition(charQuadIndex*4 + 0, sPoint).x - char.xOffset*scale;
+					var charLeft:Number = mesh.getVertexPosition(charQuadIndex*4 + 0, _sPoint).x - char.xOffset*scale;
 					if (charLeft < leftmostCharLeft || leftmostCharLeft != leftmostCharLeft)
 						leftmostCharLeft = charLeft;
 
-					var charRight:Number = mesh.getVertexPosition(charQuadIndex*4 + 1, sPoint).x;
+					var charRight:Number = mesh.getVertexPosition(charQuadIndex*4 + 1, _sPoint).x;
 					if (charRight > rightmostCharRight || rightmostCharRight != rightmostCharRight)
 						rightmostCharRight = charRight;
 
-					var charTop:Number = sPoint.y - char.yOffset*scale;
+					var charTop:Number = _sPoint.y - char.yOffset*scale;
 					if (charTop > bottommostCharTop || bottommostCharTop != bottommostCharTop)
 						bottommostCharTop = charTop;
 
@@ -249,16 +251,16 @@ package starling.extensions
 				height = _node.bounds.height - paddingTop - paddingBottom + trueTypeCorrection;
 
 				// Call super.recompose();
-				super.getBounds(this, sRect);
+				super.getBounds(this, _sRect);
 
 				// Add padding to mesh
-				getTrueTextBounds(sRect);
+				getTrueTextBounds(_sRect);
 				var halign:Number = ParseUtil.parseAlign(format.horizontalAlign);
 				var valign:Number = ParseUtil.parseAlign(format.verticalAlign);
 				var mesh:DisplayObject = getChildAt(0);
 
-				mesh.x = Layout.pad(_node.bounds.width, sRect.width, paddingLeft, paddingRight, halign) - sRect.x;
-				mesh.y = Layout.pad(_node.bounds.height, sRect.height, paddingTop, paddingBottom, valign) - sRect.y;
+				mesh.x = Layout.pad(_node.bounds.width, _sRect.width, paddingLeft, paddingRight, halign) - _sRect.x;
+				mesh.y = Layout.pad(_node.bounds.height, _sRect.height, paddingTop, paddingBottom, valign) - _sRect.y;
 
 				_requiresRecompositionWithPadding = false;
 			}
@@ -282,7 +284,9 @@ package starling.extensions
 		/** @private */
 		public override function hitTest(localPoint:Point):DisplayObject
 		{
-			return _bridge.hitTestCustom(localPoint);
+			if (!visible || !touchable) return null;
+			if (mask && !hitTestMask(localPoint)) return null;
+			return getBounds(this, _sRect).containsPoint(localPoint) ? this : null;
 		}
 
 		/** @private */
@@ -304,6 +308,47 @@ package starling.extensions
 			_bridge.dispose();
 			super.dispose();
 		}
+		
+		//
+		// Font Effect
+		//
+		private function onFontEffectChange():void
+		{
+			var compositor:ITextCompositor = getCompositor(format.font);
+			if (compositor == null) {
+				trace("[onFontEffectChange]", "getCompositor() == null", format.font);
+				return;
+			}
+			
+			var dfs:DistanceFieldStyle = compositor.getDefaultMeshStyle(style, format, options) as DistanceFieldStyle;
+			if (dfs == null) {
+				trace("[onFontEffectChange]", "getDefaultMeshStyle() == null", format.font);
+				return;
+			}
+
+			var value:String = node.getAttributeCache(Attribute.FONT_EFFECT);
+			var func:Array = ParseUtil.parseFunction(value);
+			if (func == null)
+				dfs.setupBasic();
+			else if (func[0] == "shadow")
+			{
+				var x:Number = ParseUtil.parseNumber(func[1], 2);
+				
+				dfs.setupDropShadow(
+					ParseUtil.parseNumber(func[3], 0.2), // blur
+					x,	 								 // x
+					ParseUtil.parseNumber(func[2], x),	 // y
+					ParseUtil.parseColor(func[4], 0x0),	 // color
+					ParseUtil.parseNumber(func[5], 0.5)	 // alpha	
+				)
+			}
+			else if (func[0] == "stroke")
+				dfs.setupOutline(
+					ParseUtil.parseNumber(func[1], 0.25), // width
+					ParseUtil.parseColor(func[2], 0x0),	  // color
+					ParseUtil.parseNumber(func[3], 1.0)	  // alpha
+				)
+		}
 
 		//
 		// Properties Delegating
@@ -311,14 +356,14 @@ package starling.extensions
 
 		private function onFontColorChange():void { format.color = ParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
 		private function onFontSizeChange():void { format.size = node.metrics.ppem; _node.invalidate(); }
-		private function onFontNameChange():void { format.font = node.getAttributeCache(Attribute.FONT_NAME); _node.invalidate(); }
+		private function onFontNameChange():void { format.font = node.getAttributeCache(Attribute.FONT_NAME); _node.invalidate(); onFontEffectChange(); }
 		private function onHAlignChange():void { format.horizontalAlign = _node.getAttributeCache(Attribute.HALIGN) }
 		private function onVAlignChange():void { format.verticalAlign = _node.getAttributeCache(Attribute.VALIGN) }
 		private function onAutoScaleChange():void { super.autoScale = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.FONT_AUTO_SCALE)); }
 		private function onWrapChange():void { super.wordWrap = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.WRAP)); _node.invalidate(); }
 		private function onInterlineChange():void { format.leading = Gauge.toPixels(_node.getAttributeCache(Attribute.INTERLINE), _node.metrics); _node.invalidate(); }
 		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); _node.invalidate(); }
-
+		
 		//
 		// ITalonDisplayObject
 		//

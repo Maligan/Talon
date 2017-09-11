@@ -31,26 +31,22 @@ package talon.browser.platform.document.log
 		private var _number:int;
 		private var _level:int;
 		private var _text:String;
-		private var _location:String;
 
 		public function DocumentMessage(type:String, args:Array)
 		{
-			var pattern:RegExp = /(E|W|I)(\d+):\s*(\{0}:)?\s*(.+)/;
+			var pattern:RegExp = /(E|W|I)(\d+):\s*(.+)/;
 			var split:Array = pattern.exec(type);
 			if (split == null) throw new ArgumentError("Type is invalid");
 
-			_location = (split[3] && args[0]) ? args[0] : null;
 			_level = (split[1]=="E") ? 2 : (split[1]=="W") ? 1 : 0;
 			_number = parseInt(split[2]);
 
-			args.unshift(split[4]);
+			args.unshift(split[3]);
 			_text = StringUtil.format.apply(this, args);
 		}
 
 		public function get number():int { return _number }
 		public function get level():int { return _level }
 		public function get text():String { return _text }
-		
-		public function get location():String { return _location }
 	}
 }

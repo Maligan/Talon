@@ -5,6 +5,12 @@ package starling.extensions
 	public interface ITalonDisplayObject
 	{
 		function query(selector:String = null):TalonQuery;
+
+//		+ getAttribute()
+//		+ setAttribute()
+//		+ setResources()
+//		+ setStyles()
+//		+ bounds
 		
 		function get node():Node
 	}

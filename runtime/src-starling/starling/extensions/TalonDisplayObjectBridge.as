@@ -9,15 +9,12 @@ package starling.extensions
 
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
-	import starling.display.Mesh;
 	import starling.events.Event;
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.filters.FragmentFilter;
 	import starling.rendering.Painter;
-	import starling.styles.MeshStyle;
-	import starling.text.TextField;
 	import starling.textures.Texture;
 	import starling.utils.Color;
 	import starling.utils.MatrixUtil;
@@ -28,13 +25,13 @@ package starling.extensions
 	import talon.enums.TouchMode;
 	import talon.utils.Gauge;
 	import talon.utils.ParseUtil;
+	import talon.utils.ParseUtil;
 
 	/** @private Provide method for synchronize starling display tree and talon tree. */
 	public class TalonDisplayObjectBridge
 	{
 		private const sMatrix:Matrix = new Matrix();
 		private const sPoint:Point = new Point();
-		private const sRect:Rectangle = new Rectangle();
 
 		private var _target:DisplayObject;
 		private var _node:Node;
@@ -79,7 +76,6 @@ package starling.extensions
 			setAttributeChangeListener(Attribute.ALPHA,                     onAlphaChange);
 			setAttributeChangeListener(Attribute.BLEND_MODE,                onBlendModeChange);
 			setAttributeChangeListener(Attribute.TRANSFORM,					onTransformChange);
-			setAttributeChangeListener(Attribute.MESH_STYLE,				onMeshStyleChange);
 			setAttributeChangeListener(Attribute.PIVOT,                     onPivotChange);
 
 			// Interactive
@@ -199,18 +195,6 @@ package starling.extensions
 			);
 		}
 
-		private function onMeshStyleChange():void
-		{
-			if (_target is Mesh || _target is TextField)
-			{
-				_target["style"] = ParseUtil.parseClass(MeshStyle,
-					_node.getAttributeCache(Attribute.MESH_STYLE),
-					_node,
-					_target["style"]
-				);
-			}
-		}
-
 		private function onTransformChange():void
 		{
 			_transform = ParseUtil.parseClass(Matrix, _node.getAttributeCache(Attribute.TRANSFORM), _node, _transform);
@@ -307,36 +291,45 @@ package starling.extensions
 
 		private function validate(bubble:Boolean):void
 		{
-			var node = _node;
-
-			if (bubble)
-			{
-				var parent:Node = node;
-				while (parent = parent.parent)
-					if (parent.invalidated)
-						node = parent;
-			}
+			if (bubble == false && !_node.invalidated) return;
 			
-			if (node.invalidated == false) return;
-
-			// In case target doesn't has parent talon display object
-			if (node.parent == null)
+			var node:Node;
+			
+			// Phase 1: Style validation() - may invoke layout invalidation
+			node = bubble ? getTopmostInvalidatedAncestor() : null;
+			if (node)
+				node.validate(false);
+			
+			// Phase 2: Layout validation()
+			node = bubble ? getTopmostInvalidatedAncestor() : (_node.invalidated ? _node : null);
+			if (node)
 			{
-				// TODO: Respect percentages & min/max size
+				// In case target doesn't has parent talon display object
+				if (node.parent == null)
+				{
+					// TODO: Respect percentages & min/max size
 
-				// isNaN() check for element bounds
-				// This may be if current element is topmost in talon hierarchy
-				// and there is no user setup for its sizes
+					if (node.bounds.width == -1)
+						node.bounds.width = node.width.toPixels(node.metrics);
 
-				if (node.bounds.width == -1)
-					node.bounds.width = node.width.toPixels(node.metrics);
-
-				if (node.bounds.height == -1)
-					node.bounds.height = node.height.toPixels(node.metrics);
+					if (node.bounds.height == -1)
+						node.bounds.height = node.height.toPixels(node.metrics);
+				}
+				
+				node.validate(true);
 			}
+		}
+		
+		private function getTopmostInvalidatedAncestor()
+		{
+			var base:Node = _node;
+			var last:Node = _node.invalidated ? _node : null;
 
-			// Validate
-			node.validate();
+			while (base = base.parent)
+				if (base.invalidated)
+					last = base;
+			
+			return last;
 		}
 		
 		private function renderBackground(painter:Painter):void
@@ -378,13 +371,22 @@ package starling.extensions
 
 		public function getBoundsCustom(getBounds:Function, targetSpace:DisplayObject, resultRect:Rectangle):Rectangle
 		{
+			// Starling call getBounds for invisible DisplayObject
+			// Vis can
+			if (_target.visible == false)
+			{
+				resultRect ||= new Rectangle();
+				resultRect.setEmpty();
+				return resultRect;
+			}
+			
 			validate(true);
 			
 			if (resultRect == null) resultRect = new Rectangle();
 			else resultRect.setEmpty();
 
-//			if (getBounds != null)
-//				resultRect = getBounds(targetSpace, resultRect);
+			if (getBounds != null)
+				resultRect = getBounds(targetSpace, resultRect);
 
 			var isEmpty:Boolean = resultRect.isEmpty();
 
@@ -400,13 +402,6 @@ package starling.extensions
 			if (isEmpty || resultRect.bottom<bottomRight.y) resultRect.bottom = bottomRight.y;
 
 			return resultRect;
-		}
-		
-		/** For background hit test */
-		public function hitTestCustom(localPoint:Point):DisplayObject
-		{
-			if (!_target.visible || !_target.touchable || !_target.hitTestMask(localPoint)) return null;
-			return getBoundsCustom(_target.getBounds, _target, sRect).containsPoint(localPoint) ? _target : null;
 		}
 		
 		public function dispose():void

@@ -114,14 +114,10 @@ checkbox {
 message {
 	width: 100%;
 	padding: 1em;
+
+	fontColor: white;
+	fill: $color.base1;
 }
 
-.dark message { fill: black; fillAlpha: 0.5; }
-.dark message #file { fontColor: #0088FF; }
-.dark message.error { fontColor: #FF8800; }
-.dark message.warning { fontColor: #FFFF00; }
-
-.light message { fill: white; fillAlpha: 0.7; }
-.light message #file { fontColor: #0044CC; }
-.light message.error { fontColor: #880000; }
-.light message.warning { fontColor: #888800; }
+message.error { fontColor: #FF8800; }
+message.warning { fontColor: #FFFF00; }

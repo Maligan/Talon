@@ -70,6 +70,7 @@ package talon.core
 		public static const FONT_NAME:String                       = registerAttribute("fontName",              INHERIT, "mini");
 		public static const FONT_SIZE:String                       = registerAttribute("fontSize",              INHERIT, "12px"); // Has hardcoded value in Node.ppem method
 		public static const FONT_AUTO_SCALE:String                 = registerAttribute("fontAutoScale",         INHERIT, "false");
+		public static const FONT_EFFECT:String					   = registerAttribute("fontEffect",			INHERIT, "none");
 
 		public static const TOUCH_MODE:String                      = registerAttribute("touchMode",             TouchMode.BRANCH);
 		public static const TOUCH_EVENTS:String                    = registerAttribute("touchEvents",           "false");
@@ -77,7 +78,6 @@ package talon.core
 
 		public static const LAYOUT:String                          = registerAttribute("layout",                Layout.ANCHOR);
 		public static const TRANSFORM:String 					   = registerAttribute("transform",			    NONE);
-		public static const MESH_STYLE:String 					   = registerAttribute("meshStyle",			    NONE);
 		public static const BLEND_MODE:String                      = registerAttribute("blendMode",             "auto");
 		public static const VISIBLE:String                         = registerAttribute("visible",               "true");
 		public static const FILTER:String                          = registerAttribute("filter",                NONE);

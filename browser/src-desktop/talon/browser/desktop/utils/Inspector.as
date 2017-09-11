@@ -34,6 +34,8 @@ package talon.browser.desktop.utils
 		private var _selection:Node;
 		private var _css:Boolean;
 		
+		private var _delay:Node;
+		
 		private var _mapToData:Dictionary;
 		private var _mapToView:Dictionary;
 		private var _parents:Dictionary;
@@ -87,7 +89,7 @@ package talon.browser.desktop.utils
 
 			view.addEventListener(Event.ADDED_TO_STAGE, onStageChange);
 			view.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-//			view.removeFromParent(true);
+			visible = false;
 		}
 
 		private function onStageChange(e:Event):void
@@ -100,6 +102,8 @@ package talon.browser.desktop.utils
 
 		private function onKeyDown(e:KeyboardEvent):void
 		{
+			if (visible == false) return;
+			
 			if (_selection)
 			{
 				switch (e.keyCode)
@@ -152,7 +156,11 @@ package talon.browser.desktop.utils
 		
 		public function setTree(tree:Node):void
 		{
-			if (!view.visible) return;
+			if (visible == false)
+			{
+				_delay = tree;
+				return;
+			}
 			
 			_mapToData = new Dictionary();
 			_mapToView = new Dictionary();
@@ -308,7 +316,7 @@ package talon.browser.desktop.utils
 			for each (var attribute:Attribute in node.attributes)
 			{
 				if (attribute.name == Attribute.TYPE) continue;
-				if (attribute.setted !== null || (styled && attribute.styled !== null))
+				if (attribute.setted !== null || (styled && attribute.styled !== null) || attribute.isInherit)
 					result.push(attribute.name)
 			}
 
@@ -328,6 +336,15 @@ package talon.browser.desktop.utils
 		}
 		
 		public function get visible():Boolean { return ParseUtil.parseBoolean(_view.node.getAttributeCache(Attribute.VISIBLE)) }
-		public function set visible(value:Boolean):void { view.visible = value; _view.node.setAttribute(Attribute.VISIBLE, value.toString()) }
+		public function set visible(value:Boolean):void
+		{
+			_view.node.setAttribute(Attribute.VISIBLE, value.toString())
+			
+			if (value && _delay)
+			{
+				setTree(_delay)
+				_delay = null;
+			}
+		}
 	}
 }

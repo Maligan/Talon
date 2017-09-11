@@ -78,7 +78,8 @@ package talon.layouts
 		public function isObservable(node:Node, attribute:Attribute):Boolean
 		{
 			if (attribute.node == node)
-				return attribute.name == Attribute.PADDING;
+				return attribute.name == Attribute.PADDING
+					|| attribute.name == Attribute.VISIBLE;
 			
 			else if (attribute.node.parent == node)
 				return COMMON.indexOf(attribute.name) != -1;

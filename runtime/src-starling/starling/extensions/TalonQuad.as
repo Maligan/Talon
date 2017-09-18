@@ -48,15 +48,15 @@ package starling.extensions
 		{
 			// If there is no texture - size is 100px, like default starling Image
 			return (texture ? measure(height, texture.height, texture.width) : 100)
-				 + node.paddingLeft.toPixels(node.metrics)
-				 + node.paddingRight.toPixels(node.metrics);
+				 + node.paddingLeft.toPixels()
+				 + node.paddingRight.toPixels();
 		}
 
 		private function measureHeight(width:Number):Number
 		{
 			return (texture ? measure(width,  texture.width,  texture.height) : 100)
-				 + node.paddingTop.toPixels(node.metrics)
-				 + node.paddingBottom.toPixels(node.metrics);
+				 + node.paddingTop.toPixels()
+				 + node.paddingBottom.toPixels();
 		}
 
 		private function measure(knownDimension:Number, knownDimensionOfTexture:Number, measuredDimensionOfTexture:Number):Number
@@ -81,16 +81,10 @@ package starling.extensions
 
 		private function onNodeResize():void
 		{
-			pivotX = node.pivotX.toPixels(node.metrics, node.bounds.width);
-			pivotY = node.pivotY.toPixels(node.metrics, node.bounds.height);
-
-			x = node.bounds.x + pivotX;
-			y = node.bounds.y + pivotY;
-
-			var paddingLeft:Number = node.paddingLeft.toPixels(node.metrics);
-			var paddingRight:Number = node.paddingRight.toPixels(node.metrics);
-			var paddingTop:Number = node.paddingTop.toPixels(node.metrics);
-			var paddingBottom:Number = node.paddingBottom.toPixels(node.metrics);
+			var paddingLeft:Number = node.paddingLeft.toPixels();
+			var paddingRight:Number = node.paddingRight.toPixels();
+			var paddingTop:Number = node.paddingTop.toPixels();
+			var paddingBottom:Number = node.paddingBottom.toPixels();
 
 			_vertexOffset.setTo(paddingLeft, paddingTop);
 

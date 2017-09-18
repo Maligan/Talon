@@ -6,7 +6,6 @@ package talon.utils
 
 	import talon.core.Node;
 	import talon.core.Style;
-	import talon.utils.StyleUtil;
 
 	/** @private This is utility class for work with strings in different formats and notation. */
 	public final class ParseUtil
@@ -147,7 +146,7 @@ package talon.utils
 			return null;
 		}
 
-		public static function parseAlign(string:String):Number
+		public static function parseAlign(string:String, pp100p:Number = 0):Number
 		{
 			switch (string)
 			{
@@ -161,6 +160,9 @@ package talon.utils
 				case "bottom":
 					return 1.0;
 				default:
+					if (string && string.charAt(string.length - 1) == "%")
+						return parseNumber(string.substr(0, string.length-1), 0) * pp100p / 100;
+
 					return 0.0;
 			}
 		}

@@ -28,7 +28,7 @@ package talon.utils
 		{
 			sGauge.parse(string);
 			sGauge.auto = auto;
-			return sGauge.toPixels(metrics, pp100p, aa, pps);
+			return sGauge.toPixels(pp100p, aa, pps);
 		}
 
 		private var _node:Node;
@@ -76,29 +76,36 @@ package talon.utils
 			else
 			{
 				var match:Array = sFormat.exec(string);
-				if (match == null) throw ArgumentError("Input string is not valid gauge: " + string);
-				_amount = parseFloat(match[1]);
-				_unit = match[2] || PX;
+				if (match != null)
+				{
+					_amount = parseFloat(match[1]);
+					_unit = match[2] || PX;
+				}
+				else
+				{
+					trace("[Gauge]", "Input string is not valid gauge:", string);
+					_amount = 0;
+					_unit = NONE;
+				}
 			}
 		}
 
 		/**
 		 * Transform gauge to pixels.
 		 *
-		 * @param metrics - ppmm (pixels per millimeter), ppem (pixels per em), ppdp (pixels per density-independent point)
 		 * @param pp100p pixels per 100%
 		 * @param aa argument for auto measure
 		 * @param pps pixels per star
 		 */
-		public function toPixels(metrics:Metrics, pp100p:Number = 0, aa:Number = Infinity, pps:Number = 0):Number
+		public function toPixels(pp100p:Number = 0, aa:Number = Infinity, pps:Number = 0):Number
 		{
 			switch (unit)
 			{
 				case NONE:		return auto ? auto(aa) : 0;
 				case PX:		return amount;
-				case MM:		return amount * metrics.ppmm;
-				case EM:        return amount * metrics.ppem;
-				case DP:        return amount * metrics.ppdp;
+				case MM:		return amount * _node.metrics.ppmm;
+				case EM:        return amount * _node.metrics.ppem;
+				case DP:        return amount * _node.metrics.ppdp;
 				case PERCENT:   return amount * pp100p/100;
 				case STAR:		return amount * pps;
 				default:		throw new Error("Unknown gauge unit: " + unit);

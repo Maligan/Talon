@@ -43,7 +43,7 @@ package talon.utils
 			else if (fontSize.unit == Gauge.PERCENT)
 				return fontSize.amount * (_node.parent ? _node.parent.metrics.ppem : 12) / 100;
 
-			return fontSize.toPixels(this);
+			return fontSize.toPixels();
 		}
 	}
 }

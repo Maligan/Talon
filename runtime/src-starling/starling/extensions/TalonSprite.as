@@ -88,8 +88,8 @@ package starling.extensions
 		private function onNodeResize():void
 		{
 			// if in percents
-			super.pivotX = node.pivotX.toPixels(node.metrics, node.bounds.width);
-			super.pivotY = node.pivotY.toPixels(node.metrics, node.bounds.height);
+			super.pivotX = node.pivotX.toPixels(node.bounds.width);
+			super.pivotY = node.pivotY.toPixels(node.bounds.height);
 
 			x = node.bounds.x + pivotX;
 			y = node.bounds.y + pivotY;
@@ -114,6 +114,8 @@ package starling.extensions
 		/** @private */
 		public override function hitTest(localPoint:Point):DisplayObject
 		{
+			return null;
+			
 			var localX:Number = localPoint.x;
 			var localY:Number = localPoint.y;
 
@@ -148,13 +150,5 @@ package starling.extensions
 		public function query(selector:String = null):TalonQuery { return new TalonQuery(this).select(selector); }
 
 		public function get node():Node { return _node; }
-		
-		//
-		// Properties override 
-		//
-		
-		/** @private */
-		public override function set pivotX(value:Number):void { node.setAttribute(Attribute.PIVOT_X, value.toString()); }
-		public override function set pivotY(value:Number):void { node.setAttribute(Attribute.PIVOT_Y, value.toString()); }
 	}
 }

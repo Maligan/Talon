@@ -25,7 +25,6 @@ package starling.extensions
 	import talon.enums.TouchMode;
 	import talon.utils.Gauge;
 	import talon.utils.ParseUtil;
-	import talon.utils.ParseUtil;
 
 	/** @private Provide method for synchronize starling display tree and talon tree. */
 	public class TalonDisplayObjectBridge
@@ -101,6 +100,12 @@ package starling.extensions
 		{
 			_background.width = _node.bounds.width;
 			_background.height = _node.bounds.height;
+			
+			_target.pivotX = _node.pivotX.toPixels(_node.bounds.width);
+			_target.pivotY = _node.pivotY.toPixels(_node.bounds.height);
+
+			_target.x = _node.bounds.x + _target.pivotX;
+			_target.y = _node.bounds.y + _target.pivotY;
 		}
 		
 		// Listeners: Background
@@ -310,10 +315,10 @@ package starling.extensions
 					// TODO: Respect percentages & min/max size
 
 					if (node.bounds.width == -1)
-						node.bounds.width = node.width.toPixels(node.metrics);
+						node.bounds.width = node.width.toPixels();
 
 					if (node.bounds.height == -1)
-						node.bounds.height = node.height.toPixels(node.metrics);
+						node.bounds.height = node.height.toPixels();
 				}
 				
 				node.validate(true);
@@ -369,39 +374,40 @@ package starling.extensions
 				painter.popState();
 		}
 
-		public function getBoundsCustom(getBounds:Function, targetSpace:DisplayObject, resultRect:Rectangle):Rectangle
+		public function getBoundsCustom(getBounds:Function, targetSpace:DisplayObject, out:Rectangle):Rectangle
 		{
 			// Starling call getBounds for invisible DisplayObject
-			// Vis can
 			if (_target.visible == false)
 			{
-				resultRect ||= new Rectangle();
-				resultRect.setEmpty();
-				return resultRect;
+				out ||= new Rectangle();
+				_target.getTransformationMatrix(targetSpace, sMatrix);
+				MatrixUtil.transformCoords(sMatrix, 0, 0, sPoint);
+				out.setTo(sPoint.x, sPoint.y, 0, 0);
+				return out;
 			}
 			
-			validate(true);
+			 validate(true);
 			
-			if (resultRect == null) resultRect = new Rectangle();
-			else resultRect.setEmpty();
+			if (out == null) out = new Rectangle();
+			else out.setEmpty();
 
-			if (getBounds != null)
-				resultRect = getBounds(targetSpace, resultRect);
+//			if (getBounds != null)
+//				out = getBounds(targetSpace, out);
 
-			var isEmpty:Boolean = resultRect.isEmpty();
+			var isEmpty:Boolean = out.isEmpty();
 
 			// Expand resultRect with background bounds
 			_target.getTransformationMatrix(targetSpace, sMatrix);
 
 			var topLeft:Point = MatrixUtil.transformCoords(sMatrix, 0, 0, sPoint);
-			if (isEmpty || resultRect.left>topLeft.x) resultRect.left = topLeft.x;
-			if (isEmpty || resultRect.top>topLeft.y) resultRect.top = topLeft.y;
+			if (isEmpty || out.left>topLeft.x) out.left = topLeft.x;
+			if (isEmpty || out.top>topLeft.y) out.top = topLeft.y;
 
-			var bottomRight:Point = MatrixUtil.transformCoords(sMatrix, _node.bounds.width, _node.bounds.height, sPoint);
-			if (isEmpty || resultRect.right<bottomRight.x) resultRect.right = bottomRight.x;
-			if (isEmpty || resultRect.bottom<bottomRight.y) resultRect.bottom = bottomRight.y;
-
-			return resultRect;
+			var bottomRight:Point = MatrixUtil.transformCoords(sMatrix, _background.width, _background.height, sPoint);
+			if (isEmpty || out.right<bottomRight.x) out.right = bottomRight.x;
+			if (isEmpty || out.bottom<bottomRight.y) out.bottom = bottomRight.y;
+			
+			return out;
 		}
 		
 		public function dispose():void

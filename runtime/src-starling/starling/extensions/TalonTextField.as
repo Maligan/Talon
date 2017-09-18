@@ -8,7 +8,6 @@ package starling.extensions
 	import starling.events.Event;
 	import starling.rendering.Painter;
 	import starling.styles.DistanceFieldStyle;
-	import starling.styles.MeshStyle;
 	import starling.text.BitmapChar;
 	import starling.text.BitmapFont;
 	import starling.text.ITextCompositor;
@@ -20,7 +19,6 @@ package starling.extensions
 	import talon.layouts.Layout;
 	import talon.utils.Gauge;
 	import talon.utils.ParseUtil;
-	import talon.utils.ParseUtil;
 
 	/** starling.display.TextField which implements ITalonDisplayObject. */
 	public class TalonTextField extends TextField implements ITalonDisplayObject
@@ -28,21 +26,24 @@ package starling.extensions
 		// There are 2px padding & 1px flash.text.TextField bug with autoSize disharmony
 		private static const TRUE_TYPE_CORRECTION:int = 4 + 1;
 
-		private static var _sRect:Rectangle = new Rectangle();
+		private static var sRect:Rectangle = new Rectangle();
 		private static var _sPoint:Point = new Point();
 
 		private var _node:Node;
 		private var _bridge:TalonDisplayObjectBridge;
-		private var _requiresRecompositionWithPadding:Boolean;
-		
-		private var _cacheWidth:Number;
-		private var _cacheHeight:Number;
+		private var _requiresRecomposition:Boolean;
+		private var _requiresPadding:Boolean;
+		private var _textBounds:Rectangle;
+		private var _hitArea:Rectangle;
 		
 		/** @private */
 		public function TalonTextField()
 		{
 			super(0, 0, null);
 
+			_textBounds = new Rectangle();
+			_hitArea = new Rectangle();
+			
 			_node = new Node();
 			_node.getOrCreateAttribute(Attribute.WRAP).inited = "true"; // FIXME: Bad Ya?
 			_node.addListener(Event.RESIZE, onNodeResize);
@@ -70,41 +71,18 @@ package starling.extensions
 		//
 		// Measure size
 		//
-		private function measureWidth(availableHeight:Number):Number { return _cacheWidth = measure(Infinity, availableHeight).width; }
-		private function measureHeight(availableWidth:Number):Number { return _cacheHeight = measure(availableWidth, Infinity).height; }
-		private function measure(availableWidth:Number, availableHeight:Number):Rectangle
+		private function measureWidth(height:Number):Number { return measure(Infinity, height).width; }
+		private function measureHeight(width:Number):Number { return measure(width, Infinity).height; }
+		private function measure(width:Number, height:Number):Rectangle
 		{
-			if (_cacheWidth == _cacheWidth && _cacheHeight == _cacheHeight)
-			{
-				_sRect.setTo(0, 0, x, y);
-				return _sRect;
-			}
+			setBounds(width, height);
+			recompose();
+
+			sRect.copyFrom(_textBounds);
+			sRect.width  += node.paddingLeft.toPixels() + node.paddingRight.toPixels();
+			sRect.height += node.paddingTop.toPixels() + node.paddingBottom.toPixels();
 			
-			var trueTypeCorrection:int = getCompositor(format.font) ? 0 : TRUE_TYPE_CORRECTION;
-
-			var paddingTop:Number = node.paddingTop.toPixels(node.metrics);
-			var paddingRight:Number = node.paddingRight.toPixels(node.metrics);
-			var paddingBottom:Number = node.paddingBottom.toPixels(node.metrics);
-			var paddingLeft:Number = node.paddingLeft.toPixels(node.metrics);
-
-			super.autoSize = getAutoSize(availableWidth == Infinity, availableHeight == Infinity);
-			super.width = availableWidth - paddingLeft - paddingRight + trueTypeCorrection;
-			super.height = availableHeight - paddingTop - paddingBottom + trueTypeCorrection;
-			super.getBounds(this, _sRect);				// call super.recompose();
-			getTrueTextBounds(_sRect);					// calculate true text bounds (which respect font lineHeight)
-			super.autoSize = TextFieldAutoSize.NONE;	// restore super.autoSize value
-
-			_sRect.width  += paddingLeft + paddingRight;
-			_sRect.height += paddingTop + paddingBottom;
-
-			// BitmapFont#arrangeChars has floating point error:
-			// If TextField used some combination of font, size and text
-			// containerWidth & containerHeight have small delta.
-			// Ceiling used for compensate those errors
-			_sRect.width  = Math.ceil(_sRect.width);
-			_sRect.height = Math.ceil(_sRect.height);
-			
-			return _sRect;
+			return sRect;
 		}
 
 		/** This text bounds respect font lineHeight and it height can be only (lineHeight*scale * N). */
@@ -189,31 +167,19 @@ package starling.extensions
 			var height:Number = numLines*lineHeight + (numLines-1)*leading;
 
 			out.setTo(leftmostCharLeft, topmostCharTop, width, height);
+			
+			// BitmapFont#arrangeChars has floating point error:
+			// If TextField used some combination of font, size and text
+			// containerWidth & containerHeight have small delta.
+			// Ceiling used for compensate those errors
+			out.width  = Math.ceil(out.width);
+			out.height = Math.ceil(out.height);
 			return out;
-		}
-
-
-		private function getAutoSize(autoWidth:Boolean, autoHeight:Boolean):String
-		{
-			/**/ if ( autoWidth &&  autoHeight) return TextFieldAutoSize.BOTH_DIRECTIONS;
-			else if ( autoWidth && !autoHeight) return TextFieldAutoSize.HORIZONTAL;
-			else if (!autoWidth &&  autoHeight) return TextFieldAutoSize.VERTICAL;
-			return TextFieldAutoSize.NONE;
 		}
 
 		private function onNodeResize():void
 		{
-			// TODO: Make pivot/position in bridge?
-			pivotX = node.pivotX.toPixels(node.metrics, node.bounds.width);
-			pivotY = node.pivotY.toPixels(node.metrics, node.bounds.height);
-
-			x = node.bounds.x + pivotX;
-			y = node.bounds.y + pivotY;
-
-			width = node.bounds.width;
-			height = node.bounds.height;
-			
-			recomposeWithPadding();
+			resize();
 		}
 
 		private function onNodeParentChange():void
@@ -229,56 +195,72 @@ package starling.extensions
 		/** @private */
 		public override function setRequiresRecomposition():void
 		{
-			_cacheWidth = NaN;
-			_cacheHeight = NaN;
-			_requiresRecompositionWithPadding = true;
+			_requiresRecomposition = true;
 			super.setRequiresRecomposition();
-		}
-
-		private function recomposeWithPadding():void
-		{
-			if (_requiresRecompositionWithPadding)
-			{
-				// Crop padding from result size
-				var trueTypeCorrection:int = getCompositor(format.font) ? 0 : TRUE_TYPE_CORRECTION;
-
-				var paddingTop:Number = node.paddingTop.toPixels(node.metrics);
-				var paddingRight:Number = node.paddingRight.toPixels(node.metrics);
-				var paddingBottom:Number = node.paddingBottom.toPixels(node.metrics);
-				var paddingLeft:Number = node.paddingLeft.toPixels(node.metrics);
-
-				width = _node.bounds.width - paddingLeft - paddingRight + trueTypeCorrection;
-				height = _node.bounds.height - paddingTop - paddingBottom + trueTypeCorrection;
-
-				// Call super.recompose();
-				super.getBounds(this, _sRect);
-
-				// Add padding to mesh
-				getTrueTextBounds(_sRect);
-				var halign:Number = ParseUtil.parseAlign(format.horizontalAlign);
-				var valign:Number = ParseUtil.parseAlign(format.verticalAlign);
-				var mesh:DisplayObject = getChildAt(0);
-
-				mesh.x = Layout.pad(_node.bounds.width, _sRect.width, paddingLeft, paddingRight, halign) - _sRect.x;
-				mesh.y = Layout.pad(_node.bounds.height, _sRect.height, paddingTop, paddingBottom, valign) - _sRect.y;
-
-				_requiresRecompositionWithPadding = false;
-			}
 		}
 
 		/** @private */
 		public override function render(painter:Painter):void
 		{
-			_bridge.renderCustom(recomposeAndRender, painter);
+			_bridge.renderCustom(refreshAndRender, painter);
 		}
 
-		private function recomposeAndRender(painter:Painter):void
+		private function refreshAndRender(painter:Painter):void
 		{
-			recomposeWithPadding();
+			refresh();
 
 			// In this call recompose() nether will be invoked (already invoked)
 			// and now this is analog of super.super.render() :-)
 			super.render(painter);
+		}
+		
+		private function refresh():void
+		{
+			resize();
+			recompose();
+			repadding();
+		}
+
+		private function resize():void
+		{
+			setBounds(
+				_node.width.isNone  ? Infinity : _node.bounds.width,
+				_node.height.isNone ? Infinity : _node.bounds.height
+			);
+		}
+
+		private function recompose():void
+		{
+			if (_requiresRecomposition)
+			{
+				// Call super.recompose()
+				super.getBounds(this, sRect);
+
+				getTrueTextBounds(_textBounds);
+
+				_requiresPadding = true;
+				_requiresRecomposition = false;
+			}
+		}
+
+		private function repadding():void
+		{
+			if (_requiresPadding)
+			{
+				_requiresPadding = false;
+
+				var halign:Number = ParseUtil.parseAlign(format.horizontalAlign);
+				var valign:Number = ParseUtil.parseAlign(format.verticalAlign);
+				var mesh:DisplayObject = getChildAt(0);
+
+				var paddingTop:Number = node.paddingTop.toPixels();
+				var paddingRight:Number = node.paddingRight.toPixels();
+				var paddingBottom:Number = node.paddingBottom.toPixels();
+				var paddingLeft:Number = node.paddingLeft.toPixels();
+
+				mesh.x = Layout.pad(_node.bounds.width, _textBounds.width, paddingLeft, paddingRight, halign) - _textBounds.x;
+				mesh.y = Layout.pad(_node.bounds.height, _textBounds.height, paddingTop, paddingBottom, valign) - _textBounds.y;
+			}
 		}
 
 		/** @private */
@@ -286,20 +268,14 @@ package starling.extensions
 		{
 			if (!visible || !touchable) return null;
 			if (mask && !hitTestMask(localPoint)) return null;
-			return getBounds(this, _sRect).containsPoint(localPoint) ? this : null;
-		}
-
-		/** @private */
-		public override function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
-		{
-			return _bridge.getBoundsCustom(null, targetSpace, resultRect);
+			return getBounds(this, sRect).containsPoint(localPoint) ? this : null;
 		}
 
 		/** @private */
 		public override function get textBounds():Rectangle
 		{
-			recomposeWithPadding();
-			return getTrueTextBounds();
+			refresh();
+			return _textBounds;
 		}
 
 		/** @private */
@@ -316,13 +292,13 @@ package starling.extensions
 		{
 			var compositor:ITextCompositor = getCompositor(format.font);
 			if (compositor == null) {
-				trace("[onFontEffectChange]", "getCompositor() == null", format.font);
+//				trace("[onFontEffectChange]", "getCompositor() == null", format.font);
 				return;
 			}
 			
 			var dfs:DistanceFieldStyle = compositor.getDefaultMeshStyle(style, format, options) as DistanceFieldStyle;
 			if (dfs == null) {
-				trace("[onFontEffectChange]", "getDefaultMeshStyle() == null", format.font);
+//				trace("[onFontEffectChange]", "getDefaultMeshStyle() == null", format.font);
 				return;
 			}
 
@@ -333,14 +309,22 @@ package starling.extensions
 			else if (func[0] == "shadow")
 			{
 				var x:Number = ParseUtil.parseNumber(func[1], 2);
+				var y:Number = ParseUtil.parseNumber(func[2], x);
 				
-				dfs.setupDropShadow(
-					ParseUtil.parseNumber(func[3], 0.2), // blur
-					x,	 								 // x
-					ParseUtil.parseNumber(func[2], x),	 // y
-					ParseUtil.parseColor(func[4], 0x0),	 // color
-					ParseUtil.parseNumber(func[5], 0.5)	 // alpha	
-				)
+				if (x != 0 || y != 0)
+					dfs.setupDropShadow(
+						ParseUtil.parseNumber(func[3], 0.2), // blur
+						x,	 								 // x
+						y,	 								 // y
+						ParseUtil.parseColor(func[4], 0x0),	 // color
+						ParseUtil.parseNumber(func[5], 0.5)	 // alpha	
+					);
+				else
+					dfs.setupGlow(
+						ParseUtil.parseNumber(func[3], 0.2),
+						ParseUtil.parseColor(func[4], 0x0),	 // color
+						ParseUtil.parseNumber(func[5], 0.5)	 // alpha	
+					);
 			}
 			else if (func[0] == "stroke")
 				dfs.setupOutline(
@@ -348,6 +332,39 @@ package starling.extensions
 					ParseUtil.parseColor(func[2], 0x0),	  // color
 					ParseUtil.parseNumber(func[3], 1.0)	  // alpha
 				)
+		}
+		
+		//
+		// Bounds override
+		//
+
+		/** @private */
+		public override function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
+		{
+			return _bridge.getBoundsCustom(null, targetSpace, resultRect);
+		}
+		
+		private function setBounds(width:Number, height:Number):void
+		{
+			var trueTypeCorrection:int = getCompositor(format.font) ? 0 : TRUE_TYPE_CORRECTION;
+			
+			var paddingRight:Number = node.paddingRight.toPixels();
+			var paddingLeft:Number = node.paddingLeft.toPixels();
+			var paddingTop:Number = node.paddingTop.toPixels();
+			var paddingBottom:Number = node.paddingBottom.toPixels();
+
+			width = width - paddingLeft - paddingRight + trueTypeCorrection;
+			height = height - paddingTop - paddingBottom + trueTypeCorrection;
+			
+			if (_hitArea.width != width) {
+				_hitArea.width = width;
+				super.width = width;
+			}
+			
+			if (_hitArea.height != height) {
+				_hitArea.height = height;
+				super.height = height;
+			}
 		}
 
 		//
@@ -382,6 +399,14 @@ package starling.extensions
 		/** @private */ public override function get autoSize():String { return getAutoSize(node.width.isNone, node.height.isNone); }
 		/** @private */ public override function set autoSize(value:String):void { trace("[TalonTextFiled]", "Ignore autoSize value, this value defined via node width/height == 'none'"); }
 
+		private function getAutoSize(autoWidth:Boolean, autoHeight:Boolean):String
+		{
+			/**/ if ( autoWidth &&  autoHeight) return TextFieldAutoSize.BOTH_DIRECTIONS;
+			else if ( autoWidth && !autoHeight) return TextFieldAutoSize.HORIZONTAL;
+			else if (!autoWidth &&  autoHeight) return TextFieldAutoSize.VERTICAL;
+			return TextFieldAutoSize.NONE;
+		}
+		
 		/** @private */ public override function get border():Boolean { return false; }
 		/** @private */ public override function set border(value:Boolean):void { trace("[TalonTextFiled]", "Ignore border value, for debug draw use custom 'fill' property"); }
 	}

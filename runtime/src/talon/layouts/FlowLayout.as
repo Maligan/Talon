@@ -59,13 +59,13 @@ package talon.layouts
 				orientation = orientationAttribute.inited;
 			}
 
-			var paddingLeft:Number = node.paddingLeft.toPixels(node.metrics, 0);
-			var paddingRight:Number = node.paddingRight.toPixels(node.metrics, 0);
-			var paddingTop:Number = node.paddingTop.toPixels(node.metrics, 0);
-			var paddingBottom:Number = node.paddingBottom.toPixels(node.metrics, 0);
+			var paddingLeft:Number = node.paddingLeft.toPixels(0);
+			var paddingRight:Number = node.paddingRight.toPixels(0);
+			var paddingTop:Number = node.paddingTop.toPixels(0);
+			var paddingBottom:Number = node.paddingBottom.toPixels(0);
 
-			var contentWidth:Number = maxWidth==Infinity ? 0 : (maxWidth - paddingLeft - paddingRight);
-			var contentHeight:Number = maxHeight==Infinity ? 0 : (maxHeight - paddingTop - paddingBottom);
+			var contentWidth:Number = node.width.isNone ? 0 : (maxWidth - paddingLeft - paddingRight);
+			var contentHeight:Number = node.height.isNone ? 0 : (maxHeight - paddingTop - paddingBottom);
 
 			var flow:Flow = new Flow();
 			flow.setSpacings(getGap(node), getInterline(node));
@@ -96,10 +96,10 @@ package talon.layouts
 				var childWidth:Number = calcSize(child, child.width, child.height, contentWidth, contentHeight, child.minWidth, child.maxWidth, 1);
 				var childHeight:Number = calcSize(child, child.height, child.width, contentHeight, contentWidth, child.minHeight, child.maxHeight, 1);
 
-				var childMarginLeft:Number      = child.marginLeft.toPixels(node.metrics, contentWidth);
-				var childMarginRight:Number     = child.marginRight.toPixels(node.metrics, contentWidth);
-				var childMarginTop:Number       = child.marginTop.toPixels(node.metrics, contentHeight);
-				var childMarginBottom:Number    = child.marginBottom.toPixels(node.metrics, contentHeight);
+				var childMarginLeft:Number      = child.marginLeft.toPixels(contentWidth);
+				var childMarginRight:Number     = child.marginRight.toPixels(contentWidth);
+				var childMarginTop:Number       = child.marginTop.toPixels(contentHeight);
+				var childMarginBottom:Number    = child.marginBottom.toPixels(contentHeight);
 
 				// Setup child flow values
 				flow.beginChild();
@@ -130,18 +130,18 @@ package talon.layouts
 		private function calcSize(child:Node, childMainSize:Gauge, childCrossSize:Gauge, contentMainSize:Number, contentCrossSize:Number, childMainMinSize:Gauge, childMainMaxSize:Gauge, pps:Number):Number
 		{
 			var valueIsDependent:Boolean = childMainSize.isNone && !childCrossSize.isNone;
-			var valueAutoArg:Number = valueIsDependent ? childCrossSize.toPixels(child.metrics, contentCrossSize) : Infinity;
-			var value:Number = childMainSize.toPixels(child.metrics, contentMainSize, valueAutoArg, pps); // NB! Different
+			var valueAutoArg:Number = valueIsDependent ? childCrossSize.toPixels(contentCrossSize) : Infinity;
+			var value:Number = childMainSize.toPixels(contentMainSize, valueAutoArg, pps); // NB! Different
 
 			if (!childMainMinSize.isNone)
 			{
-				var min:Number = childMainMinSize.toPixels(child.metrics, contentMainSize);
+				var min:Number = childMainMinSize.toPixels(contentMainSize);
 				if (min > value) return min;
 			}
 
 			if (!childMainMaxSize.isNone)
 			{
-				var max:Number = childMainMaxSize.toPixels(child.metrics, contentMainSize);
+				var max:Number = childMainMaxSize.toPixels(contentMainSize);
 				if (max < value) return max;
 			}
 

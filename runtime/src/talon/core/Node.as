@@ -8,6 +8,8 @@ package talon.core
 	import talon.utils.Gauge;
 	import talon.utils.Metrics;
 	import talon.utils.ParseUtil;
+	import talon.utils.ParseUtil;
+	import talon.utils.ParseUtil;
 	import talon.utils.StringSet;
 	import talon.utils.StyleUtil;
 	import talon.utils.Trigger;
@@ -139,26 +141,25 @@ package talon.core
 		/** Recursive apply style to current node. */
 		private function refreshStyle():void
 		{
-			if (status & STYLE)
+			if (!visible) return;
+			
+			status &= ~STYLE;
+			
+			var style:Object = requestStyle(this);
+	
+			_styleTouch++;
+	
+			// Set styled values (NB! Order is important)
+			for (var name:String in style)
 			{
-				status &= ~STYLE;
-				
-				var style:Object = requestStyle(this);
-		
-				_styleTouch++;
-		
-				// Set styled values (NB! Order is important)
-				for (var name:String in style)
-				{
-					getOrCreateAttribute(name).styled = style[name];
-					_styleTouches[name] = _styleTouch;
-				}
-		
-				// Clear all previous styles
-				for each (var attribute:Attribute in _attributes)
-					if (_styleTouches[attribute.name] != _styleTouch)
-						attribute.styled = null;
+				getOrCreateAttribute(name).styled = style[name];
+				_styleTouches[name] = _styleTouch;
 			}
+	
+			// Clear all previous styles
+			for each (var attribute:Attribute in _attributes)
+				if (_styleTouches[attribute.name] != _styleTouch)
+					attribute.styled = null;
 			
 			// Recursive children restyling
 			for (var i:int = 0; i < numChildren; i++)
@@ -205,14 +206,13 @@ package talon.core
 
 		private function refreshResource():void
 		{
-			if (status & RESOURCES)
-			{
-				status &= ~RESOURCES;
+			if (!visible) return;
+
+			status &= ~RESOURCES;
 	
-				// Notify resource change
-				for each (var attribute:Attribute in _attributes)
-					if (attribute.isResource) attribute.dispatchChange();
-			}
+			// Notify resource change
+			for each (var attribute:Attribute in _attributes)
+				if (attribute.isResource) attribute.dispatchChange();
 
 			// Recursive children notify resource change
 			for (var i:int = 0; i < numChildren; i++)
@@ -223,8 +223,12 @@ package talon.core
 		// Layout
 		//
 		
+		private function get visible():Boolean { return ParseUtil.parseBoolean(getAttributeCache(Attribute.VISIBLE)); }
+		
 		private function refreshLayout():void
 		{
+			if (!visible) return;
+			
 			if (boundsIsResized || status | LAYOUT)
 			{
 				status &= ~LAYOUT;
@@ -237,7 +241,6 @@ package talon.core
 				dispatch(Event.RESIZE);
 			}
 
-			// TODO: Visible Children Only
 			for (var i:int = 0; i < numChildren; i++)
 				getChildAt(i).refreshLayout();
 		}
@@ -262,27 +265,6 @@ package talon.core
 			refreshResource();
 			
 			if (layout) refreshLayout();
-		}
-		
-		public function val():void
-		{
-//			// Phase 1
-//			var rootStyle:Node = null;
-//			var rootResource:Node = null;
-//			
-//			var node:Node = null;
-//			do 
-//			{
-//				if (node & STYLE) rootStyle = node;
-//				if (node & RESOURCES) rootResource = node;
-//			}
-//			while (node = node.parent);
-//			
-//			if (rootStyle) rootStyle.refreshStyle();
-//			if (rootResource) rootResource.refreshResource();
-//
-//			// Phase 2
-//			var rootLayout:Node = null;
 		}
 		
 		/** Bonds was changed from external code. */

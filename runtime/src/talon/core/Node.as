@@ -259,8 +259,8 @@ package talon.core
 
 		public function validate(layout:Boolean = true):void
 		{
-			refreshStyle();
-			refreshResource();
+			if (status & STYLE) refreshStyle();
+			if (status & RESOURCES) refreshResource();
 			
 			if (layout) refreshLayout();
 		}

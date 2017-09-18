@@ -8,8 +8,6 @@ package talon.core
 	import talon.utils.Gauge;
 	import talon.utils.Metrics;
 	import talon.utils.ParseUtil;
-	import talon.utils.ParseUtil;
-	import talon.utils.ParseUtil;
 	import talon.utils.StringSet;
 	import talon.utils.StyleUtil;
 	import talon.utils.Trigger;

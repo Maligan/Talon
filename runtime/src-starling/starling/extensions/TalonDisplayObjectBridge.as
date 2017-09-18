@@ -391,8 +391,8 @@ package starling.extensions
 			if (out == null) out = new Rectangle();
 			else out.setEmpty();
 
-//			if (getBounds != null)
-//				out = getBounds(targetSpace, out);
+			if (getBounds != null)
+				out = getBounds(targetSpace, out);
 
 			var isEmpty:Boolean = out.isEmpty();
 
@@ -441,11 +441,8 @@ import starling.filters.BlurFilter;
 import starling.filters.ColorMatrixFilter;
 import starling.filters.FilterChain;
 import starling.filters.FragmentFilter;
-import starling.styles.DistanceFieldStyle;
-import starling.styles.MeshStyle;
 import starling.utils.MatrixUtil;
 
-import talon.core.Attribute;
 import talon.core.Node;
 import talon.utils.ParseUtil;
 
@@ -460,7 +457,6 @@ class Parsers
 			_init = true;
 			ParseUtil.registerClassParser(Matrix, Parsers.parseMatrix);
 			ParseUtil.registerClassParser(FragmentFilter, Parsers.parseFragmentFilter);
-			ParseUtil.registerClassParser(MeshStyle, Parsers.parseMeshStyle);
 		}
 	}
 	
@@ -559,53 +555,5 @@ class Parsers
 			out = outBlur;
 	
 		return out;
-	}
-
-	private static function parseMeshStyle(value:String, node:Node, out:MeshStyle):MeshStyle
-	{
-		var split:Array = ParseUtil.parseFunction(value);
-		if (split == null || split[0] == Attribute.NONE)
-			return null;
-	
-		var dfs:DistanceFieldStyle = out as DistanceFieldStyle;
-		if (dfs == null)
-			dfs = new DistanceFieldStyle();
-	
-		dfs.softness  = ParseUtil.parseNumber(split[1], 0.125);
-		dfs.threshold = ParseUtil.parseNumber(split[2], 0.5);
-	
-		switch (split[0])
-		{
-			case "dfs":
-				dfs.setupBasic();
-				break;
-			case "dfs-glow":
-				dfs.setupGlow(
-					ParseUtil.parseNumber(split[3], 0.2),
-					ParseUtil.parseColor(split[4], 0x0),
-					ParseUtil.parseNumber(split[5], 0.5)
-				);
-				break;
-			case "dfs-shadow":
-				dfs.setupDropShadow(
-					ParseUtil.parseNumber(split[3], 0.2),
-					ParseUtil.parseNumber(split[4], 2),
-					ParseUtil.parseNumber(split[5], 2),
-					ParseUtil.parseColor(split[6], 0x0),
-					ParseUtil.parseNumber(split[7], 0.5)
-				);
-				break;
-			case "dfs-outline":
-				dfs.setupOutline(
-					ParseUtil.parseNumber(split[3], 0.25),
-					ParseUtil.parseColor(split[4], 0x0),
-					ParseUtil.parseNumber(split[5], 1)
-				);
-				break;
-			default:
-				return null;
-		}
-	
-		return dfs;
 	}
 }

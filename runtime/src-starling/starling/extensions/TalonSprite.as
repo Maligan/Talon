@@ -14,7 +14,7 @@ package starling.extensions
 	/** starling.display.Sprite which implements ITalonDisplayObject. */
 	public class TalonSprite extends Sprite implements ITalonDisplayObject
 	{
-		private static var _helperRect:Rectangle = new Rectangle();
+		private static var sRect:Rectangle = new Rectangle();
 
 		private var _node:Node;
 		private var _bridge:TalonDisplayObjectBridge;
@@ -114,8 +114,6 @@ package starling.extensions
 		/** @private */
 		public override function hitTest(localPoint:Point):DisplayObject
 		{
-			return null;
-			
 			var localX:Number = localPoint.x;
 			var localY:Number = localPoint.y;
 
@@ -129,7 +127,7 @@ package starling.extensions
 				if (!visible || !touchable || !hitTestMask(localPoint)) return null;
 
 				// Use getBoundsCustom(null, ...) directly - in this way there is no traveling via children
-				var contains:Boolean = _bridge.getBoundsCustom(null, this, _helperRect).contains(localX, localY);
+				var contains:Boolean = _bridge.getBoundsCustom(null, this, sRect).contains(localX, localY);
 				if (contains) return this;
 			}
 

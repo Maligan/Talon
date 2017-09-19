@@ -139,8 +139,6 @@ package talon.core
 		/** Recursive apply style to current node. */
 		private function refreshStyle():void
 		{
-			if (!visible) return;
-			
 			status &= ~STYLE;
 			
 			var style:Object = requestStyle(this);
@@ -204,8 +202,6 @@ package talon.core
 
 		private function refreshResource():void
 		{
-			if (!visible) return;
-
 			status &= ~RESOURCES;
 	
 			// Notify resource change
@@ -259,10 +255,14 @@ package talon.core
 
 		public function validate(layout:Boolean = true):void
 		{
-			if (status & STYLE) refreshStyle();
-			if (status & RESOURCES) refreshResource();
+			if (status & STYLE)
+				refreshStyle();
 			
-			if (layout) refreshLayout();
+			if (status & RESOURCES)
+				refreshResource();
+			
+			if (layout)
+				refreshLayout();
 		}
 		
 		/** Bonds was changed from external code. */

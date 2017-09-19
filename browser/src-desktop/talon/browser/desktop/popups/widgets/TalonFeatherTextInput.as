@@ -99,9 +99,6 @@ package talon.browser.desktop.popups.widgets
 
 		private function onResize():void
 		{
-			x = node.bounds.x;
-			y = node.bounds.y;
-
 			width = node.bounds.width;
 			height = node.bounds.height;
 		}
@@ -112,10 +109,10 @@ package talon.browser.desktop.popups.widgets
 		private function onTextChange():void { text = node.getAttributeCache(Attribute.TEXT); }
 		private function onPaddingChange():void
 		{
-			paddingLeft = node.paddingLeft.toPixels(node.metrics);
-			paddingRight = node.paddingRight.toPixels(node.metrics);
-			paddingTop = node.paddingTop.toPixels(node.metrics);
-			paddingBottom = node.paddingBottom.toPixels(node.metrics);
+			paddingLeft = node.paddingLeft.toPixels();
+			paddingRight = node.paddingRight.toPixels();
+			paddingTop = node.paddingTop.toPixels();
+			paddingBottom = node.paddingBottom.toPixels();
 		}
 
 		private function get textFormat():BitmapFontTextFormat

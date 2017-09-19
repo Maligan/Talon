@@ -279,6 +279,9 @@ package talon.browser.desktop.utils
 			var attributes:TalonSprite = _view.query("#attributes")[0] as TalonSprite;
 			var i:int = 0;
 
+//			attributes.removeChildren();
+//			return;
+
 			for each (var attributeName:String in getList(node, _css))
 			{
 				var attribute:Attribute = node.getOrCreateAttribute(attributeName);

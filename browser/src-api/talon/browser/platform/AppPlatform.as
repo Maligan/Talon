@@ -10,15 +10,18 @@ package talon.browser.platform
 	import starling.core.Starling;
 	import starling.display.DisplayObjectContainer;
 	import starling.display.DisplayObjectContainer;
+	import starling.display.DisplayObjectContainer;
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 	import starling.extensions.TalonFactory;
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
+	import starling.text.TextField;
 	import starling.text.TextFieldAutoSize;
 	import starling.textures.Texture;
 	import starling.utils.Align;
+	import starling.utils.Color;
 
 	import talon.browser.platform.document.Document;
 	import talon.browser.platform.document.DocumentEvent;
@@ -88,6 +91,9 @@ package talon.browser.platform
 			if (_started) start();
 		}
 
+//		[Embed(source="/FiraSans.fnt", mimeType="application/octet-stream")] private static const FONT_FNT:Class;
+//		[Embed(source="/FiraSans.0.png")] private static const FONT_PNG:Class;
+		
 		public function start():void
 		{
 			_started = true;
@@ -97,6 +103,56 @@ package talon.browser.platform
 			{
 				_starling.start();
 				_plugins.start();
+				
+//				var font:BitmapFont = new BitmapFont(
+//					Texture.fromEmbeddedAsset(FONT_PNG),
+//					XML(new FONT_FNT)
+//				);
+//				TextField.registerCompositor(font, "FiraSans");
+
+//				var tf:TextField = new TextField(100, font.lineHeight, "The quick brown fox jumps over the lazy dog");
+//				tf.format.font = "FiraSans";
+//				tf.format.size = 16;
+//				tf.format.color = Color.GRAY;
+//				tf.autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
+//				tf.border = true;
+//				tf.x = tf.y = 100;
+//				_starling.stage.addChild(tf);
+//				addComment(tf, "autoSize = BOTH_DIRECTIONS");
+//
+//				var tf:TextField = new TextField(100, font.lineHeight, "--e qu-c- -rown -ox -umps over --e -azy -og");
+//				tf.format.font = "FiraSans";
+//				tf.format.size = 16;
+//				tf.format.color = Color.GRAY;
+//				tf.autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
+//				tf.border = true;
+//				tf.x = 100;
+//				tf.y = 150;
+//				_starling.stage.addChild(tf);
+//				addComment(tf, "autoSize = BOTH_DIRECTIONS, Chars with ascender replaced by '-'");
+//
+//				var tf:TextField = new TextField(100, font.lineHeight, "--e +u-c- -rown -ox -um+s over --e -az+ -o+");
+//				tf.format.font = "FiraSans";
+//				tf.format.size = 16;
+//				tf.format.color = Color.GRAY;
+//				tf.autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
+//				tf.border = true;
+//				tf.x = 100;
+//				tf.y = 200;
+//				_starling.stage.addChild(tf);
+//				addComment(tf, "autoSize = BOTH_DIRECTIONS, Chars with ascender/descender replaced by '-'/'+'");
+//				
+//				function addComment(to:TextField, message:String):void
+//				{
+//					var tf:TextField = new TextField(100, 100, message + ", height = " + to.height);
+//					tf.format.color = Color.WHITE;
+//					tf.format.font = BitmapFont.MINI;
+//					tf.format.size = 8;
+//					tf.autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
+//					tf.y = to.y - tf.height- 2;
+//					tf.x = to.x;
+//					_starling.stage.addChild(tf);
+//				}
 
 				dispatchEventWith(AppPlatformEvent.STARTED, false, _lastInvokeArgs);
 			}

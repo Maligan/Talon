@@ -39,7 +39,7 @@
 	<def ref="Toggle">
 		<div class="Toggle" text="Toggle" layout="flow">
 			<img id="icon" source="@icon" padding="5px" />
-			<txt id="text" text="@text" align="center" height="100%"/>
+			<txt id="text" text="@text" align="center" valignSelf="center" />
 		</div>
 	</def>
 
@@ -53,7 +53,7 @@
 	<def ref="Attribute">
 		<div class="Attribute" width="100%" layout="flow" name="Name" value="Value"> 
 			<use ref="Toggle" update="text:@name; width: 50%"/>
-			<txt id="value" text="@value" width="50%" height="100%" align="left center" />
+			<txt id="value" valignSelf="center" text="@value" width="50%" align="left center" />
 		</div>
 	</def>
 

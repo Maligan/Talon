@@ -71,8 +71,8 @@ package talon.browser.desktop.utils
 			process.addEventListener(NativeProcessExitEvent.EXIT, onProcessExit);
 			process.addEventListener(NativeProcessExitEvent.EXIT, onProcessExit);
 
-			_processes.push(process);
-			process.start(processInfo);
+			try { process.start(processInfo); _processes.push(process) }
+			catch (e:Error) { promise.reject(e); }
 
 			function onProcessError(e:ProgressEvent):void
 			{

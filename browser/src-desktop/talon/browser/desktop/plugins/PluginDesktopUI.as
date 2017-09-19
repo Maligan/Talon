@@ -509,8 +509,8 @@ package talon.browser.desktop.plugins
 			}
 
 			refreshMessages();
-			refreshOutline(_template);
 			refreshTemplateContainer();
+			refreshOutline(_template);
 
 			dispatchEventWith(Event.CHANGE);
 		}
@@ -534,7 +534,7 @@ package talon.browser.desktop.plugins
 				_templateContainer.parent.scale = zoom;
 				_templateContainer.parent.x = (pw - cw*zoom)/2;
 				_templateContainer.parent.y = (ph - ch*zoom)/2;
-				_templateContainer.node.setAttribute(Attribute.FILL_SCALE, (1/zoom).toString())
+				_templateContainer.node.setAttribute(Attribute.FILL_SCALE, (1/zoom).toString());
 
 				_template && refreshOutline(_template);
 			}

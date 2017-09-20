@@ -34,7 +34,7 @@ package starling.extensions
 		private var _requiresRecomposition:Boolean;
 		private var _requiresPadding:Boolean;
 		private var _textBounds:Rectangle;
-		private var _hitArea:Rectangle;
+		private var _lastBounds:Rectangle;
 		
 		/** @private */
 		public function TalonTextField()
@@ -42,11 +42,10 @@ package starling.extensions
 			super(0, 0, null);
 
 			_textBounds = new Rectangle();
-			_hitArea = new Rectangle();
+			_lastBounds = new Rectangle();
 			
 			_node = new Node();
 			_node.getOrCreateAttribute(Attribute.WRAP).inited = "true"; // FIXME: Bad Ya?
-			_node.addListener(Event.RESIZE, onNodeResize);
 			_node.addListener(Event.ADDED, onNodeParentChange);
 			_node.addListener(Event.REMOVED, onNodeParentChange);
 			_node.width.auto = measureWidth;
@@ -177,11 +176,6 @@ package starling.extensions
 			return out;
 		}
 
-		private function onNodeResize():void
-		{
-			resize();
-		}
-
 		private function onNodeParentChange():void
 		{
 			var unit:String = _node.fontSize.unit;
@@ -216,17 +210,9 @@ package starling.extensions
 		
 		private function refresh():void
 		{
-			resize();
+			setBounds(_node.bounds.width, _node.bounds.height);
 			recompose();
 			repadding();
-		}
-
-		private function resize():void
-		{
-			setBounds(
-				_node.width.isNone  ? Infinity : _node.bounds.width,
-				_node.height.isNone ? Infinity : _node.bounds.height
-			);
 		}
 
 		private function recompose():void
@@ -274,7 +260,7 @@ package starling.extensions
 		/** @private */
 		public override function get textBounds():Rectangle
 		{
-			refresh();
+			refresh(); // TODO: Add validation!
 			return _textBounds;
 		}
 
@@ -346,25 +332,17 @@ package starling.extensions
 		
 		private function setBounds(width:Number, height:Number):void
 		{
+			// Crop padding
 			var trueTypeCorrection:int = getCompositor(format.font) ? 0 : TRUE_TYPE_CORRECTION;
-			
-			var paddingRight:Number = node.paddingRight.toPixels();
-			var paddingLeft:Number = node.paddingLeft.toPixels();
-			var paddingTop:Number = node.paddingTop.toPixels();
-			var paddingBottom:Number = node.paddingBottom.toPixels();
+			width = width - node.paddingRight.toPixels() - node.paddingLeft.toPixels() + trueTypeCorrection;
+			height = height - node.paddingTop.toPixels() - node.paddingBottom.toPixels() + trueTypeCorrection;
 
-			width = width - paddingLeft - paddingRight + trueTypeCorrection;
-			height = height - paddingTop - paddingBottom + trueTypeCorrection;
-			
-			if (_hitArea.width != width) {
-				_hitArea.width = width;
-				super.width = width;
-			}
-			
-			if (_hitArea.height != height) {
-				_hitArea.height = height;
-				super.height = height;
-			}
+			// Change super values with without excess setRequiresRecomposition() calls
+			if (_lastBounds.width != width && _textBounds.width != width)
+				super.width = _lastBounds.width = width;
+				
+			if (_lastBounds.height != height && _textBounds.height != height)
+				super.height = _lastBounds.height = height;
 		}
 
 		//

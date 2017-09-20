@@ -11,6 +11,7 @@ package talon.browser.desktop.popups
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
 	import talon.browser.platform.popups.Popup;
 	import talon.browser.platform.utils.DeviceProfile;
+	import talon.core.Attribute;
 
 	public class ProfilePopup extends Popup
 	{
@@ -29,7 +30,7 @@ package talon.browser.desktop.popups
 
 			initializeInput("#width",     _profileTemp.width);
 			initializeInput("#height",    _profileTemp.height);
-			initializeInput("#dpi",       _profileTemp.dpi);
+			initializeInput("#dpi",       _profileTemp.dpi, onDPIFulfill);
 			initializeInput("#csf",       _profileTemp.csf);
 			initializeTabFocus(["#width", "#height", "#dpi", "#csf"]);
 
@@ -41,6 +42,13 @@ package talon.browser.desktop.popups
 
 			FocusManager.setEnabledForStage(stage, true);
 		}
+		
+		private function onDPIFulfill():void
+		{
+			var dpi:Number = readInput("#dpi");
+			var csf:Number = Math.max(1, int(dpi/160));
+			query("#csf").set(Attribute.TEXT, csf);
+		}
 
 		public override function dispose():void
 		{
@@ -48,7 +56,7 @@ package talon.browser.desktop.popups
 			super.dispose();
 		}
 
-		private function initializeInput(inputName:String, value:Number):void
+		private function initializeInput(inputName:String, value:Number, fulfill:Function = null):void
 		{
 			var input:TalonFeatherTextInput = query(inputName)[0] as TalonFeatherTextInput;
 			if (input != null)
@@ -62,6 +70,7 @@ package talon.browser.desktop.popups
 				input.addEventListener(FeathersEventType.FOCUS_OUT, function():void {
 					var valid:Boolean = NUMBER.test(input.text) && parseInt(input.text)>0;
 					input.node.states.set("error", !valid);
+					if (valid && fulfill) fulfill();
 				});
 			}
 		}

@@ -133,7 +133,6 @@ package talon.core
 		{
 			status |= STYLE;
 			_styles = styles;
-//			refreshStyle();
 		}
 
 		/** Recursive apply style to current node. */
@@ -217,10 +216,9 @@ package talon.core
 		// Layout
 		//
 		
-		private function get visible():Boolean { return ParseUtil.parseBoolean(getAttributeCache(Attribute.VISIBLE)); }
-		
 		private function refreshLayout():void
 		{
+			var visible:Boolean = ParseUtil.parseBoolean(getAttributeCache(Attribute.VISIBLE));
 			if (!visible) return;
 			
 			if (boundsIsResized || status | LAYOUT)

@@ -64,8 +64,8 @@ package talon.layouts
 			var paddingTop:Number = node.paddingTop.toPixels(0);
 			var paddingBottom:Number = node.paddingBottom.toPixels(0);
 
-			var contentWidth:Number = node.width.isNone ? 0 : (maxWidth - paddingLeft - paddingRight);
-			var contentHeight:Number = node.height.isNone ? 0 : (maxHeight - paddingTop - paddingBottom);
+			var contentWidth:Number = maxWidth==Infinity ? 0 : (maxWidth-paddingLeft-paddingRight);
+			var contentHeight:Number = maxHeight==Infinity ? 0 : (maxHeight-paddingTop-paddingBottom);
 
 			var flow:Flow = new Flow();
 			flow.setSpacings(getGap(node), getInterline(node));

@@ -29,6 +29,7 @@ package talon.browser.desktop.plugins
 	import talon.browser.desktop.commands.OpenDocumentCommand;
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
+	import talon.browser.desktop.utils.FileMonitor;
 	import talon.browser.desktop.utils.FileUtil;
 	import talon.browser.desktop.utils.GithubUpdater;
 	import talon.browser.desktop.utils.Inspector;
@@ -63,7 +64,9 @@ package talon.browser.desktop.plugins
 		private var _template:DisplayObject;
 		private var _templateProduceMessage:DocumentMessage;
 		private var _locked:Boolean;
-
+		
+		private var _documentMonitor:FileMonitor;
+		
 		public function get id():String { return "UI"; }
 		public function get version():String{ return "1.0.0"; }
 		public function get versionAPI():String { return "1.0.0"; }
@@ -74,6 +77,7 @@ package talon.browser.desktop.plugins
 		{
 			_platform = platform;
 			_updater = new GithubUpdater("maligan/talon", "0.0.0");
+			_documentMonitor = new FileMonitor();
 			
 			initListeners()
 				.then(initSettings)
@@ -87,13 +91,17 @@ package talon.browser.desktop.plugins
 			_platform.addEventListener(AppPlatformEvent.STARTED, onPlatformStart);
 			_platform.addEventListener(AppPlatformEvent.INVOKE, onPlatformInvoke);
 
+			_platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
 			_platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, refreshWindowFont);
 			_platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, refreshWindowTitle);
 			_platform.addEventListener(AppPlatformEvent.TEMPLATE_CHANGE, refreshWindowTitle);
 
+			_documentMonitor.addEventListener(Event.CHANGE, onDocumentFileChange);
+			_documentMonitor.watch();
+
 			_platform.profile.addEventListener(Event.CHANGE, refreshWindowTitle);
 			_platform.profile.addEventListener(Event.CHANGE, onProfileChange);
-
+			
 			var promise:Promise = new Promise();
 			promise.fulfill();
 			return promise;
@@ -329,6 +337,23 @@ package talon.browser.desktop.plugins
 			}
 		}
 
+		private function onDocumentChange(e:Event):void
+		{
+			var documentFile:File = null;
+			if (_platform.document != null)
+			{
+				var documentDir:String = _platform.document.properties.getValue(DesktopDocumentProperty.PROJECT_DIR, String, null);
+				documentFile = new File(documentDir + "/" + AppConstants.BROWSER_DOCUMENT_FILENAME);
+			}
+			
+			_documentMonitor.file = documentFile;
+		}
+		
+		private function onDocumentFileChange(e:Event):void
+		{
+			new OpenDocumentCommand(_platform, _documentMonitor.file.parent).execute();
+		}
+		
 		private function onStageResize(e:* = null):void
 		{
 			_ui && _ui.node.bounds.setTo(0, 0, _platform.starling.stage.stageWidth, _platform.starling.stage.stageHeight);

@@ -117,7 +117,8 @@ package talon.browser.desktop.popups.widgets
 
 		private function get textFormat():BitmapFontTextFormat
 		{
-			return textEditor ? BitmapFontTextEditor(textEditor).textFormat : null; }
+			return textEditor ? BitmapFontTextEditor(textEditor).textFormat : null;
+		}
 
 		public override function render(painter:Painter):void
 		{

@@ -118,7 +118,7 @@ package starling.extensions
 		// Event Listeners
 		//
 
-		public function onTap(listener:Function, numTapRequired:int = 1):TalonQuery
+		public function onTap(listener:Function, numTapRequired:int = 0):TalonQuery
 		{
 			forEach(function(element:EventDispatcher):void
 			{
@@ -126,7 +126,7 @@ package starling.extensions
 				{
 					var target:DisplayObject = e.target as DisplayObject;
 					var touch:Touch = e.getTouch(target, TouchPhase.ENDED);
-					if (touch && touch.tapCount == numTapRequired)
+					if (touch && (touch.tapCount == numTapRequired || numTapRequired == 0))
 					{
 						var local:Point = touch.getLocation(target, Pool.getPoint());
 						var within:Boolean = target.hitTest(local);

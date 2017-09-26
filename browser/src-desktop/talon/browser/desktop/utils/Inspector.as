@@ -187,15 +187,15 @@ package talon.browser.desktop.utils
 			itemName = itemName.charAt(0).toUpperCase() + itemName.substr(1);
 
 			item.query()
-				.set("text", itemName)
-				.set("info", node.getAttributeCache(Attribute.ID))
-				.set("depth", depth)
-				.set("paddingLeft", depth * 14)
-				.set("visible", depth==0)
+				.put("text", itemName)
+				.put("info", node.getAttributeCache(Attribute.ID))
+				.put("depth", depth)
+				.put("paddingLeft", depth * 14)
+				.put("visible", depth==0)
 				.onTap(onTreeItemTap1, 1)
 				.onTap(onTreeItemTap2, 2);
 
-			item.node.getChildAt(0).states.set("empty", node.numChildren == 0);
+			item.node.getChildAt(0).states.put("empty", node.numChildren == 0);
 
 			tree.addChild(item as DisplayObject);
 			
@@ -240,7 +240,7 @@ package talon.browser.desktop.utils
 			var toggle:Boolean = !ParseUtil.parseBoolean(toggled.getAttributeCache("toggle"));
 
 			toggled.setAttribute("toggle", toggle.toString());
-			toggled.getChildAt(0).states.set(State.CHECKED, toggle);
+			toggled.getChildAt(0).states.put(State.CHECKED, toggle);
 
 			for (var i:int = index+1; i < toggled.parent.numChildren; i++)
 			{
@@ -258,7 +258,7 @@ package talon.browser.desktop.utils
 					if (deep)
 					{
 						nextChild.setAttribute("toggle", expanded.toString());
-						nextChild.getChildAt(0).states.set(State.CHECKED, expanded);
+						nextChild.getChildAt(0).states.put(State.CHECKED, expanded);
 					}
 				}
 				else if (nextChildDepth == depth)
@@ -299,11 +299,11 @@ package talon.browser.desktop.utils
 				}
 
 				item.query()
-					.set("name", attribute.name)
-					.set("value", attribute.isResource ? attribute.value.substr(1) : attribute.value);
+					.put("name", attribute.name)
+					.put("value", attribute.isResource ? attribute.value.substr(1) : attribute.value);
 
-				item.node.getChildAt(0).states.set("empty", true);
-				item.node.classes.set("setted", attribute.setted != null);
+				item.node.getChildAt(0).states.put("empty", true);
+				item.node.classes.put("setted", attribute.setted != null);
 
 				i++;
 			}

@@ -254,16 +254,16 @@ package starling.extensions
 
 			if (touch == null || touch.phase == TouchPhase.ENDED)
 			{
-				_node.states.set(State.HOVER, false);
-				_node.states.set(State.ACTIVE, false);
+				_node.states.put(State.HOVER, false);
+				_node.states.put(State.ACTIVE, false);
 			}
 			else if (touch.phase == TouchPhase.HOVER)
 			{
-				_node.states.set(State.HOVER, true);
+				_node.states.put(State.HOVER, true);
 			}
 			else if (touch.phase == TouchPhase.BEGAN)
 			{
-				_node.states.set(State.ACTIVE, true);
+				_node.states.put(State.ACTIVE, true);
 			}
 			else if (touch.phase == TouchPhase.MOVED)
 			{
@@ -271,13 +271,13 @@ package starling.extensions
 
 				if (_node.states.has(State.ACTIVE) && !isWithinBounds)
 				{
-					_node.states.set(State.HOVER, false);
-					_node.states.set(State.ACTIVE, false);
+					_node.states.put(State.HOVER, false);
+					_node.states.put(State.ACTIVE, false);
 				}
 				else if (!_node.states.has(State.ACTIVE) && isWithinBounds)
 				{
-					_node.states.set(State.HOVER, true);
-					_node.states.set(State.ACTIVE, true);
+					_node.states.put(State.HOVER, true);
+					_node.states.put(State.ACTIVE, true);
 				}
 			}
 		}

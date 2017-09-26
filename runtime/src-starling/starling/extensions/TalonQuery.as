@@ -80,7 +80,7 @@ package starling.extensions
 		// Common
 		//
 		
-		public function set(name:String, value:*, ...args):TalonQuery
+		public function put(name:String, value:*, ...args):TalonQuery
 		{
 			if (args.length)
 			{
@@ -174,7 +174,7 @@ package starling.extensions
 			if (name is String)
 				throw new ArgumentError();
 			
-			set(name, value);
+			put(name, value);
 		}
 	}
 }

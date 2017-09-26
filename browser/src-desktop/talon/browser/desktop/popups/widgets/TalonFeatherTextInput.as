@@ -87,12 +87,12 @@ package talon.browser.desktop.popups.widgets
 
 		private function onFocusIn(e:*):void
 		{
-			node.states.set(State.FOCUS, true);
+			node.states.put(State.FOCUS, true);
 		}
 
 		private function onFocusOut(e:*):void
 		{
-			node.states.set(State.FOCUS, false);
+			node.states.put(State.FOCUS, false);
 		}
 
 		// node

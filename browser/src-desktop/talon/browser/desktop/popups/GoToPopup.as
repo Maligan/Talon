@@ -276,7 +276,7 @@ package talon.browser.desktop.popups
 		private function updateCursor():void
 		{
 			for (var i:int = 0; i < _labels.length; i++)
-				_labels[i].node.classes.set("selected", _labelsCursor == _labelsOffset + i);
+				_labels[i].node.classes.put("selected", _labelsCursor == _labelsOffset + i);
 		}
 
 		private function moveCursorToNext():void { refreshList(_labelsOffset, _labelsCursor + 1); }

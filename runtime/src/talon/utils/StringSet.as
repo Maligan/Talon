@@ -20,7 +20,7 @@ package talon.utils
 			_attributeName = attributeName;
 		}
 		
-		public function set(string:String, value:Boolean):void
+		public function put(string:String, value:Boolean):void
 		{
 			initialize();
 			

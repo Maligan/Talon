@@ -47,7 +47,7 @@ package talon.browser.desktop.popups
 		{
 			var dpi:Number = readInput("#dpi");
 			var csf:Number = Math.max(1, int(dpi/160));
-			query("#csf").set(Attribute.TEXT, csf);
+			query("#csf").put(Attribute.TEXT, csf);
 		}
 
 		public override function dispose():void
@@ -69,7 +69,7 @@ package talon.browser.desktop.popups
 
 				input.addEventListener(FeathersEventType.FOCUS_OUT, function():void {
 					var valid:Boolean = NUMBER.test(input.text) && parseInt(input.text)>0;
-					input.node.states.set("error", !valid);
+					input.node.states.put("error", !valid);
 					if (valid && fulfill) fulfill();
 				});
 			}

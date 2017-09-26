@@ -51,13 +51,13 @@ package talon.browser.desktop.plugins
 		private function activate():void
 		{
 			var overlay:TalonSprite = DisplayTreeUtil.findChildByName(_platform.starling.root as DisplayObjectContainer, "drag") as TalonSprite;
-			if (overlay) overlay.node.classes.set(State.ACTIVE, true);
+			if (overlay) overlay.node.classes.put(State.ACTIVE, true);
 		}
 
 		private function deactivate():void
 		{
 			var overlay:TalonSprite = DisplayTreeUtil.findChildByName(_platform.starling.root as DisplayObjectContainer, "drag") as TalonSprite;
-			if (overlay) overlay.node.classes.set(State.ACTIVE, false);
+			if (overlay) overlay.node.classes.put(State.ACTIVE, false);
 		}
 
 		public function detach():void

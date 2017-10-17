@@ -2,16 +2,16 @@ package talon.browser.desktop.commands
 {
 	import starling.events.Event;
 
-	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.AppPlatformEvent;
-	import talon.browser.platform.utils.Command;
+	import talon.browser.core.App;
+	import talon.browser.core.AppEvent;
+	import talon.browser.core.utils.Command;
 
 	public class CloseDocumentCommand extends Command
 	{
-		public function CloseDocumentCommand(platform:AppPlatform):void
+		public function CloseDocumentCommand(platform:App):void
 		{
 			super(platform);
-			platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
+			platform.addEventListener(AppEvent.DOCUMENT_CHANGE, onDocumentChange);
 		}
 
 		private function onDocumentChange(e:Event):void

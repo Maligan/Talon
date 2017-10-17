@@ -7,8 +7,8 @@ package talon.browser.desktop.filetypes
 	import starling.text.TextField;
 	import starling.textures.Texture;
 
-	import talon.browser.platform.document.DocumentEvent;
-	import talon.browser.platform.document.log.DocumentMessage;
+	import talon.browser.core.document.DocumentEvent;
+	import talon.browser.core.document.log.DocumentMessage;
 
 	public class XMLFontAsset extends Asset
 	{

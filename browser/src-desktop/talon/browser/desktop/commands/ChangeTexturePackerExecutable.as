@@ -3,13 +3,13 @@ package talon.browser.desktop.commands
 	import flash.events.Event;
 	import flash.filesystem.File;
 
-	import talon.browser.platform.AppConstants;
-	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.utils.Command;
+	import talon.browser.core.AppConstants;
+	import talon.browser.core.App;
+	import talon.browser.core.utils.Command;
 
 	public class ChangeTexturePackerExecutable extends Command
 	{
-		public function ChangeTexturePackerExecutable(platform:AppPlatform)
+		public function ChangeTexturePackerExecutable(platform:App)
 		{
 			super(platform);
 

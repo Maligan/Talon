@@ -17,39 +17,39 @@ package talon.browser.desktop.commands
 	import talon.browser.desktop.filetypes.XMLFontAsset;
 	import talon.browser.desktop.filetypes.XMLLibraryAsset;
 	import talon.browser.desktop.filetypes.XMLTemplateAsset;
-	import talon.browser.desktop.plugins.PluginDesktopUI;
+	import talon.browser.desktop.plugins.PluginDesktop;
 	import talon.browser.desktop.popups.PromisePopup;
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.desktop.utils.DesktopFileReference;
 	import talon.browser.desktop.utils.FileUtil;
 	import talon.browser.desktop.utils.Promise;
 	import talon.browser.desktop.utils.TexturePacker;
-	import talon.browser.platform.AppConstants;
-	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.AppPlatformEvent;
-	import talon.browser.platform.document.Document;
-	import talon.browser.platform.document.files.DummyFileController;
-	import talon.browser.platform.document.files.IFileController;
-	import talon.browser.platform.document.files.IFileReference;
-	import talon.browser.platform.utils.Command;
-	import talon.browser.platform.utils.Glob;
+	import talon.browser.core.AppConstants;
+	import talon.browser.core.App;
+	import talon.browser.core.AppEvent;
+	import talon.browser.core.document.Document;
+	import talon.browser.core.document.files.DummyFileController;
+	import talon.browser.core.document.files.IFileController;
+	import talon.browser.core.document.files.IFileReference;
+	import talon.browser.core.utils.Command;
+	import talon.browser.core.utils.Glob;
 
 	public class PublishCommand extends Command
 	{
 		private var _target:File;
-		private var _ui:PluginDesktopUI;
+		private var _ui:PluginDesktop;
 		
 		private var _packer:TexturePacker;
 		private var _packerPromise:Promise;
 		
-		public function PublishCommand(platform:AppPlatform, target:File = null)
+		public function PublishCommand(platform:App, target:File = null)
 		{
 			super(platform);
 			platform.settings.addPropertyListener(AppConstants.SETTING_TEXTURE_PACKER_BIN, onTexturePackerBinChange); onTexturePackerBinChange();
-			platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
+			platform.addEventListener(AppEvent.DOCUMENT_CHANGE, onDocumentChange);
 
 			_target = target;
-			_ui = platform.plugins.getPlugin(PluginDesktopUI) as PluginDesktopUI;
+			_ui = platform.plugins.getPlugin(PluginDesktop) as PluginDesktop;
 		}
 
 		public override function get isExecutable():Boolean
@@ -128,7 +128,7 @@ package talon.browser.desktop.commands
 			else
 			{
 				var popup:PromisePopup = new PromisePopup();
-				_ui.popups.open(popup);
+				platform.popups.open(popup);
 				popup.addEventListener(Event.CANCEL, _packer.stop);
 				popup.setHeader("Publish As...");
 				popup.setStateProcess("Pack sprites with TexturePacker...");
@@ -152,7 +152,7 @@ package talon.browser.desktop.commands
 			function onPackerError(e:Error):void
 			{
 				files = null;
-				trace(e); // TODO: Add Error Message
+				trace(e);
 			}
 
 			function complete():void

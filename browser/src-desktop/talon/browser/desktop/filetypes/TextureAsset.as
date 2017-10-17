@@ -10,7 +10,7 @@ package talon.browser.desktop.filetypes
 	import starling.textures.AtfData;
 	import starling.textures.Texture;
 
-	import talon.browser.platform.document.log.DocumentMessage;
+	import talon.browser.core.document.log.DocumentMessage;
 
 	public class TextureAsset extends Asset
 	{

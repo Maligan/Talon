@@ -11,10 +11,10 @@ package talon.browser.desktop.plugins
 	import starling.display.DisplayObjectContainer;
 	import starling.extensions.TalonSprite;
 
-	import talon.browser.platform.AppConstants;
-	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.plugins.IPlugin;
-	import talon.browser.platform.utils.DisplayTreeUtil;
+	import talon.browser.core.AppConstants;
+	import talon.browser.core.App;
+	import talon.browser.core.plugins.IPlugin;
+	import talon.browser.desktop.utils.DisplayTreeUtil;
 	import talon.enums.State;
 
 	public class PluginDesktopDragAndDrop implements IPlugin
@@ -24,13 +24,13 @@ package talon.browser.desktop.plugins
 		public static const EVENT_DRAG_DROP:String = "dragDrop";
 
 		private var _nativeDragLayer:Sprite;
-		private var _platform:AppPlatform;
+		private var _platform:App;
 
 		public function get id():String { return "talon.browser.plugin.core.DragAndDrop"; }
 		public function get version():String { return "0.0.1"; }
 		public function get versionAPI():String { return "0.1.0"; }
 
-		public function attach(platform:AppPlatform):void
+		public function attach(platform:App):void
 		{
 			_platform = platform;
 

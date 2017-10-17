@@ -5,7 +5,7 @@ package talon.browser.desktop.popups
 	import starling.display.DisplayObject;
 	import starling.events.Event;
 
-	import talon.browser.platform.popups.Popup;
+	import talon.browser.core.popups.Popup;
 	import talon.core.Attribute;
 
 	public class PromisePopup extends Popup

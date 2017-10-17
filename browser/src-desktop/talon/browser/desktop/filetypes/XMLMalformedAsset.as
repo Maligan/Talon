@@ -1,6 +1,6 @@
 package talon.browser.desktop.filetypes
 {
-	import talon.browser.platform.document.log.DocumentMessage;
+	import talon.browser.core.document.log.DocumentMessage;
 
 	public class XMLMalformedAsset extends Asset
 	{

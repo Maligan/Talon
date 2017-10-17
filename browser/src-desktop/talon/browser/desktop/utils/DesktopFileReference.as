@@ -6,8 +6,8 @@ package talon.browser.desktop.utils
 	import flash.system.System;
 	import flash.utils.ByteArray;
 
-	import talon.browser.platform.document.files.IFileReference;
-	import talon.browser.platform.utils.byteArrayStartsWith;
+	import talon.browser.core.document.files.IFileReference;
+	import talon.browser.desktop.utils.byteArrayStartsWith;
 
 	[Event(name="change", type="flash.events.Event")]
 	public class DesktopFileReference extends EventDispatcher implements IFileReference

@@ -3,10 +3,10 @@ package talon.browser.desktop.filetypes
 	import flash.utils.ByteArray;
 
 	import talon.browser.desktop.utils.DesktopFileReference;
-	import talon.browser.platform.document.Document;
-	import talon.browser.platform.document.files.IFileController;
-	import talon.browser.platform.document.files.IFileReference;
-	import talon.browser.platform.document.log.DocumentMessage;
+	import talon.browser.core.document.Document;
+	import talon.browser.core.document.files.IFileController;
+	import talon.browser.core.document.files.IFileReference;
+	import talon.browser.core.document.log.DocumentMessage;
 
 	internal class Asset implements IFileController
 	{

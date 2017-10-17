@@ -3,12 +3,12 @@ package talon.browser.desktop.commands
 	import flash.display.StageDisplayState;
 	import flash.events.NativeWindowDisplayStateEvent;
 
-	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.utils.Command;
+	import talon.browser.core.App;
+	import talon.browser.core.utils.Command;
 
 	public class ToggleFullScreenCommand extends Command
 	{
-		public function ToggleFullScreenCommand(platform:AppPlatform)
+		public function ToggleFullScreenCommand(platform:App)
 		{
 			super(platform);
 

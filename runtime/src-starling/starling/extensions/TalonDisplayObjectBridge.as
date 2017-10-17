@@ -243,9 +243,12 @@ package starling.extensions
 
 		private function onTouch_Cursor(e:TouchEvent):void
 		{
-			Mouse.cursor = e.interactsWith(_target)
+			var cursor:String = e.interactsWith(_target)
 				? _node.getAttributeCache(Attribute.CURSOR)
 				: MouseCursor.AUTO;
+
+			try { Mouse.cursor = cursor }
+			catch (e:Error) { trace("[Talon]", "Invalid cursor value:", cursor) }
 		}
 
 		private function onTouch_States(e:TouchEvent):void
@@ -325,7 +328,7 @@ package starling.extensions
 			}
 		}
 		
-		private function getTopmostInvalidatedAncestor()
+		private function getTopmostInvalidatedAncestor():Node
 		{
 			var base:Node = _node;
 			var last:Node = _node.invalidated ? _node : null;

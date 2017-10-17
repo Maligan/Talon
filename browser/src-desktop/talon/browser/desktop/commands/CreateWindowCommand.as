@@ -4,8 +4,8 @@ package talon.browser.desktop.commands
 	import flash.display.NativeWindowInitOptions;
 	import flash.display.NativeWindowRenderMode;
 
-	import talon.browser.desktop.DesktopLauncher;
-	import talon.browser.platform.utils.Command;
+	import talon.browser.desktop.AppDesktopLauncher;
+	import talon.browser.core.utils.Command;
 
 	public class CreateWindowCommand extends Command
 	{
@@ -22,7 +22,7 @@ package talon.browser.desktop.commands
 			var window:NativeWindow = new NativeWindow(windowOptions);
 			window.activate();
 
-			var launcher:DesktopLauncher = new DesktopLauncher();
+			var launcher:AppDesktopLauncher = new AppDesktopLauncher();
 			window.stage.addChild(launcher);
 		}
 

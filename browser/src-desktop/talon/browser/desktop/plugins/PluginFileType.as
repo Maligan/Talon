@@ -12,29 +12,29 @@ package talon.browser.desktop.plugins
 	import talon.browser.desktop.filetypes.XMLMalformedAsset;
 	import talon.browser.desktop.filetypes.XMLTemplateAsset;
 	import talon.browser.desktop.utils.DesktopFileReference;
-	import talon.browser.platform.AppConstants;
-	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.AppPlatformEvent;
-	import talon.browser.platform.plugins.IPlugin;
+	import talon.browser.core.AppConstants;
+	import talon.browser.core.App;
+	import talon.browser.core.AppEvent;
+	import talon.browser.core.plugins.IPlugin;
 	import talon.utils.TalonFactoryBase;
 
 	public class PluginFileType implements IPlugin
 	{
-		private var _platform:AppPlatform;
+		private var _platform:App;
 
 		public function get id():String         { return "talon.browser.plugin.core.FileType"; }
 		public function get version():String    { return "0.0.1"; }
 		public function get versionAPI():String { return "0.1.0"; }
 
-		public function attach(platform:AppPlatform):void
+		public function attach(platform:App):void
 		{
 			_platform = platform;
-			_platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
+			_platform.addEventListener(AppEvent.DOCUMENT_CHANGE, onDocumentChange);
 		}
 
 		public function detach():void
 		{
-			_platform.removeEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
+			_platform.removeEventListener(AppEvent.DOCUMENT_CHANGE, onDocumentChange);
 			_platform = null;
 		}
 

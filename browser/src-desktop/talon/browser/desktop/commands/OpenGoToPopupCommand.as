@@ -3,16 +3,16 @@ package talon.browser.desktop.commands
 	import starling.events.Event;
 
 	import talon.browser.desktop.popups.GoToPopup;
-	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.AppPlatformEvent;
+	import talon.browser.core.App;
+	import talon.browser.core.AppEvent;
 
 	public class OpenGoToPopupCommand extends OpenPopupCommand
 	{
-		public function OpenGoToPopupCommand(platform:AppPlatform)
+		public function OpenGoToPopupCommand(platform:App)
 		{
 			super(platform, GoToPopup, platform);
 
-			platform.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
+			platform.addEventListener(AppEvent.DOCUMENT_CHANGE, onDocumentChange);
 		}
 
 		private function onDocumentChange(e:Event):void

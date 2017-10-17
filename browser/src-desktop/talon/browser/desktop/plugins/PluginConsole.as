@@ -5,36 +5,34 @@ package talon.browser.desktop.plugins
 
 	import talon.core.Attribute;
 	import talon.core.Node;
-	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.document.files.IFileReference;
-	import talon.browser.platform.document.log.DocumentMessage;
-	import talon.browser.platform.plugins.IPlugin;
-	import talon.browser.platform.plugins.PluginStatus;
-	import talon.browser.platform.utils.Console;
-	import talon.browser.platform.utils.Glob;
+	import talon.browser.core.App;
+	import talon.browser.core.document.files.IFileReference;
+	import talon.browser.core.document.log.DocumentMessage;
+	import talon.browser.core.plugins.IPlugin;
+	import talon.browser.core.plugins.PluginStatus;
+	import talon.browser.core.utils.Console;
+	import talon.browser.core.utils.Glob;
 
 	public class PluginConsole implements IPlugin
 	{
-		private var _platform:AppPlatform;
+		private var _platform:App;
 		private var _console:Console;
 
 		public function get id():String         { return "talon.browser.plugin.core.Console"; }
 		public function get version():String    { return "0.0.1"; }
 		public function get versionAPI():String { return "0.1.0"; }
 
-		public function attach(platform:AppPlatform):void
+		public function attach(platform:App):void
 		{
 			_platform = platform;
 
-			_console = new Console();
-			_platform.stage.addChild(_console);
+			_console = _platform.console;
 
 			_console.addCommand("plugin_list", cmdPluginList, "Print current plugin list");
 			_console.addCommand("plugin_attach", cmdPluginAttach, "Attach plugin", "number");
 			_console.addCommand("plugin_detach", cmdPluginDetach, "Detach plugin", "number");
 
 			_console.addCommand("errors", cmdErrors, "Print current error list");
-			_console.addCommand("tree", cmdTree, "Print current template tree", "-a attributeName");
 			_console.addCommand("match", cmdMatch, "Print all files which match glob-pattern", "PATTERNs");
 		}
 
@@ -59,19 +57,6 @@ package talon.browser.desktop.plugins
 					if (Glob.match(file.path, pattern))
 						console.println(file.path);
 			}
-		}
-
-		private function cmdTree(query:String):void
-		{
-			throw new Error("Not implemented");
-
-			var split:Array = query.split(" ");
-			var useAttrs:Boolean = split.length > 1 && split[1] == "-a";
-			var attrs:Array = useAttrs ? split[2].split(/\s*,\s*/) : [];
-
-			var template:ITalonDisplayObject = ITalonDisplayObject(null /* FIXME */);
-			var node:Node = template.node;
-			traceNode(node, 0, attrs);
 		}
 
 		private function traceNode(node:Node, depth:int, attrs:Array):void

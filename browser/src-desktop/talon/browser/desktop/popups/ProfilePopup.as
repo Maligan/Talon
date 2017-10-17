@@ -9,8 +9,8 @@ package talon.browser.desktop.popups
 	import starling.events.Event;
 
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
-	import talon.browser.platform.popups.Popup;
-	import talon.browser.platform.utils.DeviceProfile;
+	import talon.browser.core.popups.Popup;
+	import talon.browser.core.utils.DeviceProfile;
 	import talon.core.Attribute;
 
 	public class ProfilePopup extends Popup

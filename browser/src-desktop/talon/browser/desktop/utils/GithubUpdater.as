@@ -10,12 +10,12 @@ package talon.browser.desktop.utils
 	public class GithubUpdater
 	{
 		private var _url:String;
-		private var _versionNumber:String;
+		private var _currentVersionNumber:String;
 		
-		public function GithubUpdater(repo:String = "maligan/talon", versionNumber:String = "0.0.0")
+		public function GithubUpdater(repo:String = "maligan/talon", currentVersionNumber:String = "0.0.0")
 		{
 			_url = "https://api.github.com/repos/" + repo + "/releases";
-			_versionNumber = versionNumber;
+			_currentVersionNumber = currentVersionNumber;
 		}
 		
 		public function check(prerelease:Boolean = true):Promise
@@ -54,7 +54,7 @@ package talon.browser.desktop.utils
 						releases.sort(compareGithubRelease);
 
 						var latest:GithubRelease = releases.pop();
-						if (latest != null && compare(latest.version, _versionNumber) > 0)
+						if (latest != null && compare(latest.version, _currentVersionNumber) > 0)
 							promise.fulfill(latest.url);
 						else
 							promise.fulfill(null);

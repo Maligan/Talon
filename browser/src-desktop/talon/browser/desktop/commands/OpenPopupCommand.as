@@ -1,15 +1,15 @@
 package talon.browser.desktop.commands
 {
-	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.utils.Command;
-	import talon.browser.platform.popups.Popup;
+	import talon.browser.core.App;
+	import talon.browser.core.utils.Command;
+	import talon.browser.core.popups.Popup;
 
 	public class OpenPopupCommand extends Command
 	{
 		private var _popupClass:Class;
 		private var _popupData:Object;
 
-		public function OpenPopupCommand(platform:AppPlatform, popupClass:Class, popupData:Object)
+		public function OpenPopupCommand(platform:App, popupClass:Class, popupData:Object)
 		{
 			super(platform);
 			_popupClass = popupClass;

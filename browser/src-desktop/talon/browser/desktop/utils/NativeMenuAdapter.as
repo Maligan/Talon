@@ -6,7 +6,7 @@ package talon.browser.desktop.utils
 
 	import starling.events.Event;
 
-	import talon.browser.platform.utils.Command;
+	import talon.browser.core.utils.Command;
 
 	public class NativeMenuAdapter
 	{

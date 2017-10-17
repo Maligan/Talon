@@ -6,8 +6,8 @@ package talon.browser.desktop.filetypes
 
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.desktop.utils.DesktopFileReference;
-	import talon.browser.platform.document.log.DocumentMessage;
-	import talon.browser.platform.utils.Glob;
+	import talon.browser.core.document.log.DocumentMessage;
+	import talon.browser.core.utils.Glob;
 
 	public class DirectoryAsset extends Asset
 	{

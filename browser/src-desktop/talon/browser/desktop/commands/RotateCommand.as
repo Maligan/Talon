@@ -1,11 +1,11 @@
 package talon.browser.desktop.commands
 {
-	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.utils.Command;
+	import talon.browser.core.App;
+	import talon.browser.core.utils.Command;
 
 	public class RotateCommand extends Command
 	{
-		public function RotateCommand(platform:AppPlatform)
+		public function RotateCommand(platform:App)
 		{
 			super(platform);
 		}

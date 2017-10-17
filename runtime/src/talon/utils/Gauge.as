@@ -27,13 +27,15 @@ package talon.utils
 		public static function toPixels(string:String, metrics:Metrics, pp100p:Number = 0, auto:Function = null, aa:Number = 0, pps:Number = 0):Number
 		{
 			sGauge.parse(string);
-			sGauge.auto = auto;
+			sGauge._auto = auto;
+			sGauge._metrics = metrics;
 			return sGauge.toPixels(pp100p, aa, pps);
 		}
 
 		private var _node:Node;
 		private var _attributeName:String;
 		private var _attribute:Attribute;
+		private var _metrics:Metrics;
 
 		private var _unit:String = NONE;
 		private var _amount:Number = 0;
@@ -50,6 +52,7 @@ package talon.utils
 		{
 			if (_attribute == null && _node && _attributeName)
 			{
+				_metrics = _node.metrics;
 				_attribute = _node.getOrCreateAttribute(_attributeName);
 				_attribute.change.addListener(onChange);
 				onChange();
@@ -63,6 +66,8 @@ package talon.utils
 
 		private function parse(string:String):void
 		{
+			var exec:Array;
+			
 			if (string == NONE)
 			{
 				_unit = NONE;
@@ -73,20 +78,15 @@ package talon.utils
 				_unit = STAR;
 				_amount = 1;
 			}
-			else
+			else if (exec = sFormat.exec(string))
 			{
-				var match:Array = sFormat.exec(string);
-				if (match != null)
-				{
-					_amount = parseFloat(match[1]);
-					_unit = match[2] || PX;
-				}
-				else
-				{
-					trace("[Gauge]", "Input string is not valid gauge:", string);
-					_amount = 0;
-					_unit = NONE;
-				}
+				_amount = parseFloat(exec[1]);
+				_unit = exec[2] || PX;
+			}
+			else // Fallback to NONE
+			{
+				_amount = 0;
+				_unit = NONE;
 			}
 		}
 
@@ -103,9 +103,9 @@ package talon.utils
 			{
 				case NONE:		return auto ? auto(aa) : 0;
 				case PX:		return amount;
-				case MM:		return amount * _node.metrics.ppmm;
-				case EM:        return amount * _node.metrics.ppem;
-				case DP:        return amount * _node.metrics.ppdp;
+				case MM:		return amount * _metrics.ppmm;
+				case EM:        return amount * _metrics.ppem;
+				case DP:        return amount * _metrics.ppdp;
 				case PERCENT:   return amount * pp100p/100;
 				case STAR:		return amount * pps;
 				default:		throw new Error("Unknown gauge unit: " + unit);

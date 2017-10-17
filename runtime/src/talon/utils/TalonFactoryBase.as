@@ -45,7 +45,6 @@ package talon.utils
 
 		// Factory
 
-		// TODO: Roll back after errors? _stack & _roots
 		protected function buildObject(xmlOrKey:Object, includeStyleSheet:Boolean, includeResources:Boolean):Object
 		{
 			if (xmlOrKey == null) throw new Error("Parameter xmlOrKey must be non-null");
@@ -66,6 +65,10 @@ package talon.utils
 				if (template === null) throw new ArgumentError("Template with id: " + xmlOrKey + " doesn't exist");
 			}
 
+			// Reset
+			_parserStack.length = 0;
+			_parserRoots.length = 0;
+			
 			// Parse template, while parsing events dispatched (onElementBegin, onElementEnd)
 			if (templateCached)
 			{
@@ -297,9 +300,9 @@ package talon.utils
 							
 							for (var i:int = 0; i < list.length; i+=2)
 							{
-								var name:String = list[i];
-								var value:String = list[i+1];
-								cursor[name] = value;
+								var aName:String = list[i];
+								var aValue:String = list[i+1];
+								cursor[aName] = aValue;
 							}
 						}
 					}
@@ -315,9 +318,9 @@ package talon.utils
 
 				for (var j:int = 0; j < attributes.length; j+=2)
 				{
-					name = attributes[j];
-					value = attributes[j+1];
-					style.values[name] = value;
+					aName = attributes[j];
+					aValue = attributes[j+1];
+					style.values[aName] = aValue;
 				}
 			}
 			

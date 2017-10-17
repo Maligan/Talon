@@ -1,7 +1,5 @@
 package talon.browser.desktop.utils
 {
-	import com.doitflash.Scroller;
-
 	import flash.ui.Keyboard;
 	import flash.utils.Dictionary;
 
@@ -28,7 +26,7 @@ package talon.browser.desktop.utils
 		
 		private var _factory:TalonFactory;
 		private var _view:ITalonDisplayObject;
-		private var _scroller:Scroller;
+//		private var _scroller:Scroller;
 		
 		private var _tree:Node;
 		private var _selection:Node;

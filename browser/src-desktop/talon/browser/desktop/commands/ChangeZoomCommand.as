@@ -1,14 +1,14 @@
 package talon.browser.desktop.commands
 {
-	import talon.browser.platform.AppConstants;
-	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.utils.Command;
+	import talon.browser.core.AppConstants;
+	import talon.browser.core.App;
+	import talon.browser.core.utils.Command;
 
 	public class ChangeZoomCommand extends Command
 	{
 		private var _delta:Number;
 
-		public function ChangeZoomCommand(platform:AppPlatform, delta:Number)
+		public function ChangeZoomCommand(platform:App, delta:Number)
 		{
 			super(platform);
 			platform.settings.addPropertyListener(AppConstants.SETTING_ZOOM, dispatchEventChange);

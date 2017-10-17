@@ -7,22 +7,22 @@ package talon.browser.desktop.commands
 	import flash.filesystem.FileStream;
 	import flash.utils.ByteArray;
 
-	import talon.browser.desktop.plugins.PluginDesktopUI;
-	import talon.browser.platform.AppConstants;
-	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.utils.Command;
+	import talon.browser.desktop.plugins.PluginDesktop;
+	import talon.browser.core.AppConstants;
+	import talon.browser.core.App;
+	import talon.browser.core.utils.Command;
 
 	public class PublishScreenshotCommand extends Command
 	{
-		private var _ui:PluginDesktopUI;
+		private var _desktop:PluginDesktop;
 		private var _output:File;
 
-		public function PublishScreenshotCommand(platform:AppPlatform, ui:PluginDesktopUI, output:File = null)
+		public function PublishScreenshotCommand(platform:App, ui:PluginDesktop, output:File = null)
 		{
 			super(platform);
 			_output = output;
-			_ui = ui;
-			_ui.addEventListener(Event.CHANGE, onTemplateChange);
+			_desktop = ui;
+			_desktop.addEventListener(Event.CHANGE, onTemplateChange);
 		}
 
 		private function onTemplateChange(e:*):void
@@ -32,7 +32,7 @@ package talon.browser.desktop.commands
 
 		public override function get isExecutable():Boolean
 		{
-			return _ui.template;
+			return _desktop.template != null;
 		}
 
 		override public function execute():void
@@ -60,7 +60,7 @@ package talon.browser.desktop.commands
 		{
 			if (file != null)
 			{
-				var bitmap:BitmapData = _ui.template.drawToBitmapData();
+				var bitmap:BitmapData = _desktop.template.drawToBitmapData();
 				var bytes:ByteArray = PNGEncoder2.encode(bitmap);
 
 				try

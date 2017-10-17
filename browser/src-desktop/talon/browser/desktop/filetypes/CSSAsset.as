@@ -1,6 +1,6 @@
 package talon.browser.desktop.filetypes
 {
-	import talon.browser.platform.document.log.DocumentMessage;
+	import talon.browser.core.document.log.DocumentMessage;
 	import talon.utils.ParseUtil;
 
 	public class CSSAsset extends Asset

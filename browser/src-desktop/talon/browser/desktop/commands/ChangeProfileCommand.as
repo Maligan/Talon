@@ -2,15 +2,15 @@ package talon.browser.desktop.commands
 {
 	import starling.events.Event;
 
-	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.utils.Command;
-	import talon.browser.platform.utils.DeviceProfile;
+	import talon.browser.core.App;
+	import talon.browser.core.utils.Command;
+	import talon.browser.core.utils.DeviceProfile;
 
 	public class ChangeProfileCommand extends Command
 	{
 		private var _profile:DeviceProfile;
 
-		public function ChangeProfileCommand(platform:AppPlatform, profile:DeviceProfile)
+		public function ChangeProfileCommand(platform:App, profile:DeviceProfile)
 		{
 			super(platform);
 			platform.profile.addEventListener(Event.CHANGE, onProfileChange);

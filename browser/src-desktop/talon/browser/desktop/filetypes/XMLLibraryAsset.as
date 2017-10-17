@@ -2,7 +2,7 @@ package talon.browser.desktop.filetypes
 {
 	import flash.system.System;
 
-	import talon.browser.platform.document.log.DocumentMessage;
+	import talon.browser.core.document.log.DocumentMessage;
 	import talon.utils.ParseUtil;
 	import talon.utils.TMLParser;
 	import talon.utils.TalonFactoryBase;

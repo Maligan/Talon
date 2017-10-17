@@ -5,18 +5,19 @@ package talon.browser.desktop.commands
 
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.desktop.utils.DesktopFileReference;
+	import talon.browser.desktop.utils.DesktopStorage;
 	import talon.browser.desktop.utils.FileUtil;
-	import talon.browser.platform.AppConstants;
-	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.document.Document;
-	import talon.browser.platform.utils.Command;
-	import talon.browser.platform.utils.Storage;
+	import talon.browser.core.AppConstants;
+	import talon.browser.core.App;
+	import talon.browser.core.document.Document;
+	import talon.browser.core.utils.Command;
+	import talon.browser.core.utils.Storage;
 
 	public class OpenDocumentCommand extends Command
 	{
 		private var _source:File;
 
-		public function OpenDocumentCommand(platform:AppPlatform, root:File = null)
+		public function OpenDocumentCommand(platform:App, root:File = null)
 		{
 			super(platform);
 			_source = root;
@@ -46,7 +47,7 @@ package talon.browser.desktop.commands
 			var config:File = dir.resolvePath(AppConstants.BROWSER_DOCUMENT_FILENAME);
 
 			// NB! Set as current document immediately (before any references)
-			var documentProperties:Storage = config.exists ? Storage.fromProperties(FileUtil.readText(config)) : new Storage();
+			var documentProperties:Storage = new DesktopStorage(config);
 			var document:Document = new Document(documentProperties);
 			document.properties.setValue(DesktopDocumentProperty.PROJECT_DIR, dir.url);
 			platform.document = document;

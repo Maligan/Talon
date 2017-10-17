@@ -6,8 +6,8 @@ package talon.browser.desktop.filetypes
 	import starling.textures.Texture;
 	import starling.textures.TextureAtlas;
 
-	import talon.browser.platform.document.DocumentEvent;
-	import talon.browser.platform.document.log.DocumentMessage;
+	import talon.browser.core.document.DocumentEvent;
+	import talon.browser.core.document.log.DocumentMessage;
 
 	public class XMLAtlasAsset extends Asset
 	{

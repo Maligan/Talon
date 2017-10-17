@@ -16,11 +16,11 @@ package talon.browser.desktop.popups
 	import starling.styles.MeshStyle;
 
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
-	import talon.browser.platform.AppPlatform;
-	import talon.browser.platform.AppPlatformEvent;
-	import talon.browser.platform.popups.Popup;
-	import talon.browser.platform.utils.FuzzyUtil;
-	import talon.browser.platform.utils.MouseWheel;
+	import talon.browser.core.App;
+	import talon.browser.core.AppEvent;
+	import talon.browser.core.popups.Popup;
+	import talon.browser.desktop.utils.FuzzyUtil;
+	import talon.browser.desktop.utils.MouseWheel;
 
 	public class GoToPopup extends Popup
 	{
@@ -40,7 +40,7 @@ package talon.browser.desktop.popups
 		private var _labelsCursor:int;
 
 		// Controller
-		private var _app:AppPlatform;
+		private var _app:App;
 		private var _wheel:MouseWheel;
 
 		protected override function initialize():void
@@ -49,8 +49,8 @@ package talon.browser.desktop.popups
 			
 			getBounds(this);
 
-			_app = data as AppPlatform;
-			_app.addEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
+			_app = data as App;
+			_app.addEventListener(AppEvent.DOCUMENT_CHANGE, onDocumentChange);
 			_items = _app.document.factory.templateIds;
 
 			// Keyboard control
@@ -131,7 +131,7 @@ package talon.browser.desktop.popups
 		{
 			_wheel.dispose();
 			_wheel = null;
-			_app.removeEventListener(AppPlatformEvent.DOCUMENT_CHANGE, onDocumentChange);
+			_app.removeEventListener(AppEvent.DOCUMENT_CHANGE, onDocumentChange);
 			_app = null;
 			super.dispose();
 		}

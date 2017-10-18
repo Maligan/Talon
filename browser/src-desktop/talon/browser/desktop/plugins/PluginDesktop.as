@@ -898,7 +898,7 @@ class DesktopNativeMenu
 		// Help
 		insert("help");
 		insert("help/online", new OpenURLCommand(_platform, AppConstants.APP_DOCUMENTATION_URL));
-		insert("help/report", new OpenURLCommand(_platform, "http://google.com/"));
+		insert("help/report", new OpenURLCommand(_platform, AppConstants.APP_TRACKER_URL));
 //		insert("help/update", new OpenPopupCommand(_platform, UpdatePopup, ui.updater));
 
 		if (NativeWindow.supportsMenu) _platform.stage.nativeWindow.menu = _menu.nativeMenu;

@@ -6,6 +6,7 @@ package talon.browser.core
 	{
 		public static const APP_NAME:String = "Talon Browser";
 		public static const APP_DOCUMENTATION_URL:String = "https://github.com/Maligan/Talon/blob/master/docs/index.md";
+		public static const APP_TRACKER_URL:String = "https://github.com/Maligan/Talon/issues";
 
 		public static function get APP_VERSION_LABEL():String { return readDescriptor("versionLabel") }
 		public static function get APP_VERSION():String { return readDescriptor("versionNumber") }

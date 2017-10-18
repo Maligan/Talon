@@ -35,6 +35,7 @@ package talon.browser.desktop.plugins
 	import talon.browser.core.utils.DeviceProfile;
 	import talon.browser.desktop.commands.OpenDocumentCommand;
 	import talon.browser.desktop.popups.widgets.TalonFeatherTextInput;
+	import talon.browser.desktop.utils.BackgroundTexture;
 	import talon.browser.desktop.utils.DesktopDocumentProperty;
 	import talon.browser.desktop.utils.FileUtil;
 	import talon.browser.desktop.utils.GithubUpdater;
@@ -54,6 +55,7 @@ package talon.browser.desktop.plugins
 		private var _layout:TalonSprite;
 		private var _messages:TalonSprite;
 		private var _inspector:Inspector;
+		private var _backgrounds:Vector.<BackgroundTexture>;
 
 		private var _container:TalonSprite;
 		private var _templateContainer:TalonSprite;
@@ -61,6 +63,7 @@ package talon.browser.desktop.plugins
 		private var _template:DisplayObject;
 
 		private var _locked:Boolean;
+		private var _background:BackgroundTexture;
 		
 		public function get id():String { return "UI"; }
 		public function get version():String{ return "1.0.0"; }
@@ -74,6 +77,7 @@ package talon.browser.desktop.plugins
 
 			initSettings()
 				.then(initListeners)
+				.then(initBackgrounds)
 				.then(initWindow)
 				.then(initLocale)
 				.then(initUI);
@@ -136,7 +140,9 @@ package talon.browser.desktop.plugins
 			_platform.addEventListener(AppEvent.TEMPLATE_CHANGE, onCurrentTemplateChange);
 			_platform.profile.addEventListener(Event.CHANGE, onProfileChange);
 			_platform.starling.stage.addEventListener(ResizeEvent.RESIZE, onStageResize);
+			
 			_platform.settings.addPropertyListener(AppConstants.SETTING_ZOOM, onZoomChange);
+			_platform.settings.addPropertyListener(AppConstants.SETTING_PROFILE_BIND_MODE, onBindChange);
 
 			/* When opened new document, or close current */
 			function onCurrentDocumentChange(e:Event):void
@@ -199,6 +205,14 @@ package talon.browser.desktop.plugins
 			{
 				refreshWindowTitle();
 			}
+			
+			function onBindChange(e:Event):void
+			{
+				if (isProfileBinding)
+					_platform.profile.setSize(_platform.starling.stage.stageWidth, _platform.starling.stage.stageHeight);
+				
+				refreshTemplateContainer();
+			}
 		}
 
 		private function initWindow():void
@@ -246,6 +260,26 @@ package talon.browser.desktop.plugins
 			}
 		}
 
+		private function initBackgrounds():void
+		{
+			_backgrounds = new <BackgroundTexture>[];
+			
+			// Default backgrounds
+			for each (var background:Object in AppConstants.SETTING_BACKGROUNDS)
+				_backgrounds.push(BackgroundTexture.fromObject(background));
+			
+			// Search background in application plugins subdirectory
+			var dir:File = File.applicationDirectory.resolvePath(AppConstants.PLUGINS_DIR);
+			if (dir.exists)
+			{
+				var files:Array = dir.getDirectoryListing();
+
+				for each (var file:File in files)
+					if (AppConstants.BROWSER_SUPPORTED_IMAGE_EXTENSIONS.indexOf(file.extension) != -1)
+						_backgrounds.push(BackgroundTexture.fromFile(file, _platform.factory));
+			}
+		}
+		
 		private function initLocale(lang:String):void
 		{
 			lang = "en_US";
@@ -267,7 +301,7 @@ package talon.browser.desktop.plugins
 		
 		private function initUI():void
 		{
-			_menu = new DesktopNativeMenu(_platform, this, _platform.locale.values);
+			_menu = new DesktopNativeMenu(this);
 
 			var filePath:String = "layouts.zip";
 			var fileInterface:File = File.applicationDirectory.resolvePath(filePath);
@@ -313,18 +347,34 @@ package talon.browser.desktop.plugins
 					_templateFrame.alpha = 0.3;
 					_templateFrame.touchable = false;
 					_container.addChild(_templateFrame);
-					
-					_container.node.setResources({
-						"dark":	 assets.getTexture("bg_dark"), // concrete_wall
-						"light": assets.getTexture("bg_light") // fabric_of_squares_gray | old_mathematics
-					});
-					
+
 					// listeners
 					_platform.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, onBackgroundChange); 		onBackgroundChange(null);
 					_platform.settings.addPropertyListener(AppConstants.SETTING_STATS, onStatsChange); 					onStatsChange(null);
 					_platform.settings.addPropertyListener(AppConstants.SETTING_SHOW_OUTLINE, onOutlineChange); 		onOutlineChange(null);
 					_platform.settings.addPropertyListener(AppConstants.SETTING_SHOW_INSPECTOR, onInspectorChange);	onInspectorChange(null);
  
+					// Background
+					upd();
+					
+					_platform.settings.addPropertyListener(AppConstants.SETTING_BACKGROUND, upd);
+					
+					function upd():void
+					{
+						var value:String = _platform.settings.getValue(AppConstants.SETTING_BACKGROUND, String);
+						
+						for each (var back:BackgroundTexture in backgrounds)
+						{
+							if (back.name == value)
+							{
+								background = back;
+								return;
+							}
+						}
+						
+						background = _backgrounds[0];
+					}
+					
 					// ready
 					refreshTemplateContainer();
 					refreshTemplate();
@@ -335,7 +385,6 @@ package talon.browser.desktop.plugins
 				throw new Error("Can't find interface file:\n" + fileInterface.nativePath);
 			}
 		}
-
 		
 		private function onPlatformStart(e:Event):void
 		{
@@ -408,8 +457,9 @@ package talon.browser.desktop.plugins
 
 		private function onBackgroundChange(e:Event):void
 		{
-			var styleName:String = _platform.settings.getValue(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
-			_container.node.setAttribute(Attribute.FILL, "$" + styleName);
+//			var name:String = _platform.settings.getValue(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
+//			_container.node.setAttribute(Attribute.FILL, "$low_contrast_linen"); //"$bg_" + name);
+		
 		}
 
 		private function onStatsChange(e:Event):void
@@ -633,6 +683,9 @@ package talon.browser.desktop.plugins
 		
 				
 		
+		
+//		public function setBackground()
+		
 
 		public function get isProfileBinding():Boolean {
 			return _platform.settings.getValue(AppConstants.SETTING_PROFILE_BIND_MODE, Boolean, true)
@@ -641,8 +694,10 @@ package talon.browser.desktop.plugins
 		
 		public function get outline():Boolean { return _platform.settings.getValue(AppConstants.SETTING_SHOW_OUTLINE, Boolean, false); }
 
+		public function get backgrounds():Vector.<BackgroundTexture> { return _backgrounds; }
 
 		// Properties
+		public function get platform():App { return _platform; }
 		public function get template():DisplayObject { return _template; }
 
 		public function get locked():Boolean { return _locked; }
@@ -667,6 +722,24 @@ package talon.browser.desktop.plugins
 
 		public function get zoom():Number { return _platform.settings.getValue(AppConstants.SETTING_ZOOM, Number, 1); }
 		public function set zoom(value:Number):void { if (zoom != value) _platform.settings.setValue(AppConstants.SETTING_ZOOM, value); }
+		
+		public function get background():BackgroundTexture { return _background; }
+		public function set background(value:BackgroundTexture):void
+		{
+			if (_background != value)
+			{
+				_background = value;
+				_background.initialize().then(function(back:BackgroundTexture):void
+				{
+					if (_background == back)
+					{
+						_platform.stage.color = back.color;
+						_container.node.setAttribute(Attribute.FILL, "$" + back.texture);
+						_platform.settings.setValue(AppConstants.SETTING_BACKGROUND_COLOR, back.color);
+					}
+				});
+			}
+		}
 		
 		// Window
 
@@ -725,6 +798,7 @@ import talon.browser.core.utils.DeviceProfile;
 import talon.browser.desktop.commands.*;
 import talon.browser.desktop.plugins.PluginDesktop;
 import talon.browser.desktop.popups.ProfilePopup;
+import talon.browser.desktop.utils.BackgroundTexture;
 import talon.browser.desktop.utils.NativeMenuAdapter;
 
 class DesktopNativeMenu
@@ -734,10 +808,27 @@ class DesktopNativeMenu
 	private var _menu:NativeMenuAdapter;
 	private var _prevDocuments:Array;
 
-	public function DesktopNativeMenu(platform:App, ui:PluginDesktop, locale:Object)
+	private function insert(path:String, command:Command = null, shortcut:String = null):void
 	{
-		_platform = platform;
-		_locale = locale;
+		var labelKey:String = "menu." + path.replace(/\//g, ".");
+		var label:String = labelKey in _locale ? _locale[labelKey] : path.split("/").pop();
+
+		var keyPattern:RegExp = /^(SHIFT-)?(CTRL-)?(ALT-)?(.+)$/;
+		var keySplit:Array = (shortcut ? keyPattern.exec(shortcut.toUpperCase()) : null) || [];
+		var keyModifiers:Array = [];
+		if (keySplit[1]) keyModifiers.push(Keyboard.SHIFT);
+		if (keySplit[2]) keyModifiers.push(Keyboard.CONTROL);
+		if (keySplit[3]) keyModifiers.push(Keyboard.ALTERNATE);
+		var key:String = null;
+		if (keySplit[4]) key = keySplit[4].toLowerCase();
+
+		_menu.insert(path, label, command, key, keyModifiers);
+	}
+
+	public function DesktopNativeMenu(desktop:PluginDesktop)
+	{
+		_platform = desktop.platform;
+		_locale = _platform.locale.values;
 		_menu = new NativeMenuAdapter();
 
 		// File
@@ -757,7 +848,7 @@ class DesktopNativeMenu
 		insert("file/preferences/texturePacker", new ChangeTexturePackerExecutable(_platform));
 		insert("file/-");
 		insert("file/publishAs",               new  PublishCommand(_platform), "shift-ctrl-s");
-		insert("file/screenshot",              new  PublishScreenshotCommand(_platform, ui), "shift-ctrl-a");
+		insert("file/screenshot",              new  PublishScreenshotCommand(_platform, desktop), "shift-ctrl-a");
 
 		_platform.settings.addPropertyListener(AppConstants.SETTING_RECENT_DOCUMENTS, refreshRecentOpenedDocumentsList);
 		refreshRecentOpenedDocumentsList();
@@ -766,10 +857,18 @@ class DesktopNativeMenu
 		insert("view");
 		insert("view/rotate",                  new  RotateCommand(_platform), "ctrl-r");
 		insert("view/theme");
-		insert("view/theme/dark",              new  ChangeSettingCommand(_platform, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_DARK));
-		insert("view/theme/light",             new  ChangeSettingCommand(_platform, AppConstants.SETTING_BACKGROUND, AppConstants.SETTING_BACKGROUND_LIGHT));
+
+		for (var i:int = 0; i < desktop.backgrounds.length; i++)
+		{
+			if (i == AppConstants.SETTING_BACKGROUNDS.length)
+				insert("view/theme/-");
+
+			var background:BackgroundTexture = desktop.backgrounds[i];
+			insert("view/theme/" + background.name, new ChangeSettingCommand(_platform, AppConstants.SETTING_BACKGROUND, background.name));
+		}
+		
 		insert("view/profile");
-		insert("view/profile/custom",          new  OpenPopupCommand(_platform, ProfilePopup, platform.profile), "ctrl-0");
+		insert("view/profile/custom",          new  OpenPopupCommand(_platform, ProfilePopup, _platform.profile), "ctrl-0");
 
 		var profiles:Vector.<DeviceProfile> = DeviceProfile.getProfiles();
 		if (profiles.length > 0) insert("view/profile/-");
@@ -787,39 +886,22 @@ class DesktopNativeMenu
 		insert("view/-");
 		insert("view/outline",				   new  ChangeSettingCommand(_platform, AppConstants.SETTING_SHOW_OUTLINE, true, false), "ctrl-l");
 		insert("view/inspector",			   new  ChangeSettingCommand(_platform, AppConstants.SETTING_SHOW_INSPECTOR, true, false), "ctrl-i");
-		
+
 		insert("view/-");
 		insert("view/fullScreen",              new  ToggleFullScreenCommand(_platform)); // FIXME: F11
-		
+
 		// Navigate
 		insert("navigate");
 		insert("navigate/gotoFolder",		   new OpenDocumentFolderCommand(_platform));
 		insert("navigate/gotoTemplate",        new OpenGoToPopupCommand(_platform), "ctrl-p");
-		
+
 		// Help
 		insert("help");
 		insert("help/online", new OpenURLCommand(_platform, AppConstants.APP_DOCUMENTATION_URL));
 		insert("help/report", new OpenURLCommand(_platform, "http://google.com/"));
 //		insert("help/update", new OpenPopupCommand(_platform, UpdatePopup, ui.updater));
 
-		if (NativeWindow.supportsMenu) platform.stage.nativeWindow.menu = _menu.nativeMenu;
-	}
-
-	private function insert(path:String, command:Command = null, shortcut:String = null):void
-	{
-		var labelKey:String = "menu." + path.replace(/\//g, ".");
-		var label:String = labelKey in _locale ? _locale[labelKey] : path.split("/").pop();
-
-		var keyPattern:RegExp = /^(SHIFT-)?(CTRL-)?(ALT-)?(.+)$/;
-		var keySplit:Array = (shortcut ? keyPattern.exec(shortcut.toUpperCase()) : null) || [];
-		var keyModifiers:Array = [];
-		if (keySplit[1]) keyModifiers.push(Keyboard.SHIFT);
-		if (keySplit[2]) keyModifiers.push(Keyboard.CONTROL);
-		if (keySplit[3]) keyModifiers.push(Keyboard.ALTERNATE);
-		var key:String = null;
-		if (keySplit[4]) key = keySplit[4].toLowerCase();
-
-		_menu.insert(path, label, command, key, keyModifiers);
+		if (NativeWindow.supportsMenu) _platform.stage.nativeWindow.menu = _menu.nativeMenu;
 	}
 
 	private function refreshRecentOpenedDocumentsList():void
@@ -838,8 +920,6 @@ class DesktopNativeMenu
 			for (var i:int = 0; i < recent.length; i++)
 			{
 				var path:String = recent[i];
-				//var pathToLabelRegExp:RegExp = new RegExp("\\" + File.separator + "[^\\" + File.separator + "]*\\." + AppConstants.BROWSER_DOCUMENT_EXTENSION + "$");
-				//var label:String = path.replace(pathToLabelRegExp, "");
 				var label:String = path;
 				recentMenu.insert(i.toString(), label, new OpenDocumentCommand(_platform, new File(path)));
 			}

@@ -42,10 +42,12 @@ package talon.browser.core
 		public static const RECENT_HISTORY:int = 10;
 
 		public static const SETTING_BACKGROUND:String = "background";
-		public static const SETTING_BACKGROUND_DARK:String = "dark";
-		public static const SETTING_BACKGROUND_LIGHT:String = "light";
-		public static const SETTING_BACKGROUND_DEFAULT:String = SETTING_BACKGROUND_DARK;
-		public static const SETTING_BACKGROUND_STAGE_COLOR:Object = { "dark": 0x3F4142, "light": 0xBFBFBF };
+		public static const SETTING_BACKGROUND_COLOR:String = "backgroundColor";
+		public static const SETTING_BACKGROUNDS:Array = [
+			{ name: "Dark",  texture: "bg_dark",  color: 0x3F4142 },
+			{ name: "Light", texture: "bg_light", color: 0xBFBFBF }
+		];
+		
 		public static const SETTING_STATS:String = "stats";
 		public static const SETTING_SHOW_OUTLINE:String = "showOutline";
 		public static const SETTING_SHOW_INSPECTOR:String = "showInspector";

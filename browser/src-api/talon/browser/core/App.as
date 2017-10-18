@@ -56,9 +56,7 @@ package talon.browser.core
 			_stage.addChild(_console);
 
 			// WARNING: NOT work after starling creating!
-			var colorName:String = _settings.getValue(AppConstants.SETTING_BACKGROUND, String, AppConstants.SETTING_BACKGROUND_DEFAULT);
-			var color:uint = AppConstants.SETTING_BACKGROUND_STAGE_COLOR[colorName];
-			stage.color = color;
+			stage.color = _settings.getValue(AppConstants.SETTING_BACKGROUND_COLOR, uint, 0x3F4142);
 			// --------------------------------------
 
 			// With "baselineConstrained" there are same issues:

@@ -6,6 +6,7 @@ package starling.extensions
 	import starling.rendering.Painter;
 	import starling.rendering.VertexData;
 	import starling.styles.MeshStyle;
+	import starling.textures.Texture;
 	import starling.utils.Align;
 	import starling.utils.Color;
 
@@ -76,6 +77,16 @@ package starling.extensions
 		//
 		// Properties
 		//
+		/** @inherit */
+		public override function set texture(value:Texture):void
+		{
+			if (texture != value)
+				setRequiresRecomposition();
+			else if (value && (texture.width != value.width || texture.height != value.height))
+				setRequiresRecomposition();
+				
+			super.texture = value;
+		}
 
 		/** @inherit */
 		public override function get width():Number { return _width; }

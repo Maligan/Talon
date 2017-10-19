@@ -1,15 +1,22 @@
+## Настройки браузера
+* Глобальные настройки
+* Настройки проекта через `.talon`
+	* <a href="#projectname">`project.name`</a>
+	* <a href="#sourcepath">`source.path`</a>
+	* <a href="#sourcepattern">`source.pattern`</a>
+	* <a href="#exportpath">`export.path`</a>
+	* <a href="#exportpattern">`export.pattern`</a>
+	* <a href="#exporttppattern">`export.tp.pattern`</a>
+	* <a href="#exporttptemp">`export.tp.temp`</a>
+* Формат файловых фильтров
+
+### Глобальные настройки
+В дирректории приложения лежит глобальный файл настроек - `settings.json`. В нём вы можете настроить эмулируемые профили устройств, гораячие клавиши и общие настройки поведения.
+
+Данная папка содержит подключаемые расширения приложения.
 
 ### Мета-файл `.talon`
-
 В любой директории может лежать файл `.talon` который может содержать конфигурацию для браузера. Этот файл будет прочитан при открытии дирректории через `File -> Open` и использован для изменения поведения проекта.
-
-* <a href="#projectname">`project.name`</a>
-* <a href="#sourcepath">`source.path`</a>
-* <a href="#sourcepattern">`source.pattern`</a>
-* <a href="#exportpath">`export.path`</a>
-* <a href="#exportpattern">`export.pattern`</a>
-* <a href="#exporttppattern">`export.tp.pattern`</a>
-* <a href="#exporttptemp">`export.tp.temp`</a>
 
 #### `project.name`
 Свойство задаёт имя проекта которое будет отображатся в заголовке окна браузера и в списке недавно открытых проектов.

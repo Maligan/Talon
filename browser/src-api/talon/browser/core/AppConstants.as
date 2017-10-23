@@ -48,11 +48,11 @@ package talon.browser.core
 			{ name: "Dark",  texture: "bg_dark",  color: 0x3F4142 },
 			{ name: "Light", texture: "bg_light", color: 0xBFBFBF }
 		];
-		
-		public static const SETTING_STATS:String = "stats";
+
+		public static const SETTING_ZOOM:String = "zoom";
+		public static const SETTING_STATS:String = "showStats";
 		public static const SETTING_SHOW_OUTLINE:String = "showOutline";
 		public static const SETTING_SHOW_INSPECTOR:String = "showInspector";
-		public static const SETTING_ZOOM:String = "zoom";
 		public static const SETTING_ALWAYS_ON_TOP:String = "alwaysOnTop";
 		public static const SETTING_AUTO_REOPEN:String = "autoReopen";
 		public static const SETTING_RECENT_DOCUMENTS:String = "recentDocuments";

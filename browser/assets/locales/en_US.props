@@ -37,9 +37,9 @@ menu.navigate.gotoFolder = Go to Document Folder
 menu.navigate.gotoTemplate = Go to Template
 
 menu.help = Help
-menu.help.online = Documentation
-menu.help.report = Issues Tracker
-menu.help.update = Check for Update...
+menu.help.online = Open Documentation
+menu.help.report = Open Tracker
+menu.help.update = Open Download Page
 
 # Dialogs
 dialog.profile.title = Profile Settings

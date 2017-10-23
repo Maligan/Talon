@@ -7,6 +7,7 @@ package talon.browser.core
 		public static const APP_NAME:String = "Talon Browser";
 		public static const APP_DOCUMENTATION_URL:String = "https://github.com/Maligan/Talon/blob/master/docs/index.md";
 		public static const APP_TRACKER_URL:String = "https://github.com/Maligan/Talon/issues";
+		public static const APP_DOWNLOAD_URL:String = "https://github.com/Maligan/Talon/releases";
 
 		public static function get APP_VERSION_LABEL():String { return readDescriptor("versionLabel") }
 		public static function get APP_VERSION():String { return readDescriptor("versionNumber") }
@@ -54,14 +55,16 @@ package talon.browser.core
 		public static const SETTING_SHOW_OUTLINE:String = "showOutline";
 		public static const SETTING_SHOW_INSPECTOR:String = "showInspector";
 		public static const SETTING_ALWAYS_ON_TOP:String = "alwaysOnTop";
-		public static const SETTING_AUTO_REOPEN:String = "autoReopen";
 		public static const SETTING_RECENT_DOCUMENTS:String = "recentDocuments";
 		public static const SETTING_RECENT_TEMPLATE:String = "recentTemplate";
 		public static const SETTING_PROFILE:String = "profile";
+		
 		public static const SETTING_PROFILE_BIND_MODE:String = "profileBindMode";
-		public static const SETTING_CHECK_FOR_UPDATE_ON_STARTUP:String = "checkForUpdateOnStartup";
+		public static const SETTING_AUTO_REOPEN:String = "autoReopen";
+		public static const SETTING_ENABLE_UPDATE_CHECK:String = "enableUpdateCheck";
+		public static const SETTING_ENABLE_WINDOW_LOCK:String = "enableWindowLock";
+		
 		public static const SETTING_WINDOW_SIZE:String = "windowSize";
-		public static const SETTING_WINDOW_SIZE_LOCK:String = "windowSizeLock";
 		public static const SETTING_DETACHED_PLUGINS:String = "detachedPlugins";
 		public static const SETTING_TEXTURE_PACKER_BIN:String = "texturePackerBin";
 

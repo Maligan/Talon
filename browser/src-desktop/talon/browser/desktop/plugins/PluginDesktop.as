@@ -51,6 +51,7 @@ package talon.browser.desktop.plugins
 		private var _platform:App;
 		private var _menu:DesktopNativeMenu;
 		private var _updater:GithubUpdater;
+		private var _updateUrl:String;
 
 		private var _layout:TalonSprite;
 		private var _messages:TalonSprite;
@@ -65,6 +66,7 @@ package talon.browser.desktop.plugins
 		private var _locked:Boolean;
 		private var _background:BackgroundTexture;
 		
+		
 		public function get id():String { return "UI"; }
 		public function get version():String{ return "1.0.0"; }
 		public function get versionAPI():String { return "1.0.0"; }
@@ -73,7 +75,7 @@ package talon.browser.desktop.plugins
 		public function attach(platform:App):void
 		{
 			_platform = platform;
-			_updater = new GithubUpdater("maligan/talon", "0.0.0");
+			_updater = new GithubUpdater("maligan/talon", AppConstants.APP_VERSION);
 
 			initSettings()
 				.then(initListeners)
@@ -240,7 +242,7 @@ package talon.browser.desktop.plugins
 			function onWindowResizing(e:NativeWindowBoundsEvent):void
 			{
 				// NativeWindow#resizable is read only, this is fix:
-				var needPrevent:Boolean = _platform.settings.getValue(AppConstants.SETTING_WINDOW_SIZE_LOCK, Boolean, false);
+				var needPrevent:Boolean = _platform.settings.getValue(AppConstants.SETTING_ENABLE_WINDOW_LOCK, Boolean, false);
 				if (needPrevent) e.preventDefault();
 				else _platform.settings.setValue(AppConstants.SETTING_WINDOW_SIZE, e.afterBounds);
 			}
@@ -389,15 +391,18 @@ package talon.browser.desktop.plugins
 		private function onPlatformStart(e:Event):void
 		{
 			// [UPDATE]
-			var isEnableAutoUpdate:Boolean = _platform.settings.getValue(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, Boolean, true);
+			var isEnableAutoUpdate:Boolean = _platform.settings.getValue(AppConstants.SETTING_ENABLE_UPDATE_CHECK, Boolean, true);
 			
-			// TODO: Save for have default value != null
-			_platform.settings.setValue(AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, isEnableAutoUpdate);
+			_platform.settings.setValue(AppConstants.SETTING_ENABLE_UPDATE_CHECK, isEnableAutoUpdate);
 
 			// FIXME: Auto check
 			 if (isEnableAutoUpdate) _updater.check().then(function(url:String):void
 			 {
-				 if (url) trace("[Updater]", "There is new version:", url);
+				 if (url)
+				 {
+					 _updateUrl = url;
+					 refreshWindowTitle();
+				 }
 			 });
 
 			// [REOPEN]
@@ -681,8 +686,6 @@ package talon.browser.desktop.plugins
 		}
 
 		
-				
-		
 		
 //		public function setBackground()
 		
@@ -695,6 +698,8 @@ package talon.browser.desktop.plugins
 		public function get outline():Boolean { return _platform.settings.getValue(AppConstants.SETTING_SHOW_OUTLINE, Boolean, false); }
 
 		public function get backgrounds():Vector.<BackgroundTexture> { return _backgrounds; }
+		
+		public function get updateURL():String { return _updateUrl; }
 
 		// Properties
 		public function get platform():App { return _platform; }
@@ -766,8 +771,10 @@ package talon.browser.desktop.plugins
 			if (profileName) result.push(profileName);
 			// Zoom (if non 100%)
 			if (zoom != 1) result.push(int(zoom * 100) + "%");
-			// Application name + version
-			result.push([AppConstants.APP_NAME, AppConstants.APP_VERSION, AppConstants.APP_VERSION_LABEL].join(" "));
+			// Application name + version + update
+			var info:Array = [AppConstants.APP_NAME, AppConstants.APP_VERSION];
+			if (_updateUrl != null) info.push("(OUTDATED)");
+			result.push(info.join(" "));
 
 			_platform.stage.nativeWindow.title = result.join(" - ");
 		}
@@ -840,10 +847,10 @@ class DesktopNativeMenu
 		insert("file/closeBrowser",            new  CloseWindowCommand(_platform), "shift-ctrl-w");
 		insert("file/-");
 		insert("file/preferences");
-		insert("file/preferences/lockResize",    new ChangeSettingCommand(_platform, AppConstants.SETTING_WINDOW_SIZE_LOCK, true, false));
+		insert("file/preferences/lockResize",    new ChangeSettingCommand(_platform, AppConstants.SETTING_ENABLE_WINDOW_LOCK, true, false));
 		insert("file/preferences/alwaysOnTop",   new ChangeSettingCommand(_platform, AppConstants.SETTING_ALWAYS_ON_TOP, true, false));
 		insert("file/preferences/autoReopen",    new ChangeSettingCommand(_platform, AppConstants.SETTING_AUTO_REOPEN, true, false));
-		insert("file/preferences/autoUpdate",    new ChangeSettingCommand(_platform, AppConstants.SETTING_CHECK_FOR_UPDATE_ON_STARTUP, true, false));
+		insert("file/preferences/autoUpdate",    new ChangeSettingCommand(_platform, AppConstants.SETTING_ENABLE_UPDATE_CHECK, true, false));
 		insert("file/preferences/stats",         new ChangeSettingCommand(_platform, AppConstants.SETTING_STATS, true, false));
 		insert("file/preferences/texturePacker", new ChangeTexturePackerExecutable(_platform));
 		insert("file/-");
@@ -899,7 +906,7 @@ class DesktopNativeMenu
 		insert("help");
 		insert("help/online", new OpenURLCommand(_platform, AppConstants.APP_DOCUMENTATION_URL));
 		insert("help/report", new OpenURLCommand(_platform, AppConstants.APP_TRACKER_URL));
-//		insert("help/update", new OpenPopupCommand(_platform, UpdatePopup, ui.updater));
+		insert("help/update", new UpdateCommand(desktop));
 
 		if (NativeWindow.supportsMenu) _platform.stage.nativeWindow.menu = _menu.nativeMenu;
 	}

@@ -11,7 +11,6 @@ package starling.extensions
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.utils.Pool;
-	import starling.utils.StringUtil;
 
 	import talon.utils.StyleUtil;
 
@@ -25,7 +24,6 @@ package starling.extensions
 
 		public function TalonQuery(element:ITalonDisplayObject = null):void
 		{
-			
 			_elements = new <ITalonDisplayObject>[];
 			_elementsBackBuffer = new <ITalonDisplayObject>[];
 			if (element) reset(element);
@@ -45,7 +43,8 @@ package starling.extensions
 
 		public function select(selector:String):TalonQuery
 		{
-			if (selector == null) return this;
+			if (selector == null)
+				return this;
 			
 			// Select
 			var result:Vector.<ITalonDisplayObject> = _elementsBackBuffer;
@@ -79,17 +78,11 @@ package starling.extensions
 		//
 		// Common
 		//
-		
-		public function put(name:String, value:*, ...args):TalonQuery
+
+		public function attr(name:String, value:*):TalonQuery
 		{
-			if (args.length)
-			{
-				args.unshift(value);
-				value = StringUtil.format.apply(null, args);
-			}
-			
 			for each (var element:ITalonDisplayObject in _elements)
-				element.node.setAttribute(name, value);
+				element.setAttribute(name, value);
 
 			return this;
 		}
@@ -148,6 +141,8 @@ package starling.extensions
 		//
 		// Flash Proxy & Enumeration
 		//
+		
+		/** Count of elements stored in query. */
 		public function get length():int { return _elements.length }
 		
 		public function indexOf(element:ITalonDisplayObject):int { return _elements.indexOf(element) }
@@ -160,21 +155,26 @@ package starling.extensions
 		// Access to elements & attributes
 		flash_proxy override function getProperty(name:*):*
 		{
+			// Enumeration
 			if (name is String)
 				return name < _elements.length ? _elements[name] : null;
 
+			// Attributes
 			else if (_elements.length > 0)
-				return _elements[0].node.getOrCreateAttribute(name).value;
+				return _elements[0].getAttribute(name);
 
+			// Query is empty
 			return null;
 		}
 		
 		flash_proxy override function setProperty(name:*, value:*):void
 		{
+			// For index based access name is String
+			// In this case deny `query[0] = value` code
 			if (name is String)
 				throw new ArgumentError();
 			
-			put(name, value);
+			attr(name, value);
 		}
 	}
 }

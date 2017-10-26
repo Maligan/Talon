@@ -12,6 +12,7 @@ package starling.extensions
 
 	import talon.core.Attribute;
 	import talon.core.Node;
+	import talon.core.Style;
 	import talon.utils.ParseUtil;
 
 	/** starling.display.Quad which implements ITalonDisplayObject. */
@@ -20,7 +21,6 @@ package starling.extensions
 		private static var _sRectangle:Rectangle = new Rectangle();
 
 		private var _bridge:TalonDisplayObjectBridge;
-		private var _node:Node;
 		private var _vertexOffset:Point;
 
 		/** @private */
@@ -30,15 +30,14 @@ package starling.extensions
 
 			super(1, 1);
 
-			_node = new Node();
-			_node.width.auto = measureWidth;
-			_node.height.auto = measureHeight;
-			_node.addListener(Event.RESIZE, onNodeResize);
-
-			_bridge = new TalonDisplayObjectBridge(this, node);
+			_bridge = new TalonDisplayObjectBridge(this);
 			_bridge.setAttributeChangeListener(Attribute.SOURCE, onSourceChange);
 			_bridge.setAttributeChangeListener(Attribute.TINT, onSourceTintChange);
 
+			node.width.auto = measureWidth;
+			node.height.auto = measureHeight;
+			node.addListener(Event.RESIZE, onNodeResize);
+			
 			_vertexOffset = new Point();
 
 			pixelSnapping = true;
@@ -71,12 +70,12 @@ package starling.extensions
 		private function onSourceChange():void
 		{
 			texture = node.getAttributeCache(Attribute.SOURCE) as Texture;
-			_node.invalidate();
+			node.invalidate();
 		}
 
 		private function onSourceTintChange():void
 		{
-			color = ParseUtil.parseColor(_node.getAttributeCache(Attribute.TINT));
+			color = ParseUtil.parseColor(node.getAttributeCache(Attribute.TINT));
 		}
 
 		private function onNodeResize():void
@@ -144,8 +143,15 @@ package starling.extensions
 		//
 		// ITalonDisplayObject
 		//
+		/** @private */
+		public function get node():Node { return _bridge.node; }
+		public function get rectangle():Rectangle { return node.bounds; }
+		
 		public function query(selector:String = null):TalonQuery { return new TalonQuery(this).select(selector); }
 
-		public function get node():Node { return _node; }
+		public function setAttribute(name:String, value:String):void { node.setAttribute(name, value); }
+		public function getAttribute(name:String):String { return node.getOrCreateAttribute(name).value; }
+		public function setStyles(styles:Vector.<Style>):void { node.setStyles(styles); }
+		public function setResources(resources:Object):void { node.setResources(resources); }
 	}
 }

@@ -47,7 +47,7 @@ package talon.browser.desktop.popups
 		{
 			var dpi:Number = readInput("#dpi");
 			var csf:Number = Math.max(1, int(dpi/160));
-			query("#csf").put(Attribute.TEXT, csf);
+			query("#csf").attr(Attribute.TEXT, csf);
 		}
 
 		public override function dispose():void

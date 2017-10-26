@@ -12,13 +12,13 @@ package talon.browser.desktop
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
 
-	import talon.browser.desktop.plugins.PluginConsole;
-	import talon.browser.desktop.plugins.PluginDesktopDragAndDrop;
-	import talon.browser.desktop.plugins.PluginDesktop;
-	import talon.browser.desktop.plugins.PluginFileType;
-	import talon.browser.core.AppConstants;
 	import talon.browser.core.App;
+	import talon.browser.core.AppConstants;
 	import talon.browser.core.AppEvent;
+	import talon.browser.desktop.plugins.PluginConsole;
+	import talon.browser.desktop.plugins.PluginDesktop;
+	import talon.browser.desktop.plugins.PluginDesktopDragAndDrop;
+	import talon.browser.desktop.plugins.PluginFileType;
 
 	[SWF(frameRate="60")]
 	public class AppDesktopLauncher extends Sprite
@@ -30,7 +30,7 @@ package talon.browser.desktop
 		{
 			stage ? initialize() : addEventListener(Event.ADDED_TO_STAGE, initialize);
 		}
-
+		
 		private function initialize(e:* = null):void
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, initialize);

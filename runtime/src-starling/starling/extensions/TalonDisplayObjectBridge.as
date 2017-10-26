@@ -39,17 +39,16 @@ package starling.extensions
 		private var _transformChanged:Boolean;
 		private var _listeners:Dictionary;
 
-		public function TalonDisplayObjectBridge(target:DisplayObject, node:Node):void
+		public function TalonDisplayObjectBridge(target:DisplayObject):void
 		{
 			Parsers.registerParsers();
 			
 			_target = target;
 			_target.setRequiresRedraw();
 			_listeners = new Dictionary();
-
 			_transform = new Matrix();
 
-			_node = node;
+			_node = new Node();
 			_node.addListener(Event.RESIZE, onNodeResize);
 			_node.addListener(Event.CHANGE, onNodeChange);
 			_node.addListener(Event.UPDATE, _target.setRequiresRedraw);
@@ -435,6 +434,13 @@ package starling.extensions
 				|| _transform.tx != 0.0
 				|| _transform.ty != 0.0;
 		}
+		
+		// Props
+		
+		public function get node():Node 
+		{
+			return _node;
+		}
 	}
 }
 
@@ -475,16 +481,17 @@ class Parsers
 			if (split == null || split.length < 2) continue;
 	
 			var name:String = split[0];
-			var float1:Number = parseFloat(split[1]);
+			var float1_0:Number = ParseUtil.parseNumber(split[1], 0);
+			var float1_1:Number = ParseUtil.parseNumber(split[1], 1);
 			var angle1:Number = ParseUtil.parseAngle(split[1], 0);
 	
-			if (name == "scale") out.scale(float1, float1);
-			else if (name == "scaleX") out.scale(float1, 1);
-			else if (name == "scaleY") out.scale(1, float1);
+			if (name == "scale") out.scale(float1_1, ParseUtil.parseNumber(split[2], float1_1));
+			else if (name == "scaleX") out.scale(float1_1, 1);
+			else if (name == "scaleY") out.scale(1, float1_1);
 			else if (name == "rotate") out.rotate(angle1);
-			else if (name == "translate") out.translate(float1, float1);
-			else if (name == "translateX") out.translate(float1, 0);
-			else if (name == "translateY") out.translate(0, float1);
+			else if (name == "translate") out.translate(float1_0, ParseUtil.parseNumber(split[2], float1_0));
+			else if (name == "translateX") out.translate(float1_0, 0);
+			else if (name == "translateY") out.translate(0, float1_0);
 			else if (name == "skewX") MatrixUtil.skew(out, angle1, 0);
 			else if (name == "skewY") MatrixUtil.skew(out, 0, angle1);
 			else if (name == "matrix")

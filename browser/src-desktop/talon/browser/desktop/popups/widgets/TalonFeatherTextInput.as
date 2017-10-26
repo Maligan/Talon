@@ -6,6 +6,8 @@ package talon.browser.desktop.popups.widgets
 	import feathers.events.FeathersEventType;
 	import feathers.text.BitmapFontTextFormat;
 
+	import flash.geom.Rectangle;
+
 	import starling.events.Event;
 	import starling.extensions.ITalonDisplayObject;
 	import starling.extensions.TalonDisplayObjectBridge;
@@ -15,25 +17,25 @@ package talon.browser.desktop.popups.widgets
 
 	import talon.core.Attribute;
 	import talon.core.Node;
+	import talon.core.Style;
 	import talon.enums.State;
 	import talon.utils.ParseUtil;
 
 	public class TalonFeatherTextInput extends TextInput implements ITalonDisplayObject
 	{
-		private var _node:Node;
 		private var _bridge:TalonDisplayObjectBridge;
 
 		public function TalonFeatherTextInput()
 		{
-			_node = new Node();
-			_node.addListener(Event.RESIZE, onResize);
 
-			_bridge = new TalonDisplayObjectBridge(this, _node);
+			_bridge = new TalonDisplayObjectBridge(this);
 			_bridge.setAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange);
 			_bridge.setAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
 			_bridge.setAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
 			_bridge.setAttributeChangeListener(Attribute.TEXT, onTextChange);
 			_bridge.setAttributeChangeListener(Attribute.PADDING, onPaddingChange);
+
+			node.addListener(Event.RESIZE, onResize);
 
 			restrict = "0-9.,";
 			maxChars = 5;
@@ -128,8 +130,14 @@ package talon.browser.desktop.popups.widgets
 		//
 		// ITalonDisplayObject
 		//
-		public function query(selector:String = null):TalonQuery { return new TalonQuery(this).select(selector); }
 
-		public function get node():Node { return _node; }
+		public function query(selector:String = null):TalonQuery { return new TalonQuery(this).select(selector); }
+		public function get rectangle():Rectangle { return node.bounds; }
+
+		public function get node():Node { return _bridge.node; }
+		public function setAttribute(name:String, value:String):void { node.setAttribute(name, value); }
+		public function getAttribute(name:String):String { return node.getAttributeCache(name); }
+		public function setStyles(styles:Vector.<Style>):void { node.setStyles(styles); }
+		public function setResources(resources:Object):void { node.setResources(resources); }
 	}
 }

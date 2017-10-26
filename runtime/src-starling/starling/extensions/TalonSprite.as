@@ -2,6 +2,7 @@ package starling.extensions
 {
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.ui.MouseCursor;
 
 	import starling.display.DisplayObject;
 	import starling.display.Sprite;
@@ -10,22 +11,23 @@ package starling.extensions
 
 	import talon.core.Attribute;
 	import talon.core.Node;
+	import talon.core.Style;
 
 	/** starling.display.Sprite which implements ITalonDisplayObject. */
 	public class TalonSprite extends Sprite implements ITalonDisplayObject
 	{
 		private static var sRect:Rectangle = new Rectangle();
 
-		private var _node:Node;
 		private var _bridge:TalonDisplayObjectBridge;
 		private var _layers:Boolean;
 
 		/** @private */
 		public function TalonSprite()
 		{
-			_node = new Node();
-			_node.addListener(Event.RESIZE, onNodeResize);
-			_bridge = new TalonDisplayObjectBridge(this, node);
+			_bridge = new TalonDisplayObjectBridge(this);
+			node.addListener(Event.RESIZE, onNodeResize);
+			
+			MouseCursor
 		}
 
 		//
@@ -144,9 +146,15 @@ package starling.extensions
 		//
 		// ITalonDisplayObject
 		//
+		/** @private */
+		public function get node():Node { return _bridge.node; }
+		public function get rectangle():Rectangle { return node.bounds; }
 
 		public function query(selector:String = null):TalonQuery { return new TalonQuery(this).select(selector); }
-
-		public function get node():Node { return _node; }
+		
+		public function setAttribute(name:String, value:String):void { node.setAttribute(name, value); }
+		public function getAttribute(name:String):String { return node.getOrCreateAttribute(name).value; }
+		public function setStyles(styles:Vector.<Style>):void { node.setStyles(styles); }
+		public function setResources(resources:Object):void { node.setResources(resources); }
 	}
 }

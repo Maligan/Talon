@@ -48,6 +48,11 @@ package talon.browser.desktop.commands
 
 			// NB! Set as current document immediately (before any references)
 			var documentProperties:Storage = new DesktopStorage(config);
+
+			// Set project name
+			if (documentProperties.getValue(DesktopDocumentProperty.PROJECT_NAME) == null)
+				documentProperties.setValue(DesktopDocumentProperty.PROJECT_NAME, dir.name);
+			
 			var document:Document = new Document(documentProperties);
 			document.properties.setValue(DesktopDocumentProperty.PROJECT_DIR, dir.url);
 			platform.document = document;
@@ -77,10 +82,6 @@ package talon.browser.desktop.commands
 
 			// Add source root
 			document.files.addReference(sourcePathReference);
-
-			// Set project name
-			if (document.properties.getValue(DesktopDocumentProperty.PROJECT_NAME) == null)
-				document.properties.setValue(DesktopDocumentProperty.PROJECT_NAME, sourcePath.name);
 
 			// Add document to recent list
 			var recent:Array = platform.settings.getValue(AppConstants.SETTING_RECENT_DOCUMENTS, Array, []);

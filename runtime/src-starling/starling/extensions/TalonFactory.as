@@ -124,7 +124,6 @@ class AssetManagerZip extends AssetManager
 	public function enqueueZip(bytes:ByteArray):void
 	{
 		var FZip:Class = ApplicationDomain.currentDomain.getDefinition("deng.fzip.FZip") as Class;
-		var FZipFile:Class = ApplicationDomain.currentDomain.getDefinition("deng.fzip.FZipFile") as Class;
 		
 		var zip:* = new FZip();
 		zip.loadBytes(bytes);

@@ -16,6 +16,7 @@ package starling.extensions
 
 	import talon.core.Attribute;
 	import talon.core.Node;
+	import talon.core.Style;
 	import talon.layouts.Layout;
 	import talon.utils.Gauge;
 	import talon.utils.ParseUtil;
@@ -29,7 +30,6 @@ package starling.extensions
 		private static var sRect:Rectangle = new Rectangle();
 		private static var _sPoint:Point = new Point();
 
-		private var _node:Node;
 		private var _bridge:TalonDisplayObjectBridge;
 		private var _requiresRecomposition:Boolean;
 		private var _requiresPadding:Boolean;
@@ -43,16 +43,9 @@ package starling.extensions
 
 			_textBounds = new Rectangle();
 			_lastBounds = new Rectangle();
-			
-			_node = new Node();
-			_node.getOrCreateAttribute(Attribute.WRAP).inited = "true"; // FIXME: Bad Ya?
-			_node.addListener(Event.ADDED, onNodeParentChange);
-			_node.addListener(Event.REMOVED, onNodeParentChange);
-			_node.width.auto = measureWidth;
-			_node.height.auto = measureHeight;
 
 			// Bridge
-			_bridge = new TalonDisplayObjectBridge(this, node);
+			_bridge = new TalonDisplayObjectBridge(this);
 			_bridge.setAttributeChangeListener(Attribute.TEXT, onTextChange);
 			_bridge.setAttributeChangeListener(Attribute.WRAP, onWrapChange);
 			_bridge.setAttributeChangeListener(Attribute.FONT_AUTO_SCALE, onAutoScaleChange);
@@ -63,6 +56,12 @@ package starling.extensions
 			_bridge.setAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
 			_bridge.setAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
 			_bridge.setAttributeChangeListener(Attribute.FONT_EFFECT, onFontEffectChange);
+
+			node.getOrCreateAttribute(Attribute.WRAP).inited = "true"; // FIXME: Bad Ya?
+			node.addListener(Event.ADDED, onNodeParentChange);
+			node.addListener(Event.REMOVED, onNodeParentChange);
+			node.width.auto = measureWidth;
+			node.height.auto = measureHeight;
 
 			batchable = true; // TODO: Allow setup batchable flag
 		}
@@ -178,7 +177,7 @@ package starling.extensions
 
 		private function onNodeParentChange():void
 		{
-			var unit:String = _node.fontSize.unit;
+			var unit:String = node.fontSize.unit;
 			if (unit == Gauge.EM || unit == Gauge.PERCENT || node.getOrCreateAttribute(Attribute.FONT_SIZE).isInherit)
 				onFontSizeChange();
 		}
@@ -210,7 +209,7 @@ package starling.extensions
 		
 		private function refresh():void
 		{
-			setBounds(_node.bounds.width, _node.bounds.height);
+			setBounds(node.bounds.width, node.bounds.height);
 			recompose();
 			repadding();
 		}
@@ -244,8 +243,8 @@ package starling.extensions
 				var paddingBottom:Number = node.paddingBottom.toPixels();
 				var paddingLeft:Number = node.paddingLeft.toPixels();
 
-				mesh.x = Layout.pad(_node.bounds.width, _textBounds.width, paddingLeft, paddingRight, halign) - _textBounds.x;
-				mesh.y = Layout.pad(_node.bounds.height, _textBounds.height, paddingTop, paddingBottom, valign) - _textBounds.y;
+				mesh.x = Layout.pad(node.bounds.width, _textBounds.width, paddingLeft, paddingRight, halign) - _textBounds.x;
+				mesh.y = Layout.pad(node.bounds.height, _textBounds.height, paddingTop, paddingBottom, valign) - _textBounds.y;
 			}
 		}
 
@@ -278,13 +277,11 @@ package starling.extensions
 		{
 			var compositor:ITextCompositor = getCompositor(format.font);
 			if (compositor == null) {
-//				trace("[onFontEffectChange]", "getCompositor() == null", format.font);
 				return;
 			}
 			
 			var dfs:DistanceFieldStyle = compositor.getDefaultMeshStyle(style, format, options) as DistanceFieldStyle;
 			if (dfs == null) {
-//				trace("[onFontEffectChange]", "getDefaultMeshStyle() == null", format.font);
 				return;
 			}
 
@@ -350,21 +347,28 @@ package starling.extensions
 		//
 
 		private function onFontColorChange():void { format.color = ParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
-		private function onFontSizeChange():void { format.size = node.metrics.ppem; _node.invalidate(); }
-		private function onFontNameChange():void { format.font = node.getAttributeCache(Attribute.FONT_NAME); _node.invalidate(); onFontEffectChange(); }
-		private function onHAlignChange():void { format.horizontalAlign = _node.getAttributeCache(Attribute.HALIGN) }
-		private function onVAlignChange():void { format.verticalAlign = _node.getAttributeCache(Attribute.VALIGN) }
-		private function onAutoScaleChange():void { super.autoScale = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.FONT_AUTO_SCALE)); }
-		private function onWrapChange():void { super.wordWrap = ParseUtil.parseBoolean(_node.getAttributeCache(Attribute.WRAP)); _node.invalidate(); }
-		private function onInterlineChange():void { format.leading = Gauge.toPixels(_node.getAttributeCache(Attribute.INTERLINE), _node.metrics); _node.invalidate(); }
-		private function onTextChange():void { super.text = _node.getAttributeCache(Attribute.TEXT); _node.invalidate(); }
+		private function onFontSizeChange():void { format.size = node.metrics.ppem; node.invalidate(); }
+		private function onFontNameChange():void { format.font = node.getAttributeCache(Attribute.FONT_NAME); node.invalidate(); onFontEffectChange(); }
+		private function onHAlignChange():void { format.horizontalAlign = node.getAttributeCache(Attribute.HALIGN) }
+		private function onVAlignChange():void { format.verticalAlign = node.getAttributeCache(Attribute.VALIGN) }
+		private function onAutoScaleChange():void { super.autoScale = ParseUtil.parseBoolean(node.getAttributeCache(Attribute.FONT_AUTO_SCALE)); }
+		private function onWrapChange():void { super.wordWrap = ParseUtil.parseBoolean(node.getAttributeCache(Attribute.WRAP)); node.invalidate(); }
+		private function onInterlineChange():void { format.leading = Gauge.toPixels(node.getAttributeCache(Attribute.INTERLINE), node.metrics); node.invalidate(); }
+		private function onTextChange():void { super.text = node.getAttributeCache(Attribute.TEXT); node.invalidate(); }
 		
 		//
 		// ITalonDisplayObject
 		//
-		public function query(selector:String = null):TalonQuery { return new TalonQuery(this).select(selector); }
+		/** @private */
+		public function get node():Node { return _bridge.node; }
+		public function get rectangle():Rectangle { return node.bounds; }
 
-		public function get node():Node { return _node; }
+		public function query(selector:String = null):TalonQuery { return new TalonQuery(this).select(selector); }
+		
+		public function setAttribute(name:String, value:String):void { node.setAttribute(name, value); }
+		public function getAttribute(name:String):String { return node.getOrCreateAttribute(name).value; }
+		public function setStyles(styles:Vector.<Style>):void { node.setStyles(styles); }
+		public function setResources(resources:Object):void { node.setResources(resources); }
 		
 		//
 		// Properties override

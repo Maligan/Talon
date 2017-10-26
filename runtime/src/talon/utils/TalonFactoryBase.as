@@ -267,6 +267,7 @@ package talon.utils
 				addResource(id, object[id]);
 		}
 		
+		/** Add all resources, templates and styles from cache file. */
 		public function importCache(cache:Object):void
 		{
 			if (cache == null) throw new Error("Parameter cache must be non-null");

@@ -185,11 +185,11 @@ package talon.browser.desktop.utils
 			itemName = itemName.charAt(0).toUpperCase() + itemName.substr(1);
 
 			item.query()
-				.put("text", itemName)
-				.put("info", node.getAttributeCache(Attribute.ID))
-				.put("depth", depth)
-				.put("paddingLeft", depth * 14)
-				.put("visible", depth==0)
+				.attr("text", itemName)
+				.attr("info", node.getAttributeCache(Attribute.ID))
+				.attr("depth", depth)
+				.attr("paddingLeft", depth * 14)
+				.attr("visible", depth==0)
 				.onTap(onTreeItemTap1, 1)
 				.onTap(onTreeItemTap2, 2);
 
@@ -297,8 +297,8 @@ package talon.browser.desktop.utils
 				}
 
 				item.query()
-					.put("name", attribute.name)
-					.put("value", attribute.isResource ? attribute.value.substr(1) : attribute.value);
+					.attr("name", attribute.name)
+					.attr("value", attribute.isResource ? attribute.value.substr(1) : attribute.value);
 
 				item.node.getChildAt(0).states.put("empty", true);
 				item.node.classes.put("setted", attribute.setted != null);

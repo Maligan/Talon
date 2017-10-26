@@ -879,7 +879,7 @@ class DesktopNativeMenu
 
 		var profiles:Vector.<DeviceProfile> = DeviceProfile.getProfiles();
 		if (profiles.length > 0) insert("view/profile/-");
-		for (var i:int = 0; i < profiles.length; i++)
+		for (i = 0; i < profiles.length; i++)
 		{
 			var profileNumber:String = (i+1).toString();
 			var profile:DeviceProfile = profiles[i];

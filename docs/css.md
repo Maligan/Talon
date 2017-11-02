@@ -2,56 +2,56 @@
 All attribute names use *smallCamelCaseNotation*, without dashed like W3C/Flex dialects.  
 
 #### Common
-* <a href="#id">id</a>
-* <a href="#type">type</a>
-* <a href="#class">class</a>
-* <a href="#state">state</a>
+* [id](#id)
+* [type](#type)
+* [class](#class)
+* [state](#state)
 #### Background
-* <a href="#fill">fill</a>
-* <a href="#fillalpha">fillAlpha</a>
-* <a href="#fillblendmode">fillBlendMode</a>
-* <a href="#filltint">fillTint</a>
-* <a href="#fillmode">fillMode (fillModeX, fillModeY)</a>
-* <a href="#fillscale">fillScale (fillScaleX, fillScaleY)</a>
-* <a href="#fillstretchgrid">fillStretchGrid (fillStretchGridTop, fillStretchGridRight, fillStretchGridBottom, fillStretchGridLeft)</a>
-* <a href="#fillalign">fillAlign (fillAlignX, fillAlignY)</a>
+* [fill](#fill)
+* [fillAlpha](#fillalpha)
+* [fillBlendMode](#fillblendmode)
+* [fillTint](#filltint)
+* [fillMode (fillModeX, fillModeY)](#fillmode)
+* [fillScale (fillScaleX, fillScaleY)](#fillscale)
+* [fillStretchGrid (fillStretchGridTop, fillStretchGridRight, fillStretchGridBottom, fillStretchGridLeft)](#fillstretchgrid)
+* [fillAlign (fillAlignX, fillAlignY)](#fillalign)
 #### Font
-* <a href="#fontcolor">fontColor</a>
-* <a href="#fontname">fontName</a>
-* <a href="#fontsize">fontSize</a>
-* <a href="#fontautoscale">fontAutoScale</a>
-* <a href="#fonteffect">fontEffect</a>
+* [fontColor](#fontcolor)
+* [fontName](#fontname)
+* [fontSize](#fontsize)
+* [fontAutoScale](#fontautoscale)
+* [fontEffect](#fonteffect)
 #### Mouse
-* <a href="#touchmode">touchMode</a>
-* <a href="#touchevents">touchEvents</a>
-* <a href="#cursor">cursor</a>
+* [touchMode](#touchmode)
+* [touchEvents](#touchevents)
+* [cursor](#cursor)
 #### Display
-* <a href="#blendmode">blendMode</a>
-* <a href="#visible">visible</a>
-* <a href="#filter">filter</a>
-* <a href="#alpha">alpha</a>
-* <a href="#transform">transform</a>
-* <a href="#pivot">pivot (pivotX, pivotY)</a>
-#### Layout
-* <a href="#widthheight">width/height</a>
-* <a href="#minwidthmaxwidthminheightmaxheight">minWidth/maxWidth/minHeight/maxHeight</a>
-* <a href="#margin">margin (marginTop, marginRight, marginBottom, marginLeft)</a>
-* <a href="#padding">padding (paddingTop, paddingRight, paddingBottom, paddingLeft)</a>
+* [blendMode](#blendmode)
+* [visible](#visible)
+* [filter](#filter)
+* [alpha](#alpha)
+* [transform](#transform)
+* [pivot (pivotX, pivotY)](#pivot)
+#### Box Model
+* [width/height](#widthheight)
+* [minWidth/maxWidth/minHeight/maxHeight](#minwidthmaxwidthminheightmaxheight)
+* [margin (marginTop, marginRight, marginBottom, marginLeft)](#margin)
+* [padding (paddingTop, paddingRight, paddingBottom, paddingLeft)](#padding)
 #### Type `img` related
-* <a href="#source">source</a>
-* <a href="#tint">tint</a>
+* [source](#source)
+* [tint](#tint)
 #### Type `txt` related
-* <a href="#text">text</a>
+* [text](#text)
 #### Type `div` related
-* <a href="#layout">layout</a>
-* <a href="#anchor">anchor (top, right, bottom, left)</a>
-* <a href="#orientation">orientation</a>
-* <a href="#align">align (alignX, alignY)</a>
-* <a href="#gap">gap</a>
-* <a href="#interline">interline</a>
-* <a href="#wrap">wrap</a>
-* <a href="#alignSelf">alignSelf (alignSelfX, valignSelfY)</a>
-* <a href="#break">break (breakBefore, breakAfter)</a>
+* [layout](#layout)
+* [anchor (top, right, bottom, left)](#anchor)
+* [orientation](#orientation)
+* [align (alignX, alignY)](#align)
+* [gap](#gap)
+* [interline](#interline)
+* [wrap](#wrap)
+* [alignSelf (alignSelfX, valignSelfY)](#alignSelf)
+* [break (breakBefore, breakAfter)](#break)
 
 * * *
 
@@ -73,37 +73,37 @@ Define set of *css classes*: Used for style applying.
 Define set of *css pseudo classes*: Used for style applying.  
 
 #### fill
-> See <a href="fill.md">background</a> article.
+> See [background](fill.md) article.
 
 Setup node backgound.  
 
 * **`none`**
-* <a href="#color">`COLOR`</a>
-* <a href="#resource">`RESOURCE`</a>
+* [`COLOR`](#color)
+* [`RESOURCE`](#resource)
 
 #### fillAlpha
-> See <a href="fill.md">background</a> article.
+> See [background](fill.md) article.
 
 Setup background alpha.
 
 #### fillBlendMode
-> See <a href="fill.md">background</a> article.
+> See [background](fill.md) article.
 
 Setup background blendMode.
 
 * Any supported <a href="http://doc.starling-framework.org/current/starling/display/BlendMode.html">BlendMode</a>
 
 #### fillTint
-> See <a href="fill.md">background</a> article.
+> See [background](fill.md) article.
 
 Setup backgound tint color.
 
 * **`none`**
-* <a href="#color">`COLOR`</a>
+* [`COLOR`](#color)
 
 #### fillMode
-> See <a href="fill.md">background</a> article.  
-> Use <a href="#pair">pair</a> of `fillModeX` and `fillModeY`.
+> See [background](fill.md) article.  
+> Use [pair](#pair) of `fillModeX` and `fillModeY`.
 
 Setup background image fill algorithm.  
 
@@ -112,32 +112,32 @@ Setup background image fill algorithm.
 * `repeat`
 
 #### fillScale
-> See <a href="fill.md">background</a> article.  
-> Use <a href="#pair">pair</a> of `fillScaleX` and `fillScaleY`.
+> See [background](fill.md) article.  
+> Use [pair](#pair) of `fillScaleX` and `fillScaleY`.
 
 Setup backgound image scale, default **`1`**.
 
 #### fillStretchGrid
-> See <a href="fill.md">background</a> article.  
-> Use <a href="#quad">quad</a> of `fillStretchGridTop`, `fillStretchGridRight`, `fillStretchGridBottom` and `fillStretchGridLeft`.
+> See [background](fill.md) article.  
+> Use [quad](#quad) of `fillStretchGridTop`, `fillStretchGridRight`, `fillStretchGridBottom` and `fillStretchGridLeft`.
 
 Setup 9-scale rectange for `fillMode = stretch`, default **`none`**.
 
-* <a href="#gauge">`GAUGE`</a>
+* [`GAUGE`](#gauge)
 
 #### fillAlign
-> See <a href="fill.md">background</a> article.  
-> Use <a href="#pair">pair</a> of `fillAlignX` and `fillAlignY`.
+> See [background](fill.md) article.  
+> Use [pair](#pair) of `fillAlignX` and `fillAlignY`.
 
 Setup backgound image align for `fillMode = none | repeat`, default **`left top`**
 
-* <a href="#align">ALIGN</a>
+* [ALIGN](#align)
 
 #### fontColor
 Setup font color, default **`#FFFFFF`**.
 
 * **`inherit`**
-* <a href="#color">`COLOR`</a>
+* [`COLOR`](#color)
 
 #### fontName
 Setup font, default **`mini`**.
@@ -149,7 +149,7 @@ Setup font, default **`mini`**.
 Setup font size, default **`12px`**.
 
 * **`inherit`**
-* <a href="#gauge">`GAUGE`</a>
+* [`GAUGE`](#gauge)
 
 #### fontAutoScale
 > Scale down works only if text bounds is static.
@@ -180,7 +180,7 @@ Define ineraction with mouse/touches.
 
 > This attribute added for optimization reasons.
 
-Nodes with enabled `touchEvents` change self <a href="#state">`state`</a> value add/remove `hover` and `active` based on mouse/touch interactions.  
+Nodes with enabled `touchEvents` change self [`state`](#state) value add/remove `hover` and `active` based on mouse/touch interactions.  
 
 * **`false`**
 * `true`
@@ -215,8 +215,8 @@ Setup node filter(s).
 * `saturate(value = 0)` within `[-1; +1]`
 * `brightness(value = 0)` within `[-1; +1]`
 * `contrast(value = 0)` within `[-1; +1]`
-* `hue(angle = 0)` accept <a href="#angle">ANGLE</a>
-* `tint(color = #000000, amount = 1)` accept <a href="#color">COLOR</a>, amount within `[-1; +1]`
+* `hue(angle = 0)` accept [ANGLE](#angle)
+* `tint(color = #000000, amount = 1)` accept [COLOR](#color), amount within `[-1; +1]`
 * Any combinations of above filters, like `blur() hue(45)`
 
 #### alpha
@@ -225,13 +225,13 @@ Setup node alpha, default **`1`**.
 #### transform
 > Transform doesn't change node layout bounds.
 
-Setup node transformation use <a href="#pivot">pivot</a> as pivot point.
+Setup node transformation use [pivot](#pivot) as pivot point.
 
 * **`none`**
 * `scale(scaleX = 1, scaleY = scaleX)`
 * `scaleX(value = 1)`
 * `scaleY(value = 1)`
-* `rotate(value = 0)` accept <a href="#angle">ANGLE</a>
+* `rotate(value = 0)` accept [ANGLE](#angle)
 * `translate(x = 0, y = x)`
 * `translateX(value = 0)`
 * `translateY(value = 0)`
@@ -241,11 +241,11 @@ Setup node transformation use <a href="#pivot">pivot</a> as pivot point.
 * Any combinations of above transformations
 
 #### pivot
-> Use <a href="#pair">pair</a> of `pivotX` and `pivotY`.
+> Use [pair](#pair) of `pivotX` and `pivotY`.
 
 Setup transformation pivot point, default **`0px`**.
 
-* <a href="#gauge">`GAUGE`</a>
+* [`GAUGE`](#gauge)
 
 #### width/height
 > See <a href="layouts.md">layouts</a> article.
@@ -253,23 +253,23 @@ Setup transformation pivot point, default **`0px`**.
 #### minWidth/maxWidth/minHeight/maxHeight
 > See <a href="layouts.md">layouts</a> article.
 
-* <a href="#gauge">`GAUGE`</a>
+* [`GAUGE`](#gauge)
 
 #### margin 
 > See <a href="layouts.md">layouts</a> article.  
-> Use <a href="#quad">quad</a> of `marginTop`, `marginRight`, `marginBottom` and `marginLeft`.
+> Use [quad](#quad) of `marginTop`, `marginRight`, `marginBottom` and `marginLeft`.
 
-* <a href="#gauge">`GAUGE`</a>
+* [`GAUGE`](#gauge)
 
 #### padding
 > See <a href="layouts.md">layouts</a> article.  
-> Use <a href="#quad">quad</a> of `paddingTop`, `paddingRight`, `paddingBottom` and `paddingLeft`.
+> Use [quad](#quad) of `paddingTop`, `paddingRight`, `paddingBottom` and `paddingLeft`.
 
-* <a href="#gauge">`GAUGE`</a>
+* [`GAUGE`](#gauge)
 
 #### source
 Setup image source.
-* <a href="#resource">RESOURCE</a>
+* [RESOURCE](#resource)
 
 #### tint
 Setup image source tint color.

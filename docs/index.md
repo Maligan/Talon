@@ -2,13 +2,11 @@
 
 #### Theory
 1. [Talon Basics](basics.md)
-1. [TML - Template Markup Language](tml.md)
+2. [Background](fill.md)
+3. [Layouts](layouts.md)
 
 #### Runtime
-2. [Factory](factory.md)
-3. [Background](fill.md)
-4. [Layouts](layouts.md)
-5. [TalonQuery](tquery.md)
+1. [TalonQuery](tquery.md)
 
 #### Browser
 1. [Using `.talon` file](browser.md)

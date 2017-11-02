@@ -70,7 +70,7 @@ package talon.utils
 
 		public static function parseAngle(string:String, fallback:Number = NaN):Number
 		{
-			var pattern:RegExp = /^(-?\d*\.?\d+)(deg|rad|)$/;
+			var pattern:RegExp = /^(-?\d*\.?\d+)(deg|rad|turn|)$/;
 			var split:Array = pattern.exec(string);
 			if (split == null) return fallback;
 
@@ -80,6 +80,9 @@ package talon.utils
 			{
 				case "rad":
 					return amount;
+				
+				case "turn":
+					return amount * Math.PI * 2;
 
 				case "deg":
 				default:

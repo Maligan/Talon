@@ -128,8 +128,8 @@ package starling.extensions
 
 		private function onFillModeChange():void
 		{
-			_background.horizontalFillMode = _node.getAttributeCache(Attribute.FILL_MODE_HORIZONTAL);
-			_background.verticalFillMode = _node.getAttributeCache(Attribute.FILL_MODE_VERTICAL);
+			_background.horizontalFillMode = _node.getAttributeCache(Attribute.FILL_MODE_X);
+			_background.verticalFillMode = _node.getAttributeCache(Attribute.FILL_MODE_Y);
 		}
 
 		private function onFillAlphaChange():void
@@ -139,8 +139,8 @@ package starling.extensions
 
 		private function onFillScaleChange():void
 		{
-			_background.horizontalScale = parseFloat(_node.getAttributeCache(Attribute.FILL_SCALE_HORIZONTAL));
-			_background.verticalScale = parseFloat(_node.getAttributeCache(Attribute.FILL_SCALE_VERTICAL));
+			_background.horizontalScale = parseFloat(_node.getAttributeCache(Attribute.FILL_SCALE_X));
+			_background.verticalScale = parseFloat(_node.getAttributeCache(Attribute.FILL_SCALE_Y));
 		}
 
 		private function onFillBlendModeChange():void
@@ -150,8 +150,8 @@ package starling.extensions
 
 		private function onFillAlignChange():void
 		{
-			_background.horizontalAlign = _node.getAttributeCache(Attribute.FILL_ALIGN_HORIZONTAL);
-			_background.verticalAlign = _node.getAttributeCache(Attribute.FILL_ALIGN_VERTICAAL);
+			_background.horizontalAlign = _node.getAttributeCache(Attribute.FILL_ALIGN_X);
+			_background.verticalAlign = _node.getAttributeCache(Attribute.FILL_ALIGN_Y);
 		}
 		
 		private function onFillStretchGridChange():void

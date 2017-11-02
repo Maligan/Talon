@@ -54,16 +54,16 @@ package talon.core
 		public static const FILL_STRETCH_GRID_LEFT:String          = registerAttribute("fillStretchGridLeft",   NONE);
 		public static const FILL_STRETCH_GRID:String               = registerComposite("fillStretchGrid",       [FILL_STRETCH_GRID_TOP, FILL_STRETCH_GRID_RIGHT, FILL_STRETCH_GRID_BOTTOM, FILL_STRETCH_GRID_LEFT]);
 		public static const FILL_ALPHA:String                      = registerAttribute("fillAlpha",             "1");
-		public static const FILL_SCALE_HORIZONTAL:String           = registerAttribute("fillScaleHorizontal",	"1");
-		public static const FILL_SCALE_VERTICAL:String             = registerAttribute("fillScaleVertical",	    "1");
-		public static const FILL_SCALE:String                      = registerComposite("fillScale",	    		[FILL_SCALE_HORIZONTAL, FILL_SCALE_VERTICAL]);
-		public static const FILL_MODE_HORIZONTAL:String            = registerAttribute("fillModeHorizontal",    FillMode.STRETCH);
-		public static const FILL_MODE_VERTICAL:String              = registerAttribute("fillModeVertical",      FillMode.STRETCH);
-		public static const FILL_MODE:String                       = registerComposite("fillMode",              [FILL_MODE_HORIZONTAL, FILL_MODE_VERTICAL]);
+		public static const FILL_SCALE_X:String           		   = registerAttribute("fillScaleX",			"1");
+		public static const FILL_SCALE_Y:String             	   = registerAttribute("fillScaleY",	    	"1");
+		public static const FILL_SCALE:String                      = registerComposite("fillScale",	    		[FILL_SCALE_X, FILL_SCALE_Y]);
+		public static const FILL_MODE_X:String             		   = registerAttribute("fillModeX",    			FillMode.STRETCH);
+		public static const FILL_MODE_Y:String              	   = registerAttribute("fillModeY",      		FillMode.STRETCH);
+		public static const FILL_MODE:String                       = registerComposite("fillMode",              [FILL_MODE_X, FILL_MODE_Y]);
 		public static const FILL_BLEND_MODE:String                 = registerAttribute("fillBlendMode",         "auto");
-		public static const FILL_ALIGN_HORIZONTAL:String           = registerAttribute("fillAlignHorizontal",   "left");
-		public static const FILL_ALIGN_VERTICAAL:String            = registerAttribute("fillAlignVertical",     "top");
-		public static const FILL_ALIGN:String                 	   = registerComposite("fillAlign",             [FILL_ALIGN_HORIZONTAL, FILL_ALIGN_VERTICAAL]);
+		public static const FILL_ALIGN_X:String           		   = registerAttribute("fillAlignX",   			"left");
+		public static const FILL_ALIGN_Y:String            		   = registerAttribute("fillAlignY",     		"top");
+		public static const FILL_ALIGN:String                 	   = registerComposite("fillAlign",             [FILL_ALIGN_X, FILL_ALIGN_Y]);
 		public static const FILL_TINT:String					   = registerAttribute("fillTint",				"#FFFFFF");
 
 		public static const FONT_COLOR:String                      = registerAttribute("fontColor",             INHERIT, "#FFFFFF");
@@ -88,17 +88,17 @@ package talon.core
 		public static const PIVOT_Y:String                         = registerAttribute("pivotY",                NONE);
 		public static const PIVOT:String                           = registerComposite("pivot",                 [PIVOT_X, PIVOT_Y]);
 
-		public static const HALIGN:String                          = registerAttribute("halign",                "left");
-		public static const VALIGN:String                          = registerAttribute("valign",                "top");
-		public static const ALIGN:String                           = registerComposite("align",                 [HALIGN, VALIGN]);
+		public static const ALIGN_X:String                         = registerAttribute("alignX",               "left");
+		public static const ALIGN_Y:String                         = registerAttribute("alignY",               "top");
+		public static const ALIGN:String                           = registerComposite("align",                 [ALIGN_X, ALIGN_Y]);
 
 		public static const ORIENTATION:String                     = registerAttribute("orientation",           Orientation.HORIZONTAL);
 		public static const GAP:String                             = registerAttribute("gap",                   NONE);
 		public static const INTERLINE:String                       = registerAttribute("interline",             NONE);
 		public static const WRAP:String                            = registerAttribute("wrap",                  "false");
-		public static const HALIGN_SELF:String                     = registerAttribute("halignSelf",            "left");
-		public static const VALIGN_SELF:String                     = registerAttribute("valignSelf",            "top");
-		public static const ALIGN_SELF:String					   = registerComposite("alignSelf",				[HALIGN_SELF, VALIGN_SELF]);
+		public static const ALIGN_SELF_X:String                    = registerAttribute("alignSelfX",            "left");
+		public static const ALIGN_SELF_Y:String                    = registerAttribute("alignSelfY",            "top");
+		public static const ALIGN_SELF:String					   = registerComposite("alignSelf",				[ALIGN_SELF_X, ALIGN_SELF_Y]);
 
 		public static const BREAK_BEFORE:String                    = registerAttribute("breakBefore",           BreakMode.SOFT);
 		public static const BREAK_AFTER:String                     = registerAttribute("breakAfter",            BreakMode.SOFT);

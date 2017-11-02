@@ -75,13 +75,13 @@ package talon.layouts
 			if (orientation == Orientation.HORIZONTAL)
 			{
 				flow.setMaxSize(maxWidth, maxHeight);
-				flow.setAlign(getAlign(node, Attribute.HALIGN), getAlign(node, Attribute.VALIGN));
+				flow.setAlign(getAlign(node, Attribute.ALIGN_X), getAlign(node, Attribute.ALIGN_Y));
 				flow.setPadding(paddingLeft, paddingRight, paddingTop, paddingBottom);
 			}
 			else
 			{
 				flow.setMaxSize(maxHeight, maxWidth);
-				flow.setAlign(getAlign(node, Attribute.VALIGN), getAlign(node, Attribute.HALIGN));
+				flow.setAlign(getAlign(node, Attribute.ALIGN_Y), getAlign(node, Attribute.ALIGN_X));
 				flow.setPadding(paddingTop, paddingBottom, paddingLeft, paddingRight);
 			}
 
@@ -111,7 +111,7 @@ package talon.layouts
 					flow.setChildLengthMargin(childMarginLeft, childMarginRight);
 					flow.setChildThickness(childHeight, child.height.unit == Gauge.STAR);
 					flow.setChildThicknessMargin(childMarginTop, childMarginBottom);
-					flow.setChildInlineAlign(getAlign(child, Attribute.VALIGN_SELF));
+					flow.setChildInlineAlign(getAlign(child, Attribute.ALIGN_SELF_Y));
 				}
 				else
 				{
@@ -119,7 +119,7 @@ package talon.layouts
 					flow.setChildLengthMargin(childMarginTop, childMarginBottom);
 					flow.setChildThickness(childWidth, child.width.unit == Gauge.STAR);
 					flow.setChildThicknessMargin(childMarginLeft, childMarginRight);
-					flow.setChildInlineAlign(getAlign(child, Attribute.HALIGN_SELF));
+					flow.setChildInlineAlign(getAlign(child, Attribute.ALIGN_SELF_X));
 				}
 				flow.endChild();
 			}

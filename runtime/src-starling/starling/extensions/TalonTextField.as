@@ -49,8 +49,8 @@ package starling.extensions
 			_bridge.setAttributeChangeListener(Attribute.TEXT, onTextChange);
 			_bridge.setAttributeChangeListener(Attribute.WRAP, onWrapChange);
 			_bridge.setAttributeChangeListener(Attribute.FONT_AUTO_SCALE, onAutoScaleChange);
-			_bridge.setAttributeChangeListener(Attribute.HALIGN, onHAlignChange, true);
-			_bridge.setAttributeChangeListener(Attribute.VALIGN, onVAlignChange, true);
+			_bridge.setAttributeChangeListener(Attribute.ALIGN_X, onHAlignChange, true);
+			_bridge.setAttributeChangeListener(Attribute.ALIGN_Y, onVAlignChange, true);
 			_bridge.setAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange, true);
 			_bridge.setAttributeChangeListener(Attribute.INTERLINE, onInterlineChange);
 			_bridge.setAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
@@ -349,8 +349,8 @@ package starling.extensions
 		private function onFontColorChange():void { format.color = ParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
 		private function onFontSizeChange():void { format.size = node.metrics.ppem; node.invalidate(); }
 		private function onFontNameChange():void { format.font = node.getAttributeCache(Attribute.FONT_NAME); node.invalidate(); onFontEffectChange(); }
-		private function onHAlignChange():void { format.horizontalAlign = node.getAttributeCache(Attribute.HALIGN) }
-		private function onVAlignChange():void { format.verticalAlign = node.getAttributeCache(Attribute.VALIGN) }
+		private function onHAlignChange():void { format.horizontalAlign = node.getAttributeCache(Attribute.ALIGN_X) }
+		private function onVAlignChange():void { format.verticalAlign = node.getAttributeCache(Attribute.ALIGN_Y) }
 		private function onAutoScaleChange():void { super.autoScale = ParseUtil.parseBoolean(node.getAttributeCache(Attribute.FONT_AUTO_SCALE)); }
 		private function onWrapChange():void { super.wordWrap = ParseUtil.parseBoolean(node.getAttributeCache(Attribute.WRAP)); node.invalidate(); }
 		private function onInterlineChange():void { format.leading = Gauge.toPixels(node.getAttributeCache(Attribute.INTERLINE), node.metrics); node.invalidate(); }

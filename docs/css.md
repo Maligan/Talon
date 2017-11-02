@@ -67,10 +67,10 @@ Define node behaviour and used for style applying.
 * Any user types.
 
 #### class
-Define set of css classes: Used for style applying.
+Define set of *css classes*: Used for style applying.
 
 #### state
-Define set of css pseudo classes: Used for style applying.  
+Define set of *css pseudo classes*: Used for style applying.  
 
 #### fill
 > See <a href="fill.md">background</a> article.
@@ -272,13 +272,13 @@ Setup image source.
 * <a href="#resource">RESOURCE</a>
 
 #### tint
-Setup source tint color.
+Setup image source tint color.
 
 #### text
 Setup rendered text.
 
-#### anchor
 #### layout
+#### anchor
 #### orientation
 #### align
 #### gap
@@ -298,6 +298,19 @@ Some data types is reusable and can has several formats, there are these types.
 * `white`, `silver`, `gray`, `black`, `red`, `maroon`, `yellow`, `olive`, `lime`, `green`, `aqua`, `teal`, `blue`, `navy`, `fuchsia`, `purple`
 
 #### Gauge
+Format is `NUMBER [UNIT]` there are units:
+* `none` this is null analog, in more cases calculated as `0`, but in same attributes (as `width`/`height`) has special logic
+* `px` pysical pixel  
+In case there is no units used pixels by default (`100px` equals `100`).  
+* `dp` device-independent pixel like in Android it is equivalent to one physical pixel on 160 dpi screen
+* `mm` pysical millimeter 
+* `em` like css ems this is current node `fontSize` value in pixels
+* `%` percents base value for calculation depends on attribute
+* `*` stars implies "free space" see [layouts article](layouts.md) for more information  
+In case stars it is possible to ommit amount for `1` value (`1*` equals `*`).
+
+> **NB!** Today on web/desktop application air doesn't have access to screen DPI so `dp` and `mm` units are not correct value.
+
 
 #### Angle
 Format is `NUMBER [UNIT]` there are units:
@@ -324,7 +337,39 @@ Absolutely **any** attribute can use resource as value.
 
 * * *
 
-### Composition
-#### Single
+### Compositions
+Some of attributes are special composition of another attributes like `pivot` and `pivotX`, `pivotY`. There are 2 typical composition type, based on amount of composed attributes.  
+
 #### Pair
+For example:
+
+* `pivot = X` equals:
+	* `pivotX = X`
+	* `pivotY = X`
+* `pivot = X Y` equals:
+	* `pivotX = X`
+	* `pivotY = Y`
+
 #### Quad
+For example:
+
+* `margin = X` equals:
+	* `marginTop = X`
+	* `marginRight = X`
+	* `marginBottom = X`
+	* `marginLeft = X`
+* `margin = X Y` equals:
+	* `marginTop = X`
+	* `marginRight = Y`
+	* `marginBottom = X`
+	* `marginLeft = Y`
+* `margin = X Y Z` equals:
+	* `marginTop = X`
+	* `marginRight = Y`
+	* `marginBottom = Z`
+	* `marginLeft = Y`
+* `margin = X Y Z W` equals:
+	* `marginTop = X`
+	* `marginRight = Y`
+	* `marginBottom = Z`
+	* `marginLeft = W`

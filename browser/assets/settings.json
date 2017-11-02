@@ -6,18 +6,5 @@
 		{ "name": "iPhone 6+", "width": 1080, "height": 1920, "dpi": 401, "csf": 2 },
 		{ "name": "iPad (Retina)", "width": 2048, "height": 1536, "dpi": 264, "csf": 2 },
 		{ "name": "iPad Mini (Retina)", "width": 2048, "height": 1536, "dpi": 326, "csf": 2 }
-	],
-
-	"keybinds": [
-		{ "command": "document.open", "key": "ctrl+o" },
-		{ "command": "document.close", "key": "ctrl+w" },
-		{ "command": "document.publish", "key": "ctrl+shift+s" },
-
-		{ "command": "view.rotate", "key": "ctrl+r" },
-		{ "command": "view.profile", "key": "ctrl+0" },
-		{ "command": "view.screenshot", "key": "ctrl+shift+a" },
-		{ "command": "view.toggleProfileBind" },
-		{ "command": "view.toggleOutline", "key": "ctrl+l" },
-		{ "command": "view.toggleInspector", "key": "ctrl+i" }
 	]
 }

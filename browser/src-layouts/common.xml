@@ -25,7 +25,7 @@
 				<div layout="flow" width="100%" gap="8px">
 					<txt text="$dialog.profile.size" width="*" height="*" alignX="left" alignY="center" />
 					<input id="width" width="48" />
-					<txt text="x" alignYSelf="center" margin="none -6px none -4px" />
+					<txt text="x" alignSelfY="center" margin="none -6px none -4px" />
 					<input id="height" width="48" />
 				</div>
 
@@ -40,7 +40,7 @@
 				</div>
 			</div>
 
-			<div layout="flow" alignXSelf="center" margin="none" gap="8px" padding="8px" width="150px">
+			<div layout="flow" alignSelfX="center" margin="none" gap="8px" padding="8px" width="150px">
 				<button id="accept" label="$button.accept" width="*" class="action" />
 				<button id="cancel" label="$button.cancel" width="*" />
 			</div>
@@ -54,7 +54,7 @@
 			<txt id="header" text="POPUP_HEADER" margin="8px" />
 
 			<div layout="flow" fill="#4e5051" width="100%" orientation="horizontal" padding="8px" wrap="true">
-				<txt id="status" alignYSelf="center" text="POPUP_STATUS" width="*" height="16px" />
+				<txt id="status" alignSelfY="center" text="POPUP_STATUS" width="*" height="16px" />
 				<div layout="anchor" width="20px" height="20px" >
 					<img id="details" pivot="50%" source="$drop_down" cursor="button" />
 					<img id="spinner" pivot="50%" source="$spinner_small" />
@@ -63,7 +63,7 @@
 
 			<txt id="detailsInfo" text="POPUP_DETAILS" width="266px" padding="8px" marginTop="2px" fontColor="#888888" />
 
-			<div layout="flow" alignXSelf="center" margin="none" gap="8px" padding="8px" width="100%" alignX="right">
+			<div layout="flow" alignSelfX="center" margin="none" gap="8px" padding="8px" width="100%" alignX="right">
 				<button id="cancel" label="Cancel" />
 			</div>
 
@@ -84,7 +84,7 @@
 				<checkbox label="$dialog.preferences.openLastDocument" />
 			</div>
 
-			<div alignXSelf="center" margin="none" gap="8px" padding="8px">
+			<div alignSelfX="center" margin="none" gap="8px" padding="8px">
 				<button id="_accept" label="$button.accept" class="action" />
 				<button id="_cancel" label="$button.cancel" />
 			</div>

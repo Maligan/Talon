@@ -186,8 +186,6 @@ package talon.browser.desktop.plugins
 			{
 				if (isProfileBinding)
 					resizeWindowTo(_platform.profile.width, _platform.profile.height);
-				else
-					refreshTemplateContainer();
 				
 				refreshWindowTitle();
 			}
@@ -199,8 +197,6 @@ package talon.browser.desktop.plugins
 				
 				if (isProfileBinding)
 					_platform.profile.setSize(_platform.starling.stage.stageWidth, _platform.starling.stage.stageHeight);
-
-				refreshTemplateContainer();
 			}
 			
 			function onZoomChange(e:Event):void
@@ -212,8 +208,6 @@ package talon.browser.desktop.plugins
 			{
 				if (isProfileBinding)
 					_platform.profile.setSize(_platform.starling.stage.stageWidth, _platform.starling.stage.stageHeight);
-				
-				refreshTemplateContainer();
 			}
 		}
 
@@ -340,6 +334,7 @@ package talon.browser.desktop.plugins
 					isolator.addChild(_templateContainer);
 
 					_container = _layout.query("#container")[0] as TalonSprite;
+					_container.node.addListener(Event.RESIZE, refreshTemplateContainer);
 					_container.addEventListener(TouchEvent.TOUCH, onIsolatorTouch);
 					_container.addChild(isolator);
 
@@ -378,7 +373,6 @@ package talon.browser.desktop.plugins
 					}
 					
 					// ready
-					refreshTemplateContainer();
 					refreshTemplate();
 				})
 			}
@@ -561,50 +555,24 @@ package talon.browser.desktop.plugins
 				// Content Size
 				var cw:Number = _platform.profile.width;
 				var ch:Number = _platform.profile.height;
-				_templateContainer.node.bounds.setTo(0, 0, cw, ch);
+				_templateContainer.rectangle.setTo(0, 0, cw, ch);
 
 				// Container Size
-				_layout.bounds;
-				var pw:Number = ITalonDisplayObject(_container.parent.parent).node.bounds.width;
-				var ph:Number = ITalonDisplayObject(_container.parent.parent).node.bounds.height;
+				var pw:Number = _container.rectangle.width;
+				var ph:Number = _container.rectangle.height;
 
-				// Align isolator in center
+				// Align isolator in center (with NO_SCALE or SHOW_ALL)
 				_templateContainer.parent.scale = zoom = isProfileBinding ? 1 : Math.min(1, pw/cw, ph/ch);
 				_templateContainer.parent.x = (pw - cw*zoom)/2;
 				_templateContainer.parent.y = (ph - ch*zoom)/2;
-//				_templateContainer.node.setAttribute(Attribute.FILL_SCALE, (1/zoom).toString());
 
 				// Set Frame
-				_templateFrame.x = Math.round(_templateContainer.parent.x)-1;
-				_templateFrame.y = Math.round(_templateContainer.parent.y)-1;
-				_templateFrame.width = Math.round(cw*zoom)+2;
-				_templateFrame.height = Math.round(ch*zoom)+2;
+				_templateFrame.x = Math.floor(_templateContainer.parent.x)-1;
+				_templateFrame.y = Math.floor(_templateContainer.parent.y)-1;
+				_templateFrame.width = Math.ceil(cw*zoom)+2;
+				_templateFrame.height = Math.ceil(ch*zoom)+2;
 				
 				_template && refreshOutline(_template);
-
-				refreshTemplateContainerBounds();
-			}
-		}
-		
-		public function refreshTemplateContainerBounds():void
-		{
-			return;
-			
-			if (_templateContainer == null)
-				return;
-			
-			with (Starling.current.nativeOverlay.graphics)
-			{
-				var bounds:Rectangle = _templateContainer.node.bounds;
-				var global:Rectangle = new Rectangle();
-				
-				global.topLeft = _templateContainer.localToGlobal(bounds.topLeft);
-				global.bottomRight = _templateContainer.localToGlobal(bounds.bottomRight);
-				global.inflate(2, 2);
-
-				clear();
-				lineStyle(1, Color.AQUA, 0.3, true);
-				drawRect(global.x, global.y, global.width, global.height);
 			}
 		}
 
@@ -684,15 +652,11 @@ package talon.browser.desktop.plugins
 				}
 			}
 		}
-
 		
-		
-//		public function setBackground()
-		
-
-		public function get isProfileBinding():Boolean {
+		public function get isProfileBinding():Boolean
+		{
 			return _platform.settings.getValue(AppConstants.SETTING_PROFILE_BIND_MODE, Boolean, true)
-				&& !_platform.settings.getValue(AppConstants.SETTING_SHOW_INSPECTOR, Boolean, false)
+			   && !_platform.settings.getValue(AppConstants.SETTING_SHOW_INSPECTOR, Boolean, false)
 		}
 		
 		public function get outline():Boolean { return _platform.settings.getValue(AppConstants.SETTING_SHOW_OUTLINE, Boolean, false); }
@@ -771,7 +735,7 @@ package talon.browser.desktop.plugins
 			if (profileName) result.push(profileName);
 			// Zoom (if non 100%)
 			if (zoom != 1) result.push(int(zoom * 100) + "%");
-			// Application name + version + update
+			// Application name + version + update state
 			var info:Array = [AppConstants.APP_NAME, AppConstants.APP_VERSION];
 			if (_updateUrl != null) info.push("(OUTDATED)");
 			result.push(info.join(" "));

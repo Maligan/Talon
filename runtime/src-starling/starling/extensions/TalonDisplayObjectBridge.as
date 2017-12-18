@@ -315,6 +315,7 @@ package starling.extensions
 				if (node.parent == null)
 				{
 					// TODO: Respect percentages & min/max size
+					// 		 Support stageWidth/stageHeight
 
 					if (node.bounds.width == -1)
 						node.bounds.width = node.width.toPixels();
@@ -379,6 +380,7 @@ package starling.extensions
 		public function getBoundsCustom(getBounds:Function, targetSpace:DisplayObject, out:Rectangle):Rectangle
 		{
 			// Starling call getBounds for invisible DisplayObject
+			// But Talon invisible objects are not processed
 			if (_target.visible == false)
 			{
 				out ||= new Rectangle();
@@ -388,7 +390,7 @@ package starling.extensions
 				return out;
 			}
 			
-			 validate(true);
+			validate(true);
 			
 			if (out == null) out = new Rectangle();
 			else out.setEmpty();

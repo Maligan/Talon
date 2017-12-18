@@ -70,7 +70,7 @@ package starling.extensions
 		private function onSourceChange():void
 		{
 			texture = node.getAttributeCache(Attribute.SOURCE) as Texture;
-			node.invalidate();
+			node.invalidateLayout();
 		}
 
 		private function onSourceTintChange():void

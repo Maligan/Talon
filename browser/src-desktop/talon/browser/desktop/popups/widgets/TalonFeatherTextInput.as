@@ -2,6 +2,7 @@ package talon.browser.desktop.popups.widgets
 {
 	import feathers.controls.TextInput;
 	import feathers.controls.text.BitmapFontTextEditor;
+	import feathers.controls.text.BitmapFontTextEditor;
 	import feathers.core.ITextEditor;
 	import feathers.events.FeathersEventType;
 	import feathers.text.BitmapFontTextFormat;
@@ -13,7 +14,9 @@ package talon.browser.desktop.popups.widgets
 	import starling.extensions.TalonDisplayObjectBridge;
 	import starling.extensions.TalonQuery;
 	import starling.rendering.Painter;
+	import starling.text.BitmapFont;
 	import starling.text.TextField;
+	import starling.text.TextFormat;
 
 	import talon.core.Attribute;
 	import talon.core.Node;
@@ -27,11 +30,7 @@ package talon.browser.desktop.popups.widgets
 
 		public function TalonFeatherTextInput()
 		{
-
 			_bridge = new TalonDisplayObjectBridge(this);
-			_bridge.setAttributeChangeListener(Attribute.FONT_NAME, onFontNameChange);
-			_bridge.setAttributeChangeListener(Attribute.FONT_SIZE, onFontSizeChange);
-			_bridge.setAttributeChangeListener(Attribute.FONT_COLOR, onFontColorChange);
 			_bridge.setAttributeChangeListener(Attribute.TEXT, onTextChange);
 			_bridge.setAttributeChangeListener(Attribute.PADDING, onPaddingChange);
 
@@ -39,8 +38,7 @@ package talon.browser.desktop.popups.widgets
 
 			restrict = "0-9.,";
 			maxChars = 5;
-
-			// Create textEditor
+			
 			textEditorFactory = editorFactory;
 		}
 
@@ -59,14 +57,12 @@ package talon.browser.desktop.popups.widgets
 
 		private function editorFactory():ITextEditor
 		{
+			var fontName:String = node.getAttributeCache(Attribute.FONT_NAME);
+			var fontSize:int = node.metrics.ppem;
+			var fontColor:int = ParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR));
+			
 			var editor:BitmapFontTextEditor = new BitmapFontTextEditor();
-
-			editor.textFormat = new BitmapFontTextFormat(
-				node.getAttributeCache(Attribute.FONT_NAME),
-				node.getAttributeCache(Attribute.FONT_SIZE),
-				ParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR))
-			);
-
+			editor.textFormat = new BitmapFontTextFormat(fontName, fontSize, fontColor);
 			return editor;
 		}
 
@@ -105,10 +101,8 @@ package talon.browser.desktop.popups.widgets
 			height = node.bounds.height;
 		}
 
-		private function onFontNameChange():void { if (textFormat) textFormat.font = TextField.getBitmapFont(node.getAttributeCache(Attribute.FONT_NAME)); }
-		private function onFontSizeChange():void { if (textFormat) textFormat.size = parseFloat(node.getAttributeCache(Attribute.FONT_SIZE)); }
-		private function onFontColorChange():void { if (textFormat) textFormat.color = ParseUtil.parseColor(node.getAttributeCache(Attribute.FONT_COLOR)); }
 		private function onTextChange():void { text = node.getAttributeCache(Attribute.TEXT); }
+		
 		private function onPaddingChange():void
 		{
 			paddingLeft = node.paddingLeft.toPixels();
@@ -117,10 +111,6 @@ package talon.browser.desktop.popups.widgets
 			paddingBottom = node.paddingBottom.toPixels();
 		}
 
-		private function get textFormat():BitmapFontTextFormat
-		{
-			return textEditor ? BitmapFontTextEditor(textEditor).textFormat : null;
-		}
 
 		public override function render(painter:Painter):void
 		{

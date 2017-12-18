@@ -41,7 +41,7 @@ package talon.core
 		private var _boundsCache:Rectangle = new Rectangle();
 		private var _triggers:Dictionary = new Dictionary();
 		private var _metrics:Metrics = new Metrics(this);
-		private var _status:int = RESOURCES | STYLE | LAYOUT;
+		private var _invalidFlag:int = RESOURCES | STYLE | LAYOUT;
 		
 		/** @private */
 		public function Node():void
@@ -131,14 +131,14 @@ package talon.core
 		//
 		public function setStyles(styles:Vector.<Style>):void
 		{
-			status |= STYLE;
+			invalidFlag |= STYLE;
 			_styles = styles;
 		}
 
 		/** Recursive apply style to current node. */
 		private function refreshStyle():void
 		{
-			status &= ~STYLE;
+			invalidFlag &= ~STYLE;
 			
 			var style:Object = requestStyle(this);
 	
@@ -171,7 +171,7 @@ package talon.core
 		
 		private function resetStyle():void
 		{
-			status |= STYLE;
+			invalidFlag |= STYLE;
 
 			for (var i:int = 0; i < numChildren; i++)
 				getChildAt(i).resetStyle();
@@ -183,7 +183,7 @@ package talon.core
 		/** Set current node resources (an object containing key-value pairs). */
 		public function setResources(resources:Object):void
 		{
-			status |= RESOURCES;
+			invalidFlag |= RESOURCES;
 			_resources = resources;
 		}
 
@@ -201,7 +201,7 @@ package talon.core
 
 		private function refreshResource():void
 		{
-			status &= ~RESOURCES;
+			invalidFlag &= ~RESOURCES;
 	
 			// Notify resource change
 			for each (var attribute:Attribute in _attributes)
@@ -221,9 +221,9 @@ package talon.core
 			var visible:Boolean = ParseUtil.parseBoolean(getAttributeCache(Attribute.VISIBLE));
 			if (!visible) return;
 			
-			if (boundsIsResized || status | LAYOUT)
+			if (boundsIsResized || invalidFlag | LAYOUT)
 			{
-				status &= ~LAYOUT;
+				invalidFlag &= ~LAYOUT;
 				layout.arrange(this, bounds.width, bounds.height);
 			}
 
@@ -237,26 +237,26 @@ package talon.core
 				getChildAt(i).refreshLayout();
 		}
 
-		public function invalidate():void
+		public function invalidateLayout():void
 		{
-			status |= LAYOUT;
+			invalidFlag |= LAYOUT;
 			
 			if (width.isNone || height.isNone)
-				parent && parent.invalidate();
+				parent && parent.invalidateLayout();
 		}
 		
 		public function get invalidated():Boolean
 		{
-			return status > 0
+			return invalidFlag > 0
 				|| boundsIsChanged;
 		}
 
 		public function validate(layout:Boolean = true):void
 		{
-			if (status & STYLE)
+			if (invalidFlag & STYLE)
 				refreshStyle();
 			
-			if (status & RESOURCES)
+			if (invalidFlag & RESOURCES)
 				refreshResource();
 			
 			if (layout)
@@ -300,19 +300,19 @@ package talon.core
 		{
 			var layoutChanged:Boolean = layout.isObservable(this, attribute);
 			if (layoutChanged)
-				invalidate();
+				invalidateLayout();
 		}
 
 		//
 		// Helper for validation
 		//
-		private function get status():int { return _status }
-		private function set status(value:int):void
+		private function get invalidFlag():int { return _invalidFlag }
+		private function set invalidFlag(value:int):void
 		{
-			if (_status != value)
+			if (_invalidFlag != value)
 			{
-				var changed:int = ~_status && value;	// Bits which was setted to one
-				_status = value;
+				var changed:int = ~_invalidFlag && value;	// Bits which was setted to one
+				_invalidFlag = value;
 				if (changed != 0) dispatch("update");	// There is not flash.events.Event.UPDATE (but there is in Starling)
 			}
 		}
@@ -336,9 +336,9 @@ package talon.core
 			child._parent = this;
 			child.addListener(Event.CHANGE, onSelfOrChildAttributeChange);
 			child.dispatch(Event.ADDED);
-			child.status |= STYLE | RESOURCES;
+			child.invalidFlag |= STYLE | RESOURCES;
 
-			invalidate();
+			invalidateLayout();
 		}
 
 		/** Removes a child from the container. If the object is not a child throws ArgumentError. */
@@ -349,10 +349,10 @@ package talon.core
 			_children.removeAt(_children.indexOf(child));
 			child.removeListener(Event.CHANGE, onSelfOrChildAttributeChange);
 			child.dispatch(Event.REMOVED);
-			child.status |= STYLE | RESOURCES;
+			child.invalidFlag |= STYLE | RESOURCES;
 			child._parent = null;
 
-			invalidate();
+			invalidateLayout();
 		}
 
 		/** Returns a child object at a certain index. */

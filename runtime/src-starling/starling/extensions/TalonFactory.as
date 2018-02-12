@@ -1,8 +1,8 @@
 package starling.extensions
 {
-	import flash.system.ApplicationDomain;
 	import flash.utils.ByteArray;
 
+	import starling.assets.AssetManager;
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
 	import starling.utils.AssetManager;
@@ -46,8 +46,14 @@ package starling.extensions
 		// integration with starling asset manager
 
 		/** Import all textures and caches into factory. */
-		public function importAssetManager(assets:AssetManager):void
+		public function importAssetManager(assets:Object):void
 		{
+			var oldManager:starling.utils.AssetManager = assets as starling.utils.AssetManager;
+			var newManager:starling.assets.AssetManager = assets as starling.assets.AssetManager;
+
+			if (oldManager == null && newManager == null)
+				throw new Error("Parameter asstets must be instance of starling.utils.AssetManager or starling.assets.AssetManager");
+			
 			var name:String;
 			var names:Vector.<String> = new Vector.<String>();
 			
@@ -75,26 +81,19 @@ package starling.extensions
 		 * 3) Import AssetManager into factory (@see importAssetManager).
 		 * 
 		 * This method works only if you link FZip library (https://github.com/claus/fzip) int swf. */
-		public function importArchiveAsync(bytes:ByteArray, onProgress:Function):AssetManager
+		public function importArchiveAsync(bytes:ByteArray, onComplete:Function, onProgress:Function = null, onError:Function = null):starling.assets.AssetManager
 		{
-			var hasFZipLibrary:Boolean = ApplicationDomain.currentDomain.hasDefinition("deng.fzip.FZip");
-			if (hasFZipLibrary == false) throw new Error("FZip library required for archive import: https://github.com/claus/fzip");
-			if (bytes == null) throw new ArgumentError("Parameter bytes must be non-null");
-
-			var manager:AssetManagerZip = new AssetManagerZip();
-			manager.verbose = false;
-			manager.enqueueZip(bytes);
-			manager.loadQueue(onProgressInner);
-
-			function onProgressInner(ratio:Number):void
+			var manager = new starling.assets.AssetManager();
+			
+			manager.registerFactory(new FZipAssetFactory());
+			manager.verbose = true;
+			manager.enqueueSingle(bytes);
+			manager.loadQueue(onCompleteInner, onProgress, onError);
+			
+			function onCompleteInner():void
 			{
-				if (ratio == 1)
-					importAssetManager(manager);
-
-				if (onProgress.length == 1)
-					onProgress(ratio);
-				else if (ratio == 1)
-					onProgress();
+				importAssetManager(manager);
+				onComplete();
 			}
 			
 			return manager;
@@ -102,107 +101,47 @@ package starling.extensions
 	}
 }
 
-import flash.display.Loader;
-import flash.display.LoaderInfo;
-import flash.events.IOErrorEvent;
-import flash.system.ApplicationDomain;
-import flash.system.ImageDecodingPolicy;
-import flash.system.LoaderContext;
+
+import deng.fzip.FZip;
+import deng.fzip.FZipFile;
+
 import flash.utils.ByteArray;
 
-import starling.events.Event;
-import starling.utils.AssetManager;
-import starling.utils.SystemUtil;
+import starling.assets.AssetFactory;
+import starling.assets.AssetFactoryHelper;
+import starling.assets.AssetReference;
+import starling.assets.AtfTextureFactory;
+import starling.assets.BitmapTextureFactory;
+import starling.assets.JsonFactory;
+import starling.assets.XmlFactory;
+import starling.textures.TextureOptions;
 
-class AssetManagerZip extends AssetManager
+class FZipAssetFactory extends AssetFactory
 {
-	private static const PNG:String = "\u0089PNG\r\n\u001A\n";
-	private static const JPG:String = "\u00FF\u00D8\u00FF";
-	private static const GIF87a:String = "\u0047\u0049\u0046\u0038\u0037\u0061";
-	private static const GIF89a:String = "\u0047\u0049\u0046\u0038\u0039\u0061";
+	private var _subFactories:Array;
 
-	public function enqueueZip(bytes:ByteArray):void
+	public function FZipAssetFactory()
 	{
-		var FZip:Class = ApplicationDomain.currentDomain.getDefinition("deng.fzip.FZip") as Class;
-		
-		var zip:* = new FZip();
-		zip.loadBytes(bytes);
+		addExtensions("zip");
+		addMimeTypes("application/zip", "application/zip-compressed");
 
-		var numFiles:int = zip.getFileCount();
-		for (var i:int = 0; i < numFiles; i++)
-		{
-			var file:* = zip.getFileAt(i);
-
-			var name:String = getBasenameFromUrl(file.filename);
-			var asset:ByteArray = file.content;
-
-			enqueueWithName(asset, name);
-		}
+		_subFactories = [
+			new BitmapTextureFactory(),
+			new JsonFactory(),
+			new XmlFactory(),
+			new AtfTextureFactory()
+		];
 	}
 
-	protected override function loadRawAsset(rawAsset:Object, onProgress:Function, onComplete:Function):void
+	public override function canHandle(reference:AssetReference):Boolean
 	{
-		var loaderInfo:LoaderInfo = null;
+		var superCanHandle = super.canHandle(reference);
+		if (superCanHandle) return true;
 
-		if (rawAsset is ByteArray)
-		{
-			var bytes:ByteArray = ByteArray(rawAsset);
-
-			var hasImageSignature:Boolean = false;
-			hasImageSignature ||= hasSignature(bytes, PNG);
-			hasImageSignature ||= hasSignature(bytes, JPG);
-			hasImageSignature ||= hasSignature(bytes, GIF87a);
-			hasImageSignature ||= hasSignature(bytes, GIF89a);
-
-			if (hasImageSignature)
-			{
-				var loaderContext:LoaderContext = new LoaderContext(checkPolicyFile);
-				var loader:Loader = new Loader();
-				loaderContext.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
-				loaderInfo = loader.contentLoaderInfo;
-				loaderInfo.addEventListener(Event.IO_ERROR, onIoError);
-				loaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete);
-				loader.loadBytes(bytes, loaderContext);
-
-				function onIoError(event:IOErrorEvent):void
-				{
-					log("IO error: " + event.text);
-					dispatchEventWith(Event.IO_ERROR);
-					complete(null);
-				}
-
-				function onLoaderComplete(event:Object):void
-				{
-					complete(event.target.content);
-				}
-			}
-			else
-			{
-				complete(bytes);
-			}
-		}
-		else
-		{
-			super.loadRawAsset(rawAsset, onProgress, onComplete);
-		}
-
-		/** NB! Copy-Paste from super. */
-		function complete(asset:Object):void
-		{
-			if (loaderInfo)
-			{
-				loaderInfo.removeEventListener(Event.IO_ERROR, onIoError);
-				loaderInfo.removeEventListener(Event.COMPLETE, onLoaderComplete);
-			}
-
-			// On mobile, it is not allowed / endorsed to make stage3D calls while the app
-			// is in the background. Thus, we pause queue processing if that's the case.
-
-			if (SystemUtil.isDesktop)
-				onComplete(asset);
-			else
-				SystemUtil.executeWhenApplicationIsActive(onComplete, asset);
-		}
+		if (reference.data is ByteArray)
+			return hasSignature(reference.data as ByteArray, "PK\u0003\u0004");
+		
+		return false;
 	}
 
 	/** Check whenever byte array starts with signature. */
@@ -214,5 +153,82 @@ class AssetManagerZip extends AssetManager
 			if (signature.charCodeAt(i) != source[i]) return false;
 
 		return true;
+	}
+
+	public override function create(reference:AssetReference, helper:AssetFactoryHelper, onComplete:Function, onError:Function):void
+	{
+		// get the FZip library here: https://github.com/claus/fzip
+
+		var abort:Boolean = false;
+		var numProcessing:int = 0;
+		
+		var fzip:FZip = new FZip();
+		fzip.loadBytes(reference.data as ByteArray);
+
+		numProcessing++;
+		var numFiles:int = fzip.getFileCount();
+		for (var i:int = 0; i < numFiles; i++)
+		{
+			var file:FZipFile = fzip.getFileAt(i);
+			var asset:AssetReference = getAssetForFile(file, helper, reference.textureOptions);
+
+			if (asset != null)
+			{
+				var subFactory:AssetFactory = getFactoryFor(asset);
+				if (subFactory)
+				{
+					numProcessing++;
+					subFactory.create(asset, helper, onSubFactoryComplete, onSubFactoryError);
+				}
+				else
+					helper.log("No suitable factory found for " + asset.url);
+			}
+		}
+		numProcessing--;
+		finishIfReady();
+		
+		function onSubFactoryComplete(name:String, asset:Object):void
+		{
+			helper.addComplementaryAsset(name, asset);
+			numProcessing--;
+			finishIfReady();
+		}
+
+		function onSubFactoryError(error:String):void
+		{
+			if (!abort)
+			{
+				abort = true;
+				onError(error);
+			}
+		}
+
+		function finishIfReady():void
+		{
+			if (!abort && numProcessing == 0)
+				onComplete();
+		}
+	}
+	
+	private function getAssetForFile(file:FZipFile, helper:AssetFactoryHelper, textureOptions:TextureOptions)
+	{
+		if (file.sizeUncompressed == 0 || file.filename.indexOf("__MACOSX") != -1)
+			return null;
+
+		var subAsset:AssetReference = new AssetReference(file.content);
+		subAsset.url = file.filename;
+		subAsset.name = helper.getNameFromUrl(file.filename);
+		subAsset.extension = helper.getExtensionFromUrl(file.filename);
+		subAsset.textureOptions = textureOptions;
+		
+		return subAsset;
+	}
+
+	private function getFactoryFor(asset:AssetReference):AssetFactory
+	{
+		for each (var factory:AssetFactory in _subFactories)
+			if (factory.canHandle(asset)) return factory;
+
+		return null;
 	}
 }

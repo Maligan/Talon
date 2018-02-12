@@ -8,6 +8,8 @@ package talon.browser.desktop.plugins
 	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 
+	import starling.assets.AssetManager;
+
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
@@ -22,7 +24,6 @@ package talon.browser.desktop.plugins
 	import starling.extensions.ITalonDisplayObject;
 	import starling.extensions.TalonSprite;
 	import starling.filters.FragmentFilter;
-	import starling.utils.AssetManager;
 	import starling.utils.Color;
 	import starling.utils.StringUtil;
 

@@ -2,6 +2,8 @@ package talon.utils
 {
 	import flash.events.Event;
 
+	import starling.extensions.ITalonDisplayObject;
+
 	import talon.core.Attribute;
 	import talon.core.Node;
 	import talon.core.Style;
@@ -23,8 +25,8 @@ package talon.utils
 		protected var _parser:TMLParser;
 		protected var _parserCache:Object;
 		
-		private var _parserStack:Vector.<Object>;
-		private var _parserRoots:Vector.<Object>;
+		private var _parserStack:Vector.<ITalonDisplayObject>;
+		private var _parserRoots:Vector.<ITalonDisplayObject>;
 		private var _parserAttributes:Vector.<Object>;
 		private var _parserTags:Vector.<String>;
 		
@@ -35,8 +37,8 @@ package talon.utils
 			_styles = new <Style>[];
 
 			_parserCache = {};
-			_parserStack = new Vector.<Object>();
-			_parserRoots = new Vector.<Object>();
+			_parserStack = new Vector.<ITalonDisplayObject>();
+			_parserRoots = new Vector.<ITalonDisplayObject>();
 
 			_parser = new TMLParser();
 			_parser.addEventListener(TMLParser.EVENT_BEGIN, onElementBegin);
@@ -88,19 +90,14 @@ package talon.utils
 			}
 
 			// Get result
-			var result:* = _parserStack.pop();
+			var result:ITalonDisplayObject = _parserStack.pop();
 			
 			// In case of empty template
 			if (result == null) return null;
 			
-			var resultNode:Node = getNode(result);
-
 			// Add style and resources
-			if (resultNode)
-			{
-				if (includeResources) resultNode.setResources(_resources);
-				if (includeStyleSheet) resultNode.setStyles(_styles);
-			}
+			if (includeResources) result.node.setResources(_resources);
+			if (includeStyleSheet) result.node.setStyles(_styles);
 
 			// Result
 			return result;
@@ -110,8 +107,8 @@ package talon.utils
 		{
 			// Create new element
 			var elementClass:Class = getLinkageClass(_parserTags);
-			var element:* = new elementClass();
-			var elementNode:Node = getNode(element);
+			var element:ITalonDisplayObject = ITalonDisplayObject(new elementClass());
+			var elementNode:Node = element.node;
 
 			// Copy attributes to node
 			elementNode.setAttribute(Attribute.TYPE, _parserTags[0]);
@@ -127,7 +124,7 @@ package talon.utils
 					var bindName:String = (bindSplit && bindSplit.length>1) ? bindSplit[1] : null;
 					if (bindName)
 					{
-						var bindSource:Node = (i==0 && _parserRoots.length) ? getNode(_parserRoots[_parserRoots.length-1]) : elementNode;
+						var bindSource:Node = (i==0 && _parserRoots.length) ? _parserRoots[_parserRoots.length-1].node : elementNode;
 						var bindSourceAttribute:Attribute = bindSource.getOrCreateAttribute(bindName);
 						elementNode.getOrCreateAttribute(key).upstream(bindSourceAttribute);
 					}
@@ -165,11 +162,6 @@ package talon.utils
 		}
 
 		// For override
-		
-		protected function getNode(element:*):Node
-		{
-			throw new Error("Abstract method");
-		}
 
 		protected function addChild(parent:*, child:*):void
 		{

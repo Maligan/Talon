@@ -58,21 +58,18 @@ package talon.browser.core.document
 		{
 			resources.reset();
 			_styles = _stylesCollection.getMergedStyleSheet();
-
-			return super.build(source, includeStyleSheet, includeResources);
+			var result:ITalonDisplayObject = super.build(source, includeStyleSheet, includeResources);
+			overrideMetrics(result.node);
+			return result;
 		}
-
-		protected override function getNode(element:*):Node
+		
+		private function overrideMetrics(node:Node):void
 		{
-			var node:Node = super.getNode(element);
+			if (csf == csf) node.metrics.ppdp = csf;
+			if (dpi == dpi) node.metrics.ppmm = dpi / 25.4;
 
-			if (node)
-			{
-				if (csf == csf) node.metrics.ppdp = csf;
-				if (dpi == dpi) node.metrics.ppmm = dpi / 25.4;
-			}
-
-			return node;
+			for (var i:int = 0; i < node.numChildren; i++)
+				overrideMetrics(node.getChildAt(i));
 		}
 
 		public function get csf():Number { return _csf; }
@@ -180,12 +177,6 @@ package talon.browser.core.document
 		
 		public function appendResources(object:Object):void
 		{
-			for (var key:String in object)
-			{
-				if (key == "0")
-					trace("sdf")
-			}
-			
 			resources.append(object);
 			dispatchChange();
 		}

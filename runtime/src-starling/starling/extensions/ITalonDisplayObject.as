@@ -13,7 +13,9 @@ package starling.extensions
 		 */
 		function query(selector:String = null):TalonQuery;
 
-//		+ validate()
+		// TODO: Next public API
+		// + validate()	- For implicit control validation process
+		// + clone()	- For easy copy/paste
 
 		function getAttribute(name:String):String;
 		function setAttribute(name:String, value:String):void;
@@ -23,7 +25,7 @@ package starling.extensions
 		/** Bounds rectangle in parent coordinate system. */
 		function get rectangle():Rectangle;
 
-		/** @private */
+		/** @private For internal usage (in public API use delegating to node methods) */
 		function get node():Node
 	}
 }

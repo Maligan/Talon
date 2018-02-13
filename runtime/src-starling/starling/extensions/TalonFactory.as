@@ -28,12 +28,6 @@ package starling.extensions
 		}
 
 		// override methods
-		
-		/** @private */
-		protected override function getNode(element:*):Node
-		{
-			return ITalonDisplayObject(element).node;
-		}
 
 		/** @private */
 		protected override function addChild(parent:*, child:*):void
